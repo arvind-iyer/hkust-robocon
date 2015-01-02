@@ -1,5 +1,5 @@
 Dependencies for Project 'Project', Target 'stm32_template': (DO NOT MODIFY !)
-F (.\src\main.c)(0x54A27ACB)(-c --cpu Cortex-M3 -D__MICROLIB -g -O3 --apcs=interwork -I.\src -I.\src\stm32f10x_std\inc -I.\src\ustrobo_min_system\inc -I C:\Keil\ARM\RV31\INC -I C:\Keil\ARM\CMSIS\Include -I C:\Keil\ARM\Inc\ST\STM32F10x -DUSE_STDPERIPH_DRIVER -DSTM32F10X_HD -DUSE_STM3210B_EVAL -o ".\output\main.o" --omf_browse ".\output\main.crf" --depend ".\output\main.d")
+F (.\src\main.c)(0x54A27B4A)(-c --cpu Cortex-M3 -D__MICROLIB -g -O3 --apcs=interwork -I.\src -I.\src\stm32f10x_std\inc -I.\src\ustrobo_min_system\inc -I C:\Keil\ARM\RV31\INC -I C:\Keil\ARM\CMSIS\Include -I C:\Keil\ARM\Inc\ST\STM32F10x -DUSE_STDPERIPH_DRIVER -DSTM32F10X_HD -DUSE_STM3210B_EVAL -o ".\output\main.o" --omf_browse ".\output\main.crf" --depend ".\output\main.d")
 I (src\main.h)(0x5496FA75)
 I (C:\Keil\ARM\ARMCC\bin\..\include\stdio.h)(0x4EB0D286)
 I (.\src\stm32f10x_std\inc\stm32f10x.h)(0x53720062)
@@ -94,7 +94,7 @@ I (.\src\stm32f10x_std\inc\stm32f10x_tim.h)(0x4D783BB4)
 I (.\src\ustrobo_min_system\inc\delay.h)(0x50DD4B78)
 I (.\src\ustrobo_min_system\inc\debug.h)(0x5396E835)
 I (.\src\ustrobo_min_system\inc\approx_math.h)(0x53442034)
-F (.\src\ustrobo_min_system\src\approx_math.c)(0x54970AF1)(-c --cpu Cortex-M3 -D__MICROLIB -g -O3 --apcs=interwork -I.\src -I.\src\stm32f10x_std\inc -I.\src\ustrobo_min_system\inc -I C:\Keil\ARM\RV31\INC -I C:\Keil\ARM\CMSIS\Include -I C:\Keil\ARM\Inc\ST\STM32F10x -DUSE_STDPERIPH_DRIVER -DSTM32F10X_HD -DUSE_STM3210B_EVAL -o ".\output\approx_math.o" --omf_browse ".\output\approx_math.crf" --depend ".\output\approx_math.d")
+F (.\src\ustrobo_min_system\src\approx_math.c)(0x54970AF2)(-c --cpu Cortex-M3 -D__MICROLIB -g -O3 --apcs=interwork -I.\src -I.\src\stm32f10x_std\inc -I.\src\ustrobo_min_system\inc -I C:\Keil\ARM\RV31\INC -I C:\Keil\ARM\CMSIS\Include -I C:\Keil\ARM\Inc\ST\STM32F10x -DUSE_STDPERIPH_DRIVER -DSTM32F10X_HD -DUSE_STM3210B_EVAL -o ".\output\approx_math.o" --omf_browse ".\output\approx_math.crf" --depend ".\output\approx_math.d")
 I (.\src\ustrobo_min_system\inc\approx_math.h)(0x53442034)
 I (.\src\stm32f10x_std\inc\stm32f10x.h)(0x53720062)
 I (.\src\stm32f10x_std\inc\core_cm3.h)(0x4D523B58)
@@ -150,7 +150,7 @@ I (.\src\ustrobo_min_system\inc\delay.h)(0x50DD4B78)
 I (.\src\ustrobo_min_system\inc\lcd_red.h)(0x50F28B0C)
 I (C:\Keil\ARM\ARMCC\bin\..\include\stdio.h)(0x4EB0D286)
 I (C:\Keil\ARM\ARMCC\bin\..\include\stdarg.h)(0x4EB0D27C)
-F (.\src\ustrobo_min_system\src\debug.c)(0x5496FA99)(-c --cpu Cortex-M3 -D__MICROLIB -g -O3 --apcs=interwork -I.\src -I.\src\stm32f10x_std\inc -I.\src\ustrobo_min_system\inc -I C:\Keil\ARM\RV31\INC -I C:\Keil\ARM\CMSIS\Include -I C:\Keil\ARM\Inc\ST\STM32F10x -DUSE_STDPERIPH_DRIVER -DSTM32F10X_HD -DUSE_STM3210B_EVAL -o ".\output\debug.o" --omf_browse ".\output\debug.crf" --depend ".\output\debug.d")
+F (.\src\ustrobo_min_system\src\debug.c)(0x5496FA9A)(-c --cpu Cortex-M3 -D__MICROLIB -g -O3 --apcs=interwork -I.\src -I.\src\stm32f10x_std\inc -I.\src\ustrobo_min_system\inc -I C:\Keil\ARM\RV31\INC -I C:\Keil\ARM\CMSIS\Include -I C:\Keil\ARM\Inc\ST\STM32F10x -DUSE_STDPERIPH_DRIVER -DSTM32F10X_HD -DUSE_STM3210B_EVAL -o ".\output\debug.o" --omf_browse ".\output\debug.crf" --depend ".\output\debug.d")
 I (.\src\ustrobo_min_system\inc\debug.h)(0x5396E835)
 I (.\src\stm32f10x_std\inc\stm32f10x.h)(0x53720062)
 I (.\src\stm32f10x_std\inc\core_cm3.h)(0x4D523B58)
@@ -246,7 +246,7 @@ I (.\src\stm32f10x_std\inc\stm32f10x_spi.h)(0x4D783BB4)
 I (.\src\stm32f10x_std\inc\stm32f10x_usart.h)(0x533A38A4)
 I (.\src\stm32f10x_std\inc\misc.h)(0x4D783BB4)
 I (.\src\ustrobo_min_system\inc\delay.h)(0x50DD4B78)
-F (.\src\ustrobo_min_system\src\motor_pwm.c)(0x5340B1E9)(-c --cpu Cortex-M3 -D__MICROLIB -g -O3 --apcs=interwork -I.\src -I.\src\stm32f10x_std\inc -I.\src\ustrobo_min_system\inc -I C:\Keil\ARM\RV31\INC -I C:\Keil\ARM\CMSIS\Include -I C:\Keil\ARM\Inc\ST\STM32F10x -DUSE_STDPERIPH_DRIVER -DSTM32F10X_HD -DUSE_STM3210B_EVAL -o ".\output\motor_pwm.o" --omf_browse ".\output\motor_pwm.crf" --depend ".\output\motor_pwm.d")
+F (.\src\ustrobo_min_system\src\motor_pwm.c)(0x5340B1EA)(-c --cpu Cortex-M3 -D__MICROLIB -g -O3 --apcs=interwork -I.\src -I.\src\stm32f10x_std\inc -I.\src\ustrobo_min_system\inc -I C:\Keil\ARM\RV31\INC -I C:\Keil\ARM\CMSIS\Include -I C:\Keil\ARM\Inc\ST\STM32F10x -DUSE_STDPERIPH_DRIVER -DSTM32F10X_HD -DUSE_STM3210B_EVAL -o ".\output\motor_pwm.o" --omf_browse ".\output\motor_pwm.crf" --depend ".\output\motor_pwm.d")
 I (.\src\ustrobo_min_system\inc\motor_pwm.h)(0x52F8C6AD)
 I (.\src\stm32f10x_std\inc\stm32f10x_gpio.h)(0x5340CA94)
 I (.\src\stm32f10x_std\inc\stm32f10x.h)(0x53720062)
@@ -263,7 +263,7 @@ I (.\src\stm32f10x_std\inc\stm32f10x_spi.h)(0x4D783BB4)
 I (.\src\stm32f10x_std\inc\stm32f10x_usart.h)(0x533A38A4)
 I (.\src\stm32f10x_std\inc\misc.h)(0x4D783BB4)
 I (.\src\stm32f10x_std\inc\stm32f10x_tim.h)(0x4D783BB4)
-F (.\src\ustrobo_min_system\src\servo.c)(0x51BDE92B)(-c --cpu Cortex-M3 -D__MICROLIB -g -O3 --apcs=interwork -I.\src -I.\src\stm32f10x_std\inc -I.\src\ustrobo_min_system\inc -I C:\Keil\ARM\RV31\INC -I C:\Keil\ARM\CMSIS\Include -I C:\Keil\ARM\Inc\ST\STM32F10x -DUSE_STDPERIPH_DRIVER -DSTM32F10X_HD -DUSE_STM3210B_EVAL -o ".\output\servo.o" --omf_browse ".\output\servo.crf" --depend ".\output\servo.d")
+F (.\src\ustrobo_min_system\src\servo.c)(0x51BDE92C)(-c --cpu Cortex-M3 -D__MICROLIB -g -O3 --apcs=interwork -I.\src -I.\src\stm32f10x_std\inc -I.\src\ustrobo_min_system\inc -I C:\Keil\ARM\RV31\INC -I C:\Keil\ARM\CMSIS\Include -I C:\Keil\ARM\Inc\ST\STM32F10x -DUSE_STDPERIPH_DRIVER -DSTM32F10X_HD -DUSE_STM3210B_EVAL -o ".\output\servo.o" --omf_browse ".\output\servo.crf" --depend ".\output\servo.d")
 I (.\src\ustrobo_min_system\inc\servo.h)(0x50D19FEC)
 I (.\src\stm32f10x_std\inc\stm32f10x_gpio.h)(0x5340CA94)
 I (.\src\stm32f10x_std\inc\stm32f10x.h)(0x53720062)
@@ -335,7 +335,7 @@ I (.\src\stm32f10x_std\inc\stm32f10x_rcc.h)(0x4D783BB4)
 I (.\src\stm32f10x_std\inc\stm32f10x_spi.h)(0x4D783BB4)
 I (.\src\stm32f10x_std\inc\stm32f10x_usart.h)(0x533A38A4)
 I (.\src\stm32f10x_std\inc\misc.h)(0x4D783BB4)
-F (.\src\ustrobo_min_system\src\uart.c)(0x52E21F83)(-c --cpu Cortex-M3 -D__MICROLIB -g -O3 --apcs=interwork -I.\src -I.\src\stm32f10x_std\inc -I.\src\ustrobo_min_system\inc -I C:\Keil\ARM\RV31\INC -I C:\Keil\ARM\CMSIS\Include -I C:\Keil\ARM\Inc\ST\STM32F10x -DUSE_STDPERIPH_DRIVER -DSTM32F10X_HD -DUSE_STM3210B_EVAL -o ".\output\uart.o" --omf_browse ".\output\uart.crf" --depend ".\output\uart.d")
+F (.\src\ustrobo_min_system\src\uart.c)(0x52E21F84)(-c --cpu Cortex-M3 -D__MICROLIB -g -O3 --apcs=interwork -I.\src -I.\src\stm32f10x_std\inc -I.\src\ustrobo_min_system\inc -I C:\Keil\ARM\RV31\INC -I C:\Keil\ARM\CMSIS\Include -I C:\Keil\ARM\Inc\ST\STM32F10x -DUSE_STDPERIPH_DRIVER -DSTM32F10X_HD -DUSE_STM3210B_EVAL -o ".\output\uart.o" --omf_browse ".\output\uart.crf" --depend ".\output\uart.d")
 I (.\src\ustrobo_min_system\inc\uart.h)(0x50D2E230)
 I (.\src\stm32f10x_std\inc\stm32f10x_gpio.h)(0x5340CA94)
 I (.\src\stm32f10x_std\inc\stm32f10x.h)(0x53720062)
@@ -353,7 +353,7 @@ I (.\src\stm32f10x_std\inc\stm32f10x_usart.h)(0x533A38A4)
 I (.\src\stm32f10x_std\inc\misc.h)(0x4D783BB4)
 I (C:\Keil\ARM\ARMCC\bin\..\include\stdio.h)(0x4EB0D286)
 I (C:\Keil\ARM\ARMCC\bin\..\include\stdarg.h)(0x4EB0D27C)
-F (.\src\ustrobo_min_system\src\xbc_mb.c)(0x535CE0EB)(-c --cpu Cortex-M3 -D__MICROLIB -g -O3 --apcs=interwork -I.\src -I.\src\stm32f10x_std\inc -I.\src\ustrobo_min_system\inc -I C:\Keil\ARM\RV31\INC -I C:\Keil\ARM\CMSIS\Include -I C:\Keil\ARM\Inc\ST\STM32F10x -DUSE_STDPERIPH_DRIVER -DSTM32F10X_HD -DUSE_STM3210B_EVAL -o ".\output\xbc_mb.o" --omf_browse ".\output\xbc_mb.crf" --depend ".\output\xbc_mb.d")
+F (.\src\ustrobo_min_system\src\xbc_mb.c)(0x535CE0EC)(-c --cpu Cortex-M3 -D__MICROLIB -g -O3 --apcs=interwork -I.\src -I.\src\stm32f10x_std\inc -I.\src\ustrobo_min_system\inc -I C:\Keil\ARM\RV31\INC -I C:\Keil\ARM\CMSIS\Include -I C:\Keil\ARM\Inc\ST\STM32F10x -DUSE_STDPERIPH_DRIVER -DSTM32F10X_HD -DUSE_STM3210B_EVAL -o ".\output\xbc_mb.o" --omf_browse ".\output\xbc_mb.crf" --depend ".\output\xbc_mb.d")
 I (.\src\ustrobo_min_system\inc\xbc_mb.h)(0x51B7BEC7)
 I (.\src\stm32f10x_std\inc\stm32f10x_gpio.h)(0x5340CA94)
 I (.\src\stm32f10x_std\inc\stm32f10x.h)(0x53720062)
