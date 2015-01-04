@@ -31,33 +31,46 @@ void tft_spi_init(void)
    GPIO_InitTypeDef 	GPIO_InitStructure;
 
    /* Enable TFT_SPI and GPIO clocks */
-   RCC_APB2PeriphClockCmd(RCC_APB2Periph_SPI1 | RCC_APB2Periph_GPIOA, ENABLE);
-
+   //RCC_APB2PeriphClockCmd(RCC_APB2Periph_SPI1 | RCC_APB2Periph_GPIOA, ENABLE);
+	RCC_APB2PeriphClockCmd(RCC_APB2Periph_GPIOA, ENABLE);
+		RCC_APB2PeriphClockCmd(RCC_APB2Periph_GPIOB, ENABLE);
+		RCC_APB2PeriphClockCmd(RCC_APB2Periph_GPIOD, ENABLE);
+		RCC_APB1PeriphClockCmd(RCC_APB1Periph_SPI3, ENABLE);
+	
    /* Enable GPIOA for RST pin */
-   RCC_APB2PeriphClockCmd(RCC_APB2Periph_GPIOA, ENABLE);
-   GPIO_InitStructure.GPIO_Pin = GPIO_Pin_1;
+   //RCC_APB2PeriphClockCmd(RCC_APB2Periph_GPIOA, ENABLE);
+   GPIO_InitStructure.GPIO_Pin = GPIO_Pin_7;
    GPIO_InitStructure.GPIO_Mode = GPIO_Mode_Out_PP;
    GPIO_InitStructure.GPIO_Speed = GPIO_Speed_10MHz;
-   GPIO_Init(GPIOA, &GPIO_InitStructure);
+   GPIO_Init(GPIOD, &GPIO_InitStructure);
 
    /* Enable GPIOF for DC Pin */
-   RCC_APB2PeriphClockCmd(RCC_APB2Periph_GPIOF, ENABLE);
-   GPIO_InitStructure.GPIO_Pin = GPIO_Pin_12;
+   //RCC_APB2PeriphClockCmd(RCC_APB2Periph_GPIOF, ENABLE);
+   GPIO_InitStructure.GPIO_Pin = GPIO_Pin_6;
    GPIO_InitStructure.GPIO_Mode = GPIO_Mode_Out_PP;
    GPIO_InitStructure.GPIO_Speed = GPIO_Speed_10MHz;
-   GPIO_Init(GPIOF, &GPIO_InitStructure);
+   GPIO_Init(GPIOD, &GPIO_InitStructure);
 
    /* Configure TFT_SPI Pin: SCK, MISO and MOSI */
-   GPIO_InitStructure.GPIO_Pin = GPIO_Pin_5 | GPIO_Pin_6 | GPIO_Pin_7;
+   GPIO_InitStructure.GPIO_Pin = GPIO_Pin_3 | GPIO_Pin_4 | GPIO_Pin_5;
    GPIO_InitStructure.GPIO_Mode = GPIO_Mode_AF_PP;
    GPIO_InitStructure.GPIO_Speed = GPIO_Speed_50MHz;
-   GPIO_Init(GPIOA, &GPIO_InitStructure);
+   GPIO_Init(GPIOB, &GPIO_InitStructure);
 
    /* Configure TFT_SPI Pin: CS */
    GPIO_InitStructure.GPIO_Pin = GPIO_Pin_CS;
    GPIO_InitStructure.GPIO_Mode = GPIO_Mode_Out_PP;
+	 GPIO_InitStructure.GPIO_Speed = GPIO_Speed_50MHz;
    GPIO_Init(GPIO_CS, &GPIO_InitStructure);
+	 
+	 /* Configure TFT_SPI Pin: CS */
+//   GPIO_InitStructure.GPIO_Pin = GPIO_Pin_5;
+//   GPIO_InitStructure.GPIO_Mode = GPIO_Mode_IPU;
+//	 GPIO_InitStructure.GPIO_Speed = GPIO_Speed_50MHz;
+//   GPIO_Init(GPIOD, &GPIO_InitStructure);
+	 
   
+		GPIO_PinRemapConfig(GPIO_Remap_SPI3, ENABLE);
    /* TFT_SPI configuration */
    SPI_InitStructure.SPI_Direction = SPI_Direction_2Lines_FullDuplex;
    SPI_InitStructure.SPI_Mode = SPI_Mode_Master;

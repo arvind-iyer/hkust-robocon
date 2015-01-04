@@ -11,10 +11,10 @@
 
 #include "buzzer.h"
 #include "led.h"
-#include "lcd_red.h"
+#include "tft_160x128.h"
 #include "system.h"
-#include "xbc_mb.h"
-#include "button.h"
+//#include "xbc_mb.h"
+//#include "button.h"
 
 /*** Optional ***/
 #include "uart.h"

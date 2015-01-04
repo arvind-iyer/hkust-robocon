@@ -10,13 +10,13 @@
 #include "delay.h"
 
 // SPI, RST, DC
-#define TFT_RST_PIN		GPIO_Pin_1
-#define TFT_DC_PIN		GPIO_Pin_12
-#define TFT_RST_PORT	GPIOA
-#define TFT_DC_PORT		GPIOF
+#define TFT_RST_PIN		GPIO_Pin_7
+#define TFT_DC_PIN		GPIO_Pin_6
+#define TFT_RST_PORT	GPIOD
+#define TFT_DC_PORT		GPIOD
 
-#define TFT_SPI			SPI1
-#define GPIO_Pin_CS		GPIO_Pin_4
+#define TFT_SPI			SPI3
+#define GPIO_Pin_CS		GPIO_Pin_15
 #define RCC_APB2Periph_GPIO_CS	RCC_APB2Periph_GPIOA
 #define GPIO_CS			GPIOA
 
