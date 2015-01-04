@@ -1,0 +1,28 @@
+﻿Build started 1/2/2015 8:21:14 PM.
+     1>Project "C:\Documents\GitHub\Robocon2015\Robocon Control Panel\Robocon Control Panel\Robocon Control Panel.vcxproj" on node 2 (Build target(s)).
+     1>ClCompile:
+         C:\Program Files (x86)\Microsoft Visual Studio 12.0\VC\bin\CL.exe /c /ZI /nologo /W3 /WX- /sdl /Od /Oy- /D WIN32 /D _WINDOWS /D _DEBUG /D _UNICODE /D UNICODE /Gm /EHsc /RTC1 /MTd /GS /fp:precise /Zc:wchar_t /Zc:forScope /Yc"stdafx.h" /Fp"Debug\Robocon Control Panel.pch" /Fo"Debug\\" /Fd"Debug\vc120.pdb" /Gd /TP /analyze- /errorReport:prompt stdafx.cpp
+         stdafx.cpp
+         C:\Program Files (x86)\Microsoft Visual Studio 12.0\VC\bin\CL.exe /c /ZI /nologo /W3 /WX- /sdl /Od /Oy- /D WIN32 /D _WINDOWS /D _DEBUG /D _UNICODE /D UNICODE /Gm /EHsc /RTC1 /MTd /GS /fp:precise /Zc:wchar_t /Zc:forScope /Yu"stdafx.h" /Fp"Debug\Robocon Control Panel.pch" /Fo"Debug\\" /Fd"Debug\vc120.pdb" /Gd /TP /analyze- /errorReport:prompt MainFrm.cpp PropertiesWnd.cpp "Robocon Control Panel.cpp" "Robocon Control PanelDoc.cpp" "Robocon Control PanelView.cpp"
+         Robocon Control PanelView.cpp
+         Robocon Control PanelDoc.cpp
+         Robocon Control Panel.cpp
+         PropertiesWnd.cpp
+         MainFrm.cpp
+         Generating Code...
+       ResourceCompile:
+         C:\Program Files (x86)\Windows Kits\8.1\bin\x86\rc.exe /D _DEBUG /D _UNICODE /D UNICODE /l"0x0409" /IDebug\ /nologo /fo"Debug\Robocon Control Panel.res" "Robocon Control Panel.rc" 
+       Link:
+         C:\Program Files (x86)\Microsoft Visual Studio 12.0\VC\bin\link.exe /ERRORREPORT:PROMPT /OUT:"C:\Documents\GitHub\Robocon2015\Robocon Control Panel\Debug\Robocon Control Panel.exe" /INCREMENTAL /NOLOGO /MANIFEST /MANIFESTUAC:"level='asInvoker' uiAccess='false'" /manifest:embed /manifestinput:"C:\Program Files (x86)\Microsoft Visual Studio 12.0\VC\Include\Manifest\dpiaware.manifest" /DEBUG /PDB:"C:\Documents\GitHub\Robocon2015\Robocon Control Panel\Debug\Robocon Control Panel.pdb" /SUBSYSTEM:WINDOWS /TLBID:1 /ENTRY:"wWinMainCRTStartup" /DYNAMICBASE /NXCOMPAT /IMPLIB:"C:\Documents\GitHub\Robocon2015\Robocon Control Panel\Debug\Robocon Control Panel.lib" /MACHINE:X86 "Debug\Robocon Control Panel.res"
+         Debug\MainFrm.obj
+         Debug\PropertiesWnd.obj
+         "Debug\Robocon Control Panel.obj"
+         "Debug\Robocon Control PanelDoc.obj"
+         "Debug\Robocon Control PanelView.obj"
+         Debug\stdafx.obj
+         Robocon Control Panel.vcxproj -> C:\Documents\GitHub\Robocon2015\Robocon Control Panel\Debug\Robocon Control Panel.exe
+     1>Done Building Project "C:\Documents\GitHub\Robocon2015\Robocon Control Panel\Robocon Control Panel\Robocon Control Panel.vcxproj" (Build target(s)).
+
+Build succeeded.
+
+Time Elapsed 00:00:06.13
