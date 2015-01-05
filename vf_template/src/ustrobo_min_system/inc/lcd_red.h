@@ -16,9 +16,9 @@
 #define TFT_DC_PORT		GPIOD
 
 #define TFT_SPI			SPI3
-#define GPIO_Pin_CS		GPIO_Pin_15
-#define RCC_APB2Periph_GPIO_CS	RCC_APB2Periph_GPIOA
-#define GPIO_CS			GPIOA
+#define GPIO_Pin_CS		GPIO_Pin_5
+#define RCC_APB2Periph_GPIO_CS	RCC_APB2Periph_GPIOD
+#define GPIO_CS			GPIOD
 
 // Color
 #define WHITE			0xFFFF
@@ -80,7 +80,7 @@ void tft_toggle(void);
 void tft_put_pixel(u8 x, u8 y, u16 color);
 void tft_fill_color(u16 color);
 u8 tft_char_is_changed(u8 x, u8 y);
-void tft_prints(u8 x, u8 y, const u8 * pstr, ...);
+void tft_prints(u8 x, u8 y, const char * pstr, ...);
 void tft_update(void);
 
 #endif		/* __LCD_RED_H */

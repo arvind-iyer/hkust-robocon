@@ -25,56 +25,19 @@ int main(void)
 	//RCC_APB1PeriphClockCmd(RCC_APB1Periph_TIM2 | RCC_APB1Periph_TIM3|RCC_APB1Periph_TIM4|RCC_APB1Periph_TIM5|RCC_APB1Periph_TIM6|RCC_APB1Periph_TIM7|RCC_APB1Periph_USART3, ENABLE);
 	//RCC_APB2PeriphClockCmd(RCC_APB2Periph_AFIO | RCC_APB2Periph_GPIOA| RCC_APB2Periph_GPIOB | RCC_APB2Periph_GPIOC | RCC_APB2Periph_GPIOD |  RCC_APB2Periph_TIM1 |RCC_APB2Periph_TIM8| RCC_APB2Periph_USART1,ENABLE);
 
-	ticks_init();
-	//tft_init(2, YELLOW, RED, GREEN);	
-	buzzer_init();
-	//TIM_SetAutoreload
-	//TIM_SetCompare2(TIM8, 200);
-	
-	
-	
-	buzzer_play_song(START_UP, 300, 10);
-	
-	while(1) {
-		if (ticks_img != get_ticks()) {
-			ticks_img = get_ticks();
-			
-			if (ticks_img == 1) {
-			//	buzzer_set_note_period(get_note_period(NOTE_C, get_seconds()));
-				//buzzer_control(1, 100);
-			}
 
-		}
-		
-	}
-		
+	ticks_init();
+	tft_init(1, YELLOW, RED, GREEN);	
 	buzzer_init();
 	led_init();
 	but_init();
 	
-	
-	//	tft_reset();
+	buzzer_play_song(START_UP, 100, 10);
 
-	//tft_enable();
-	
-	
-	
-//	uart_init(COM1, 115200);
-//	uart_interrupt(COM1);
-//	uart_init(COM2, 115200);
-//	uart_interrupt(COM2);
-//	uart_init(COM3, 115200);
-//	uart_interrupt(COM3);
-//	uart_init(COM4, 115200);
-//	uart_interrupt(COM4);
-//	uart_init(COM5, 115200);
-//	uart_interrupt(COM5);
 	
 	
 	led_control((LED) (LED_D1 | LED_D2 | LED_D3), LED_ON);
-	buzzer_control(1, 200);
 	_delay_ms(1000);
-	buzzer_control(2, 100);
 	led_control((LED) (LED_D1 | LED_D2 | LED_D3), LED_OFF);
 	
 
@@ -86,6 +49,7 @@ int main(void)
 			if (ticks_img % 500 == 0) {
 				//buzzer_control(3, 100);
 				led_control((LED) (LED_D1 | LED_D2 | LED_D3), (LED_STATE) (ticks_img == 0));
+				
 //				uart_tx(COM1, "COM1 Output: %d\r\n", get_seconds());
 //				uart_tx(COM2, "COM2 Output: %d\r\n", get_seconds());
 //				uart_tx(COM3, "COM3 Output: %d\r\n", get_seconds());

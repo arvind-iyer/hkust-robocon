@@ -35,7 +35,10 @@ void tft_spi_init(void)
 	RCC_APB2PeriphClockCmd(RCC_APB2Periph_GPIOA, ENABLE);
 		RCC_APB2PeriphClockCmd(RCC_APB2Periph_GPIOB, ENABLE);
 		RCC_APB2PeriphClockCmd(RCC_APB2Periph_GPIOD, ENABLE);
+		RCC_APB2PeriphClockCmd(RCC_APB2Periph_AFIO, ENABLE);
 		RCC_APB1PeriphClockCmd(RCC_APB1Periph_SPI3, ENABLE);
+
+	GPIO_PinRemapConfig(GPIO_Remap_SWJ_JTAGDisable, ENABLE);
 	
    /* Enable GPIOA for RST pin */
    //RCC_APB2PeriphClockCmd(RCC_APB2Periph_GPIOA, ENABLE);
@@ -70,7 +73,7 @@ void tft_spi_init(void)
 //   GPIO_Init(GPIOD, &GPIO_InitStructure);
 	 
   
-		GPIO_PinRemapConfig(GPIO_Remap_SPI3, ENABLE);
+		//GPIO_PinRemapConfig(GPIO_Remap_SPI3, ENABLE);
    /* TFT_SPI configuration */
    SPI_InitStructure.SPI_Direction = SPI_Direction_2Lines_FullDuplex;
    SPI_InitStructure.SPI_Mode = SPI_Mode_Master;
@@ -509,7 +512,7 @@ u8 tft_char_is_changed(u8 x, u8 y)
   * @param  pstr: string to be printed
   * @retval None
   */
-void tft_prints(u8 x, u8 y, const u8 * pstr, ...)
+void tft_prints(u8 x, u8 y, const char * pstr, ...)
 {
 	u8 buf[256], is_special = 0;
 	u8* fp = NULL;
