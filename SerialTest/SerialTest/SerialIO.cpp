@@ -2,7 +2,6 @@
 #include "SerialIO.h"
 #include <locale>
 #include <codecvt>
-#include <iostream>
 #include <fstream>
 #include <sstream>
 #include <exception>
@@ -104,16 +103,53 @@ bool SerialIO::write(std::string msg)
 	}
 	else
 	{
-		// WriteFile completed immediately.
 		fRes = TRUE;
 	}
 	CloseHandle(osWrite.hEvent);
 	return fRes;
 }
 
-bool SerialIO::read()
+int SerialIO::bytes_to_read()
 {
-	return 0;
+	DWORD dwErrorFlags;
+	COMSTAT ComStat;
+
+	ClearCommError(com_handle, &dwErrorFlags, &ComStat);
+	return((int)ComStat.cbInQue);
+}
+
+bool SerialIO::read(void *buffer, unsigned int limit)
+{
+	BOOL bReadStatus;
+	DWORD dwBytesRead, dwErrorFlags;
+	COMSTAT ComStat;
+	OVERLAPPED osRead = {0};
+
+	ClearCommError(com_handle, &dwErrorFlags, &ComStat);
+	if (!ComStat.cbInQue) {
+		return(0);
+	}
+
+	dwBytesRead = (DWORD)ComStat.cbInQue;
+	if (limit < dwBytesRead) {
+		dwBytesRead = limit;
+	}
+
+	osRead.hEvent = CreateEvent(NULL, TRUE, FALSE, NULL);
+	if (osRead.hEvent == NULL) {
+		return FALSE;
+	}
+
+	bReadStatus = ReadFile(com_handle, buffer, dwBytesRead, &dwBytesRead, &osRead);
+	if (!bReadStatus){
+		if (GetLastError() == ERROR_IO_PENDING){
+			WaitForSingleObject(osRead.hEvent, 2000);
+			return((int)dwBytesRead);
+		}
+		return(0);
+	}
+	CloseHandle(osRead.hEvent);
+	return((int)dwBytesRead);
 }
 
 SerialIO::~SerialIO()
