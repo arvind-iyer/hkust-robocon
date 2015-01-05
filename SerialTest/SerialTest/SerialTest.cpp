@@ -44,12 +44,22 @@ void write_thread(void* ioport){
 int _tmain(int argc, _TCHAR* argv[])
 {
 	try {
-		SerialIO a("COM5");
+		int baud_rate;
+		std::string port_name;
+		std::cout << "Enter the number of the port you wish to open (number only please)." << std::endl;
+		std::cin >> port_name;
+		std::cout << "Enter the desired baud rate." << std::endl;
+		std::cin >> baud_rate;
+		port_name = "COM" + port_name;
+		std::cout << "Opening port: " << port_name << std::endl;
+		SerialIO a(port_name, baud_rate);
 		_beginthread(read_thread, 0, &a);
 		_beginthread(write_thread, 0, &a);
 		while (true){
 			if (!running){
-				Sleep(500);
+				int a;
+				std::cout << "Quitting program." << std::endl;
+				Sleep(1000);
 				break;
 			}
 		}
