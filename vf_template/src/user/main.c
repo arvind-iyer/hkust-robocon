@@ -29,10 +29,11 @@ int main(void)
 	ticks_init();
 	tft_init(1, YELLOW, RED, GREEN);	
 	buzzer_init();
+	CAN_Configuration();
 	led_init();
 	but_init();
 	
-	buzzer_play_song(START_UP, 100, 10);
+	buzzer_play_song(START_UP, 120, 0);
 
 	
 	
@@ -46,6 +47,13 @@ int main(void)
 		if (ticks_img != get_ticks()) {
 			ticks_img = get_ticks();
 			
+			if (ticks_img % 10 == 0) {
+				CAN_Tx_update();
+			}
+			
+			if (ticks_img % 100 == 0) {
+				can_ticks_test(ticks_img, get_seconds());
+			}
 			if (ticks_img % 500 == 0) {
 				//buzzer_control(3, 100);
 				led_control((LED) (LED_D1 | LED_D2 | LED_D3), (LED_STATE) (ticks_img == 0));

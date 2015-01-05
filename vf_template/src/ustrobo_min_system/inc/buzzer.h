@@ -71,7 +71,7 @@ typedef struct {
 } MUSIC_NOTE;
 
 
-static MUSIC_NOTE START_UP[] = {{NOTE_Eb,6},{NOTE_G,6},{NOTE_Bb,6},{NOTE_Eb,6},{NOTE_END,2}};
+static MUSIC_NOTE START_UP[] = {{NOTE_G,6},{NOTE_B,6},{NOTE_D,7},{NOTE_G,7},{NOTE_G,7},{NOTE_END,2}};
 
 
 void buzzer_set_note_period(u16 p);

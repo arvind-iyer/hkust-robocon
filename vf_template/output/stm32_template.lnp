@@ -1,5 +1,8 @@
 --cpu Cortex-M3
 ".\output\main.o"
+".\output\robocon.o"
+".\output\can_protocol.o"
+".\output\can.o"
 ".\output\approx_math.o"
 ".\output\battery.o"
 ".\output\buzzer.o"
