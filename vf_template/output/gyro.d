@@ -21,5 +21,6 @@
 .\output\gyro.o: C:\Keil_v5\ARM\ARMCC\Bin\..\include\stdarg.h
 .\output\gyro.o: .\src\ustrobo_min_system\inc\ticks.h
 .\output\gyro.o: .\src\stm32f10x_std\inc\stm32f10x_tim.h
+.\output\gyro.o: .\src\ustrobo_min_system\inc\buzzer.h
 .\output\gyro.o: .\src\ustrobo_min_system\inc\delay.h
 .\output\gyro.o: .\src\ustrobo_min_system\inc\approx_math.h

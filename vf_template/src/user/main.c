@@ -29,12 +29,15 @@ int main(void)
 	ticks_init();
 	tft_init(1, YELLOW, RED, GREEN);	
 	buzzer_init();
-	CAN_Configuration();
+	can_init();
+	//can_tx_init();
+	
 	led_init();
 	but_init();
 	
-	buzzer_play_song(START_UP, 120, 0);
-
+	//buzzer_play_song(START_UP, 120, 0);
+	buzzer_set_note_period(get_note_period(NOTE_E, 7));
+	buzzer_control(2, 100);
 	
 	
 	led_control((LED) (LED_D1 | LED_D2 | LED_D3), LED_ON);
@@ -47,13 +50,15 @@ int main(void)
 		if (ticks_img != get_ticks()) {
 			ticks_img = get_ticks();
 			
-			if (ticks_img % 10 == 0) {
-				CAN_Tx_update();
+			if (ticks_img % 200 == 0) {
+				CAN_MESSAGE msg;
+				msg.id = 0xB1;
+				msg.length = 2;
+				msg.data[0] = ticks_img;
+				msg.data[1] = get_seconds();
+				can_tx_enqueue(msg);
 			}
-			
-			if (ticks_img % 100 == 0) {
-				can_ticks_test(ticks_img, get_seconds());
-			}
+
 			if (ticks_img % 500 == 0) {
 				//buzzer_control(3, 100);
 				led_control((LED) (LED_D1 | LED_D2 | LED_D3), (LED_STATE) (ticks_img == 0));
@@ -73,11 +78,11 @@ int main(void)
 				
 			
 				if (GPIO_ReadInputDataBit(GPIOB, GPIO_Pin_6) == 0) {
-					buzzer_control(2, 100);
+
 				}
 				
 				if (GPIO_ReadInputDataBit(GPIOB, GPIO_Pin_7) == 0) {
-					buzzer_control(3, 100);
+
 				}
 				
 			}
@@ -134,5 +139,23 @@ void UART5_IRQHandler(void)
 		u8 rx_data = (u8)USART_ReceiveData(UART5);
 		uart_tx_byte(COM5, rx_data);
 	}
+}
+
+/** 
+	* @brief Interrupt for CAN Rx
+	* @warning Use USB_LP_CAN_RX0_IRQHandler for HD, USB_LP_CAN1_RX0_IRQHandler for XLD / MD
+	*/
+void USB_LP_CAN1_RX0_IRQHandler(void)
+{
+	//
+	CanRxMsg RxMessage;
+	//CAN_ClearITPendingBit(CAN1, CAN_IT_FMP0);
+	CAN_Receive(CAN1, CAN_FIFO0, &RxMessage);
+
+	if(RxMessage.IDE == CAN_ID_STD) {
+		buzzer_control(1, 50);
+		
+	}
+	
 }
 

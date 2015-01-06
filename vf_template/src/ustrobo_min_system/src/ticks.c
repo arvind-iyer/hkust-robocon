@@ -38,7 +38,7 @@ void ticks_init(void) {
 	TICKS_TIM->CR1 = 1;
 	
 	NVIC_InitStructure.NVIC_IRQChannelPreemptionPriority = 0;
-	NVIC_InitStructure.NVIC_IRQChannelSubPriority = 3;
+	NVIC_InitStructure.NVIC_IRQChannelSubPriority = 0;
 	NVIC_InitStructure.NVIC_IRQChannelCmd = ENABLE;
 	NVIC_InitStructure.NVIC_IRQChannel = TICKS_IRQn;
 	NVIC_Init(&NVIC_InitStructure);

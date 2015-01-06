@@ -1,30 +1,21 @@
 #include "can.h"
 
 u8 CAN_FilterCount = 0;
-CanTxMsg TxMessage;
-CanRxMsg RxMessage;
-CanRxMsg CAN_Queue[CAN_QUEUE_LENGTH];	//CAN Msg buffer
-s32 CAN_QueueCounter = 0;							//number of entries in the queue
-u8 CAN_QueueHead = 0;
-u8 CAN_QueueTail = 0;
-CanRxMsg CAN_queueHead;
-u8 can_rx_data = 0;
 
-void CAN_GPIO_Configuration(void)
+void can_gpio_init(void)
 {
 
 	GPIO_InitTypeDef GPIO_InitStructure;
 			
 	RCC_APB2PeriphClockCmd(CAN_RCC, ENABLE);
 	
-	/* Configure CAN pin: RX */
+	// CAN_Rx Pin
 	GPIO_InitStructure.GPIO_Pin = CAN_Rx_GPIO_Pin;
 	GPIO_InitStructure.GPIO_Mode = GPIO_Mode_IPU;
 	GPIO_InitStructure.GPIO_Speed = GPIO_Speed_50MHz;
 	GPIO_Init(CAN_PORT, &GPIO_InitStructure);
 	
-	/* Configure CAN pin: TX */
-	
+	// CAN_Tx Pin
 	GPIO_InitStructure.GPIO_Pin = CAN_Tx_GPIO_Pin;
 	GPIO_InitStructure.GPIO_Mode = GPIO_Mode_AF_PP;
 	GPIO_InitStructure.GPIO_Speed = GPIO_Speed_50MHz;
@@ -34,7 +25,7 @@ void CAN_GPIO_Configuration(void)
 	
 }
 
-void CAN_NVIC_Configuration(void)
+void can_nvic_init(void)
 {
 	NVIC_InitTypeDef NVIC_InitStructure;
 	
@@ -49,10 +40,10 @@ void CAN_NVIC_Configuration(void)
 	*/
 
 	/* enabling interrupt */
-	NVIC_InitStructure.NVIC_IRQChannel=USB_LP_CAN1_RX0_IRQn; //USB低优先级或者CAN接收0中断
+	NVIC_InitStructure.NVIC_IRQChannel=USB_LP_CAN1_RX0_IRQn; 
 
 	NVIC_InitStructure.NVIC_IRQChannelPreemptionPriority = 0;
-	NVIC_InitStructure.NVIC_IRQChannelSubPriority = 0;
+	NVIC_InitStructure.NVIC_IRQChannelSubPriority = 4;
 	NVIC_InitStructure.NVIC_IRQChannelCmd = ENABLE;
 	NVIC_Init(&NVIC_InitStructure);
 }
@@ -63,18 +54,19 @@ void CAN_NVIC_Configuration(void)
   * @param  None
   * @retval None
   */
-void CAN_Configuration(void)
+void can_init(void)
 {
 	CAN_InitTypeDef CAN_InitStructure;
 	CAN_FilterInitTypeDef CAN_FilterInitStructure;
 	
-	CAN_GPIO_Configuration();
-	CAN_NVIC_Configuration();
-
 	/* GPIO clock enable */
 	RCC_APB2PeriphClockCmd(RCC_APB2Periph_AFIO, ENABLE);
 	RCC_APB2PeriphClockCmd(RCC_APB2Periph_GPIOA, ENABLE);
 	RCC_APB1PeriphClockCmd(RCC_APB1Periph_CAN1, ENABLE);
+
+	can_gpio_init();
+	can_nvic_init();
+
 	
 	/* CAN register init */
 	CAN_DeInit(CAN1);
@@ -89,7 +81,7 @@ void CAN_Configuration(void)
 	CAN_InitStructure.CAN_TXFP = DISABLE;
 	CAN_InitStructure.CAN_Mode = CAN_Mode_Normal;
 	
-	/* CAN Baudrate = 1mbps*/
+	/* CAN Baudrate = 1 MBPS */
 	CAN_InitStructure.CAN_SJW = CAN_SJW_1tq;
 	CAN_InitStructure.CAN_BS1 = CAN_BS1_3tq;
 	CAN_InitStructure.CAN_BS2 = CAN_BS2_2tq;
@@ -116,9 +108,15 @@ void CAN_Configuration(void)
 }
 
 /**
-	@brief 
-*/
-void CAN_AddFilter(u16 id, u16 mask)
+	* @brief Add filter to can data received (involves bitwise calculation)
+	* @param id: 11-bit ID (0x000 to 0x7FF)
+	* @param mask: 11-bit mask, corresponding to the 11-bit ID				
+	* @example can_rx_add_filter(0x00, 0x00) will receive CAN message with ANY ID
+	* @example can_rx_add_filter(0xCD, 0xFF) will receive CAN message with ID 0xCD
+	* @example can_rx_add_filter(0xA0, 0xF0) will receive CAN message with ID from 0xA0 to 0xAF
+	* @example can_rx_add_filter(0x00, 0xFA) will receive CAN message with ID from 0x00 to 0x03
+	*/
+void can_rx_add_filter(u16 id, u16 mask)
 {
 	CAN_FilterInitTypeDef CAN_FilterInitStructure;
 	
@@ -136,26 +134,21 @@ void CAN_AddFilter(u16 id, u16 mask)
 	++CAN_FilterCount;
 }
 
-void CAN_addToQueue(CanRxMsg RxMsg)
-{										   	
-	CAN_Queue[CAN_QueueTail] = RxMsg;				//add the new message to the queue
-	CAN_QueueTail++;												//update the queue counter
-	if(CAN_QueueTail == CAN_QUEUE_LENGTH)		//circular
-		CAN_QueueTail = 0;
-	CAN_QueueCounter++;
-}
+/**
+	* @brief Transfer a CAN message
+	* @param msg: the CAN message
+	* @retval True if the message is successfully tranferred
+	*/
 
-u8 CAN_dequeue(void)
+u8 can_tx(CanTxMsg msg)
 {
-	if(CAN_QueueCounter != 0)
+	u8 Tx_MailBox = CAN_Transmit(CAN1, &msg);							//transmit the message
+	u16 retry = CAN_TX_RETRY_TIMEOUT;
+	while(CAN_TransmitStatus(CAN1,Tx_MailBox) != CANTXOK)	// Wait till transmission ends
 	{
-		CAN_queueHead = CAN_Queue[CAN_QueueHead];
-		CAN_QueueHead++;
-		if(CAN_QueueHead == CAN_QUEUE_LENGTH)
-			CAN_QueueHead = 0;
-		CAN_QueueCounter--;
-		return 1;
+		if (--retry == 0) {
+			return 0;
+		}
 	}
-	else
-		return CAN_QUEUE_EMPTY;			
+	return 1;
 }

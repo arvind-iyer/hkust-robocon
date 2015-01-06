@@ -16,3 +16,4 @@
 .\output\ticks.o: .\src\stm32f10x_std\inc\stm32f10x_spi.h
 .\output\ticks.o: .\src\stm32f10x_std\inc\stm32f10x_usart.h
 .\output\ticks.o: .\src\stm32f10x_std\inc\misc.h
+.\output\ticks.o: .\src\ustrobo_min_system\inc\buzzer.h
