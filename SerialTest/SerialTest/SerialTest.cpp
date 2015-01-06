@@ -47,7 +47,7 @@ void write_thread_realtime(void* ioport){
 		std::string msg;
 		char ch;
 		while ((ch = _getch()) != EOF) {
-			if (!(msg.compare("q"))) {
+			if (ch == 'q') {
 				running = false;
 			}
 			else {
@@ -79,17 +79,16 @@ int _tmain(int argc, _TCHAR* argv[])
 		port_name = "COM" + port_name;
 		std::cout << "Opening port: " << port_name << std::endl;
 
-		SerialIO a(port_name, baud_rate, buffer_size);
-		_beginthread(read_thread, 0, &a);
+		SerialIO serial_port(port_name, baud_rate, buffer_size);
+		_beginthread(read_thread, 0, &serial_port);
 		if (mode){
-			_beginthread(write_thread_realtime, 0, &a);
+			_beginthread(write_thread_realtime, 0, &serial_port);
 		}
 		else {
-			_beginthread(write_thread, 0, &a);
+			_beginthread(write_thread, 0, &serial_port);
 		}
 		while (true){
 			if (!running){
-				int a;
 				std::cout << "Quitting program." << std::endl;
 				Sleep(1000);
 				break;
@@ -98,6 +97,7 @@ int _tmain(int argc, _TCHAR* argv[])
 	}
 	catch (std::runtime_error r) {
 		std::cerr << r.what() << std::endl;
+		std::cout << "Quitting program." << std::endl;
 		Sleep(2000);
 	}
 	return 0;
