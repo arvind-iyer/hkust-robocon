@@ -214,36 +214,8 @@ void USB_LP_CAN_RX0_IRQHandler(void);
 void USB_LP_CAN1_RX0_IRQHandler(void);
 #endif
 
-void Gyro_Send_Pos(u16 Pos_Angle);
-void Gyro_Send_Pos_2(s16,s16,u16);
-
-
-void Motor_Set_Vel(u32 Motor_ID, s32 vel, u8 Closed_Loop_Flag);
-void Motor_Set_Pos(u32 Motor_ID, u16 vel, s32 pos);
-void Motor_Set_Parameter(u32 Motor_ID, u16 accel);
-void Motor_Lock(u32 Motor_ID);
-void IO_SetBits(u32 Data);
-
-void Gyro_Stop_Calibration(void);
-void Gyro_Reset_Position(s16 x,s16 y,s16 angle);
-
-void sensor_update(void);
-void laser_update(void);
-void Cylinder_Set_State(u8 Cyl_id, u8 state);
-#define CYL_ON 0
-#define CYL_OFF 1
-
-void Button_Board_Update(void);
-
-#ifdef SENSOR_BAR
-void Sensor_Bar_Update(void);
-#endif
-
-void Sensor_Bar1_Feedback_Decoding(CanRxMsg RxMessage);
-void Sensor_Bar2_Feedback_Decoding(CanRxMsg RxMessage);
-#endif
 
 void can_ticks_test(u16 ticks, u16 seconds);
 
-
+#endif
 
