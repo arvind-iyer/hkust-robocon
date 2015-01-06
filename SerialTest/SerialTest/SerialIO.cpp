@@ -8,7 +8,7 @@
 
 std::wstring_convert<std::codecvt_utf8_utf16<wchar_t>> converter;
 
-SerialIO::SerialIO(std::string port_name, int baud_rate) : port("\\\\.\\" + port_name), connected(false), com_handle(CreateFile((converter.from_bytes("\\\\.\\" + port_name)).c_str(), GENERIC_READ | GENERIC_WRITE, 0, NULL, OPEN_EXISTING, FILE_FLAG_OVERLAPPED, NULL))
+SerialIO::SerialIO(std::string port_name, int baud_rate, int size_of_buffer) : buffer(new char[size_of_buffer]), buffer_size(size_of_buffer), port("\\\\.\\" + port_name), connected(false), com_handle(CreateFile((converter.from_bytes("\\\\.\\" + port_name)).c_str(), GENERIC_READ | GENERIC_WRITE, 0, NULL, OPEN_EXISTING, FILE_FLAG_OVERLAPPED, NULL))
 {
 	// std::wcout << (converter.from_bytes("\\\\.\\" + port_name)).c_str() << std::endl;
 	
@@ -118,38 +118,39 @@ int SerialIO::bytes_to_read()
 	return((int)ComStat.cbInQue);
 }
 
-bool SerialIO::read(void *buffer, unsigned int limit)
+std::string SerialIO::read()
 {
 	BOOL bReadStatus;
 	DWORD dwBytesRead, dwErrorFlags;
 	COMSTAT ComStat;
 	OVERLAPPED osRead = {0};
+	memset(buffer, 0, sizeof(char)*buffer_size);
 
 	ClearCommError(com_handle, &dwErrorFlags, &ComStat);
 	if (!ComStat.cbInQue) {
-		return(0);
+		return std::string();
 	}
 
 	dwBytesRead = (DWORD)ComStat.cbInQue;
-	if (limit < dwBytesRead) {
-		dwBytesRead = limit;
+	if (buffer_size < dwBytesRead) {
+		dwBytesRead = buffer_size;
 	}
 
 	osRead.hEvent = CreateEvent(NULL, TRUE, FALSE, NULL);
 	if (osRead.hEvent == NULL) {
-		return FALSE;
+		return std::string();
 	}
 
 	bReadStatus = ReadFile(com_handle, buffer, dwBytesRead, &dwBytesRead, &osRead);
 	if (!bReadStatus){
 		if (GetLastError() == ERROR_IO_PENDING){
 			WaitForSingleObject(osRead.hEvent, 2000);
-			return((int)dwBytesRead);
+			return std::string();
 		}
-		return(0);
+		return std::string();
 	}
 	CloseHandle(osRead.hEvent);
-	return((int)dwBytesRead);
+	return std::string(buffer);
 }
 
 SerialIO::~SerialIO()
