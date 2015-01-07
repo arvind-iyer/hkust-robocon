@@ -199,3 +199,14 @@ CAN_Rx_IRQHandler
 		}
 	}
 }
+
+/**
+	* @struct CAN_CMD_SET
+	* @brief A struct for can protocol with the first byte as the command
+	*/
+typedef struct {
+	u8 length;	// 0 - 8
+	u8 cmd;
+	//void (*)
+} CAN_CMD_SET;
+

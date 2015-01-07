@@ -1,0 +1,10 @@
+.\obj\stm32f10x_dbgmcu.o: FWlib\SRC\stm32f10x_dbgmcu.c
+.\obj\stm32f10x_dbgmcu.o: .\FWlib\inc\stm32f10x_dbgmcu.h
+.\obj\stm32f10x_dbgmcu.o: E:\UST\Robocon2012\KEIL\ARM\INC\ST\STM32F10x\stm32f10x.h
+.\obj\stm32f10x_dbgmcu.o: E:\UST\Robocon2012\KEIL\ARM\CMSIS\Include\core_cm3.h
+.\obj\stm32f10x_dbgmcu.o: E:\UST\Robocon2012\KEIL\ARM\RV31\INC\stdint.h
+.\obj\stm32f10x_dbgmcu.o: E:\UST\Robocon2012\KEIL\ARM\CMSIS\Include\core_cmInstr.h
+.\obj\stm32f10x_dbgmcu.o: E:\UST\Robocon2012\KEIL\ARM\CMSIS\Include\core_cmFunc.h
+.\obj\stm32f10x_dbgmcu.o: E:\UST\Robocon2012\KEIL\ARM\INC\ST\STM32F10x\system_stm32f10x.h
+.\obj\stm32f10x_dbgmcu.o: E:\UST\Robocon2012\KEIL\ARM\INC\ST\STM32F10x\stm32f10x_conf.h
+.\obj\stm32f10x_dbgmcu.o: E:\UST\Robocon2012\KEIL\ARM\INC\ST\STM32F10x\stm32f10x_type.h
