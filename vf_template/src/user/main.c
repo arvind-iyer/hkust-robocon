@@ -18,6 +18,15 @@ void but_init(void)
 
 }
 
+void can_rx_test(CanRxMsg msg)
+{
+	u16 id = msg.IDE;
+	buzzer_set_note_period(get_note_period(NOTE_A, 5));
+	buzzer_control(1, 20);
+	tft_prints(0, 6, "CAN test: %d", msg.FMI);
+}
+
+
 
 int main(void)
 {
@@ -30,14 +39,15 @@ int main(void)
 	tft_init(1, YELLOW, RED, GREEN);	
 	buzzer_init();
 	can_init();
-	//can_tx_init();
-	
+	//can_rx_init();
+	//can_rx_add_filter(0xA0, CAN_RX_MASK_DIGIT_0_F, can_rx_test);
 	led_init();
 	but_init();
 	
-	//buzzer_play_song(START_UP, 120, 0);
-	buzzer_set_note_period(get_note_period(NOTE_E, 7));
-	buzzer_control(2, 100);
+	buzzer_play_song(START_UP, 120, 0);
+	
+	
+	//buzzer_control(2, 100);
 	
 	
 	led_control((LED) (LED_D1 | LED_D2 | LED_D3), LED_ON);
@@ -50,9 +60,9 @@ int main(void)
 		if (ticks_img != get_ticks()) {
 			ticks_img = get_ticks();
 			
-			if (ticks_img % 200 == 0) {
+			if (ticks_img % 10 == 0 && get_seconds() > 0) {
 				CAN_MESSAGE msg;
-				msg.id = 0xB1;
+				msg.id = 0xA1;
 				msg.length = 2;
 				msg.data[0] = ticks_img;
 				msg.data[1] = get_seconds();
@@ -63,28 +73,17 @@ int main(void)
 				//buzzer_control(3, 100);
 				led_control((LED) (LED_D1 | LED_D2 | LED_D3), (LED_STATE) (ticks_img == 0));
 				
-//				uart_tx(COM1, "COM1 Output: %d\r\n", get_seconds());
-//				uart_tx(COM2, "COM2 Output: %d\r\n", get_seconds());
-//				uart_tx(COM3, "COM3 Output: %d\r\n", get_seconds());
-//				uart_tx(COM4, "COM4 Output: %d\r\n", get_seconds());
-//				uart_tx(COM5, "COM5 Output: %d\r\n", get_seconds());
-				
-				
-				tft_clear();
-				
+			}
+			
+			if (ticks_img % 50 == 0) {
+				//tft_clear();
 				tft_prints(0, 0, "HELLO_WORLD!");
 				tft_prints(0, 1, "Seconds: %d", get_seconds());
+				tft_prints(0, 2, "Ticks: %d", ticks_img);
+				tft_prints(0, 3, "CAN Queue: %d", can_tx_queue_size());
+				tft_prints(0, 4, "(%3d - %3d)", can_tx_queue_head(), can_tx_queue_tail());
+				tft_prints(0, 5, "CAN Empty: %d", can_empty_mailbox());
 				tft_update();
-				
-			
-				if (GPIO_ReadInputDataBit(GPIOB, GPIO_Pin_6) == 0) {
-
-				}
-				
-				if (GPIO_ReadInputDataBit(GPIOB, GPIO_Pin_7) == 0) {
-
-				}
-				
 			}
 
 		}
@@ -141,21 +140,6 @@ void UART5_IRQHandler(void)
 	}
 }
 
-/** 
-	* @brief Interrupt for CAN Rx
-	* @warning Use USB_LP_CAN_RX0_IRQHandler for HD, USB_LP_CAN1_RX0_IRQHandler for XLD / MD
-	*/
-void USB_LP_CAN1_RX0_IRQHandler(void)
-{
-	//
-	CanRxMsg RxMessage;
-	//CAN_ClearITPendingBit(CAN1, CAN_IT_FMP0);
-	CAN_Receive(CAN1, CAN_FIFO0, &RxMessage);
 
-	if(RxMessage.IDE == CAN_ID_STD) {
-		buzzer_control(1, 50);
-		
-	}
-	
-}
+
 

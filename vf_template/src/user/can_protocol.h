@@ -5,15 +5,21 @@
 #include "can.h"
 
 
-#define CAN_TX_QUEUE_SIZE 255
-#define CAN_TX_DEQUEUE_TIMEOUT	1000
-//#define CAN_RX_QUEUE_SIZE 100
-
-#define	CAN_TX_TIM					TIM6
-#define CAN_TX_RCC					RCC_APB1Periph_TIM6
-#define	CAN_TX_IRQn					TIM6_IRQn
-#define CAN_TX_IRQHander		void TIM6_IRQHandler(void)
+#define CAN_TX_QUEUE_MAX_SIZE				2000
+#define CAN_TX_IRQHander						void USB_HP_CAN1_TX_IRQHandler(void)
 	
+#define CAN_IRQn										USB_LP_CAN1_RX0_IRQn
+#define	CAN_Rx_IRQHandler						void USB_LP_CAN1_RX0_IRQHandler(void)
+
+/*** X = the ID bit that must be equal 	***/
+/*** ? = the ID bit that can varies 		***/
+																						/***   11-bit ID   	(example range) 		***/
+#define CAN_RX_MASK_EXACT						0x7FF		/*** XXX XXXX XXXX	(Exactly same ID)		***/
+#define CAN_RX_MASK_DIGIT_0_F				0x7F0		/*** XXX XXXX ???? 	(0xAB0 - 0xABF) 		***/
+#define	CAN_RX_MASK_DIGIT_0_7				0x7F8		/*** XXX XXXX X??? 	(0xAB0 - 0xAB7)			***/
+#define	CAN_RX_MASK_DIGIT_0_3				0x7FC		/*** XXX XXXX XX?? 	(0xAB0 - 0xAB3)			***/
+#define	CAN_RX_MASK_DIGIT_0_1				0x7FE		/*** XXX XXXX XXX? 	(0xAB0 - 0xAB1)			***/
+
 
 typedef struct {
 	u32 id;			/*** 11-bit ID: 0x000 to 0x7FF ***/
@@ -28,9 +34,17 @@ typedef struct {
 	CAN_MESSAGE* queue;		/*** The can message queue (array) ***/
 } CAN_QUEUE;
 
-void can_tx_init(void);
 
+/*** CAN Tx ***/
+u16 can_tx_queue_head(void);
+u16 can_tx_queue_tail(void);
+u16 can_tx_queue_size(void);
+u8 can_empty_mailbox(void);
 u8 can_tx_enqueue(CAN_MESSAGE msg);
 u8 can_tx_dequeue(void);
+
+/*** CAN Rx ***/
+void can_rx_init(void);
+void can_rx_add_filter(u16 id, u16 mask, void (*handler)(CanRxMsg msg));
 
 #endif /* __CAN_PROTOCOL_H */

@@ -19,6 +19,7 @@ u16 buzzer_song_note_length = 0;
 u16 buzzer_song_note_length_left = 0;// Length left
 u16 buzzer_song_note_break = 0;	// break length between notes (can be 0)
 u8 buzzer_song_note_break_flag = 0;
+
 /**
   * @brief  Initialization of buzzer
   * @param  None
