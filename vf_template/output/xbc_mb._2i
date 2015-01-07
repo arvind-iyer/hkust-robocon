@@ -1,5 +1,0 @@
--c --cpu Cortex-M3 -D__EVAL -D__MICROLIB -O3 --apcs=interwork -I.\src -IC:\stm32\stm32f10x_std\inc -IC:\stm32\ustrobo_min_system\inc
--I "C:\Program Files\Keil\ARM\RV31\INC"
--I "C:\Program Files\Keil\ARM\CMSIS\Include"
--I "C:\Program Files\Keil\ARM\Inc\ST\STM32F10x"
--DUSE_STDPERIPH_DRIVER -DSTM32F10X_HD -DUSE_STM3210B_EVAL -o .\output\xbc_mb.o --omf_browse .\output\xbc_mb.crf --depend .\output\xbc_mb.d --feedback ".\output\stm32_template.fed" "C:\stm32\ustrobo_min_system\src\xbc_mb.c"
