@@ -140,7 +140,16 @@ void uart_tx(COM_TypeDef COM, uc8 * tx_buf, ...)
 	while (*fp)
 		uart_tx_byte(COM,*fp++);
 }
-
+/**
+  * @brief  Receiving one byte of data via USART
+  * @param  COM: which USART to be used for receiving data
+  * @retval One byte of data received
+  */
+u8 uart_rx_byte(COM_TypeDef COM)
+{
+	while (USART_GetFlagStatus(COM_USART[COM], USART_FLAG_TC) == RESET); 
+	return (u8)USART_ReceiveData(COM_USART[COM]);
+}
 /**
   * @brief  Binding of function Printf
   * @param  None
