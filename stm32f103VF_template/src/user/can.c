@@ -53,6 +53,17 @@ void can_init(void)
 	/* CAN FIFO0 message pending interrupt enable */ 
 	CAN_ITConfig(CANn, CAN_IT_TME, ENABLE);
   CAN_ITConfig(CANn, CAN_IT_FMP0, ENABLE);
+	
+	/* CAN TX interrupt */
+	{
+		NVIC_InitTypeDef NVIC_InitStructure;
+		NVIC_InitStructure.NVIC_IRQChannel= USB_HP_CAN1_TX_IRQn; 
+
+		NVIC_InitStructure.NVIC_IRQChannelPreemptionPriority = 0;
+		NVIC_InitStructure.NVIC_IRQChannelSubPriority = 4;
+		NVIC_InitStructure.NVIC_IRQChannelCmd = ENABLE;
+		NVIC_Init(&NVIC_InitStructure);
+	}
 
 }
 
@@ -60,10 +71,10 @@ void can_init(void)
 /**
 	* @brief Transfer a CAN message
 	* @param msg: the CAN message
-	* @retval True if the message is can be tranferred
+	* @retval True if the message can be tranferred
 	*/
 u8 can_tx(CanTxMsg msg)
 {
-	return (CAN_Transmit(CANn, &msg) != CAN_TxStatus_NoMailBox);							//transmit the message
+	return CAN_Transmit(CANn, &msg) != CAN_TxStatus_NoMailBox;							//transmit the message
 }
 

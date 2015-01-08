@@ -4,7 +4,7 @@ u16 ticks_img = (u16) -1;			// Trival value
 u16 seconds_img = (u16) -1;		// Trival value
 
 
-
+u16 hello = 0;
 void but_init(void)
 {
 	GPIO_InitTypeDef GPIO_InitStructure;
@@ -21,11 +21,12 @@ void but_init(void)
 void can_rx_test(CanRxMsg msg)
 {
 	u16 id = msg.IDE;
-	buzzer_set_note_period(get_note_period(NOTE_A, 5));
-	buzzer_control(1, 20);
-	tft_prints(0, 6, "CAN test: %d", msg.FMI);
+	//buzzer_set_note_period(get_note_period(NOTE_A, 5));
+	//buzzer_control(1, 20);
+	
+	++hello;
+	//tft_prints(0, 6, "CAN test: %d", msg.FMI);
 }
-
 
 
 int main(void)
@@ -39,10 +40,15 @@ int main(void)
 	tft_init(1, YELLOW, RED, GREEN);	
 	buzzer_init();
 	can_init();
-	//can_rx_init();
-	//can_rx_add_filter(0xA0, CAN_RX_MASK_DIGIT_0_F, can_rx_test);
+	can_rx_init();
+	
+	
+	//can_rx_add_filter(0x0A1, 0x7FF, can_rx_test);
+	//can_rx_add_filter(0x0B0, 0x7F0, can_rx_test2);
 	led_init();
 	but_init();
+	
+	uart_init(COM1, 115200);
 	
 	buzzer_play_song(START_UP, 120, 0);
 	
@@ -60,12 +66,12 @@ int main(void)
 		if (ticks_img != get_ticks()) {
 			ticks_img = get_ticks();
 			
-			if (ticks_img % 10 == 0 && get_seconds() > 0) {
+			if (ticks_img % 5 == 0 && get_seconds() > 0) {
 				CAN_MESSAGE msg;
 				msg.id = 0xA1;
-				msg.length = 2;
-				msg.data[0] = ticks_img;
-				msg.data[1] = get_seconds();
+				msg.length = 1;
+				//msg.data[0] = (u8) ticks_img;
+				msg.data[0] = (u8) get_seconds();
 				can_tx_enqueue(msg);
 			}
 
@@ -76,14 +82,16 @@ int main(void)
 			}
 			
 			if (ticks_img % 50 == 0) {
-				//tft_clear();
+				tft_clear();
 				tft_prints(0, 0, "HELLO_WORLD!");
-				tft_prints(0, 1, "Seconds: %d", get_seconds());
-				tft_prints(0, 2, "Ticks: %d", ticks_img);
-				tft_prints(0, 3, "CAN Queue: %d", can_tx_queue_size());
-				tft_prints(0, 4, "(%3d - %3d)", can_tx_queue_head(), can_tx_queue_tail());
-				tft_prints(0, 5, "CAN Empty: %d", can_empty_mailbox());
+				tft_prints(0, 1, "%d", hello);
 				tft_update();
+//				tft_prints(0, 1, "Seconds: %d", get_seconds());
+//				tft_prints(0, 2, "Ticks: %d", ticks_img);
+//				tft_prints(0, 3, "CAN Queue: %d", can_tx_queue_size());
+//				tft_prints(0, 4, "(%3d - %3d)", can_tx_queue_head(), can_tx_queue_tail());
+//				tft_prints(0, 5, "CAN Empty: %d", can_empty_mailbox());
+//				tft_update();
 			}
 
 		}
@@ -139,7 +147,4 @@ void UART5_IRQHandler(void)
 		uart_tx_byte(COM5, rx_data);
 	}
 }
-
-
-
 

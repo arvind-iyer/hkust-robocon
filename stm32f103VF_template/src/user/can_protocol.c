@@ -41,18 +41,28 @@ u16 can_tx_queue_size(void)
 }
 
 /**
+	* @brief Check if the CAN_TX queue is empty
+	* @param None
+	* @retval True if the queue is empty
+	*/
+u8 can_tx_queue_empty(void)
+{
+	return CAN_Tx_Queue.head == CAN_Tx_Queue.tail;
+}
+
+/**
 	* @brief	Get the number of empty (free) CAN mailboxes (Refer to the CAN_Transmit(...) function)
 	* @param 	None
 	* @retval	The number of empty CAN mailboxes (0 if no CAN mailbox available for anymore CAN Tx)
 	*/
 u8 can_empty_mailbox(void)
 {
-//	return ((CANn->TSR&CAN_TSR_TME0) == CAN_TSR_TME0)
-//	+((CANn->TSR&CAN_TSR_TME1) == CAN_TSR_TME1)
-//	+ ((CANn->TSR&CAN_TSR_TME2) == CAN_TSR_TME2);
-	return (CAN_TransmitStatus(CANn, 0) == CAN_TxStatus_Ok)
-		+ (CAN_TransmitStatus(CANn, 1) == CAN_TxStatus_Ok)
-		+ (CAN_TransmitStatus(CANn, 2) == CAN_TxStatus_Ok);
+	return ((CANn->TSR&CAN_TSR_TME0) == CAN_TSR_TME0)
+	+((CANn->TSR&CAN_TSR_TME1) == CAN_TSR_TME1)
+	+ ((CANn->TSR&CAN_TSR_TME2) == CAN_TSR_TME2);
+//	return (CAN_TransmitStatus(CANn, 0) == CAN_TxStatus_Ok)
+//		+ (CAN_TransmitStatus(CANn, 1) == CAN_TxStatus_Ok)
+//		+ (CAN_TransmitStatus(CANn, 2) == CAN_TxStatus_Ok);
 }
 
 /** 
@@ -84,9 +94,9 @@ u8 can_tx_enqueue(CAN_MESSAGE msg)
 	*/
 u8 can_tx_dequeue(void)
 {
-	if (CAN_Tx_Queue.head == CAN_Tx_Queue.tail) {   
+	if (can_tx_queue_empty()) {   
 		return 0;
-	} else {
+	} else if (can_empty_mailbox() > 0) {
 		CAN_MESSAGE msg = CAN_Tx_Queue.queue[CAN_Tx_Queue.head];
 		CanTxMsg TxMsg;
 		u8 data_length = msg.length;
@@ -102,8 +112,14 @@ u8 can_tx_dequeue(void)
 			TxMsg.Data[data_length] = msg.data[data_length];
 		}
 
+		
 		if (can_tx(TxMsg)) {
 			CAN_Tx_Queue.head = (CAN_Tx_Queue.head + 1) % CAN_Tx_Queue.length;
+		}
+		
+		// If there are still empty mailbox, dequeue again
+		if (can_empty_mailbox() > 0) {
+			can_tx_dequeue();
 		}
 		
 		return 1;
@@ -154,7 +170,7 @@ void can_rx_init(void)
 	*/
 
 	/* enabling interrupt */
-	NVIC_InitStructure.NVIC_IRQChannel= CAN_IRQn; 
+	NVIC_InitStructure.NVIC_IRQChannel= CAN_Rx_IRQn; 
 
 	NVIC_InitStructure.NVIC_IRQChannelPreemptionPriority = 0;
 	NVIC_InitStructure.NVIC_IRQChannelSubPriority = 4;
@@ -167,6 +183,7 @@ void can_rx_init(void)
 	* @warning can only be called for 14 / 28 times. Check the function IS_CAN_FILTER_NUMBER for detail
 	* @param id: 11-bit ID (0x000 to 0x7FF)
 	* @param mask: 11-bit mask, corresponding to the 11-bit ID	(0x000 to 0x7FF)		
+	* @param handler: function pointer for the corresponding CAN ID filter
 	* @example can_rx_add_filter(0x000, 0x000) will receive CAN message with ANY ID
 	* @example can_rx_add_filter(0x0CD, 0x7FF) will receive CAN message with ID 0xCD
 	* @example can_rx_add_filter(0x0A0, 0x7F0) will receive CAN message with ID from 0xA0 to 0xAF

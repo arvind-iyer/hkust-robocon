@@ -9,8 +9,6 @@
 #define	CANn							CAN1
 #define CAN_RCC						RCC_APB1Periph_CAN1
 
-
-
 #define	CAN_Rx_GPIO_Pin		GPIO_Pin_11
 #define	CAN_Tx_GPIO_Pin		GPIO_Pin_12
 #define	CAN_GPIO_PORT			GPIOA

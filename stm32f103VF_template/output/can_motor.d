@@ -22,3 +22,5 @@
 .\output\can_motor.o: .\src\ustrobo_min_system\inc\ticks.h
 .\output\can_motor.o: .\src\stm32f10x_std\inc\stm32f10x_tim.h
 .\output\can_motor.o: .\src\ustrobo_min_system\inc\buzzer.h
+.\output\can_motor.o: .\src\ustrobo_min_system\inc\uart.h
+.\output\can_motor.o: C:\Keil_v5\ARM\ARMCC\Bin\..\include\stdarg.h

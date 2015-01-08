@@ -3,12 +3,12 @@
 
 #include "ticks.h"
 #include "can.h"
-
+#include "uart.h"
 
 #define CAN_TX_QUEUE_MAX_SIZE				2000
 #define CAN_TX_IRQHander						void USB_HP_CAN1_TX_IRQHandler(void)
 	
-#define CAN_IRQn										USB_LP_CAN1_RX0_IRQn
+#define CAN_Rx_IRQn									USB_LP_CAN1_RX0_IRQn
 #define	CAN_Rx_IRQHandler						void USB_LP_CAN1_RX0_IRQHandler(void)
 
 /*** X = the ID bit that must be equal 	***/
@@ -31,7 +31,7 @@ typedef struct {
 	u16 head;						/*** Current head of queue ***/
 	u16 tail;						/*** Current tail of queue ***/
 	const u16 length; 	/*** Length of queue ***/
-	CAN_MESSAGE* queue;		/*** The can message queue (array) ***/
+	volatile CAN_MESSAGE* queue;		/*** The can message queue (array) ***/
 } CAN_QUEUE;
 
 
@@ -39,6 +39,7 @@ typedef struct {
 u16 can_tx_queue_head(void);
 u16 can_tx_queue_tail(void);
 u16 can_tx_queue_size(void);
+u8 can_tx_queue_empty(void);
 u8 can_empty_mailbox(void);
 u8 can_tx_enqueue(CAN_MESSAGE msg);
 u8 can_tx_dequeue(void);
