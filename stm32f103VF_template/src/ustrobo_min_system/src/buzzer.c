@@ -8,7 +8,7 @@ u16 buzzer_time_ms = 0;		// Period left
 u8 buzzer_count = 0;
 
 // Note frequency related
-static u8 buzzer_volume = 25;
+static u8 buzzer_volume = 1;		// 0 - 100 (101 for full buzz)
 static u16 buzzer_note_period = 1;
 
 // Song related
@@ -69,7 +69,6 @@ void buzzer_init(void)
 		//TIM_OC3Init(BUZZER_TIM, &TIM_OCInitStructure);
 		//TIM_OC4Init(BUZZER_TIM, &TIM_OCInitStructure);
 	
-	
 	}
 	
 	
@@ -80,6 +79,7 @@ void buzzer_init(void)
 	
 
 }
+
 
 void buzzer_on(void)
 {

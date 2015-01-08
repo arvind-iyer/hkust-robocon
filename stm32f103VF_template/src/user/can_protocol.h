@@ -42,6 +42,7 @@ u16 can_tx_queue_size(void);
 u8 can_empty_mailbox(void);
 u8 can_tx_enqueue(CAN_MESSAGE msg);
 u8 can_tx_dequeue(void);
+void can_tx_queue_clear(void);
 
 /*** CAN Rx ***/
 void can_rx_init(void);

@@ -2,7 +2,7 @@
 
 
 /**
-  * @brief  Configures the CAN.
+  * @brief  Configure and initialize the CAN (GPIOs + CAN only).
   * @param  None
   * @retval None
   */

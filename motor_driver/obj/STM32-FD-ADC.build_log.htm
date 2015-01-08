@@ -26,7 +26,20 @@ Project File Date:  01/08/2015
 
 <h2>Output:</h2>
 Build target 'STM32-FD-ADC'
-".\obj\STM32-FD-ADC.axf" - 0 Error(s), 0 Warning(s).
+compiling main.c...
+user\main.c(83): warning:  #188-D: enumerated type mixed with another type
+                                 GPIO_WriteBit(GPIOC,GPIO_Pin_1,1);
+user\main.c(84): warning:  #188-D: enumerated type mixed with another type
+                                 GPIO_WriteBit(GPIOC,GPIO_Pin_0,1);
+user\main.c(123): warning:  #188-D: enumerated type mixed with another type
+                                 GPIO_WriteBit(GPIOC,GPIO_Pin_1,0);
+user\main.c(124): warning:  #188-D: enumerated type mixed with another type
+                                 GPIO_WriteBit(GPIOC,GPIO_Pin_0,0);
+user\main.c: 4 warnings, 0 errors
+linking...
+Program Size: Code=17580 RO-data=360 RW-data=568 ZI-data=6216  
+FromELF: creating hex file...
+".\obj\STM32-FD-ADC.axf" - 0 Error(s), 4 Warning(s).
 
 <h2>Collection of Component include folders:</h2>
   C:\Users\Kenneth Au\Dropbox\Documents\HKUST\Robocon 2015\git\motor_driver\RTE

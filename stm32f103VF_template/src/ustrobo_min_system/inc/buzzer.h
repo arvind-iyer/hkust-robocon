@@ -50,7 +50,7 @@ typedef enum {
 	NOTE_Bs			=	1
 } MUSIC_NOTE_LETTER;
 
-// Sound period (1/freq) of the 0th octave in milliseconds (us)
+// Musical note period (1/freq) of the 0th octave in milliseconds (us)
 #define	C0_PERIOD			61158		
 #define	Db0_PERIOD		57725
 #define	D0_PERIOD			54485

@@ -135,7 +135,7 @@ int main(void)
 		{
 			ticks_img = get_ticks();
 		
-			if(ticks_img % 5 == 0)
+			if(ticks_img % 100 == 0)
 			{
 //				debugger_msg();	
 //	            Motor_Return_Encoder(d_count);

@@ -10,11 +10,11 @@
 typedef enum 
 {
 	COM_NULL = -1,		//disabled
-    COM1 = 0,   //usart1
-    COM2 = 1,	//usart2
-    COM3 = 2,   //usart3
-    COM4 = 3,	//uart4
-    COM5 = 4    //uart5
+    COM1 = 0,   		//usart1
+    COM2 = 1,				//usart2
+    COM3 = 2,   		//usart3
+    COM4 = 3,				//uart4
+    COM5 = 4    		//uart5
 } COM_TypeDef;
 
 #define COMn 5 

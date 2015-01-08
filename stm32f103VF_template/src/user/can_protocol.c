@@ -111,6 +111,17 @@ u8 can_tx_dequeue(void)
 }
 
 /**
+	* @brief Force clear the CAN_TX queue without process
+	* @param None.
+	* @retval None.
+	*/
+void can_tx_queue_clear(void)
+{
+	CAN_Tx_Queue.head = CAN_Tx_Queue.tail = 0;
+}
+
+
+/**
 	* @brief The handler function of empty 
 	*/
 CAN_TX_IRQHander
@@ -123,7 +134,11 @@ CAN_TX_IRQHander
 	}
 }
 
-
+/**
+	* @brief Initialize the CAN_RX interrupt handler
+	* @param None.
+	* @retval None.
+	*/
 void can_rx_init(void)
 {
 	NVIC_InitTypeDef NVIC_InitStructure;
@@ -200,13 +215,4 @@ CAN_Rx_IRQHandler
 	}
 }
 
-/**
-	* @struct CAN_CMD_SET
-	* @brief A struct for can protocol with the first byte as the command
-	*/
-typedef struct {
-	u8 length;	// 0 - 8
-	u8 cmd;
-	//void (*)
-} CAN_CMD_SET;
 
