@@ -82,4 +82,5 @@ void uart_printf_disable(void);
 void uart_tx_byte(COM_TypeDef COM, const uint8_t data);
 void uart_tx(COM_TypeDef COM, const uint8_t * tx_buf, ...);
 
+uint8_t uart_rx_byte(COM_TypeDef COM);
 #endif		/* __UART_H */
