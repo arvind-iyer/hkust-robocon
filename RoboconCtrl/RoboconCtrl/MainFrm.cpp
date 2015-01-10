@@ -22,6 +22,8 @@ const UINT uiLastUserToolBarId = uiFirstUserToolBarId + iMaxUserToolbars - 1;
 BEGIN_MESSAGE_MAP(CMainFrame, CFrameWndEx)
 	ON_WM_CREATE()
 	ON_COMMAND(ID_VIEW_CUSTOMIZE, &CMainFrame::OnViewCustomize)
+	ON_UPDATE_COMMAND_UI(ID_FILE_SAVE, OnUpdateFileSave)
+	ON_UPDATE_COMMAND_UI(ID_FILE_NEW, OnUpdateFileNew)
 	ON_REGISTERED_MESSAGE(AFX_WM_CREATETOOLBAR, &CMainFrame::OnToolbarCreateNew)
 	ON_WM_SETTINGCHANGE()
 END_MESSAGE_MAP()
@@ -197,6 +199,15 @@ void CMainFrame::SetDockingWindowIcons(BOOL bHiColorIcons)
 
 }
 
+void CMainFrame::OnUpdateFileNew(CCmdUI *pCmdUI)
+{
+	pCmdUI->Enable(FALSE);
+}
+void CMainFrame::OnUpdateFileSave(CCmdUI *pCmdUI)
+{
+	pCmdUI->Enable(FALSE);
+}
+
 // CMainFrame diagnostics
 
 #ifdef _DEBUG
@@ -210,6 +221,13 @@ void CMainFrame::Dump(CDumpContext& dc) const
 	CFrameWndEx::Dump(dc);
 }
 #endif //_DEBUG
+
+// Settings Getters (I have no idea how to make this better)
+
+std::vector<std::basic_string<TCHAR>> CMainFrame::GetSettings()
+{
+	return m_wndProperties.GetSettings();
+}
 
 // Passing print functions to output window
 

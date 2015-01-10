@@ -1,6 +1,8 @@
 
 #pragma once
 
+#include <vector>
+
 class CPropertiesToolBar : public CMFCToolBar
 {
 public:
@@ -36,6 +38,7 @@ protected:
 
 // Implementation
 public:
+	virtual std::vector<std::basic_string<TCHAR>> GetSettings();
 	virtual ~CPropertiesWnd();
 
 protected:

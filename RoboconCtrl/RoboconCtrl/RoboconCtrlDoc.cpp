@@ -48,21 +48,9 @@ BOOL CRoboconCtrlDoc::OnNewDocument()
 	return TRUE;
 }
 
-
-
-
-// CRoboconCtrlDoc serialization
-
-void CRoboconCtrlDoc::Serialize(CArchive& ar)
+void CRoboconCtrlDoc::SetTitle(LPCTSTR lpszTitle)
 {
-	if (ar.IsStoring())
-	{
-		// TODO: add storing code here
-	}
-	else
-	{
-		// TODO: add loading code here
-	}
+	CDocument::SetTitle(_T("Main Control Panel"));
 }
 
 #ifdef SHARED_HANDLERS

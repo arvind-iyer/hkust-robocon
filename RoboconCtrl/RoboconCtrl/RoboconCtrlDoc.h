@@ -21,7 +21,6 @@ public:
 // Overrides
 public:
 	virtual BOOL OnNewDocument();
-	virtual void Serialize(CArchive& ar);
 #ifdef SHARED_HANDLERS
 	virtual void InitializeSearchContent();
 	virtual void OnDrawThumbnail(CDC& dc, LPRECT lprcBounds);
@@ -36,6 +35,7 @@ public:
 #endif
 
 protected:
+	virtual void SetTitle(LPCTSTR lpszTitle);
 
 // Generated message map functions
 protected:

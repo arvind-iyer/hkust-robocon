@@ -29,6 +29,7 @@
 #define IDR_OUTPUT_POPUP			182
 #define IDR_PROPERTIES				183
 #define IDB_PROPERTIES_HC			184
+#define ID_COMBO_BOX				200
 #define IDS_BUILD_TAB				300
 #define IDS_DEBUG_TAB				301
 #define IDS_FIND_TAB				302

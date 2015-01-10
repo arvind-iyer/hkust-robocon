@@ -1,4 +1,4 @@
-﻿Build started 1/8/2015 7:09:08 PM.
+﻿Build started 1/10/2015 9:55:50 AM.
      1>Project "C:\Documents\GitHub\Robocon2015\RoboconCtrl\RoboconCtrl\RoboconCtrl.vcxproj" on node 2 (Build target(s)).
      1>ClCompile:
          C:\Program Files (x86)\Microsoft Visual Studio 12.0\VC\bin\CL.exe /c /ZI /nologo /W3 /WX- /sdl /Od /Oy- /D WIN32 /D _WINDOWS /D _DEBUG /D _UNICODE /D UNICODE /Gm /EHsc /RTC1 /MTd /GS /fp:precise /Zc:wchar_t /Zc:forScope /Yu"stdafx.h" /Fp"Debug\RoboconCtrl.pch" /Fo"Debug\\" /Fd"Debug\vc120.pdb" /Gd /TP /analyze- /errorReport:prompt RoboconCtrl.cpp
@@ -18,4 +18,4 @@
 
 Build succeeded.
 
-Time Elapsed 00:00:02.09
+Time Elapsed 00:00:01.40

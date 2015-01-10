@@ -31,9 +31,10 @@ public:
 	virtual void AssertValid() const;
 	virtual void Dump(CDumpContext& dc) const;
 #endif
+	std::vector<std::basic_string<TCHAR>> GetSettings();
 	void print_to_output(std::basic_string<TCHAR> string_to_print);
 	void print_from_serial(std::basic_string<TCHAR> string_to_print);
-	void set_serial_port(SerialIO* serial);
+
 protected:  // control bar embedded members
 	CMFCMenuBar       m_wndMenuBar;
 	CMFCToolBar       m_wndToolBar;
@@ -48,6 +49,9 @@ protected:
 	afx_msg void OnViewCustomize();
 	afx_msg LRESULT OnToolbarCreateNew(WPARAM wp, LPARAM lp);
 	afx_msg void OnSettingChange(UINT uFlags, LPCTSTR lpszSection);
+	afx_msg void OnUpdateFileNew(CCmdUI *pCmdUI);
+	afx_msg void OnUpdateFileSave(CCmdUI *pCmdUI);
+
 	DECLARE_MESSAGE_MAP()
 
 	BOOL CreateDockingWindows();

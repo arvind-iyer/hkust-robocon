@@ -304,7 +304,7 @@ END
 STRINGTABLE
 BEGIN
     ID_APP_ABOUT            "Display program information, version number and copyright\nAbout"
-    ID_APP_EXIT             "Quit the application; prompts to save documents\nExit"
+    ID_APP_EXIT             "Quit the application\nExit"
 END
 
 STRINGTABLE
@@ -337,7 +337,7 @@ BEGIN
     AFX_IDS_SCMAXIMIZE      "Enlarge the window to full size"
     AFX_IDS_SCNEXTWINDOW    "Switch to the next document window"
     AFX_IDS_SCPREVWINDOW    "Switch to the previous document window"
-    AFX_IDS_SCCLOSE         "Close the active window and prompts to save the documents"
+    AFX_IDS_SCCLOSE         "Close the active window"
 END
 
 STRINGTABLE
@@ -363,8 +363,6 @@ END
 STRINGTABLE
 BEGIN
     IDS_BUILD_TAB           "Build"
-    IDS_DEBUG_TAB           "Debug"
-    IDS_FIND_TAB            "Find"
 END
 
 STRINGTABLE

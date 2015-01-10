@@ -14,6 +14,8 @@
 #include <locale>
 #include <codecvt>
 #include <string>
+#include <utility>
+#include <sstream>
 
 #ifdef _DEBUG
 #define new DEBUG_NEW
@@ -32,7 +34,7 @@ END_MESSAGE_MAP()
 
 // CRoboconCtrlApp construction
 
-CRoboconCtrlApp::CRoboconCtrlApp() : serial(NULL)
+CRoboconCtrlApp::CRoboconCtrlApp()
 {
 	m_bHiColorIcons = TRUE;
 
@@ -56,6 +58,7 @@ CRoboconCtrlApp::~CRoboconCtrlApp()
 
 CRoboconCtrlApp theApp;
 
+SerialIO* CRoboconCtrlApp::serial = NULL;
 
 // CRoboconCtrlApp initialization
 
@@ -155,21 +158,40 @@ void CRoboconCtrlApp::PrintOutput(std::wstring string, int output_number) // 0 f
 	}
 }
 
+// Read thread
+
+void __cdecl CRoboconCtrlApp::read_thread(void* app_ptr){
+
+	while (serial != NULL && serial->is_connected()){
+		if (serial->bytes_to_read() && !(serial->read()).empty()) {
+			((CRoboconCtrlApp*)app_ptr)->PrintOutput(serial->read(), 1);
+		}
+		Sleep(10);
+	}
+	_endthread();
+}
+
 // CRoboconCtrlApp message handlers
 
 void CRoboconCtrlApp::OpenConnection()
 {
-	PrintOutput("Opening Port", 0);
+	std::wstring_convert<std::codecvt_utf8_utf16<wchar_t>> converter;
+
 	if (serial != NULL){
 		CloseConnection();
 	}
-	serial = new SerialIO();
+	std::vector<std::basic_string<TCHAR>> settings = ((CMainFrame*)m_pMainWnd)->GetSettings();
+	PrintOutput(_T("Opening Port: ") + settings[0] + _T(" | Baud rate: ") + settings[1] + _T(" bit/s | Read buffer size: ") + settings[2] + _T(" bytes"), 0);
 	try {
-		serial->init("COM7");
+		serial = new SerialIO(converter.to_bytes(settings[0]),stoi(settings[1]),stoi(settings[2]));
+
+		if (serial->is_connected()) {
+			PrintOutput("SUCCESS!", 0);
+		}
+		_beginthread(CRoboconCtrlApp::read_thread, 0, this);
 	}
 	catch (std::runtime_error r) {
 		PrintOutput(r.what(), 0);
-		CloseConnection();
 	}
 }
 
@@ -228,14 +250,6 @@ void CRoboconCtrlApp::PreLoadState()
 	bNameValid = strName.LoadString(IDS_EDIT_MENU);
 	ASSERT(bNameValid);
 	GetContextMenuManager()->AddMenu(strName, IDR_POPUP_EDIT);
-}
-
-void CRoboconCtrlApp::LoadCustomState()
-{
-}
-
-void CRoboconCtrlApp::SaveCustomState()
-{
 }
 
 // CRoboconCtrlApp message handlers

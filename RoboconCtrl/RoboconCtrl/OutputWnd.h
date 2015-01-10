@@ -27,7 +27,6 @@ protected:
 
 class COutputWnd : public CDockablePane
 {
-	SerialIO* serial_wnd;
 
 // Construction
 public:
@@ -44,8 +43,6 @@ protected:
 	COutputList m_wndOutputRead;
 
 protected:
-	void FillBuildWindow();
-
 	void AdjustHorzScroll(CListBox& wndListBox);
 
 // Implementation

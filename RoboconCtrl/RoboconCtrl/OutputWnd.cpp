@@ -16,7 +16,7 @@ static int a = 0;
 /////////////////////////////////////////////////////////////////////////////
 // COutputBar
 
-COutputWnd::COutputWnd() : serial_wnd(NULL)
+COutputWnd::COutputWnd()
 {
 }
 
@@ -70,9 +70,6 @@ int COutputWnd::OnCreate(LPCREATESTRUCT lpCreateStruct)
 	m_wndTabs.AddTab(&m_wndOutputBuild, _T("All Logs"), (UINT)0);
 	m_wndTabs.AddTab(&m_wndOutputRead, _T("Serial Only"), (UINT)0);
 
-	// Fill output tabs with some dummy text (nothing magic here)
-	//FillBuildWindow();
-
 	return 0;
 }
 
@@ -105,21 +102,16 @@ void COutputWnd::AdjustHorzScroll(CListBox& wndListBox)
 
 void COutputWnd::PrintString(std::basic_string<TCHAR> string_to_print)
 {
-	m_wndOutputBuild.AddString(string_to_print.c_str());
+	m_wndOutputBuild.SetTopIndex(m_wndOutputBuild.AddString(string_to_print.c_str()));
+	AdjustHorzScroll(m_wndOutputBuild);
 }
 
 void COutputWnd::ReadFromSerial(std::basic_string<TCHAR> string_read_from_serial)
 {
-	m_wndOutputRead.AddString(string_read_from_serial.c_str());
-	m_wndOutputBuild.AddString(string_read_from_serial.c_str());
-
-}
-
-void COutputWnd::FillBuildWindow()
-{
-	m_wndOutputBuild.AddString(_T("Build output is being displayed here."));
-	m_wndOutputBuild.AddString(_T("The output is being displayed in rows of a list view"));
-	m_wndOutputBuild.AddString(_T("but you can change the way it is displayed as you wish..."));
+	m_wndOutputRead.SetTopIndex(m_wndOutputRead.AddString(string_read_from_serial.c_str()));
+	AdjustHorzScroll(m_wndOutputRead);
+	m_wndOutputBuild.SetTopIndex(m_wndOutputBuild.AddString((L"Msg received: " + string_read_from_serial).c_str()));
+	AdjustHorzScroll(m_wndOutputBuild);
 }
 
 void COutputWnd::UpdateFonts()

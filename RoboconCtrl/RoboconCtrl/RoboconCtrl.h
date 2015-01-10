@@ -19,7 +19,7 @@
 class CRoboconCtrlApp : public CWinAppEx
 {
 private:
-	SerialIO* serial;
+	static SerialIO* serial;
 
 public:
 	CRoboconCtrlApp();
@@ -33,8 +33,8 @@ public:
 	BOOL  m_bHiColorIcons;
 
 	virtual void PreLoadState();
-	virtual void LoadCustomState();
-	virtual void SaveCustomState();
+
+	static void __cdecl read_thread(void* ioport);
 
 	void PrintOutput(std::string string, int output_number);
 	void PrintOutput(std::wstring string, int output_number);

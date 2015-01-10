@@ -8,77 +8,76 @@
 
 std::wstring_convert<std::codecvt_utf8_utf16<wchar_t>> converter;
 
-SerialIO::SerialIO() : connected(false), buffer(NULL), buffer_size(0)
+SerialIO::SerialIO(std::string port_name, int baud_rate, unsigned size_of_buffer) : connected(false), buffer(new char[size_of_buffer]), buffer_size(size_of_buffer), port("\\\\.\\" + port_name), com_handle(CreateFile((converter.from_bytes("\\\\.\\" + port_name)).c_str(), GENERIC_READ | GENERIC_WRITE, 0, NULL, OPEN_EXISTING, FILE_FLAG_OVERLAPPED, NULL))
 {	
-}
-
-void SerialIO::init(std::string port_name, int baud_rate, int size_of_buffer)
-{
-	buffer = new char[size_of_buffer];
-	buffer_size = size_of_buffer;
-	port = "\\\\.\\" + port_name;
-	com_handle = CreateFile((converter.from_bytes("\\\\.\\" + port_name)).c_str(),
-		GENERIC_READ | GENERIC_WRITE, 0, NULL,
-		OPEN_EXISTING, FILE_FLAG_OVERLAPPED, NULL);
-	/*
-	*Check if handle is valid
-	*/
-	if (com_handle == INVALID_HANDLE_VALUE)
-	{
-		//If not success full display an error
-		if (GetLastError() == ERROR_FILE_NOT_FOUND){
-			//Print specific message for invalid port
-			std::ostringstream error_stream;
-			error_stream << "ERROR: Handle was not attached, " << port_name.c_str() << " port not available.";
-			throw std::runtime_error(error_stream.str());
-		}
-		else
+	try {
+		/*
+		*Check if handle is valid
+		*/
+		if (com_handle == INVALID_HANDLE_VALUE)
 		{
-			throw std::runtime_error("ERROR: Reason unknown.");
-		}
-	}
-	else {
-		std::cout << "Connected!" << std::endl;
-		connected = true;
-
-		//If connected we try to set the comm parameters using DCB
-		DCB dcbSerialParams = { 0 };
-		COMMTIMEOUTS timeouts = { 0 };
-
-		//Try to get the current
-		if (!GetCommState(com_handle, &dcbSerialParams))
-		{
-			//If impossible, show an error
-			throw std::runtime_error("ERROR: Failed to get current serial parameters.");
-		}
-		else
-		{
-			//Define serial connection parameters
-			dcbSerialParams.BaudRate = baud_rate;
-			dcbSerialParams.ByteSize = 8;
-			dcbSerialParams.StopBits = ONESTOPBIT;
-			dcbSerialParams.Parity = NOPARITY;
-
-			//Set the parameters and check for their proper application
-			if (!SetCommState(com_handle, &dcbSerialParams))
-			{
-				throw std::runtime_error("ERROR: Could not set port parameters.");
+			//If not success full display an error
+			if (GetLastError() == ERROR_FILE_NOT_FOUND){
+				//Print specific message for invalid port
+				std::ostringstream error_stream;
+				error_stream << "ERROR: Handle was not attached, " << port_name.c_str() << " port not available.";
+				throw std::runtime_error(error_stream.str());
 			}
 			else
 			{
-				// Set COM port timeout settings
-				timeouts.ReadIntervalTimeout = 50;
-				timeouts.ReadTotalTimeoutConstant = 50;
-				timeouts.ReadTotalTimeoutMultiplier = 10;
-				timeouts.WriteTotalTimeoutConstant = 50;
-				timeouts.WriteTotalTimeoutMultiplier = 10;
-				if (!SetCommTimeouts(com_handle, &timeouts))
-				{
-					throw std::runtime_error("ERROR: Cannot set timeouts.");
-				}
-				std::cout << "Port configured!" << std::endl;
+				throw std::runtime_error("ERROR: Reason unknown.");
 			}
 		}
+		else {
+			std::cout << "Connected!" << std::endl;
+			connected = true;
+
+			//If connected we try to set the comm parameters using DCB
+			DCB dcbSerialParams = { 0 };
+			COMMTIMEOUTS timeouts = { 0 };
+
+			//Try to get the current
+			if (!GetCommState(com_handle, &dcbSerialParams))
+			{
+				//If impossible, show an error
+				throw std::runtime_error("ERROR: Failed to get current serial parameters.");
+			}
+			else
+			{
+				//Define serial connection parameters
+				dcbSerialParams.BaudRate = baud_rate;
+				dcbSerialParams.ByteSize = 8;
+				dcbSerialParams.StopBits = ONESTOPBIT;
+				dcbSerialParams.Parity = NOPARITY;
+
+				//Set the parameters and check for their proper application
+				if (!SetCommState(com_handle, &dcbSerialParams))
+				{
+					throw std::runtime_error("ERROR: Could not set port parameters.");
+				}
+				else
+				{
+					// Set COM port timeout settings
+					timeouts.ReadIntervalTimeout = 50;
+					timeouts.ReadTotalTimeoutConstant = 50;
+					timeouts.ReadTotalTimeoutMultiplier = 10;
+					timeouts.WriteTotalTimeoutConstant = 50;
+					timeouts.WriteTotalTimeoutMultiplier = 10;
+					if (!SetCommTimeouts(com_handle, &timeouts))
+					{
+						throw std::runtime_error("ERROR: Cannot set timeouts.");
+					}
+					std::cout << "Port configured!" << std::endl;
+				}
+			}
+		}
+	}
+	catch (std::runtime_error r) {
+		if (buffer) {
+			delete[] buffer;
+			buffer = NULL;
+		}
+		throw r;
 	}
 }
 
@@ -124,6 +123,11 @@ int SerialIO::bytes_to_read()
 
 	ClearCommError(com_handle, &dwErrorFlags, &ComStat);
 	return((int)ComStat.cbInQue);
+}
+
+bool SerialIO::is_connected()
+{
+	return connected;
 }
 
 std::string SerialIO::read()
