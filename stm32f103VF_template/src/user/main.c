@@ -52,7 +52,6 @@ int main(void)
 	
 	buzzer_play_song(START_UP, 120, 0);
 	
-	
 	//buzzer_control(2, 100);
 	
 	
