@@ -41,6 +41,7 @@ int main(void)
 	buzzer_init();
 	can_init();
 	can_rx_init();
+	gyro_init();
 	
 	
 	//can_rx_add_filter(0x0A1, 0x7FF, can_rx_test);
@@ -84,6 +85,7 @@ int main(void)
 				tft_clear();
 				tft_prints(0, 0, "HELLO_WORLD!");
 				tft_prints(0, 1, "%d", hello);
+				tft_prints(0, 2, "Pos: %3d,%3d,%3d", get_X(), get_Y(), get_angle());
 				tft_update();
 //				tft_prints(0, 1, "Seconds: %d", get_seconds());
 //				tft_prints(0, 2, "Ticks: %d", ticks_img);
@@ -102,48 +104,48 @@ int main(void)
 
 }
 
-void USART1_IRQHandler(void)
-{
-	if (USART_GetITStatus(USART1, USART_IT_RXNE) != RESET)
-	{
-		u8 rx_data = (u8)USART_ReceiveData(USART1);
-		uart_tx_byte(COM1, rx_data);
-	}
-}
+//void USART1_IRQHandler(void)
+//{
+//	if (USART_GetITStatus(USART1, USART_IT_RXNE) != RESET)
+//	{
+//		u8 rx_data = (u8)USART_ReceiveData(USART1);
+//		uart_tx_byte(COM1, rx_data);
+//	}
+//}
 
-void USART2_IRQHandler(void)
-{
-	if (USART_GetITStatus(USART2, USART_IT_RXNE) != RESET)
-	{
-		u8 rx_data = (u8)USART_ReceiveData(USART2);
-		uart_tx_byte(COM2, rx_data);
-	}
-}
+//void USART2_IRQHandler(void)
+//{
+//	if (USART_GetITStatus(USART2, USART_IT_RXNE) != RESET)
+//	{
+//		u8 rx_data = (u8)USART_ReceiveData(USART2);
+//		uart_tx_byte(COM2, rx_data);
+//	}
+//}
 
-void USART3_IRQHandler(void)
-{
-	if (USART_GetITStatus(USART3, USART_IT_RXNE) != RESET)
-	{
-		u8 rx_data = (u8)USART_ReceiveData(USART3);
-		uart_tx_byte(COM3, rx_data);
-	}
-}
+//void USART3_IRQHandler(void)
+//{
+//	if (USART_GetITStatus(USART3, USART_IT_RXNE) != RESET)
+//	{
+//		u8 rx_data = (u8)USART_ReceiveData(USART3);
+//		uart_tx_byte(COM3, rx_data);
+//	}
+//}
 
-void UART4_IRQHandler(void)
-{
-	if (USART_GetITStatus(UART4, USART_IT_RXNE) != RESET)
-	{
-		u8 rx_data = (u8)USART_ReceiveData(UART4);
-		uart_tx_byte(COM4, rx_data);
-	}
-}
+//void UART4_IRQHandler(void)
+//{
+//	if (USART_GetITStatus(UART4, USART_IT_RXNE) != RESET)
+//	{
+//		u8 rx_data = (u8)USART_ReceiveData(UART4);
+//		uart_tx_byte(COM4, rx_data);
+//	}
+//}
 
-void UART5_IRQHandler(void)
-{
-	if (USART_GetITStatus(UART5, USART_IT_RXNE) != RESET)
-	{
-		u8 rx_data = (u8)USART_ReceiveData(UART5);
-		uart_tx_byte(COM5, rx_data);
-	}
-}
+//void UART5_IRQHandler(void)
+//{
+//	if (USART_GetITStatus(UART5, USART_IT_RXNE) != RESET)
+//	{
+//		u8 rx_data = (u8)USART_ReceiveData(UART5);
+//		uart_tx_byte(COM5, rx_data);
+//	}
+//}
 
