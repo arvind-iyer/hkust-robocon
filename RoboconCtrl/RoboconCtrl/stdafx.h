@@ -5,6 +5,8 @@
 
 #pragma once
 
+#define WM_SEND_STRING                 (WM_USER+1)
+
 #ifndef VC_EXTRALEAN
 #define VC_EXTRALEAN            // Exclude rarely-used stuff from Windows headers
 #endif

@@ -16,6 +16,7 @@
 #define new DEBUG_NEW
 #endif
 
+
 // CMainFrame
 
 IMPLEMENT_DYNCREATE(CMainFrame, CFrameWndEx)
@@ -30,6 +31,9 @@ BEGIN_MESSAGE_MAP(CMainFrame, CFrameWndEx)
 	ON_UPDATE_COMMAND_UI(ID_FILE_SAVE, &CMainFrame::OnUpdateFileSave)
 	ON_UPDATE_COMMAND_UI(ID_FILE_NEW, &CMainFrame::OnUpdateFileNew)
 	ON_COMMAND(ID_EDIT_COPY, &CMainFrame::OnEditCopy)
+	ON_COMMAND(ID_EDIT_CLEAR, &CMainFrame::OnEditClear)
+	ON_COMMAND(ID_EDIT_PASTE, &CMainFrame::OnEditPaste)
+	ON_COMMAND(ID_EDIT_SELECT_ALL, &CMainFrame::OnEditSelectAll)
 	ON_COMMAND(ID_FILE_OPEN, &CMainFrame::OpenConnection)
 	ON_COMMAND(ID_FILE_UPDATE, &CMainFrame::CloseConnection)
 	ON_REGISTERED_MESSAGE(AFX_WM_CREATETOOLBAR, &CMainFrame::OnToolbarCreateNew)
@@ -334,11 +338,14 @@ void CMainFrame::OnEditCopy()
 
 void CMainFrame::OnEditClear()
 {
-	CWnd* pCVw = GetFocus();
-	if (pCVw != NULL && pCVw != this) {
-		if (!(pCVw->PostMessage(WM_COMMAND, MAKEWPARAM(ID_EDIT_CLEAR, 0), 0))) {
-			OutputDebugString(_T("ERROR: cannot post clear message!"));
-		}
+	if (!m_wndInput.m_wndInputBox.PostMessage(WM_COMMAND, MAKEWPARAM(ID_EDIT_CLEAR, 0), 0)) {
+		OutputDebugString(_T("ERROR: cannot post clear message to input window!"));
+	}
+	if (!m_wndOutput.m_wndOutputBuild.PostMessage(WM_COMMAND, MAKEWPARAM(ID_EDIT_CLEAR, 0), 0)) {
+		OutputDebugString(_T("ERROR: cannot post clear message to output window!"));
+	}
+	if (!m_wndOutput.m_wndOutputRead.PostMessage(WM_COMMAND, MAKEWPARAM(ID_EDIT_CLEAR, 0), 0)) {
+		OutputDebugString(_T("ERROR: cannot post clear message to output window!"));
 	}
 }
 

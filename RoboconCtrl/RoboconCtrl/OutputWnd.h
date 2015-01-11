@@ -36,7 +36,7 @@ public:
 	void UpdateFonts();
 
 // Attributes
-protected:
+public:
 	CMFCTabCtrl	m_wndTabs;
 
 	COutputList m_wndOutputBuild;
