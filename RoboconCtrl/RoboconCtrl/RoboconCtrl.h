@@ -33,15 +33,8 @@ public:
 	BOOL  m_bHiColorIcons;
 
 	virtual void PreLoadState();
-
-	static void __cdecl read_thread(void* ioport);
-
-	void PrintOutput(std::string string, int output_number);
-	void PrintOutput(std::wstring string, int output_number);
-
-	afx_msg void OpenConnection();
-	afx_msg void CloseConnection();
 	afx_msg void OnAppAbout();
+
 	DECLARE_MESSAGE_MAP()
 };
 

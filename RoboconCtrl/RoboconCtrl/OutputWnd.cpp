@@ -4,14 +4,13 @@
 #include "OutputWnd.h"
 #include "Resource.h"
 #include "MainFrm.h"
+#include <string.h>
 
 #ifdef _DEBUG
 #define new DEBUG_NEW
 #undef THIS_FILE
 static char THIS_FILE[] = __FILE__;
 #endif
-
-static int a = 0;
 
 /////////////////////////////////////////////////////////////////////////////
 // COutputBar
@@ -164,12 +163,40 @@ void COutputList::OnContextMenu(CWnd* pWnd, CPoint point)
 
 void COutputList::OnEditCopy()
 {
-	MessageBox(_T("Copy output"));
+	int row = GetCurSel();
+	if (row < 0) {
+		return;
+	}
+	else {
+		CString str;
+		GetText(row, str.GetBuffer(GetTextLen(row)));
+		str.ReleaseBuffer();
+
+		// Clipboard copying code
+		HGLOBAL h;
+		LPTSTR arr;
+
+		size_t bytes = (str.GetLength() + 1)*sizeof(TCHAR);
+		h = GlobalAlloc(GMEM_MOVEABLE, bytes);
+		arr = (LPTSTR)GlobalLock(h);
+		ZeroMemory(arr, bytes);
+		_tcscpy_s(arr, str.GetLength() + 1, str);
+		str.ReleaseBuffer();
+		GlobalUnlock(h);
+
+		::OpenClipboard(NULL);
+		EmptyClipboard();
+		SetClipboardData(CF_UNICODETEXT, h);
+		CloseClipboard();
+		// End clipboard copying code
+
+		return;
+	}
 }
 
 void COutputList::OnEditClear()
 {
-	MessageBox(_T("Clear output"));
+	ResetContent();
 }
 
 void COutputList::OnViewOutput()

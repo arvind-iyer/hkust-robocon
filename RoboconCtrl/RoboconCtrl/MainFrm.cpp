@@ -6,6 +6,11 @@
 #include "RoboconCtrl.h"
 
 #include "MainFrm.h"
+#include <sstream>
+#include <locale>
+#include <codecvt>
+#include <string>
+#include <utility>
 
 #ifdef _DEBUG
 #define new DEBUG_NEW
@@ -22,9 +27,13 @@ const UINT uiLastUserToolBarId = uiFirstUserToolBarId + iMaxUserToolbars - 1;
 BEGIN_MESSAGE_MAP(CMainFrame, CFrameWndEx)
 	ON_WM_CREATE()
 	ON_COMMAND(ID_VIEW_CUSTOMIZE, &CMainFrame::OnViewCustomize)
-	ON_UPDATE_COMMAND_UI(ID_FILE_SAVE, OnUpdateFileSave)
-	ON_UPDATE_COMMAND_UI(ID_FILE_NEW, OnUpdateFileNew)
+	ON_UPDATE_COMMAND_UI(ID_FILE_SAVE, &CMainFrame::OnUpdateFileSave)
+	ON_UPDATE_COMMAND_UI(ID_FILE_NEW, &CMainFrame::OnUpdateFileNew)
+	ON_COMMAND(ID_EDIT_COPY, &CMainFrame::OnEditCopy)
+	ON_COMMAND(ID_FILE_OPEN, &CMainFrame::OpenConnection)
+	ON_COMMAND(ID_FILE_UPDATE, &CMainFrame::CloseConnection)
 	ON_REGISTERED_MESSAGE(AFX_WM_CREATETOOLBAR, &CMainFrame::OnToolbarCreateNew)
+	ON_MESSAGE(WM_SEND_STRING, &CMainFrame::WriteString)
 	ON_WM_SETTINGCHANGE()
 END_MESSAGE_MAP()
 
@@ -43,8 +52,14 @@ CMainFrame::CMainFrame()
 	// TODO: add member initialization code here
 }
 
+SerialIO* CMainFrame::serial = NULL;
+
 CMainFrame::~CMainFrame()
 {
+	if (serial) {
+		delete serial;
+		serial = NULL;
+	}
 }
 
 int CMainFrame::OnCreate(LPCREATESTRUCT lpCreateStruct)
@@ -116,6 +131,8 @@ int CMainFrame::OnCreate(LPCREATESTRUCT lpCreateStruct)
 	DockPane(&m_wndOutput);
 	m_wndProperties.EnableDocking(CBRS_ALIGN_ANY);
 	DockPane(&m_wndProperties);
+	m_wndInput.EnableDocking(CBRS_ALIGN_ANY);
+	DockPane(&m_wndInput);
 
 
 	// set the visual manager used to draw all user interface elements
@@ -185,6 +202,16 @@ BOOL CMainFrame::CreateDockingWindows()
 		return FALSE; // failed to create
 	}
 
+	// Create input window
+	CString strInputWnd;
+	bNameValid = strInputWnd.LoadString(IDS_INPUT_WND);
+	ASSERT(bNameValid);
+	if (!m_wndInput.Create(strInputWnd, this, CRect(0, 0, 100, 100), TRUE, ID_VIEW_INPUTWND, WS_CHILD | WS_VISIBLE | WS_CLIPSIBLINGS | WS_CLIPCHILDREN | CBRS_BOTTOM | CBRS_FLOAT_MULTI))
+	{
+		TRACE0("Failed to create Output window\n");
+		return FALSE; // failed to create
+	}
+
 	SetDockingWindowIcons(theApp.m_bHiColorIcons);
 	return TRUE;
 }
@@ -197,6 +224,8 @@ void CMainFrame::SetDockingWindowIcons(BOOL bHiColorIcons)
 	HICON hPropertiesBarIcon = (HICON) ::LoadImage(::AfxGetResourceHandle(), MAKEINTRESOURCE(bHiColorIcons ? IDI_PROPERTIES_WND_HC : IDI_PROPERTIES_WND), IMAGE_ICON, ::GetSystemMetrics(SM_CXSMICON), ::GetSystemMetrics(SM_CYSMICON), 0);
 	m_wndProperties.SetIcon(hPropertiesBarIcon, FALSE);
 
+	HICON hInputBarIcon = (HICON) ::LoadImage(::AfxGetResourceHandle(), MAKEINTRESOURCE(bHiColorIcons ? IDI_INPUT_WND_HC : IDI_INPUT_WND), IMAGE_ICON, ::GetSystemMetrics(SM_CXSMICON), ::GetSystemMetrics(SM_CYSMICON), 0);
+	m_wndInput.SetIcon(hInputBarIcon, FALSE);
 }
 
 void CMainFrame::OnUpdateFileNew(CCmdUI *pCmdUI)
@@ -240,7 +269,115 @@ void CMainFrame::print_from_serial(std::basic_string<TCHAR> string_to_print)
 	m_wndOutput.ReadFromSerial(string_to_print);
 }
 
+// CMainFrame threads
+
+// Read thread
+
+void __cdecl CMainFrame::read_thread(void* app_ptr){
+
+	while (serial != NULL && serial->is_connected()){
+		if (serial->bytes_to_read()) {
+			std::string read_string = serial->read();
+			std::wstring_convert<std::codecvt_utf8_utf16<wchar_t>> converter;
+			((CMainFrame*)AfxGetMainWnd())->print_from_serial(converter.from_bytes(read_string));
+		}
+		Sleep(10);
+	}
+	_endthread();
+}
+
 // CMainFrame message handlers
+
+void CMainFrame::OpenConnection()
+{
+	std::wstring_convert<std::codecvt_utf8_utf16<wchar_t>> converter;
+
+	if (serial != NULL){
+		CloseConnection();
+	}
+	std::vector<std::basic_string<TCHAR>> settings = m_wndProperties.GetSettings();
+	print_to_output(_T("Opening Port: ") + settings[0] + _T(" | Baud rate: ") + settings[1] + _T(" bit/s | Read buffer size: ") + settings[2] + _T(" bytes"));
+	try {
+		serial = new SerialIO(converter.to_bytes(settings[0]), stoi(settings[1]), stoi(settings[2]));
+
+		if (serial->is_connected()) {
+			print_to_output(_T("SUCCESS!"));
+		}
+		_beginthread(CMainFrame::read_thread, 0, this);
+	}
+	catch (std::runtime_error r) {
+		print_to_output(converter.from_bytes(r.what()));
+	}
+}
+
+void CMainFrame::CloseConnection()
+{
+	if (serial) {
+		print_to_output(_T("Closing Port"));
+		delete serial;
+		serial = NULL;
+	}
+}
+
+void CMainFrame::OnEditCopy()
+{
+	CWnd* pCVw = GetFocus();
+	if (pCVw != NULL && pCVw != this) {
+		if (!(pCVw->PostMessage(WM_COMMAND, MAKEWPARAM(ID_EDIT_COPY, 0), 0))) {
+//			std::basic_ostringstream<TCHAR> oss;
+//			oss << _T("ID of Window: ") << pCVw->GetDlgCtrlID();
+//			OutputDebugString(oss.str().c_str());
+			OutputDebugString(_T("ERROR: cannot post copy message!"));
+		}
+	}
+}
+
+void CMainFrame::OnEditClear()
+{
+	CWnd* pCVw = GetFocus();
+	if (pCVw != NULL && pCVw != this) {
+		if (!(pCVw->PostMessage(WM_COMMAND, MAKEWPARAM(ID_EDIT_CLEAR, 0), 0))) {
+			OutputDebugString(_T("ERROR: cannot post clear message!"));
+		}
+	}
+}
+
+void CMainFrame::OnEditPaste()
+{
+	CWnd* pCVw = GetFocus();
+	if (pCVw != NULL && pCVw != this) {
+		if (!(pCVw->PostMessage(WM_COMMAND, MAKEWPARAM(ID_EDIT_PASTE, 0), 0))) {
+			OutputDebugString(_T("ERROR: cannot post paste message!"));
+		}
+	}
+}
+
+void CMainFrame::OnEditSelectAll()
+{
+	CWnd* pCVw = GetFocus();
+	if (pCVw != NULL && pCVw != this) {
+		if (!(pCVw->PostMessage(WM_COMMAND, MAKEWPARAM(ID_EDIT_SELECT_ALL, 0), 0))) {
+			OutputDebugString(_T("ERROR: cannot post select all message!"));
+		}
+	}
+}
+
+LRESULT CMainFrame::WriteString(WPARAM w, LPARAM l)
+{
+	if (serial == NULL) {
+		OpenConnection();
+	}
+	if (serial != NULL && serial->is_connected()){
+		CString* string = reinterpret_cast<CString*>(l);
+		CT2CA converted_string(*string);
+		serial->write(std::string(converted_string));
+	}
+	else {
+		OutputDebugString(_T("Port cannot be opened, cannot write"));
+		return 1;
+	}
+	return 0;
+}
 
 void CMainFrame::OnViewCustomize()
 {

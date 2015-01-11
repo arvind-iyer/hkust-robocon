@@ -76,6 +76,8 @@ IDR_MAINFRAME           ICON                    "res\\RoboconCtrl.ico"
 IDR_RoboconCtrlTYPE     ICON                    "res\\RoboconCtrlDoc.ico"
 IDI_OUTPUT_WND          ICON                    "res\\output_wnd.ico"
 IDI_OUTPUT_WND_HC       ICON                    "res\\output_wnd_hc.ico"
+IDI_INPUT_WND           ICON                    "res\\output_wnd.ico"
+IDI_INPUT_WND_HC        ICON                    "res\\output_wnd_hc.ico"
 IDI_PROPERTIES_WND      ICON                    "res\\properties_wnd.ico"
 IDI_PROPERTIES_WND_HC   ICON                    "res\\properties_wnd_hc.ico"
 
@@ -157,9 +159,7 @@ IDR_POPUP_EDIT MENU
 BEGIN
     POPUP "Edit"
     BEGIN
-        MENUITEM "Cu&t\tCtrl+X",                ID_EDIT_CUT
         MENUITEM "&Copy\tCtrl+C",               ID_EDIT_COPY
-        MENUITEM "&Paste\tCtrl+V",              ID_EDIT_PASTE
     END
 END
 
@@ -358,6 +358,7 @@ STRINGTABLE
 BEGIN
     IDS_OUTPUT_WND          "Output"
     IDS_PROPERTIES_WND      "Properties"
+	IDS_INPUT_WND           "Input"
 END
 
 STRINGTABLE
