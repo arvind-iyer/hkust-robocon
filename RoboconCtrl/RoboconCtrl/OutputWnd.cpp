@@ -142,6 +142,7 @@ END_MESSAGE_MAP()
 
 void COutputList::OnContextMenu(CWnd* pWnd, CPoint point)
 {
+	/*
 	CMenu menu;
 	menu.LoadMenu(IDR_POPUP_EDIT);
 
@@ -159,6 +160,8 @@ void COutputList::OnContextMenu(CWnd* pWnd, CPoint point)
 	}
 
 	SetFocus();
+	*/
+	((CWinAppEx*)AfxGetApp())->GetContextMenuManager()->ShowPopupMenu(IDR_POPUP_EDIT, point.x, point.y, this, TRUE);
 }
 
 void COutputList::OnEditCopy()
