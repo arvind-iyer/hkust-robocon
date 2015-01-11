@@ -1,1 +1,0 @@
-"user\delay.c" -E -c --cpu Cortex-M3 -D__MICROLIB -O0 --apcs=interwork --split_sections -I.\FWlib\inc -I.\user -I "E:\UST\Robocon2012\KEIL\ARM\CMSIS\Include" -I "E:\UST\Robocon2012\KEIL\ARM\INC\ST\STM32F10x" -DUSE_STDPERIPH_DRIVER -DSTM32F10X_HD -o ".\list\delay.i" --list_dir ".\\list\\" --list

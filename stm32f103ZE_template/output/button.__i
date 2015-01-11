@@ -1,5 +1,0 @@
--c --cpu Cortex-M3 -D__MICROLIB -g -O3 --apcs=interwork -I.\src -I.\src\stm32f10x_std\inc -I.\src\ustrobo_min_system\inc 
--I C:\Keil\ARM\RV31\INC 
--I C:\Keil\ARM\CMSIS\Include 
--I C:\Keil\ARM\Inc\ST\STM32F10x 
--DUSE_STDPERIPH_DRIVER -DSTM32F10X_HD -DUSE_STM3210B_EVAL -o ".\output\button.o" --omf_browse ".\output\button.crf" --depend ".\output\button.d" "src\ustrobo_min_system\src\button.c"
