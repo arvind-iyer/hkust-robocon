@@ -39,6 +39,7 @@
 #define IDS_DEBUG_TAB                   301
 #define IDS_FIND_TAB                    302
 #define IDS_EDIT_MENU                   306
+#define IDS_OUTPUT_MENU                 307
 
 // Next default values for new objects
 // 

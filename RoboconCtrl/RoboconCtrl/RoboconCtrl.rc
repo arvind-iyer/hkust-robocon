@@ -385,6 +385,7 @@ END
 STRINGTABLE
 BEGIN
     IDS_EDIT_MENU           "Edit"
+	IDS_OUTPUT_MENU         "Popup"
 END
 
 #endif    // English (United States) resources

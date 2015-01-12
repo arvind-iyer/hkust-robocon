@@ -283,7 +283,7 @@ void __cdecl CMainFrame::read_thread(void* app_ptr){
 		if (serial->bytes_to_read()) {
 			std::string read_string = serial->read();
 			std::wstring_convert<std::codecvt_utf8_utf16<wchar_t>> converter;
-			((CMainFrame*)AfxGetMainWnd())->print_from_serial(converter.from_bytes(read_string));
+			((CMainFrame*)app_ptr)->print_from_serial(converter.from_bytes(read_string));
 		}
 		Sleep(10);
 	}

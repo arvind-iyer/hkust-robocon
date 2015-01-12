@@ -161,7 +161,7 @@ void COutputList::OnContextMenu(CWnd* pWnd, CPoint point)
 
 	SetFocus();
 	*/
-	((CWinAppEx*)AfxGetApp())->GetContextMenuManager()->ShowPopupMenu(IDR_POPUP_EDIT, point.x, point.y, this, TRUE);
+	((CWinAppEx*)AfxGetApp())->GetContextMenuManager()->ShowPopupMenu(IDR_OUTPUT_POPUP, point.x, point.y, this, TRUE);
 }
 
 void COutputList::OnEditCopy()
