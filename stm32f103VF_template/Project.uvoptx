@@ -357,8 +357,8 @@
       <Focus>0</Focus>
       <tvExpOptDlg>0</tvExpOptDlg>
       <bDave2>0</bDave2>
-      <PathWithFileName>.\src\ustrobo_min_system\src\gyro.c</PathWithFileName>
-      <FilenameWithoutPath>gyro.c</FilenameWithoutPath>
+      <PathWithFileName>.\src\ustrobo_min_system\src\lcd_red.c</PathWithFileName>
+      <FilenameWithoutPath>lcd_red.c</FilenameWithoutPath>
       <RteFlg>0</RteFlg>
       <bShared>0</bShared>
     </File>
@@ -370,8 +370,8 @@
       <Focus>0</Focus>
       <tvExpOptDlg>0</tvExpOptDlg>
       <bDave2>0</bDave2>
-      <PathWithFileName>.\src\ustrobo_min_system\src\lcd_red.c</PathWithFileName>
-      <FilenameWithoutPath>lcd_red.c</FilenameWithoutPath>
+      <PathWithFileName>.\src\ustrobo_min_system\src\gyro.c</PathWithFileName>
+      <FilenameWithoutPath>gyro.c</FilenameWithoutPath>
       <RteFlg>0</RteFlg>
       <bShared>0</bShared>
     </File>

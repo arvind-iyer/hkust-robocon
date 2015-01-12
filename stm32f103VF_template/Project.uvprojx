@@ -555,14 +555,14 @@
               <FilePath>.\src\ustrobo_min_system\src\delay.c</FilePath>
             </File>
             <File>
-              <FileName>gyro.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>.\src\ustrobo_min_system\src\gyro.c</FilePath>
-            </File>
-            <File>
               <FileName>lcd_red.c</FileName>
               <FileType>1</FileType>
               <FilePath>.\src\ustrobo_min_system\src\lcd_red.c</FilePath>
+            </File>
+            <File>
+              <FileName>gyro.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\src\ustrobo_min_system\src\gyro.c</FilePath>
             </File>
             <File>
               <FileName>motor_pwm.c</FileName>

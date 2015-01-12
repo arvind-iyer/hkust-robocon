@@ -3,7 +3,7 @@
 int main(void)
 {
 	adc_init();
-	tft_init(2,WHITE,BLACK,RED);
+	tft_init(1,YELLOW,RED,GREEN);
 	tft_enable();
 	
 	uart_init(COM1, 115200);
@@ -14,7 +14,8 @@ int main(void)
 		if(get_ticks() % 50 == 0)
 		{
 			tft_clear();
-			tft_prints(0,4,"VOLTAGE: %d.%d",(u16)get_voltage()/100,get_voltage()%100);
+			tft_prints(0,0,"Seconds: %d", get_seconds());
+			tft_prints(0,1,"Ticks: %d", get_ticks());
 			tft_update();
 			//printf("%d   ",get_voltage());
 		}
