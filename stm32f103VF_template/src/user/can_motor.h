@@ -1,23 +1,35 @@
 #include "can.h"
 #include "can_protocol.h"
 
+#define CAN_MOTOR_COUNT										16
+#define	CAN_MOTOR_BASE										0x0B0
+
+/*** TX ***/
+#define	CAN_MOTOR_VEL_LENGTH							6
+#define CAN_MOTOR_VEL_CMD									0xAA
+
+/*** RX ***/
+#define CAN_ENCODER_FEEDBACK_LENGTH				5
+#define CAN_ENCODER_FEEDBACK							0x22
+
+
 typedef enum {
-	MOTOR1 = 0x0B0,
-	MOTOR2 = 0x0B1,
-	MOTOR3 = 0x0B2,
-	MOTOR4 = 0x0B3,
-	MOTOR5 = 0x0B4,
-	MOTOR6 = 0x0B5,
-	MOTOR7 = 0x0B6,
-	MOTOR8 = 0x0B7,
-	MOTOR9 = 0x0B8,
-	MOTOR10 = 0x0B9,
-	MOTOR11 = 0x0BA,
-	MOTOR12 = 0x0BB,
-	MOTOR13 = 0x0BC,
-	MOTOR14 = 0x0BD,
-	MOTOR15 = 0x0BE,
-	MOTOR16 = 0x0BF
+	MOTOR1 = 0,
+	MOTOR2,
+	MOTOR3,
+	MOTOR4,
+	MOTOR5,
+	MOTOR6,
+	MOTOR7,
+	MOTOR8,
+	MOTOR9,
+	MOTOR10,
+	MOTOR11,
+	MOTOR12,
+	MOTOR13,
+	MOTOR14,
+	MOTOR15,
+	MOTOR16
 } MOTOR_ID;
 
 

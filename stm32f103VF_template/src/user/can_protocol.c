@@ -232,4 +232,27 @@ CAN_Rx_IRQHandler
 	}
 }
 
+/*** Protocol Encoding / Decoding function ***/
+/**
+	* @brief Convert one n-byte variable to n one-byte variable (ENCODE)
+	* @param n: the nth byte 
+	* @param num: the nth byte number (can be unsigned)
+	* @retval The nth byte variable
+	*/
+u8 one_to_n_bytes(s32 num, u8 n)
+{
+	assert_param(n >= 0 && n <= 3);
+	return (n == 0) ? (num & 0xFF) : (one_to_n_bytes(num >> 8, n-1));
+}
+
+/**
+	* @brief Convert n one-byte variable to an array of n bytes (DECODE)
+	* @param n: the number of bytes
+	* @param array: the array of n bytes
+	*/
+s32 n_bytes_to_one(u8* array, u8 n)
+{
+	assert_param(n >= 1 && n <= 4);
+	return (n == 0) ? (array[0] & 0xFF) : ((array[0] & 0xFF) + (n_bytes_to_one(&array[1], n-1) << 8));
+}
 

@@ -41,12 +41,16 @@ u16 can_tx_queue_tail(void);
 u16 can_tx_queue_size(void);
 u8 can_tx_queue_empty(void);
 u8 can_empty_mailbox(void);
-u8 can_tx_enqueue(CAN_MESSAGE msg);
+u8 can_tx_enqueue(CAN_MESSAGE msg);		// <--- The main function for can_tx
 u8 can_tx_dequeue(void);
 void can_tx_queue_clear(void);
 
 /*** CAN Rx ***/
 void can_rx_init(void);
 void can_rx_add_filter(u16 id, u16 mask, void (*handler)(CanRxMsg msg));
+
+/*** Protocol Encoding / Decoding ***/
+u8 one_to_n_bytes(s32 num, u8 n);			// Encode
+s32 n_bytes_to_one(u8* array, u8 n);	// Decode
 
 #endif /* __CAN_PROTOCOL_H */
