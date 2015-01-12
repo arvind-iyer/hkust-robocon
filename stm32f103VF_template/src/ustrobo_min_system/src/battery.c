@@ -1,6 +1,8 @@
 #include "battery.h"
 
-u16 battery_sample_value;
+#define VOLTAGE_RATIO (u16)(100* (float)(ADC_OUTPUT_2 - ADC_OUTPUT_1)/(BATTERY_VOLTAGE_2 - BATTERY_VOLTAGE_1)) 
+
+u16 adc_value;
 
 /**
   * @brief  Inintialization of DMA for voltage calculation
@@ -10,11 +12,11 @@ u16 battery_sample_value;
 void battery_dma_init(void)
 {
     DMA_InitTypeDef DMA_InitStructure;    
-	RCC_AHBPeriphClockCmd(RCC_AHBPeriph_DMA1, ENABLE); 
-	battery_sample_value=0;					 
+		RCC_AHBPeriphClockCmd(RCC_AHBPeriph_DMA1, ENABLE); 
+		adc_value=0;					 
     DMA_DeInit(DMA1_Channel1);
     DMA_InitStructure.DMA_PeripheralBaseAddr = (u32)0x4001244C;			// address of ADC1 data register	
-    DMA_InitStructure.DMA_MemoryBaseAddr = (u32)&battery_sample_value; //result would be assigned to battery_sample_value
+    DMA_InitStructure.DMA_MemoryBaseAddr = (u32)&adc_value; //result would be assigned to battery_sample_value
     DMA_InitStructure.DMA_DIR = DMA_DIR_PeripheralSRC;
     DMA_InitStructure.DMA_BufferSize = 1;
     DMA_InitStructure.DMA_PeripheralInc = DMA_PeripheralInc_Disable;
@@ -48,7 +50,7 @@ void battery_adc_gpio_init(void)
   * @param  None
   * @retval None
   */
-void battery_adc_init(void)
+void adc_init(void)
 {
 	ADC_InitTypeDef ADC_InitStructure;					 
 	RCC_APB2PeriphClockCmd(RCC_APB2Periph_ADC1, ENABLE);
@@ -75,9 +77,13 @@ void battery_adc_init(void)
 /**
   * @brief  Calculating the voltage of power supply
   * @param  None
-  * @retval voltage scaled by 10
+  * @retval voltage scaled by 100
   */
-u8 sample_battery(void)
+u16 get_voltage(void)
 { 
-	return (u8)((4730*battery_sample_value/4096 + 9)/10); 			  //(value+5)/10*10 is to round the number
+	//To calculate voltage based on supplied data
+	
+	//Using equation for voltage V = ((adc_value+ADC_OFFSET)/VOLTAGE_RATIO)
+	u16 ADC_OFFSET = BATTERY_VOLTAGE_1 * VOLTAGE_RATIO / 100 - ADC_OUTPUT_1;
+	return (u16)(100 * (adc_value + ADC_OFFSET) / VOLTAGE_RATIO);  
 }
