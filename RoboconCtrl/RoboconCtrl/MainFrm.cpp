@@ -298,6 +298,19 @@ void __cdecl CMainFrame::read_thread(void* app_ptr){
 	_endthread();
 }
 
+// Write thread
+
+void __cdecl CMainFrame::write_thread(void* app_ptr){
+	while (serial != NULL && serial->is_connected()){
+		if (!((CMainFrame*)app_ptr)->keys_pressed.empty()){
+			((CMainFrame*)app_ptr)->SendMessage(WM_SEND_STRING, 0, (LPARAM)&CString(((CMainFrame*)app_ptr)->keys_pressed.c_str()));
+			Sleep(10);
+		}
+	}
+	((CMainFrame*)app_ptr)->print_to_output(_T("Closing Port"));
+	_endthread();
+}
+
 // CMainFrame message handlers
 
 BOOL CMainFrame::PreTranslateMessage(MSG* msg)
@@ -305,15 +318,15 @@ BOOL CMainFrame::PreTranslateMessage(MSG* msg)
 	std::vector<std::basic_string<TCHAR>> settings = m_wndProperties.GetSettings();
 	if (stoi(settings[3]) == 2){
 		if (msg && msg->message == WM_KEYDOWN && GetFocus() != NULL && GetFocus()->GetDlgCtrlID() != 2 && GetFocus()->GetDlgCtrlID() != 3){
+			if (serial == NULL) {
+				OpenConnection();
+			}
 			BYTE kb[256];
 			GetKeyboardState(kb);
 			TCHAR buffer[2] = {};
 			if (ToUnicode(msg->wParam, MapVirtualKey(msg->wParam, MAPVK_VK_TO_VSC), kb, buffer, 1, 0)){
-				// OutputDebugString(_T("RETARDED"));
-				//OutputDebugString(buffer);
 				keys_pressed = keys_pressed + buffer[0];
 				keys_pressed.erase(std::unique(keys_pressed.begin(), keys_pressed.end()), keys_pressed.end());
-				// SendMessage(WM_SEND_STRING, 0, (LPARAM)&CString(keys_pressed.c_str()));
 			}
 		}
 		else if (msg && msg->message == WM_KEYUP && GetFocus() != NULL && GetFocus()->GetDlgCtrlID() != 2 && GetFocus()->GetDlgCtrlID() != 3) {
@@ -324,9 +337,6 @@ BOOL CMainFrame::PreTranslateMessage(MSG* msg)
 				keys_pressed.erase(std::remove(keys_pressed.begin(), keys_pressed.end(), buffer[0]), keys_pressed.end());
 				// OutputDebugString(_T("Key Erased: ") + buffer[0]);
 			}
-		}
-		if (!keys_pressed.empty()) {
-			SendMessage(WM_SEND_STRING, 0, (LPARAM)&CString(keys_pressed.c_str()));
 		}
 	}
 	else {
@@ -351,6 +361,7 @@ void CMainFrame::OpenConnection()
 			print_to_output(_T("SUCCESS!"));
 		}
 		_beginthread(CMainFrame::read_thread, 0, this);
+		_beginthread(CMainFrame::write_thread, 0, this);
 	}
 	catch (std::runtime_error r) {
 		print_to_output(converter.from_bytes(r.what()));
