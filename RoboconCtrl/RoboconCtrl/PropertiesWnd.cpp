@@ -38,6 +38,7 @@ BEGIN_MESSAGE_MAP(CPropertiesWnd, CDockablePane)
 	ON_UPDATE_COMMAND_UI(ID_PROPERTIES1, OnUpdateProperties1)
 	ON_COMMAND(ID_PROPERTIES2, OnProperties2)
 	ON_UPDATE_COMMAND_UI(ID_PROPERTIES2, OnUpdateProperties2)
+	ON_WM_CONTEXTMENU()
 	ON_WM_SETFOCUS()
 	ON_WM_SETTINGCHANGE()
 END_MESSAGE_MAP()
@@ -157,6 +158,11 @@ void CPropertiesWnd::OnProperties2()
 void CPropertiesWnd::OnUpdateProperties2(CCmdUI* /*pCmdUI*/)
 {
 	// TODO: Add your command update UI handler code here
+}
+
+void CPropertiesWnd::OnContextMenu(CWnd* pWnd, CPoint point)
+{
+
 }
 
 template <typename OStreamable>

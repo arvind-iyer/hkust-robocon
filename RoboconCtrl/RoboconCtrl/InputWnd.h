@@ -9,7 +9,6 @@ public:
 	// Implementation
 public:
 	virtual ~CInputBox();
-	BOOL PreTranslateMessage(MSG* pMsg);
 
 protected:
 	afx_msg void OnContextMenu(CWnd* pWnd, CPoint point);
@@ -19,6 +18,7 @@ protected:
 	afx_msg void OnViewOutput();
 	afx_msg void OnEditClear();
 	afx_msg void OnChar(UINT nChar, UINT nRepCnt, UINT nFlags);
+	afx_msg BOOL PreTranslateMessage(MSG* pMsg);
 
 	DECLARE_MESSAGE_MAP()
 };

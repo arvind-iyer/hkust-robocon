@@ -307,7 +307,6 @@ void __cdecl CMainFrame::write_thread(void* app_ptr){
 			Sleep(10);
 		}
 	}
-	((CMainFrame*)app_ptr)->print_to_output(_T("Closing Port"));
 	_endthread();
 }
 
