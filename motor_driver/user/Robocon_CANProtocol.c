@@ -327,7 +327,7 @@ void Motor_Cmd_Decoding(CanRxMsg RxMessage)
 	{
 		case MOTOR_VEL_CMD:
 			#warning
-			uart_tx(COM1, "CAN_OK!\r\n");
+			//uart_tx(COM1, "CAN_OK!\r\n");
 			for(i = 0; i < 4; i++)
 				tmp1[i] = RxMessage.Data[i+1];
 			recombined_vel = Four_Bytes_Reconstruction(tmp1);
