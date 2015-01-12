@@ -67,7 +67,7 @@ protected:
 
 // Thread functions
 protected:
-	static void __cdecl read_thread(void* ioport);
+	static void __cdecl read_thread(void* app_ptr);
 
 	DECLARE_MESSAGE_MAP()
 

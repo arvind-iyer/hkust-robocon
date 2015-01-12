@@ -8,7 +8,7 @@
 
 std::wstring_convert<std::codecvt_utf8_utf16<wchar_t>> converter;
 
-SerialIO::SerialIO(std::string port_name, int baud_rate, unsigned size_of_buffer) : connected(false), buffer(new char[size_of_buffer]), buffer_size(size_of_buffer), port("\\\\.\\" + port_name), com_handle(CreateFile((converter.from_bytes("\\\\.\\" + port_name)).c_str(), GENERIC_READ | GENERIC_WRITE, 0, NULL, OPEN_EXISTING, FILE_FLAG_OVERLAPPED, NULL))
+SerialIO::SerialIO(std::basic_string<TCHAR> port_name, int baud_rate, unsigned size_of_buffer) : connected(false), buffer(new char[size_of_buffer]), buffer_size(size_of_buffer), port(_T("\\\\.\\") + port_name), com_handle(CreateFile((_T("\\\\.\\") + port_name).c_str(), GENERIC_READ | GENERIC_WRITE, 0, NULL, OPEN_EXISTING, FILE_FLAG_OVERLAPPED, NULL))
 {	
 	try {
 		/*
@@ -20,7 +20,7 @@ SerialIO::SerialIO(std::string port_name, int baud_rate, unsigned size_of_buffer
 			if (GetLastError() == ERROR_FILE_NOT_FOUND){
 				//Print specific message for invalid port
 				std::ostringstream error_stream;
-				error_stream << "ERROR: Handle was not attached, " << port_name.c_str() << " port not available.";
+				error_stream << "ERROR: Handle was not attached, " << converter.to_bytes(port_name).c_str() << " port not available.";
 				throw std::runtime_error(error_stream.str());
 			}
 			else
@@ -81,11 +81,13 @@ SerialIO::SerialIO(std::string port_name, int baud_rate, unsigned size_of_buffer
 	}
 }
 
-bool SerialIO::write(std::string msg)
+bool SerialIO::write(std::basic_string<TCHAR> msg_string)
 {
 	OVERLAPPED osWrite = { 0 };
 	DWORD dwWritten;
 	bool fRes;
+	
+	std::string msg(converter.to_bytes(msg_string));
 
 	// Create this writes OVERLAPPED structure hEvent.
 	osWrite.hEvent = CreateEvent(NULL, TRUE, FALSE, NULL);
@@ -146,6 +148,9 @@ std::string SerialIO::read()
 	dwBytesRead = (DWORD)ComStat.cbInQue;
 	if (buffer_size < dwBytesRead) {
 		dwBytesRead = buffer_size;
+		std::basic_ostringstream<TCHAR> oss;
+		oss << dwBytesRead;
+		OutputDebugString(oss.str().c_str());
 	}
 
 	osRead.hEvent = CreateEvent(NULL, TRUE, FALSE, NULL);
@@ -162,7 +167,10 @@ std::string SerialIO::read()
 		return std::string();
 	}
 	CloseHandle(osRead.hEvent);
-	return std::string(buffer);
+	if (buffer[500] != '\0') {
+		OutputDebugString(_T("Oh"));
+	}
+	return std::string(buffer, dwBytesRead);
 }
 
 SerialIO::~SerialIO()

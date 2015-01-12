@@ -285,15 +285,14 @@ void CMainFrame::print_from_serial(std::basic_string<TCHAR> string_to_print, int
 // Read thread
 
 void __cdecl CMainFrame::read_thread(void* app_ptr){
-
 	while (serial != NULL && serial->is_connected()){
 		if (serial->bytes_to_read()) {
-			std::string read_string = serial->read();
+			std::string string = serial->read();
 			std::wstring_convert<std::codecvt_utf8_utf16<wchar_t>> converter;
-			((CMainFrame*)app_ptr)->print_from_serial(converter.from_bytes(read_string));
+			((CMainFrame*)app_ptr)->print_from_serial(converter.from_bytes(string));
 		}
-		Sleep(10);
 	}
+	((CMainFrame*)app_ptr)->print_to_output(_T("Closing Port"));
 	_endthread();
 }
 
@@ -307,9 +306,9 @@ void CMainFrame::OpenConnection()
 		CloseConnection();
 	}
 	std::vector<std::basic_string<TCHAR>> settings = m_wndProperties.GetSettings();
-	print_to_output(_T("Opening Port: ") + settings[0] + _T(" | Baud rate: ") + settings[1] + _T(" bit/s | Read buffer size: ") + settings[2] + _T(" bytes"));
+	print_to_output(_T("Opening Port: ") + settings[0] + _T(" | Baud rate: ") + settings[1] + _T(" bit/s | Read buffer size: ") + settings[2] + _T(" bytes | Read mode: ") + settings[3]);
 	try {
-		serial = new SerialIO(converter.to_bytes(settings[0]), stoi(settings[1]), stoi(settings[2]));
+		serial = new SerialIO(settings[0], stoi(settings[1]), stoi(settings[2]));
 
 		if (serial->is_connected()) {
 			print_to_output(_T("SUCCESS!"));
@@ -324,7 +323,6 @@ void CMainFrame::OpenConnection()
 void CMainFrame::CloseConnection()
 {
 	if (serial) {
-		print_to_output(_T("Closing Port"));
 		delete serial;
 		serial = NULL;
 	}
@@ -335,9 +333,6 @@ void CMainFrame::OnEditCopy()
 	CWnd* pCVw = GetFocus();
 	if (pCVw != NULL && pCVw != this) {
 		if (!(pCVw->PostMessage(WM_COMMAND, MAKEWPARAM(ID_EDIT_COPY, 0), 0))) {
-//			std::basic_ostringstream<TCHAR> oss;
-//			oss << _T("ID of Window: ") << pCVw->GetDlgCtrlID();
-//			OutputDebugString(oss.str().c_str());
 			OutputDebugString(_T("ERROR: cannot post copy message!"));
 		}
 	}
@@ -383,7 +378,7 @@ LRESULT CMainFrame::WriteString(WPARAM w, LPARAM l)
 	}
 	if (serial != NULL && serial->is_connected()){
 		CString* string = reinterpret_cast<CString*>(l);
-		serial->write(std::string(CT2CA(*string)));
+		serial->write(std::basic_string<TCHAR>(*string));
 		print_from_serial(std::basic_string<TCHAR>(*string), 1);
 	}
 	else {

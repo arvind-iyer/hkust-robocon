@@ -9,12 +9,12 @@ class SerialIO
 private:
 	HANDLE com_handle;
 	bool connected;
-	std::string port;
+	std::basic_string<TCHAR> port;
 	char* buffer;
 	unsigned buffer_size;
 public:
-	SerialIO(std::string port_name, int baud_rate = 115200, unsigned size_of_buffer = 500);
-	bool write(std::string msg);
+	SerialIO(std::basic_string<TCHAR> port_name, int baud_rate = 115200, unsigned size_of_buffer = 500);
+	bool write(std::basic_string<TCHAR> msg);
 	int bytes_to_read();
 	bool is_connected();
 	std::string read();
