@@ -11,6 +11,7 @@
 #include <codecvt>
 #include <string>
 #include <utility>
+#include <algorithm>
 
 #ifdef _DEBUG
 #define new DEBUG_NEW
@@ -38,6 +39,7 @@ BEGIN_MESSAGE_MAP(CMainFrame, CFrameWndEx)
 	ON_COMMAND(ID_FILE_UPDATE, &CMainFrame::CloseConnection)
 	ON_REGISTERED_MESSAGE(AFX_WM_CREATETOOLBAR, &CMainFrame::OnToolbarCreateNew)
 	ON_MESSAGE(WM_SEND_STRING, &CMainFrame::WriteString)
+	ON_WM_KEYDOWN()
 	ON_WM_SETTINGCHANGE()
 END_MESSAGE_MAP()
 
@@ -51,7 +53,7 @@ static UINT indicators[] =
 
 // CMainFrame construction/destruction
 
-CMainFrame::CMainFrame()
+CMainFrame::CMainFrame() : keys_pressed()
 {
 	// TODO: add member initialization code here
 }
@@ -298,6 +300,41 @@ void __cdecl CMainFrame::read_thread(void* app_ptr){
 
 // CMainFrame message handlers
 
+BOOL CMainFrame::PreTranslateMessage(MSG* msg)
+{
+	std::vector<std::basic_string<TCHAR>> settings = m_wndProperties.GetSettings();
+	if (stoi(settings[3]) == 2){
+		if (msg && msg->message == WM_KEYDOWN && GetFocus() != NULL && GetFocus()->GetDlgCtrlID() != 2 && GetFocus()->GetDlgCtrlID() != 3){
+			BYTE kb[256];
+			GetKeyboardState(kb);
+			TCHAR buffer[2] = {};
+			if (ToUnicode(msg->wParam, MapVirtualKey(msg->wParam, MAPVK_VK_TO_VSC), kb, buffer, 1, 0)){
+				// OutputDebugString(_T("RETARDED"));
+				//OutputDebugString(buffer);
+				keys_pressed = keys_pressed + buffer[0];
+				keys_pressed.erase(std::unique(keys_pressed.begin(), keys_pressed.end()), keys_pressed.end());
+				// SendMessage(WM_SEND_STRING, 0, (LPARAM)&CString(keys_pressed.c_str()));
+			}
+		}
+		else if (msg && msg->message == WM_KEYUP && GetFocus() != NULL && GetFocus()->GetDlgCtrlID() != 2 && GetFocus()->GetDlgCtrlID() != 3) {
+			BYTE kb[256];
+			GetKeyboardState(kb);
+			TCHAR buffer[2] = {};
+			if (ToUnicode(msg->wParam, MapVirtualKey(msg->wParam, MAPVK_VK_TO_VSC), kb, buffer, 1, 0)){
+				keys_pressed.erase(std::remove(keys_pressed.begin(), keys_pressed.end(), buffer[0]), keys_pressed.end());
+				// OutputDebugString(_T("Key Erased: ") + buffer[0]);
+			}
+		}
+		if (!keys_pressed.empty()) {
+			SendMessage(WM_SEND_STRING, 0, (LPARAM)&CString(keys_pressed.c_str()));
+		}
+	}
+	else {
+		keys_pressed.clear();
+	}
+	return FALSE;
+}
+
 void CMainFrame::OpenConnection()
 {
 	std::wstring_convert<std::codecvt_utf8_utf16<wchar_t>> converter;
@@ -306,7 +343,7 @@ void CMainFrame::OpenConnection()
 		CloseConnection();
 	}
 	std::vector<std::basic_string<TCHAR>> settings = m_wndProperties.GetSettings();
-	print_to_output(_T("Opening Port: ") + settings[0] + _T(" | Baud rate: ") + settings[1] + _T(" bit/s | Read buffer size: ") + settings[2] + _T(" bytes | Read mode: ") + settings[3]);
+	print_to_output(_T("Opening Port: ") + settings[0] + _T(" | Baud rate: ") + settings[1] + _T(" bit/s | Read buffer size: ") + settings[2] + _T(" bytes"));
 	try {
 		serial = new SerialIO(settings[0], stoi(settings[1]), stoi(settings[2]));
 

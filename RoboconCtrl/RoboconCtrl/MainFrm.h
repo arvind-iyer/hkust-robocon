@@ -46,8 +46,11 @@ protected:  // control bar embedded members
 	CPropertiesWnd    m_wndProperties;
 	CInputWnd         m_wndInput;
 
-protected: // serial port member
+protected: 
+// serial port member
 	static SerialIO* serial;
+// buffer that stores keys pressed
+	std::basic_string<TCHAR> keys_pressed;
 
 // Generated message map functions
 protected:
@@ -64,6 +67,7 @@ protected:
 	afx_msg void OnSettingChange(UINT uFlags, LPCTSTR lpszSection);
 	afx_msg void OnUpdateFileNew(CCmdUI *pCmdUI);
 	afx_msg void OnUpdateFileSave(CCmdUI *pCmdUI);
+	afx_msg BOOL PreTranslateMessage(MSG* msg);
 
 // Thread functions
 protected:

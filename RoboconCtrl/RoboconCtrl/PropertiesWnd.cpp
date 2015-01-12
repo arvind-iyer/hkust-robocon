@@ -223,7 +223,7 @@ void CPropertiesWnd::InitPropList()
 	pProp = new CMFCPropertyGridProperty(_T("Buffer Size"), (_variant_t)to_string(500).c_str(), _T("Specifies the size of the read buffer."));
 	pGroup2->AddSubItem(pProp);
 
-	pProp = new CMFCPropertyGridProperty(_T("Write Mode"), (_variant_t)to_string(0).c_str(), _T("0 - Enter to send\n1 - Realtime sending"));
+	pProp = new CMFCPropertyGridProperty(_T("Write Mode"), (_variant_t)to_string(0).c_str(), _T("0 - Enter to send\n1 - Realtime sending\n2 - Realtime sending everywhere"));
 	pGroup2->AddSubItem(pProp);
 	m_wndPropList.AddProperty(pGroup2);
 }
