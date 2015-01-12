@@ -35,7 +35,7 @@ public:
 #endif
 	std::vector<std::basic_string<TCHAR>> GetSettings();
 	void print_to_output(std::basic_string<TCHAR> string_to_print);
-	void print_from_serial(std::basic_string<TCHAR> string_to_print);
+	void print_from_serial(std::basic_string<TCHAR> string_to_print, int ioconfig = 0); // 0 is for read, 1 is for write
 
 protected:  // control bar embedded members
 	CMFCMenuBar       m_wndMenuBar;

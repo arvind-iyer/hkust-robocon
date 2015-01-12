@@ -268,9 +268,16 @@ void CMainFrame::print_to_output(std::basic_string<TCHAR> string_to_print)
 {
 	m_wndOutput.PrintString(string_to_print);
 }
-void CMainFrame::print_from_serial(std::basic_string<TCHAR> string_to_print)
+void CMainFrame::print_from_serial(std::basic_string<TCHAR> string_to_print, int ioconfig)
 {
-	m_wndOutput.ReadFromSerial(string_to_print);
+	switch (ioconfig) {
+	case 1:
+		m_wndOutput.ReadFromSerial(_T("Write: ") + string_to_print); break;
+	case 0:
+	default:
+		m_wndOutput.ReadFromSerial(_T("Read: ") + string_to_print); break;
+	}
+	
 }
 
 // CMainFrame threads
@@ -376,8 +383,8 @@ LRESULT CMainFrame::WriteString(WPARAM w, LPARAM l)
 	}
 	if (serial != NULL && serial->is_connected()){
 		CString* string = reinterpret_cast<CString*>(l);
-		CT2CA converted_string(*string);
-		serial->write(std::string(converted_string));
+		serial->write(std::string(CT2CA(*string)));
+		print_from_serial(std::basic_string<TCHAR>(*string), 1);
 	}
 	else {
 		OutputDebugString(_T("Port cannot be opened, cannot write"));

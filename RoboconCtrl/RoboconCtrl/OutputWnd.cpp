@@ -109,7 +109,7 @@ void COutputWnd::ReadFromSerial(std::basic_string<TCHAR> string_read_from_serial
 {
 	m_wndOutputRead.SetTopIndex(m_wndOutputRead.AddString(string_read_from_serial.c_str()));
 	AdjustHorzScroll(m_wndOutputRead);
-	m_wndOutputBuild.SetTopIndex(m_wndOutputBuild.AddString((L"Msg received: " + string_read_from_serial).c_str()));
+	m_wndOutputBuild.SetTopIndex(m_wndOutputBuild.AddString(string_read_from_serial.c_str()));
 	AdjustHorzScroll(m_wndOutputBuild);
 }
 
