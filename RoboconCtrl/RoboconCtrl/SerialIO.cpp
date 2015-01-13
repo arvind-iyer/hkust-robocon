@@ -117,15 +117,37 @@ bool SerialIO::_internal_write(std::string string_to_write)
 	return fRes;
 }
 
-bool fletcher16(char* buffer, const char* message, int msg_length) {
-	unsigned int sum1 = 0, sum2 = 0,check_byte1;
-	for (int i = 0; i < msg_length; i++) {
-		sum1 = (sum1 + (unsigned char)message[i]) % 255;
+bool fletcher16(char* buffer, const char* message, size_t msg_length) {
+	/*
+	unsigned int sum1 = 0, sum2 = 0;
+	for (int i = 0; i < msg_length; ++i) {
+		sum1 = (sum1 + (unsigned int)(message[i])) % 255;
 		sum2 = (sum2 + sum1) % 255;
 	}
-	check_byte1 = 255 - ((sum1 + sum2) % 255);
-	buffer[0] = (unsigned char)(check_byte1);
-	buffer[1] = (unsigned char)(255 - ((sum1 + check_byte1) % 255));
+	buffer[0] = (unsigned char)(sum1);
+	buffer[1] = (unsigned char)(sum2);
+	*/
+	
+	UINT16 sum1 = 0xff, sum2 = 0xff;
+
+	while (msg_length) {
+		size_t tlen = msg_length > 20 ? 20 : msg_length;
+		msg_length -= tlen;
+		do {
+			sum2 += sum1 += *(BYTE*)(message++);
+		} while (--tlen);
+		sum1 = (sum1 & 0xff) + (sum1 >> 8);
+		sum2 = (sum2 & 0xff) + (sum2 >> 8);
+	}
+	
+	/* Second reduction step to reduce sums to 8 bits */
+	
+	sum1 = (sum1 & 0xff) + (sum1 >> 8);
+	sum2 = (sum2 & 0xff) + (sum2 >> 8);
+
+	buffer[0] = (unsigned char)sum1;
+	buffer[1] = (unsigned char)sum2;
+	
 	return true;
 }
 
@@ -135,6 +157,7 @@ bool SerialIO::write_string_with_padbytes(std::string msg)
 		for (unsigned int i = 0; i < msg.length(); i += UCHAR_MAX) {
 			write_string_with_padbytes(msg.substr(i, UCHAR_MAX));
 		}
+		return true;
 	}
 	else {
 		// byte padding
