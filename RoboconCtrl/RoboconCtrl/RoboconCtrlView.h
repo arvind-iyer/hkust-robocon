@@ -15,13 +15,21 @@ protected: // create from serialization only
 public:
 	CRoboconCtrlDoc* GetDocument() const;
 
-// Operations
+// OpenGL operations
+protected:
+	void GLDrawScene();
+	int gl_width;
+	int gl_height;
+// Device and Rendering context storing
 public:
-
+	HGLRC m_hRC; // Rendering context
+	HDC m_hDC; // Device context
 // Overrides
 public:
 	virtual void OnDraw(CDC* pDC);  // overridden to draw this view
 	virtual BOOL PreCreateWindow(CREATESTRUCT& cs);
+	virtual int OnCreate(LPCREATESTRUCT lpCreateStruct);
+	virtual void OnDestroy();
 protected:
 
 // Implementation
@@ -39,6 +47,8 @@ protected:
 	afx_msg void OnFilePrintPreview();
 	afx_msg void OnRButtonUp(UINT nFlags, CPoint point);
 	afx_msg void OnContextMenu(CWnd* pWnd, CPoint point);
+	afx_msg void OnSize(UINT nType, int cx, int cy);
+	afx_msg BOOL OnEraseBkgnd(CDC* pDC);
 	DECLARE_MESSAGE_MAP()
 };
 

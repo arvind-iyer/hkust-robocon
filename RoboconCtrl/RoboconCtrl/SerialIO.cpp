@@ -81,13 +81,11 @@ SerialIO::SerialIO(std::basic_string<TCHAR> port_name, int baud_rate, unsigned s
 	}
 }
 
-bool SerialIO::write(std::basic_string<TCHAR> msg_string)
+bool SerialIO::_internal_write(std::string string_to_write)
 {
 	OVERLAPPED osWrite = { 0 };
 	DWORD dwWritten;
 	bool fRes;
-	
-	std::string msg(converter.to_bytes(msg_string));
 
 	// Create this writes OVERLAPPED structure hEvent.
 	osWrite.hEvent = CreateEvent(NULL, TRUE, FALSE, NULL);
@@ -95,8 +93,9 @@ bool SerialIO::write(std::basic_string<TCHAR> msg_string)
 		// Error creating overlapped event handle.
 		return FALSE;
 	}
+
 	// Issue write.
-	if (!WriteFile(com_handle, msg.c_str(), msg.size(), &dwWritten, &osWrite)) {
+	if (!WriteFile(com_handle, string_to_write.c_str(), string_to_write.size(), &dwWritten, &osWrite)) {
 		if (GetLastError() != ERROR_IO_PENDING) {
 			// WriteFile failed, but it isn't delayed. Report error and abort.
 			fRes = FALSE;
@@ -116,6 +115,56 @@ bool SerialIO::write(std::basic_string<TCHAR> msg_string)
 	}
 	CloseHandle(osWrite.hEvent);
 	return fRes;
+}
+
+bool fletcher16(char* buffer, const char* message, int msg_length) {
+	unsigned int sum1 = 0, sum2 = 0,check_byte1;
+	for (int i = 0; i < msg_length; i++) {
+		sum1 = (sum1 + (unsigned char)message[i]) % 255;
+		sum2 = (sum2 + sum1) % 255;
+	}
+	check_byte1 = 255 - ((sum1 + sum2) % 255);
+	buffer[0] = (unsigned char)(check_byte1);
+	buffer[1] = (unsigned char)(255 - ((sum1 + check_byte1) % 255));
+	return true;
+}
+
+bool SerialIO::write_string_with_padbytes(std::string msg)
+{
+	if ((unsigned)msg.size() > UCHAR_MAX) {
+		for (unsigned int i = 0; i < msg.length(); i += UCHAR_MAX) {
+			write_string_with_padbytes(msg.substr(i, UCHAR_MAX));
+		}
+	}
+	else {
+		// byte padding
+		// add wake byte, check bits, and sleep byte
+		char soh = std::stoi("01", 0, 16);
+		unsigned char datalength = msg.size();
+		char eot = std::stoi("04", 0, 16);
+		//char checkbytes1 = 0, checkbytes2 = 0;
+		char checkbytes[2] = { 0, 0 };
+		fletcher16(checkbytes, msg.c_str(), msg.size());
+		std::basic_ostringstream<TCHAR> oss;
+		oss << _T("SOH BYTE: ") << std::stoi("01", 0, 16) << _T(" EOT BYTE: ") << std::stoi("04", 0, 16);
+		OutputDebugString(oss.str().c_str());
+
+		std::ostringstream o;
+		o << soh << (char)datalength << msg << checkbytes[0] << checkbytes[1] << eot << eot;
+		msg = o.str();
+		return _internal_write(msg);
+	}
+}
+
+bool SerialIO::write(std::basic_string<TCHAR> msg_string, int padbytes)
+{
+	std::string msg(converter.to_bytes(msg_string));
+	if (padbytes) {
+		return write_string_with_padbytes(msg);
+	}
+	else {
+		return _internal_write(msg);
+	}
 }
 
 int SerialIO::bytes_to_read()

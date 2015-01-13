@@ -425,7 +425,7 @@ LRESULT CMainFrame::WriteString(WPARAM w, LPARAM l)
 	}
 	if (serial != NULL && serial->is_connected()){
 		CString* string = reinterpret_cast<CString*>(l);
-		serial->write(std::basic_string<TCHAR>(*string));
+		serial->write(std::basic_string<TCHAR>(*string),std::stoi(GetSettings()[4]));
 		print_from_serial(std::basic_string<TCHAR>(*string), 1);
 	}
 	else {
