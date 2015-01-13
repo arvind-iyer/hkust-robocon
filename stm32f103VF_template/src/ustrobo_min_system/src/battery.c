@@ -3,8 +3,8 @@
 #define VOLTAGE_RATIO (u16)(100* (float)(ADC_OUTPUT_2 - ADC_OUTPUT_1)/(BATTERY_VOLTAGE_2 - BATTERY_VOLTAGE_1)) 
 //Following values are use to convert the Voltage vs ADC relationship 
 //to a Voltage vs temperature in celsius linear relationship
-#define V25   (u16)(ADC_OUTPUT_1 * (V25_TYP/BATTERY_VOLTAGE_1))
-#define Avg_Slope  (u16)( ADC_OUTPUT_1 * (V25_TYP/BATTERY_VOLTAGE_1))
+#define V25   (u16)(ADC_OUTPUT_1 * (0.1*V25_TYP/BATTERY_VOLTAGE_1))
+#define Avg_Slope  (u16)( ADC_OUTPUT_1 * (0.0001*AVG_SLOPE_TYP/BATTERY_VOLTAGE_1))
 u16 adc_value;
 
 /**
@@ -98,5 +98,5 @@ u16 get_voltage(void)
 u16 get_temp(void)
 {
 	
-	return  (uint16_t)((V25-adc_value)/Avg_Slope+25);
+	return  (uint16_t)((u16)((V25-adc_value)/Avg_Slope)/25);
 }
