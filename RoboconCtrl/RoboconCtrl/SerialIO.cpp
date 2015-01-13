@@ -128,6 +128,8 @@ bool fletcher16(char* buffer, const char* message, size_t msg_length) {
 	buffer[1] = (unsigned char)(sum2);
 	*/
 	
+	// This code is adapted from wikipedia
+
 	UINT16 sum1 = 0xff, sum2 = 0xff;
 
 	while (msg_length) {
