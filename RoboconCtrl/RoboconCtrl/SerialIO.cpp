@@ -211,11 +211,10 @@ bool SerialIO::write_string_with_padbytes(std::string msg)
 	}
 	else {
 		// byte padding
-		// add wake byte, check bits, and sleep byte
+		// add start byte, check bits, and stop byte
 		char soh = std::stoi("01", 0, 16);
 		unsigned char datalength = msg.size();
 		char eot = std::stoi("04", 0, 16);
-		//char checkbytes1 = 0, checkbytes2 = 0;
 		char checkbytes[2] = { 0, 0 };
 		crc16(checkbytes, msg.c_str(), msg.size());
 		std::basic_ostringstream<TCHAR> oss;
@@ -223,7 +222,7 @@ bool SerialIO::write_string_with_padbytes(std::string msg)
 		OutputDebugString(oss.str().c_str());
 
 		std::ostringstream o;
-		o << soh << (char)datalength << msg << checkbytes[0] << checkbytes[1] << eot << eot;
+		o << soh << (char)datalength << msg << checkbytes[0] << checkbytes[1] << eot;
 		msg = o.str();
 		return _internal_write(msg);
 	}
