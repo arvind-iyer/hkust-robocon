@@ -1,6 +1,8 @@
 #include "battery.h"
 
 #define VOLTAGE_RATIO (u16)(100* (float)(ADC_OUTPUT_2 - ADC_OUTPUT_1)/(BATTERY_VOLTAGE_2 - BATTERY_VOLTAGE_1)) 
+//Following values are use to convert the Voltage vs ADC relationship 
+//to a Voltage vs temperature in celsius linear relationship
 #define V25   (u16)(ADC_OUTPUT_1 * (V25_TYP/BATTERY_VOLTAGE_1))
 #define Avg_Slope  (u16)( ADC_OUTPUT_1 * (V25_TYP/BATTERY_VOLTAGE_1))
 u16 adc_value;
@@ -88,6 +90,11 @@ u16 get_voltage(void)
 	u16 ADC_OFFSET = BATTERY_VOLTAGE_1 * VOLTAGE_RATIO / 100 - ADC_OUTPUT_1;
 	return (u16)(100 * (adc_value + ADC_OFFSET) / VOLTAGE_RATIO);  
 }
+/**
+  * @brief  Calculating the temperature of semiconductor surface using the ADC
+  * @param  None
+  * @retval Temperature in Celsius
+  */
 u16 get_temp(void)
 {
 	
