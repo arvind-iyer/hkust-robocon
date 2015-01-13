@@ -7,6 +7,7 @@
 #include "stm32f10x_tim.h"
 #include "delay.h"
 #include "lcd_red.h"
+#include "ticks.h"
 
 #define XBC_SPI			SPI2
 #define XBC_NSS 		GPIO_Pin_12
@@ -115,6 +116,7 @@ extern u8 xbc_state;
 void disable_xbc(void);
 void enable_xbc(void);
 u8 get_xbc_mode(void);
+void xbc_test_program(void);
 
 
 #endif		/*  _XBC_H_ */
