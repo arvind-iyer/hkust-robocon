@@ -36,7 +36,7 @@ void can_motor_feedback_encoder(CanRxMsg msg)
 
 s32 get_encoder_value(MOTOR_ID motor_id)
 {
-	
+	return can_motor_encoder_value[motor_id];
 }
 
 
