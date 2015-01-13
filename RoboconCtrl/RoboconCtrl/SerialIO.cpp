@@ -124,8 +124,8 @@ bool fletcher16(char* buffer, const char* message, size_t msg_length) {
 		sum1 = (sum1 + (unsigned int)(message[i])) % 255;
 		sum2 = (sum2 + sum1) % 255;
 	}
-	buffer[0] = (unsigned char)(sum1);
-	buffer[1] = (unsigned char)(sum2);
+	buffer[0] = (unsigned char)(sum2);
+	buffer[1] = (unsigned char)(sum1);
 	*/
 	
 	// This code is adapted from wikipedia
@@ -143,12 +143,11 @@ bool fletcher16(char* buffer, const char* message, size_t msg_length) {
 	}
 	
 	/* Second reduction step to reduce sums to 8 bits */
-	
 	sum1 = (sum1 & 0xff) + (sum1 >> 8);
 	sum2 = (sum2 & 0xff) + (sum2 >> 8);
 
-	buffer[0] = (unsigned char)sum1;
-	buffer[1] = (unsigned char)sum2;
+	buffer[0] = (unsigned char)sum2;
+	buffer[1] = (unsigned char)sum1;
 	
 	return true;
 }
