@@ -15,7 +15,8 @@
 #include "lcd_red.h"
 #include "system.h"
 //#include "xbc_mb.h"
-//#include "button.h"
+#include "button.h"
+#include "encoder.h"
 
 /*** Optional ***/
 #include "can.h"
