@@ -190,6 +190,7 @@ static const unsigned short crc16table[256] = {
 
 bool crc16(char* buffer, const char* message, int msg_l)
 {
+	// taken from http://www.menie.org/georges/embedded/crc16.html
 	int counter;
 	unsigned short crc = 0;
 	for (counter = 0; counter < msg_l; counter++) {
