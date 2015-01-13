@@ -77,12 +77,12 @@ void xbc_gpio_init(void){
 	 * Configure SCK and MOSI pins as Alternate Function Push Pull,
 	 * MISO pin as Input Floating
 	 */
-	XBC_SPI_GPIO.GPIO_Pin = XBC_SPI_SCK | XBC_SPI_MOSI;
+	XBC_SPI_GPIO.GPIO_Pin = XBC_SPI_SCK | XBC_SPI_MISO;
 	XBC_SPI_GPIO.GPIO_Speed = GPIO_Speed_50MHz;
 	XBC_SPI_GPIO.GPIO_Mode = GPIO_Mode_AF_PP;
 	GPIO_Init(XBC_SPI_PORT, &XBC_SPI_GPIO);
 
-	XBC_SPI_GPIO.GPIO_Pin = XBC_SPI_MISO;
+	XBC_SPI_GPIO.GPIO_Pin = XBC_SPI_MOSI;
 	XBC_SPI_GPIO.GPIO_Speed = GPIO_Speed_50MHz;
 	XBC_SPI_GPIO.GPIO_Mode = GPIO_Mode_IPU;
 	GPIO_Init(XBC_SPI_PORT, &XBC_SPI_GPIO);
@@ -119,7 +119,6 @@ u8 xbc_update(){
 		0: error, no right data
 		1: right data
 		2: maybe disconnect
-
  	*rebuild received data in a easy way to use
 */
 	u8 ck_flag = 1;
