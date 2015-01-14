@@ -31,6 +31,7 @@ BEGIN_MESSAGE_MAP(CRoboconCtrlView, CView)
 	ON_WM_DESTROY()
 	ON_WM_SIZE()
 	ON_WM_ERASEBKGND()
+	ON_WM_LBUTTONDBLCLK()
 END_MESSAGE_MAP()
 
 // CRoboconCtrlView construction/destruction
@@ -111,13 +112,20 @@ void CRoboconCtrlView::OnDestroy()
 
 void CRoboconCtrlView::GLDrawScene()
 {
+	// Rectangle for game field
 	glColor3f((127.0f/255.0f), (51.0f/255.0f), 1.0f);
 	glBegin(GL_QUADS);
-		// Rectangle
-		glVertex2f(-0.8f, -0.8f);
-		glVertex2f(-0.8f, 0.8f);
-		glVertex2f(0.8f, 0.8f);
-		glVertex2f(0.8f, -0.8f);
+		glVertex2f(-1.0f, -1.0f);
+		glVertex2f(-1.0f, 1.0f);
+		glVertex2f(1.0f, 1.0f);
+		glVertex2f(1.0f, -1.0f);
+	glEnd();
+
+	// Drawing game field lines
+	glColor3f(1.0f, 0.0f, 0.0f);
+	glBegin(GL_LINES);
+		glVertex2f(0.0f, 1.0f);
+		glVertex2f(0.0f, -1.0f);
 	glEnd();
 }
 
@@ -154,6 +162,13 @@ void CRoboconCtrlView::OnContextMenu(CWnd* /* pWnd */, CPoint point)
 	OutputDebugString(oss.str().c_str());
 }
 
+void CRoboconCtrlView::OnLButtonDblClk(UINT nFlags, CPoint point)
+{
+	std::basic_ostringstream<TCHAR> oss;
+	oss << _T("X: ") << point.x << _T(" Y: ") << point.y;
+	OutputDebugString(oss.str().c_str());
+	CView::OnLButtonDblClk(nFlags, point);
+}
 
 // CRoboconCtrlView diagnostics
 
@@ -179,8 +194,15 @@ CRoboconCtrlDoc* CRoboconCtrlView::GetDocument() const // non-debug version is i
 
 void CRoboconCtrlView::OnSize(UINT nType, int cx, int cy)
 {
-	gl_height = cy;
-	gl_width = gl_height;
+	double ratio = 61.0 / 67.0;
+	if ((cx * ratio) > (double)(cy)) {
+		gl_height = cy * 90 / 100;
+		gl_width = (int)round(gl_height / ratio);
+	}
+	else {
+		gl_width = cx * 90 /100;
+		gl_height = (int)round(gl_width * ratio);
+	}
 	glViewport((cx - gl_width) / 2, (cy - gl_height) / 2, gl_width, gl_height);
 	CView::OnSize(nType, cx, cy);
 }

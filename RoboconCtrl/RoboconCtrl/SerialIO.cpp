@@ -212,17 +212,15 @@ bool SerialIO::write_string_with_padbytes(std::string msg)
 	else {
 		// byte padding
 		// add start byte, check bits, and stop byte
-		char soh = std::stoi("01", 0, 16);
+		char soh = 0x01;
 		unsigned char datalength = msg.size();
-		char eot = std::stoi("04", 0, 16);
+		char id = 0x00;
+		char eot = 0x04;
 		char checkbytes[2] = { 0, 0 };
 		crc16(checkbytes, msg.c_str(), msg.size());
-		std::basic_ostringstream<TCHAR> oss;
-		oss << _T("SOH BYTE: ") << std::stoi("01", 0, 16) << _T(" EOT BYTE: ") << std::stoi("04", 0, 16);
-		OutputDebugString(oss.str().c_str());
 
 		std::ostringstream o;
-		o << soh << (char)datalength << msg << checkbytes[0] << checkbytes[1] << eot;
+		o << soh << id << (char)datalength << msg << id << checkbytes[0] << checkbytes[1] << eot;
 		msg = o.str();
 		return _internal_write(msg);
 	}
