@@ -2,6 +2,7 @@
 #define	__BLUETOOTH_H
 
 #include "uart.h"
+#include "crc.h"
 
 #define	BLUETOOTH_COM										COM2			/* UART Port */
 #define	BLUETOOTH_COM_BR								115200		/* Baudrate */
@@ -9,10 +10,12 @@
 
 
 /*** BLUETOOTH PROTOCOL ***/
-#define	BLUETOOTH_DATA_LENGTH			8		// 0 - 8
-#define	BLUETOOTH_PACKAGE_LENGTH	BLUETOOTH_DATA_LENGTH + 5 // + wakeup + data_length + checkbyte*2 + sleep
-#define	BLUETOOTH_WAKEUP					0x12
-#define	BLUETOOTH_SLEEP						0x34
+#define	BLUETOOTH_PACKAGE_PRE_LENGTH			3		// wakeup + ID + data_length
+#define	BLUETOOTH_PACKAGE_DATA_LENGTH			8		// 0 - 8
+#define	BLUETOOTH_PACKAGE_POST_LENGTH			4		// ID + checkbyte * 2 + sleep
+#define	BLUETOOTH_PACKAGE_LENGTH	(BLUETOOTH_PACKAGE_PRE_LENGTH+BLUETOOTH_PACKAGE_DATA_LENGTH+BLUETOOTH_PACKAGE_POST_LENGTH)
+#define	BLUETOOTH_WAKEUP					0x01
+#define	BLUETOOTH_SLEEP						0x04
 
 
 

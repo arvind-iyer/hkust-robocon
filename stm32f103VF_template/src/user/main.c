@@ -1,5 +1,7 @@
 #include "main.h"
 
+
+
 u16 ticks_img 	= (u16)-1;
 u16 seconds_img = (u16)-1;
 
@@ -22,6 +24,8 @@ int main(void)
 	buzzer_play_song(START_UP, 120, 0);
 	
 	bluetooth_tx("Hello world\r\n");
+
+	
 	while (1) {
 		if (ticks_img != get_ticks()) {
 			ticks_img = get_ticks();
@@ -29,6 +33,7 @@ int main(void)
 				tft_clear();
 				tft_prints(0,0,"time: %d", get_seconds());
 				tft_prints(0,1,"Bluetooth: %d", bluetooth_rx_state());
+				tft_prints(0,2,"CRC: %X", CRC_GetCRC()); 
 				tft_update();
 			}
 		}

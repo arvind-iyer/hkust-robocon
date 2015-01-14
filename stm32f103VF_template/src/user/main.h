@@ -3,6 +3,7 @@
 
 #include <stdio.h>
 #include "stm32f10x.h"
+#include "stm32f10x_crc.h"
 
 /*** Essential ***/
 #include "ticks.h"
