@@ -218,20 +218,16 @@ void CRoboconCtrlView::GLDrawScene()
 			glColor3f(1.0f, 1.0f, 1.0f);
 			glVertex2f(current_pos.x, current_pos.y);
 		glEnd();
-
-		std::basic_ostringstream<TCHAR> oss; 
-		oss << _T("X: ") << current_pos.x << _T(" Y: ") << current_pos.y;
-		OutputDebugString(oss.str().c_str());
 	}
 
 	if (cursor_pos.valid) {
 		glBegin(GL_LINE);
 			glLineWidth(2.0f);
 			glColor3f(1.0f, 0.0f, 0.0f);
-			glVertex2f(cursor_pos.x + 0.0002 * 61, cursor_pos.y);
-			glVertex2f(cursor_pos.x - 0.0002 * 61, cursor_pos.y);
-			glVertex2f(cursor_pos.x, cursor_pos.y + 0.0002 * 134);
-			glVertex2f(cursor_pos.x, cursor_pos.y - 0.0002 * 134);
+			glVertex2f(cursor_pos.x + 0.0002f * 61, cursor_pos.y);
+			glVertex2f(cursor_pos.x - 0.0002f * 61, cursor_pos.y);
+			glVertex2f(cursor_pos.x, cursor_pos.y + 0.0002f * 134);
+			glVertex2f(cursor_pos.x, cursor_pos.y - 0.0002f * 134);
 		glEnd();
 	}
 }
@@ -258,7 +254,9 @@ void CRoboconCtrlView::OnMouseMove(UINT nFlags, CPoint point)
 void CRoboconCtrlView::OnRButtonUp(UINT /* nFlags */, CPoint point)
 {
 	ClientToScreen(&point);
-	OnContextMenu(this, point);
+	current_pos.valid = FALSE;
+	Invalidate();
+//	OnContextMenu(this, point);
 }
 
 void CRoboconCtrlView::OnContextMenu(CWnd* /* pWnd */, CPoint point)
@@ -269,10 +267,6 @@ void CRoboconCtrlView::OnContextMenu(CWnd* /* pWnd */, CPoint point)
 
 	CRect rect;
 	GetClientRect(&rect);
-
-	std::basic_ostringstream<TCHAR> oss;
-	oss << _T("WIDTH: ") << rect.Size().cx << _T(" HEIGHT: ") << rect.Size().cy;
-	OutputDebugString(oss.str().c_str());
 }
 
 void CRoboconCtrlView::OnLButtonDblClk(UINT nFlags, CPoint point)
