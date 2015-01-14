@@ -92,7 +92,7 @@ int CRoboconCtrlView::OnCreate(LPCREATESTRUCT lpCreateStruct)
 	VERIFY(wglMakeCurrent(m_hDC, m_hRC));
 
 	// Set clearing background color 
-	glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
+	glClearColor(1.0f, 1.0f, 1.0f, 0.0f);
 	glClearDepth(1.0f);
 	SetTimer(1, 1, 0);
 
@@ -112,23 +112,78 @@ void CRoboconCtrlView::OnDestroy()
 
 void CRoboconCtrlView::GLDrawScene()
 {
-	// Rectangle for game field
-	glColor3f((127.0f/255.0f), (51.0f/255.0f), 1.0f);
 	glBegin(GL_QUADS);
+		glColor3f((103.0f / 255.0f), (196.0f / 255.0f), (100.0f / 255.0f));
+		// Rectangle for game field
 		glVertex2f(-1.0f, -1.0f);
 		glVertex2f(-1.0f, 1.0f);
 		glVertex2f(1.0f, 1.0f);
 		glVertex2f(1.0f, -1.0f);
+
+		glColor3f((255.0f / 255.0f), (196.0f / 255.0f), (100.0f / 255.0f));
+
+		// Serving zones
+		glVertex2f(3.945f / 6.7f, 0.55f / 3.15f);
+		glVertex2f(3.945f / 6.7f, 2.57f / 3.15f);
+		glVertex2f(5.195f / 6.7f, 2.57f / 3.15f);
+		glVertex2f(5.195f / 6.7f, 0.55f / 3.15f);
+
+		glVertex2f(-3.945f / 6.7f, -0.55f / 3.15f);
+		glVertex2f(-3.945f / 6.7f, -2.57f / 3.15f);
+		glVertex2f(-5.195f / 6.7f, -2.57f / 3.15f);
+		glVertex2f(-5.195f / 6.7f, -0.55f / 3.15f);
 	glEnd();
 
 	// Drawing game field lines
-	glColor3f(1.0f, 0.0f, 0.0f);
 	glBegin(GL_LINES);
-		glVertex2f(0.0f, 1.0f);
+		glColor3f(0.0f, 0.0f, 0.0f);
+
+		// Serving lines
+		glVertex2f(2.0f / 6.7f, 1.0f);
+		glVertex2f(2.0f / 6.7f, -1.0f);
+		glVertex2f(-2.0f / 6.7f, 1.0f);
+		glVertex2f(-2.0f / 6.7f, -1.0f);
+
+		// Long service lines for doubles
+		glVertex2f(5.92f / 6.7f, 1.0f);
+		glVertex2f(5.92f / 6.7f, -1.0f);
+		glVertex2f(-5.92f / 6.7f, 1.0f);
+		glVertex2f(-5.92f / 6.7f, -1.0f);
+
+		// Center lines
+		glVertex2f(-1.0f, 0.0f);
+		glVertex2f(-2.0/6.7f, 0.0f);
+		glVertex2f(1.0f, 0.0f);
+		glVertex2f(2.0 / 6.7f, 0.0f);
+
+		// Side lines for singles
+		glVertex2f(-1.0f, 2.57f / 3.15f);
+		glVertex2f(1.0f, 2.57f / 3.15f);
+		glVertex2f(-1.0f, -2.57f / 3.15f);
+		glVertex2f(1.0f, -2.57f / 3.15f);
+
+		glColor3f(1.0f, 0.0f, 0.0f);
+
+		glLineWidth(2.0f);
+
+		// Net
 		glVertex2f(0.0f, -1.0f);
-//		glVertex2f(-1.0f, 1.37f / 3.35f);
-//		glVertex2f(1.0f, 1.37f / 3.35f);
+		glVertex2f(0.0f, 1.0f);
+		
+		glLineWidth(1.0f);
+
 	glEnd();
+
+	glLineWidth(2.0f);
+	glBegin(GL_LINE_LOOP);
+		// Game field border
+		glVertex2f(-1.0f, 1.0f);
+		glVertex2f(1.0f, 1.0f);
+		glVertex2f(1.0f, -1.0f);
+		glVertex2f(-1.0f, -1.0f);
+	glEnd();
+
+	glLineWidth(1.0f);
 }
 
 void CRoboconCtrlView::OnDraw(CDC* /*pDC*/)
