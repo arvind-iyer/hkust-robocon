@@ -19,4 +19,7 @@
 .\output\bluetooth.o: .\src\stm32f10x_std\inc\misc.h
 .\output\bluetooth.o: C:\Keil_v5\ARM\ARMCC\Bin\..\include\stdio.h
 .\output\bluetooth.o: C:\Keil_v5\ARM\ARMCC\Bin\..\include\stdarg.h
+.\output\bluetooth.o: .\src\ustrobo_min_system\inc\ticks.h
+.\output\bluetooth.o: .\src\stm32f10x_std\inc\stm32f10x_tim.h
+.\output\bluetooth.o: .\src\ustrobo_min_system\inc\buzzer.h
 .\output\bluetooth.o: src\user\crc.h

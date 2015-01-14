@@ -139,7 +139,7 @@ u8 gyro_pos_set(s16 x, s16 y, s16 a)
   * @retval None
   */
 
-/*
+
 void USART3_IRQHandler(void)
 {
 	u8 rx_data, i;
@@ -224,4 +224,4 @@ void USART3_IRQHandler(void)
 	//USART_ClearITPendingBit(USART3,USART_IT_RXNE);
 }
 
-*/
+
