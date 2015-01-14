@@ -94,9 +94,7 @@ u8 can_tx_enqueue(CAN_MESSAGE msg)
 	*/
 u8 can_tx_dequeue(void)
 {
-	if (can_tx_queue_empty()) {   
-		return 0;
-	} else if (can_empty_mailbox() > 0) {
+	if (!can_tx_queue_empty() && can_empty_mailbox() > 0) {
 		CAN_MESSAGE msg = CAN_Tx_Queue.queue[CAN_Tx_Queue.head];
 		CanTxMsg TxMsg;
 		u8 data_length = msg.length;
@@ -123,6 +121,8 @@ u8 can_tx_dequeue(void)
 		}
 		
 		return 1;
+	} else {
+		return 0;
 	}
 }
 

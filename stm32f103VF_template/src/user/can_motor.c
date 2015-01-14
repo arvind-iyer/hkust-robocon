@@ -8,6 +8,14 @@ void can_motor_init(void)
 	can_rx_add_filter(CAN_MOTOR_BASE, CAN_RX_MASK_DIGIT_0_F, 0);
 }
 
+/*** TX ***/
+/**
+	* @brief Set motor velocity (CAN)
+	* @param motor_id (MOTOR_ID enum)
+	* @param vel (vel of close_loop is not corresponded to open_loop)
+	* @param close_loop_flag: true if close_loop should be applied
+	* @retval None.
+	*/
 void motor_set_vel(MOTOR_ID motor_id, s32 vel, CLOSE_LOOP_FLAG close_loop_flag)
 {
 	CAN_MESSAGE msg;
@@ -23,13 +31,21 @@ void motor_set_vel(MOTOR_ID motor_id, s32 vel, CLOSE_LOOP_FLAG close_loop_flag)
 	msg.data[4] = (u8)(one_to_n_bytes(vel, 3));
 	msg.data[5] = (u8)(close_loop_flag);
 	
+	can_tx_enqueue(msg);
 }
 
+/*** RX ***/
 void can_motor_feedback_encoder(CanRxMsg msg)
 {
 	switch (msg.Data[0]) {
 		case CAN_ENCODER_FEEDBACK:
-			
+			if (msg.DLC == CAN_ENCODER_FEEDBACK_LENGTH) {
+				// Range check 
+				if (msg.StdId >= CAN_MOTOR_BASE && msg.StdId < CAN_MOTOR_BASE + CAN_MOTOR_COUNT) {
+					s32 feedback = n_bytes_to_one(&msg.Data[1], 4);
+					can_motor_encoder_value[msg.StdId - CAN_MOTOR_BASE] = feedback;
+				}
+			}
 		break;
 	}
 }

@@ -219,19 +219,6 @@
       <Focus>0</Focus>
       <tvExpOptDlg>0</tvExpOptDlg>
       <bDave2>0</bDave2>
-      <PathWithFileName>.\src\user\robocon.c</PathWithFileName>
-      <FilenameWithoutPath>robocon.c</FilenameWithoutPath>
-      <RteFlg>0</RteFlg>
-      <bShared>0</bShared>
-    </File>
-    <File>
-      <GroupNumber>1</GroupNumber>
-      <FileNumber>3</FileNumber>
-      <FileType>1</FileType>
-      <tvExp>0</tvExp>
-      <Focus>0</Focus>
-      <tvExpOptDlg>0</tvExpOptDlg>
-      <bDave2>0</bDave2>
       <PathWithFileName>.\src\user\can_protocol.c</PathWithFileName>
       <FilenameWithoutPath>can_protocol.c</FilenameWithoutPath>
       <RteFlg>0</RteFlg>
@@ -239,7 +226,7 @@
     </File>
     <File>
       <GroupNumber>1</GroupNumber>
-      <FileNumber>4</FileNumber>
+      <FileNumber>3</FileNumber>
       <FileType>1</FileType>
       <tvExp>0</tvExp>
       <Focus>0</Focus>
@@ -252,7 +239,7 @@
     </File>
     <File>
       <GroupNumber>1</GroupNumber>
-      <FileNumber>5</FileNumber>
+      <FileNumber>4</FileNumber>
       <FileType>1</FileType>
       <tvExp>0</tvExp>
       <Focus>0</Focus>
@@ -265,7 +252,7 @@
     </File>
     <File>
       <GroupNumber>1</GroupNumber>
-      <FileNumber>6</FileNumber>
+      <FileNumber>5</FileNumber>
       <FileType>1</FileType>
       <tvExp>0</tvExp>
       <Focus>0</Focus>
@@ -273,6 +260,19 @@
       <bDave2>0</bDave2>
       <PathWithFileName>.\src\user\bluetooth.c</PathWithFileName>
       <FilenameWithoutPath>bluetooth.c</FilenameWithoutPath>
+      <RteFlg>0</RteFlg>
+      <bShared>0</bShared>
+    </File>
+    <File>
+      <GroupNumber>1</GroupNumber>
+      <FileNumber>6</FileNumber>
+      <FileType>1</FileType>
+      <tvExp>0</tvExp>
+      <Focus>0</Focus>
+      <tvExpOptDlg>0</tvExpOptDlg>
+      <bDave2>0</bDave2>
+      <PathWithFileName>.\src\user\crc.c</PathWithFileName>
+      <FilenameWithoutPath>crc.c</FilenameWithoutPath>
       <RteFlg>0</RteFlg>
       <bShared>0</bShared>
     </File>
