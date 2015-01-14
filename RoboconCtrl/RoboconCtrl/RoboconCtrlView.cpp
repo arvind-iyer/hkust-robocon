@@ -152,9 +152,9 @@ void CRoboconCtrlView::GLDrawScene()
 
 		// Center lines
 		glVertex2f(-1.0f, 0.0f);
-		glVertex2f(-2.0/6.7f, 0.0f);
+		glVertex2f(-2.0f / 6.7f, 0.0f);
 		glVertex2f(1.0f, 0.0f);
-		glVertex2f(2.0 / 6.7f, 0.0f);
+		glVertex2f(2.0f / 6.7f, 0.0f);
 
 		// Side lines for singles
 		glVertex2f(-1.0f, 2.57f / 3.15f);
