@@ -126,6 +126,8 @@ void CRoboconCtrlView::GLDrawScene()
 	glBegin(GL_LINES);
 		glVertex2f(0.0f, 1.0f);
 		glVertex2f(0.0f, -1.0f);
+//		glVertex2f(-1.0f, 1.37f / 3.35f);
+//		glVertex2f(1.0f, 1.37f / 3.35f);
 	glEnd();
 }
 
@@ -194,7 +196,7 @@ CRoboconCtrlDoc* CRoboconCtrlView::GetDocument() const // non-debug version is i
 
 void CRoboconCtrlView::OnSize(UINT nType, int cx, int cy)
 {
-	double ratio = 61.0 / 67.0;
+	double ratio = 61.0 / 134.0;
 	if ((cx * ratio) > (double)(cy)) {
 		gl_height = cy * 90 / 100;
 		gl_width = (int)round(gl_height / ratio);
