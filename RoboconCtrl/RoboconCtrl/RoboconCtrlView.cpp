@@ -32,16 +32,21 @@ BEGIN_MESSAGE_MAP(CRoboconCtrlView, CView)
 	ON_WM_SIZE()
 	ON_WM_ERASEBKGND()
 	ON_WM_LBUTTONDBLCLK()
+	ON_WM_MOUSEMOVE()
 END_MESSAGE_MAP()
 
 // CRoboconCtrlView construction/destruction
 
-CRoboconCtrlView::CRoboconCtrlView() : current_pos()
+CRoboconCtrlView::CRoboconCtrlView()
 {
 	// TODO: add construction code here
 	current_pos.x = 0.0f;
 	current_pos.y = 0.0f;
 	current_pos.valid = FALSE;
+
+	cursor_pos.x = 0.0f;
+	cursor_pos.y = 0.0f;
+	cursor_pos.valid = FALSE;
 }
 
 CRoboconCtrlView::~CRoboconCtrlView()
@@ -117,14 +122,16 @@ CRoboconCtrlView::GLCoord CRoboconCtrlView::GetGLCoord(CPoint wndCoord)
 	CRect rect;
 	GetClientRect(rect);
 	GLCoord g;
-	g.x = (float)(-(float)(rect.Width() / 2 - wndCoord.x) / (float)(gl_width / 2));
-	g.y = (float)((float)(rect.Height() / 2 - wndCoord.y) / (float)(gl_height / 2));
+	g.x = -(float)(((double)rect.Width() / 2 - (double)(wndCoord.x + 1)) / ((double)gl_width / 2));
+	g.y = (float)(((double)rect.Height() / 2 - (double)(wndCoord.y + 1)) / ((double)gl_height / 2));
+
 	if (g.x > 1.0f || g.y > 1.0f) {
 		g.valid = FALSE;
 	}
 	else {
 		g.valid = TRUE;
 	}
+
 	return g;
 }
 
@@ -216,6 +223,17 @@ void CRoboconCtrlView::GLDrawScene()
 		oss << _T("X: ") << current_pos.x << _T(" Y: ") << current_pos.y;
 		OutputDebugString(oss.str().c_str());
 	}
+
+	if (cursor_pos.valid) {
+		glBegin(GL_LINE);
+			glLineWidth(2.0f);
+			glColor3f(1.0f, 0.0f, 0.0f);
+			glVertex2f(cursor_pos.x + 0.0002 * 61, cursor_pos.y);
+			glVertex2f(cursor_pos.x - 0.0002 * 61, cursor_pos.y);
+			glVertex2f(cursor_pos.x, cursor_pos.y + 0.0002 * 134);
+			glVertex2f(cursor_pos.x, cursor_pos.y - 0.0002 * 134);
+		glEnd();
+	}
 }
 
 void CRoboconCtrlView::OnDraw(CDC* /*pDC*/)
@@ -229,6 +247,12 @@ void CRoboconCtrlView::OnDraw(CDC* /*pDC*/)
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 	GLDrawScene();
 	SwapBuffers(m_hDC);
+}
+
+void CRoboconCtrlView::OnMouseMove(UINT nFlags, CPoint point)
+{
+	cursor_pos = GetGLCoord(point);
+	Invalidate();
 }
 
 void CRoboconCtrlView::OnRButtonUp(UINT /* nFlags */, CPoint point)
@@ -255,7 +279,7 @@ void CRoboconCtrlView::OnLButtonDblClk(UINT nFlags, CPoint point)
 {
 	CView::OnLButtonDblClk(nFlags, point);
 	current_pos = GetGLCoord(point);
-	OnDraw(NULL);
+	Invalidate();
 }
 
 // CRoboconCtrlView diagnostics
