@@ -4,7 +4,6 @@
 
 #pragma once
 
-
 class CRoboconCtrlView : public CView
 {
 protected: // create from serialization only
@@ -30,8 +29,17 @@ public:
 	virtual BOOL PreCreateWindow(CREATESTRUCT& cs);
 	virtual int OnCreate(LPCREATESTRUCT lpCreateStruct);
 	virtual void OnDestroy();
-protected:
 
+// Private helper functions
+private:
+	struct GLCoord {
+		float x;
+		float y;
+		BOOL valid;
+	};
+	GLCoord GetGLCoord(CPoint wndCoord);
+
+	struct GLCoord current_pos;
 // Implementation
 public:
 	virtual ~CRoboconCtrlView();

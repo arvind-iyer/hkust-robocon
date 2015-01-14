@@ -36,10 +36,12 @@ END_MESSAGE_MAP()
 
 // CRoboconCtrlView construction/destruction
 
-CRoboconCtrlView::CRoboconCtrlView()
+CRoboconCtrlView::CRoboconCtrlView() : current_pos()
 {
 	// TODO: add construction code here
-
+	current_pos.x = 0.0f;
+	current_pos.y = 0.0f;
+	current_pos.valid = FALSE;
 }
 
 CRoboconCtrlView::~CRoboconCtrlView()
@@ -110,10 +112,27 @@ void CRoboconCtrlView::OnDestroy()
 
 // CRoboconCtrlView drawing
 
+CRoboconCtrlView::GLCoord CRoboconCtrlView::GetGLCoord(CPoint wndCoord)
+{
+	CRect rect;
+	GetClientRect(rect);
+	GLCoord g;
+	g.x = (float)(-(float)(rect.Width() / 2 - wndCoord.x) / (float)(gl_width / 2));
+	g.y = (float)((float)(rect.Height() / 2 - wndCoord.y) / (float)(gl_height / 2));
+	if (g.x > 1.0f || g.y > 1.0f) {
+		g.valid = FALSE;
+	}
+	else {
+		g.valid = TRUE;
+	}
+	return g;
+}
+
 void CRoboconCtrlView::GLDrawScene()
 {
 	glBegin(GL_QUADS);
 		glColor3f((103.0f / 255.0f), (196.0f / 255.0f), (100.0f / 255.0f));
+
 		// Rectangle for game field
 		glVertex2f(-1.0f, -1.0f);
 		glVertex2f(-1.0f, 1.0f);
@@ -184,6 +203,19 @@ void CRoboconCtrlView::GLDrawScene()
 	glEnd();
 
 	glLineWidth(1.0f);
+
+	// Draw current position
+	if (current_pos.valid) {
+		glPointSize(10.0f);
+		glBegin(GL_POINT);
+			glColor3f(1.0f, 1.0f, 1.0f);
+			glVertex2f(current_pos.x, current_pos.y);
+		glEnd();
+
+		std::basic_ostringstream<TCHAR> oss; 
+		oss << _T("X: ") << current_pos.x << _T(" Y: ") << current_pos.y;
+		OutputDebugString(oss.str().c_str());
+	}
 }
 
 void CRoboconCtrlView::OnDraw(CDC* /*pDC*/)
@@ -221,10 +253,9 @@ void CRoboconCtrlView::OnContextMenu(CWnd* /* pWnd */, CPoint point)
 
 void CRoboconCtrlView::OnLButtonDblClk(UINT nFlags, CPoint point)
 {
-	std::basic_ostringstream<TCHAR> oss;
-	oss << _T("X: ") << point.x << _T(" Y: ") << point.y;
-	OutputDebugString(oss.str().c_str());
 	CView::OnLButtonDblClk(nFlags, point);
+	current_pos = GetGLCoord(point);
+	OnDraw(NULL);
 }
 
 // CRoboconCtrlView diagnostics
