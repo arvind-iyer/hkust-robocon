@@ -288,28 +288,30 @@ void CMainFrame::print_from_serial(std::basic_string<TCHAR> string_to_print, int
 
 // Read thread
 
-void __cdecl CMainFrame::read_thread(void* app_ptr){
+UINT __cdecl CMainFrame::read_thread(LPVOID app_ptr){
 	while (serial != NULL && serial->is_connected()){
 		if (serial->bytes_to_read()) {
 			std::string string = serial->read();
-			std::wstring_convert<std::codecvt_utf8_utf16<wchar_t>> converter;
-			((CMainFrame*)app_ptr)->print_from_serial(converter.from_bytes(string));
+			// std::wstring_convert<std::codecvt_utf8_utf16<wchar_t>> converter;
+			// Somehow using a CString to convert to a wstring seems to work well and prevents segfaults from happening
+			((CMainFrame*)app_ptr)->print_from_serial(std::wstring(CString(string.c_str(), string.size())));
 		}
+		Sleep(10);
 	}
 	((CMainFrame*)app_ptr)->print_to_output(_T("Closing Port"));
-	_endthread();
+	return 0;
 }
 
 // Write thread
 
-void __cdecl CMainFrame::write_thread(void* app_ptr){
+UINT __cdecl CMainFrame::write_thread(LPVOID app_ptr){
 	while (serial != NULL && serial->is_connected()){
 		if (!((CMainFrame*)app_ptr)->keys_pressed.empty()){
 			((CMainFrame*)app_ptr)->SendMessage(WM_SEND_STRING, 0, 0);
-			Sleep(10);
+			Sleep(50);
 		}
 	}
-	_endthread();
+	return 0;
 }
 
 // CMainFrame message handlers
@@ -358,8 +360,8 @@ void CMainFrame::OpenConnection()
 		if (serial->is_connected()) {
 			print_to_output(_T("SUCCESS!"));
 		}
-		_beginthread(CMainFrame::read_thread, 0, this);
-		_beginthread(CMainFrame::write_thread, 0, this);
+		AfxBeginThread(CMainFrame::read_thread, this);
+		AfxBeginThread(CMainFrame::write_thread, this);
 	}
 	catch (std::runtime_error r) {
 		print_to_output(converter.from_bytes(r.what()));

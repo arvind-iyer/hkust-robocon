@@ -72,8 +72,8 @@ protected:
 
 // Thread functions
 protected:
-	static void __cdecl read_thread(void* app_ptr);
-	static void __cdecl write_thread(void* app_ptr);
+	static UINT __cdecl read_thread(LPVOID app_ptr);
+	static UINT __cdecl write_thread(LPVOID app_ptr);
 	DECLARE_MESSAGE_MAP()
 
 	BOOL CreateDockingWindows();

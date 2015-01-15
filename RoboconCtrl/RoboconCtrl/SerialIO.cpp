@@ -155,7 +155,8 @@ bool fletcher16(char* buffer, const char* message, size_t msg_length) {
 
 bool SerialIO::write(std::basic_string<TCHAR> msg_string)
 {
-	std::string msg(converter.to_bytes(msg_string));
+	std::string msg(CT2CA(CString(msg_string.c_str(), msg_string.size())));
+	//std::string msg(converter.to_bytes(msg_string));
 	return _internal_write(msg);
 }
 
