@@ -318,7 +318,7 @@ BOOL CMainFrame::PreTranslateMessage(MSG* msg)
 {
 	std::vector<std::basic_string<TCHAR>> settings = m_wndProperties.GetSettings();
 	if (stoi(settings[3]) == 2){
-		if (msg && msg->message == WM_KEYDOWN && GetFocus() != NULL && GetFocus()->GetDlgCtrlID() != 2 && GetFocus()->GetDlgCtrlID() != 3){
+		if (msg && msg->message == WM_KEYDOWN && GetFocus() != NULL){
 			BYTE kb[256];
 			GetKeyboardState(kb);
 			TCHAR buffer[2] = {};
@@ -424,36 +424,47 @@ LRESULT CMainFrame::WriteString(WPARAM w, LPARAM l)
 	}
 	if (l == NULL){
 		if (serial != NULL && serial->is_connected()){
-			int x = 0;
-			int y = 0;
-			int w = 0;
-			if (keys_pressed.find(_T('w')) != std::basic_string<TCHAR>::npos) {
-				y += 100;
+			if (keys_pressed.find_first_of(_T("qweasd")) != std::basic_string<TCHAR>::npos) {
+				// manual mode printing
+				int x = 0;
+				int y = 0;
+				int w = 0;
+				if (keys_pressed.find(_T('w')) != std::basic_string<TCHAR>::npos) {
+					y += 100;
+				}
+				if (keys_pressed.find(_T('s')) != std::basic_string<TCHAR>::npos) {
+					y -= 100;
+				}
+				if (keys_pressed.find(_T('d')) != std::basic_string<TCHAR>::npos) {
+					x += 100;
+				}
+				if (keys_pressed.find(_T('a')) != std::basic_string<TCHAR>::npos) {
+					x -= 100;
+				}
+				if (keys_pressed.find(_T('q')) != std::basic_string<TCHAR>::npos) {
+					w -= 100;
+				}
+				if (keys_pressed.find(_T('e')) != std::basic_string<TCHAR>::npos) {
+					w += 100;
+				}
+				serial->write(RobotMCtrl()(x, y, w));
+				if (x != 0 && y != 0) {
+					double scale = sqrt(100 * 100 + 100 * 100) / 100.0;
+					x = (int)((double)x / scale);
+					y = (int)((double)y / scale);
+				}
+				std::basic_ostringstream<TCHAR> oss;
+				oss << _T("X: ") << x << _T(" Y: ") << y << _T(" w: ") << w;
+				print_from_serial(oss.str(), 1);
 			}
-			if (keys_pressed.find(_T('s')) != std::basic_string<TCHAR>::npos) {
-				y -= 100;
+			// speed printing
+			std::size_t found = keys_pressed.find_last_of(_T("0123456789"));
+			if (found != std::basic_string<TCHAR>::npos) {
+				serial->write(RobotMCtrl()(keys_pressed[found]));
+				std::basic_ostringstream<TCHAR> oss;
+				oss << _T("Speed: ") << keys_pressed[found];
+				print_from_serial(oss.str(), 1);
 			}
-			if (keys_pressed.find(_T('d')) != std::basic_string<TCHAR>::npos) {
-				x += 100;
-			}
-			if (keys_pressed.find(_T('a')) != std::basic_string<TCHAR>::npos) {
-				x -= 100;
-			}
-			if (keys_pressed.find(_T('q')) != std::basic_string<TCHAR>::npos) {
-				w -= 100;
-			}
-			if (keys_pressed.find(_T('e')) != std::basic_string<TCHAR>::npos) {
-				w += 100;
-			}
-			serial->write(RobotMCtrl()(x,y,w));
-			if (x != 0 && y != 0) {
-				double scale = sqrt(100 * 100 + 100 * 100) / 100.0;
-				x = (int)((double)x / scale);
-				y = (int)((double)y / scale);
-			}
-			std::basic_ostringstream<TCHAR> oss;
-			oss << _T("X: ") << x << _T(" Y: ") << y << _T(" w: ") << w;
-			print_from_serial(oss.str(), 1);
 		}
 		else {
 			OutputDebugString(_T("Port cannot be opened, cannot write"));
