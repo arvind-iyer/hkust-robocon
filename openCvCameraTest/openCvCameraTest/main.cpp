@@ -1,5 +1,5 @@
 // Please change it if there are more the one camera available (Start from 0)
-#define CAMERA_NO 2
+#define CAMERA_NO 0
 // The window name used in OpenCV for showing the frame
 #define WINDOW_NAME "OpenCV Camera Test"
 
@@ -13,7 +13,7 @@ int main(int argc, char* argv[]) {
 
 	cv::VideoCapture cap(CAMERA_NO);	// Open the video camera
 	if (!cap.isOpened()) {
-		cout << "Cannot open the video camera." << endl;
+		printf("Cannot open the video camera.\n");
 		return -1;
 	}
 
