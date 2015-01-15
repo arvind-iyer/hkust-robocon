@@ -4,6 +4,7 @@
 
 #include "stdafx.h"
 #include "RoboconCtrl.h"
+#include "RobotMCtrl.h"
 
 #include "MainFrm.h"
 #include <sstream>
@@ -12,6 +13,7 @@
 #include <string>
 #include <utility>
 #include <algorithm>
+#include <math.h>
 
 #ifdef _DEBUG
 #define new DEBUG_NEW
@@ -53,7 +55,7 @@ static UINT indicators[] =
 
 // CMainFrame construction/destruction
 
-CMainFrame::CMainFrame() : keys_pressed()
+CMainFrame::CMainFrame() : send_msg(), keys_pressed()
 {
 	// TODO: add member initialization code here
 }
@@ -303,7 +305,7 @@ void __cdecl CMainFrame::read_thread(void* app_ptr){
 void __cdecl CMainFrame::write_thread(void* app_ptr){
 	while (serial != NULL && serial->is_connected()){
 		if (!((CMainFrame*)app_ptr)->keys_pressed.empty()){
-			((CMainFrame*)app_ptr)->SendMessage(WM_SEND_STRING, 0, (LPARAM)&CString(((CMainFrame*)app_ptr)->keys_pressed.c_str()));
+			((CMainFrame*)app_ptr)->SendMessage(WM_SEND_STRING, 0, 0);
 			Sleep(10);
 		}
 	}
@@ -317,18 +319,15 @@ BOOL CMainFrame::PreTranslateMessage(MSG* msg)
 	std::vector<std::basic_string<TCHAR>> settings = m_wndProperties.GetSettings();
 	if (stoi(settings[3]) == 2){
 		if (msg && msg->message == WM_KEYDOWN && GetFocus() != NULL && GetFocus()->GetDlgCtrlID() != 2 && GetFocus()->GetDlgCtrlID() != 3){
-			if (serial == NULL) {
-				OpenConnection();
-			}
 			BYTE kb[256];
 			GetKeyboardState(kb);
 			TCHAR buffer[2] = {};
-			if (ToUnicode(msg->wParam, MapVirtualKey(msg->wParam, MAPVK_VK_TO_VSC), kb, buffer, 1, 0)){
+			if (ToUnicode(msg->wParam, MapVirtualKey(msg->wParam, MAPVK_VK_TO_VSC), kb, buffer, 1, 0)) {
 				keys_pressed = keys_pressed + buffer[0];
 				keys_pressed.erase(std::unique(keys_pressed.begin(), keys_pressed.end()), keys_pressed.end());
 			}
 		}
-		else if (msg && msg->message == WM_KEYUP && GetFocus() != NULL && GetFocus()->GetDlgCtrlID() != 2 && GetFocus()->GetDlgCtrlID() != 3) {
+		else if (msg && msg->message == WM_KEYUP) {
 			BYTE kb[256];
 			GetKeyboardState(kb);
 			TCHAR buffer[2] = {};
@@ -423,14 +422,53 @@ LRESULT CMainFrame::WriteString(WPARAM w, LPARAM l)
 	if (serial == NULL) {
 		OpenConnection();
 	}
-	if (serial != NULL && serial->is_connected()){
-		CString* string = reinterpret_cast<CString*>(l);
-		serial->write(std::basic_string<TCHAR>(*string),std::stoi(GetSettings()[4]));
-		print_from_serial(std::basic_string<TCHAR>(*string), 1);
-	}
-	else {
-		OutputDebugString(_T("Port cannot be opened, cannot write"));
-		return 1;
+	if (l == NULL){
+		if (serial != NULL && serial->is_connected()){
+			int x = 0;
+			int y = 0;
+			int w = 0;
+			if (keys_pressed.find(_T('w')) != std::basic_string<TCHAR>::npos) {
+				y += 100;
+			}
+			if (keys_pressed.find(_T('s')) != std::basic_string<TCHAR>::npos) {
+				y -= 100;
+			}
+			if (keys_pressed.find(_T('d')) != std::basic_string<TCHAR>::npos) {
+				x += 100;
+			}
+			if (keys_pressed.find(_T('a')) != std::basic_string<TCHAR>::npos) {
+				x -= 100;
+			}
+			if (keys_pressed.find(_T('q')) != std::basic_string<TCHAR>::npos) {
+				w -= 100;
+			}
+			if (keys_pressed.find(_T('e')) != std::basic_string<TCHAR>::npos) {
+				w += 100;
+			}
+			serial->write(RobotMCtrl()(x,y,w));
+			if (x != 0 && y != 0) {
+				double scale = sqrt(100 * 100 + 100 * 100) / 100.0;
+				x = (int)((double)x / scale);
+				y = (int)((double)y / scale);
+			}
+			std::basic_ostringstream<TCHAR> oss;
+			oss << _T("X: ") << x << _T(" Y: ") << y << _T(" w: ") << w;
+			print_from_serial(oss.str(), 1);
+		}
+		else {
+			OutputDebugString(_T("Port cannot be opened, cannot write"));
+			return 1;
+		}
+	} else {
+		if (serial != NULL && serial->is_connected()){
+			CString* string = reinterpret_cast<CString*>(l);
+			serial->write(std::basic_string<TCHAR>(*string));
+			print_from_serial(std::basic_string<TCHAR>(*string), 1);
+		}
+		else {
+			OutputDebugString(_T("Port cannot be opened, cannot write"));
+			return 1;
+		}
 	}
 	return 0;
 }

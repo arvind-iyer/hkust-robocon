@@ -111,6 +111,7 @@
     <ClInclude Include="RoboconCtrl.h" />
     <ClInclude Include="RoboconCtrlDoc.h" />
     <ClInclude Include="RoboconCtrlView.h" />
+    <ClInclude Include="RobotMCtrl.h" />
     <ClInclude Include="SerialIO.h" />
     <ClInclude Include="stdafx.h" />
     <ClInclude Include="targetver.h" />
@@ -123,6 +124,7 @@
     <ClCompile Include="RoboconCtrl.cpp" />
     <ClCompile Include="RoboconCtrlDoc.cpp" />
     <ClCompile Include="RoboconCtrlView.cpp" />
+    <ClCompile Include="RobotMCtrl.cpp" />
     <ClCompile Include="SerialIO.cpp" />
     <ClCompile Include="stdafx.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>

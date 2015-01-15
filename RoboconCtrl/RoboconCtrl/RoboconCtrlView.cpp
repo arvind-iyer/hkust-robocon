@@ -149,15 +149,15 @@ void CRoboconCtrlView::GLDrawScene()
 		glColor3f((255.0f / 255.0f), (196.0f / 255.0f), (100.0f / 255.0f));
 
 		// Serving zones
-		glVertex2f(3.945f / 6.7f, 0.55f / 3.15f);
-		glVertex2f(3.945f / 6.7f, 2.57f / 3.15f);
-		glVertex2f(5.195f / 6.7f, 2.57f / 3.15f);
-		glVertex2f(5.195f / 6.7f, 0.55f / 3.15f);
+		glVertex2f(3.945f / 6.7f, 0.55f / 3.05f);
+		glVertex2f(3.945f / 6.7f, 2.57f / 3.05f);
+		glVertex2f(5.195f / 6.7f, 2.57f / 3.05f);
+		glVertex2f(5.195f / 6.7f, 0.55f / 3.05f);
 
-		glVertex2f(-3.945f / 6.7f, -0.55f / 3.15f);
-		glVertex2f(-3.945f / 6.7f, -2.57f / 3.15f);
-		glVertex2f(-5.195f / 6.7f, -2.57f / 3.15f);
-		glVertex2f(-5.195f / 6.7f, -0.55f / 3.15f);
+		glVertex2f(-3.945f / 6.7f, -0.55f / 3.05f);
+		glVertex2f(-3.945f / 6.7f, -2.57f / 3.05f);
+		glVertex2f(-5.195f / 6.7f, -2.57f / 3.05f);
+		glVertex2f(-5.195f / 6.7f, -0.55f / 3.05f);
 	glEnd();
 
 	// Drawing game field lines
@@ -183,10 +183,10 @@ void CRoboconCtrlView::GLDrawScene()
 		glVertex2f(2.0f / 6.7f, 0.0f);
 
 		// Side lines for singles
-		glVertex2f(-1.0f, 2.57f / 3.15f);
-		glVertex2f(1.0f, 2.57f / 3.15f);
-		glVertex2f(-1.0f, -2.57f / 3.15f);
-		glVertex2f(1.0f, -2.57f / 3.15f);
+		glVertex2f(-1.0f, 2.57f / 3.05f);
+		glVertex2f(1.0f, 2.57f / 3.05f);
+		glVertex2f(-1.0f, -2.57f / 3.05f);
+		glVertex2f(1.0f, -2.57f / 3.05f);
 
 		glColor3f(1.0f, 0.0f, 0.0f);
 

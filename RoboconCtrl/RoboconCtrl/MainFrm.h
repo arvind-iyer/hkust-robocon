@@ -50,6 +50,7 @@ protected:
 // serial port member
 	static SerialIO* serial;
 // buffer that stores keys pressed
+	std::string send_msg;
 	std::basic_string<TCHAR> keys_pressed;
 
 // Generated message map functions
