@@ -12,6 +12,8 @@
 static char THIS_FILE[] = __FILE__;
 #endif
 
+#define MAX_STRINGS 256
+
 /////////////////////////////////////////////////////////////////////////////
 // COutputBar
 
@@ -101,14 +103,25 @@ void COutputWnd::AdjustHorzScroll(CListBox& wndListBox)
 
 void COutputWnd::PrintString(std::basic_string<TCHAR> string_to_print)
 {
+	if (m_wndOutputBuild.GetCount() > MAX_STRINGS) {
+		m_wndOutputBuild.DeleteString(0);
+	}
+
 	m_wndOutputBuild.SetTopIndex(m_wndOutputBuild.AddString(string_to_print.c_str()));
 	AdjustHorzScroll(m_wndOutputBuild);
 }
 
 void COutputWnd::ReadFromSerial(std::basic_string<TCHAR> string_read_from_serial)
 {
+	if (m_wndOutputRead.GetCount() > MAX_STRINGS) {
+		m_wndOutputRead.DeleteString(0);
+	}
 	m_wndOutputRead.SetTopIndex(m_wndOutputRead.AddString(string_read_from_serial.c_str()));
 	AdjustHorzScroll(m_wndOutputRead);
+
+	if (m_wndOutputBuild.GetCount() > MAX_STRINGS) {
+		m_wndOutputBuild.DeleteString(0);
+	}
 	m_wndOutputBuild.SetTopIndex(m_wndOutputBuild.AddString(string_read_from_serial.c_str()));
 	AdjustHorzScroll(m_wndOutputBuild);
 }
