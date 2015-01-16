@@ -284,7 +284,6 @@ void CRoboconCtrlView::OnDraw(CDC* /*pDC*/)
 	if (grid_pos.valid) {
 		std::basic_ostringstream<TCHAR> oss;
 		oss << _T("Mouse coordinates: (") << grid_pos.x << _T(", ") << grid_pos.y << _T(")");
-
 		TextOut(pDC.GetSafeHdc(), 1, 2, oss.str().c_str(), oss.str().size());
 	}
 }
@@ -342,10 +341,6 @@ LRESULT CRoboconCtrlView::refresh_coordinates(WPARAM w, LPARAM l) {
 	r_pos.angle = coordinates[2];
 
 	robot_pos = ConvertGridCoordToGLCoord(r_pos);
-
-	std::basic_ostringstream<TCHAR> oss;
-	oss << _T("ROBOT RECEIVED COORD: (") << robot_pos.x << _T(", ") << robot_pos.y << _T(", ") << robot_pos.angle << _T(")");
-	OutputDebugString(oss.str().c_str());
 
 	return 0;
 }

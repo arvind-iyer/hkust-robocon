@@ -133,7 +133,7 @@ std::pair<std::vector<int>, BOOL> RobotMCtrl::operator()(std::string string_rece
 		for (int i = 0; i < string.size(); ++i) {
 			oss << std::hex << std::setfill(_T('0')) << std::setw(2) << (BYTE)string[i] << _T(" ");
 		}
-
+		oss << std::endl;
 		OutputDebugString(oss.str().c_str());
 
 		if (string.size() == 11 && string[0] == 0x60 && string[1] == 6 && string[8] == 0x60) {
@@ -151,9 +151,7 @@ std::pair<std::vector<int>, BOOL> RobotMCtrl::operator()(std::string string_rece
 				coordinates.push_back(y);
 				unsigned short angle = (string[6] << 8) | (string[7]);
 				coordinates.push_back(angle);
-				std::basic_ostringstream<TCHAR> oss;
-				oss << _T("ROBOT x: ") << x << _T(" y: ") << y << _T(" angle: ") << angle;
-				OutputDebugString(oss.str().c_str());
+
 				return std::make_pair(coordinates, TRUE);
 			}
 		}

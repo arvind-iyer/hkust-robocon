@@ -53,7 +53,7 @@ protected:
 	std::string send_msg;
 	std::basic_string<TCHAR> keys_pressed;
 	BOOL shift;
-
+	int readmode;
 // Generated message map functions
 protected:
 	afx_msg void OnEditCopy();

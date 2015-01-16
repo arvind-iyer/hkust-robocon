@@ -295,13 +295,20 @@ void CMainFrame::print_from_serial(std::basic_string<TCHAR> string_to_print, int
 
 void CMainFrame::print_from_serial(std::string string_to_print, int ioconfig)
 {
-//	if (stoi(GetSettings()[3]) == 2) {
+//	std::vector<std::basic_string<TCHAR>> settings = m_wndProperties.GetSettings();
+	if (readmode == 2) {
 		std::pair<std::vector<int>, BOOL> data = RobotMCtrl()(string_to_print);
 		if (data.second) {
 			GetActiveView()->SendMessage(WM_SEND_STRING, 0, (LPARAM)&(data.first));
+			std::basic_ostringstream<TCHAR> oss;
+			oss << _T("Received Coordinate: (") << (data.first)[0] << _T(", ") << (data.first)[1] << _T(", ") << (data.first)[2] << _T(")");
+			print_from_serial(oss.str().c_str(), ioconfig);
 		}
-//	}
-	print_from_serial(std::wstring(CString(string_to_print.c_str(), string_to_print.size())), ioconfig);
+
+	}
+	else {
+		print_from_serial(std::wstring(CString(string_to_print.c_str(), string_to_print.size())), ioconfig);
+	}
 }
 
 // CMainFrame threads
@@ -335,7 +342,8 @@ UINT __cdecl CMainFrame::write_thread(LPVOID app_ptr){
 BOOL CMainFrame::PreTranslateMessage(MSG* msg)
 {
 	std::vector<std::basic_string<TCHAR>> settings = m_wndProperties.GetSettings();
-	if (stoi(settings[3]) == 2 && GetFocus() != NULL){
+	readmode = stoi(settings[3]);
+	if (readmode == 2 && GetFocus() != NULL){
 		keys_pressed.clear();
 		if (GetAsyncKeyState(0x51)) { // Q Key
 			keys_pressed += std::wstring(_T("q"));
