@@ -305,7 +305,7 @@ UINT __cdecl CMainFrame::read_thread(LPVOID app_ptr){
 			// Somehow using a CString to convert to a wstring seems to work well and prevents segfaults from happening
 			((CMainFrame*)app_ptr)->print_from_serial(std::wstring(CString(string.c_str(), string.size())));
 		}
-		Sleep(10);
+		Sleep(20);
 	}
 	return 0;
 }
@@ -316,7 +316,7 @@ UINT __cdecl CMainFrame::write_thread(LPVOID app_ptr){
 	while (serial != NULL && serial->is_connected()){
 		if (!((CMainFrame*)app_ptr)->keys_pressed.empty()){
 			((CMainFrame*)app_ptr)->SendMessage(WM_SEND_STRING, 0, 0);
-			Sleep(50);
+			Sleep(20);
 		}
 	}
 	return 0;
