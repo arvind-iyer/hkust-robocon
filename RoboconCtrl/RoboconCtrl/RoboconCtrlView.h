@@ -35,18 +35,25 @@ private:
 	struct GLCoord {
 		float x;
 		float y;
+		unsigned int angle;
+		BOOL valid;
+	};
+
+	struct GridCoord {
+		int x;
+		int y;
+		unsigned int angle;
 		BOOL valid;
 	};
 
 	GLCoord GetGLCoord(CPoint wndCoord);
-	std::pair<CPoint, BOOL> GetRobotCoord();
+	GridCoord GetRobotCoord(CPoint wndCoord, unsigned int angle = 0);
+	GLCoord ConvertGridCoordToGLCoord(GridCoord g);
 	struct GLCoord current_pos;
 	struct GLCoord cursor_pos;
+	struct GLCoord robot_pos;
 
-	int robot_x_pos;
-	int robot_y_pos;
-	unsigned int robot_angle;
-	BOOL robot_pos_valid;
+	struct GridCoord grid_pos;
 
 // Implementation
 public:

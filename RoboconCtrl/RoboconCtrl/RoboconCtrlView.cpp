@@ -138,31 +138,33 @@ CRoboconCtrlView::GLCoord CRoboconCtrlView::GetGLCoord(CPoint wndCoord)
 	return g;
 }
 
-std::pair<CPoint, BOOL> CRoboconCtrlView::GetRobotCoord() {
-	// CRect rect;
-	// GetClientRect(rect);
-
-	// start height = (height - gl_height) /2 scale to 3050
-	// end height = (height + gl_height) / 2 scale to -3050
-	// start width = (width - gl_width) /2
-	// end width = (width + gl_width)/2
+CRoboconCtrlView::GridCoord CRoboconCtrlView::GetRobotCoord(CPoint wndCoord, unsigned int angle) {
+	CRect rect;
+	GetClientRect(rect);
 
 	int x, y = 0;
 
-	if (cursor_pos.x < 0) {
-		x = (int)-(cursor_pos.y * 3050.0);
-		y = (int)((1.0 + cursor_pos.x) * 6700.0);
+	if (wndCoord.x < rect.Width() / 2) {
+		x = (-3050 * (rect.Height() - 2 * (wndCoord.y + 1))) / gl_height;
+		y = (-6700 * (rect.Width() - 2 * wndCoord.x - gl_width - 2)) / gl_width;
 	}
 	else {
-		x = (int)(cursor_pos.y * 3050.0);
-		y = (int)((1.0 - cursor_pos.x) * 6700.0);
+		x = (3050 * (rect.Height() - 2 * (wndCoord.y + 1))) / gl_height;
+		y = (6700 * (rect.Width() - 2 * wndCoord.x + gl_width - 2)) / gl_width;
 	}
-
-	CPoint p;
-	p.SetPoint(x, y);
-
-	return std::make_pair(p, cursor_pos.valid);
+	GridCoord g;
+	g.x = x;
+	g.y = y;
+	g.angle = angle;
+	if (x > 3050 || x < -3050 || y < 0) {
+		g.valid = FALSE;
+	}
+	else {
+		g.valid = TRUE;
+	}
+	return g;
 }
+
 void CRoboconCtrlView::GLDrawScene()
 {
 	glBegin(GL_QUADS);
@@ -245,6 +247,13 @@ void CRoboconCtrlView::GLDrawScene()
 			glVertex2f(current_pos.x, current_pos.y);
 		glEnd();
 	}
+	if (robot_pos.valid) {
+		glPointSize(7.0f);
+		glBegin(GL_POINT);
+		glColor3f(0.0f, 0.0f, 1.0f);
+		glVertex2f(robot_pos.x, robot_pos.y);
+		glEnd();
+	}
 
 	if (cursor_pos.valid) {
 		glBegin(GL_LINE);
@@ -272,16 +281,18 @@ void CRoboconCtrlView::OnDraw(CDC* /*pDC*/)
 	CClientDC pDC(this);
 	OnPrepareDC(&pDC);
 
-	std::pair<CPoint, BOOL> b = GetRobotCoord();
-	std::basic_ostringstream<TCHAR> oss;
-	oss << _T("Mouse coordinates: (") << b.first.x << _T(", ") << b.first.y << _T(")");
+	if (grid_pos.valid) {
+		std::basic_ostringstream<TCHAR> oss;
+		oss << _T("Mouse coordinates: (") << grid_pos.x << _T(", ") << grid_pos.y << _T(")");
 
-	TextOut(pDC.GetSafeHdc(), 1, 2, oss.str().c_str(), oss.str().size());
+		TextOut(pDC.GetSafeHdc(), 1, 2, oss.str().c_str(), oss.str().size());
+	}
 }
 
 void CRoboconCtrlView::OnMouseMove(UINT nFlags, CPoint point)
 {
 	cursor_pos = GetGLCoord(point);
+	grid_pos = GetRobotCoord(point);
 	Invalidate();
 }
 
@@ -308,21 +319,33 @@ void CRoboconCtrlView::OnLButtonDblClk(UINT nFlags, CPoint point)
 	CView::OnLButtonDblClk(nFlags, point);
 	current_pos = GetGLCoord(point);
 
-	std::pair<CPoint, BOOL> b = GetRobotCoord();
-	
-
 	Invalidate();
+}
+
+CRoboconCtrlView::GLCoord CRoboconCtrlView::ConvertGridCoordToGLCoord(GridCoord g)
+{
+	GLCoord r_pos;
+	r_pos.x = (float)(1.0 - (g.y / 6700.0));
+	r_pos.y = (float)(g.x / 3050.0);
+	r_pos.angle = g.angle;
+	r_pos.valid = g.valid;
+
+	return r_pos;
 }
 
 LRESULT CRoboconCtrlView::refresh_coordinates(WPARAM w, LPARAM l) {
 	std::vector<int> coordinates = *(reinterpret_cast<std::vector<int>*>(l));
-	std::basic_ostringstream<TCHAR> oss;
-	oss << _T("ROBOT RECEIVED COORD: (") << coordinates[0] << _T(", ") << coordinates[1] << _T(", ") << coordinates[2] << _T(")");
-	OutputDebugString(oss.str().c_str());
 
-	robot_x_pos = coordinates[0];
-	robot_y_pos = coordinates[1];
-	robot_angle = coordinates[2];
+	GridCoord r_pos;
+	r_pos.x = coordinates[0];
+	r_pos.y = coordinates[1];
+	r_pos.angle = coordinates[2];
+
+	robot_pos = ConvertGridCoordToGLCoord(r_pos);
+
+	std::basic_ostringstream<TCHAR> oss;
+	oss << _T("ROBOT RECEIVED COORD: (") << robot_pos.x << _T(", ") << robot_pos.y << _T(", ") << robot_pos.angle << _T(")");
+	OutputDebugString(oss.str().c_str());
 
 	return 0;
 }

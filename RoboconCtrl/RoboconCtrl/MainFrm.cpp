@@ -295,12 +295,12 @@ void CMainFrame::print_from_serial(std::basic_string<TCHAR> string_to_print, int
 
 void CMainFrame::print_from_serial(std::string string_to_print, int ioconfig)
 {
-	if (stoi(GetSettings()[3]) == 2) {
+//	if (stoi(GetSettings()[3]) == 2) {
 		std::pair<std::vector<int>, BOOL> data = RobotMCtrl()(string_to_print);
 		if (data.second) {
 			GetActiveView()->SendMessage(WM_SEND_STRING, 0, (LPARAM)&(data.first));
 		}
-	}
+//	}
 	print_from_serial(std::wstring(CString(string_to_print.c_str(), string_to_print.size())), ioconfig);
 }
 
