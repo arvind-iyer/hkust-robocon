@@ -327,7 +327,7 @@ UINT __cdecl CMainFrame::write_thread(LPVOID app_ptr){
 BOOL CMainFrame::PreTranslateMessage(MSG* msg)
 {
 	std::vector<std::basic_string<TCHAR>> settings = m_wndProperties.GetSettings();
-	if (stoi(settings[3]) == 2){
+	if (stoi(settings[3]) == 2 && GetFocus() != NULL){
 		keys_pressed.clear();
 		if (GetAsyncKeyState(0x51)) { // Q Key
 			keys_pressed += std::wstring(_T("q"));
@@ -501,7 +501,7 @@ LRESULT CMainFrame::WriteString(WPARAM w, LPARAM l)
 			// speed printing
 			std::size_t found = keys_pressed.find_last_of(_T("0123456789"));
 			if (found != std::basic_string<TCHAR>::npos) {
-				serial->write(RobotMCtrl()(keys_pressed[found]));
+				serial->write(RobotMCtrl()(keys_pressed[found] - '0'));
 				std::basic_ostringstream<TCHAR> oss;
 				oss << _T("Speed: ") << keys_pressed[found];
 				print_from_serial(oss.str(), 1);
