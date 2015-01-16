@@ -295,12 +295,13 @@ void CMainFrame::print_from_serial(std::basic_string<TCHAR> string_to_print, int
 
 void CMainFrame::print_from_serial(std::string string_to_print, int ioconfig)
 {
-	std::pair<std::vector<int>, BOOL> data = RobotMCtrl()(string_to_print);
-	if (data.second) {
-		GetActiveView()->SendMessage(WM_SEND_STRING, 0, (LPARAM)&(data.first));
+	if (stoi(GetSettings()[3]) == 2) {
+		std::pair<std::vector<int>, BOOL> data = RobotMCtrl()(string_to_print);
+		if (data.second) {
+			GetActiveView()->SendMessage(WM_SEND_STRING, 0, (LPARAM)&(data.first));
+		}
 	}
 	print_from_serial(std::wstring(CString(string_to_print.c_str(), string_to_print.size())), ioconfig);
-
 }
 
 // CMainFrame threads
@@ -312,7 +313,7 @@ UINT __cdecl CMainFrame::read_thread(LPVOID app_ptr){
 		if (serial->bytes_to_read()) {
 			((CMainFrame*)app_ptr)->print_from_serial(serial->read());
 		}
-		Sleep(20);
+		Sleep(10);
 	}
 	return 0;
 }
@@ -323,7 +324,7 @@ UINT __cdecl CMainFrame::write_thread(LPVOID app_ptr){
 	while (serial != NULL && serial->is_connected()){
 		if (!((CMainFrame*)app_ptr)->keys_pressed.empty()){
 			((CMainFrame*)app_ptr)->SendMessage(WM_SEND_STRING, 0, 0);
-			Sleep(20);
+			Sleep(10);
 		}
 	}
 	return 0;
