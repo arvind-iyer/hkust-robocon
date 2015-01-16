@@ -182,6 +182,7 @@ std::vector<std::basic_string<TCHAR>> CPropertiesWnd::GetSettings()
 	string_vector.push_back(((CString)m_wndPropList.GetProperty(1)->GetSubItem(0)->GetValue()).GetString());
 	string_vector.push_back(((CString)m_wndPropList.GetProperty(1)->GetSubItem(1)->GetValue()).GetString());
 	string_vector.push_back(((CString)m_wndPropList.GetProperty(1)->GetSubItem(2)->GetValue()).GetString());
+	string_vector.push_back(((CString)m_wndPropList.GetProperty(1)->GetSubItem(3)->GetValue()).GetString());
 
 	return string_vector;
 }
@@ -231,10 +232,13 @@ void CPropertiesWnd::InitPropList()
 	pProp = new CMFCPropertyGridProperty(_T("Buffer Size"), (_variant_t)to_string(500).c_str(), _T("Specifies the size of the read buffer."));
 	pGroup2->AddSubItem(pProp);
 
-	pProp = new CMFCPropertyGridProperty(_T("Write Mode"), (_variant_t)to_string(0).c_str(), _T("0 - Enter to send\n1 - Realtime sending\n2 - Realtime sending everywhere"));
+	pProp = new CMFCPropertyGridProperty(_T("Write Mode"), (_variant_t)to_string(2).c_str(), _T("0 - Enter to send\n1 - Realtime sending\n2 - Realtime sending everywhere"));
 	pGroup2->AddSubItem(pProp);
 
 	pProp = new CMFCPropertyGridProperty(_T("Pad Bits"), (_variant_t)to_string(1).c_str(), _T("0 - Disable\n1 - Enable"));
+	pGroup2->AddSubItem(pProp);
+
+	pProp = new CMFCPropertyGridProperty(_T("Read Mode"), (_variant_t)to_string(1).c_str(), _T("0 - Regular Read\n1 - Robot coordinates"));
 	pGroup2->AddSubItem(pProp);
 
 	m_wndPropList.AddProperty(pGroup2);
