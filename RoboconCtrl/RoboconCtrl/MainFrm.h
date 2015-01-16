@@ -52,6 +52,7 @@ protected:
 // buffer that stores keys pressed
 	std::string send_msg;
 	std::basic_string<TCHAR> keys_pressed;
+	BOOL shift;
 
 // Generated message map functions
 protected:
@@ -72,6 +73,7 @@ protected:
 
 // Thread functions
 protected:
+	CWinThread* threads[2];
 	static UINT __cdecl read_thread(LPVOID app_ptr);
 	static UINT __cdecl write_thread(LPVOID app_ptr);
 	DECLARE_MESSAGE_MAP()

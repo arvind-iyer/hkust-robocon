@@ -67,6 +67,15 @@ CMainFrame::~CMainFrame()
 	if (serial) {
 		delete serial;
 		serial = NULL;
+
+		HANDLE handles[2] = { 0 };
+		if (threads[0] != NULL) {
+			handles[0] = threads[0]->m_hThread;
+		}
+		if (threads[1] != NULL) {
+			handles[1] = threads[1]->m_hThread;
+		}
+		WaitForMultipleObjects(2, handles, TRUE, INFINITE);
 	}
 }
 
@@ -298,7 +307,6 @@ UINT __cdecl CMainFrame::read_thread(LPVOID app_ptr){
 		}
 		Sleep(10);
 	}
-	((CMainFrame*)app_ptr)->print_to_output(_T("Closing Port"));
 	return 0;
 }
 
@@ -320,22 +328,35 @@ BOOL CMainFrame::PreTranslateMessage(MSG* msg)
 {
 	std::vector<std::basic_string<TCHAR>> settings = m_wndProperties.GetSettings();
 	if (stoi(settings[3]) == 2){
-		if (msg && msg->message == WM_KEYDOWN && GetFocus() != NULL){
-			BYTE kb[256];
-			GetKeyboardState(kb);
-			TCHAR buffer[2] = {};
-			if (ToUnicode(msg->wParam, MapVirtualKey(msg->wParam, MAPVK_VK_TO_VSC), kb, buffer, 1, 0)) {
-				keys_pressed = keys_pressed + buffer[0];
-				keys_pressed.erase(std::unique(keys_pressed.begin(), keys_pressed.end()), keys_pressed.end());
-			}
+		keys_pressed.clear();
+		if (GetAsyncKeyState(0x51)) { // Q Key
+			keys_pressed += std::wstring(_T("q"));
 		}
-		else if (msg && msg->message == WM_KEYUP) {
-			BYTE kb[256];
-			GetKeyboardState(kb);
-			TCHAR buffer[2] = {};
-			if (ToUnicode(msg->wParam, MapVirtualKey(msg->wParam, MAPVK_VK_TO_VSC), kb, buffer, 1, 0)){
-				keys_pressed.erase(std::remove(keys_pressed.begin(), keys_pressed.end(), buffer[0]), keys_pressed.end());
-				// OutputDebugString(_T("Key Erased: ") + buffer[0]);
+		if (GetAsyncKeyState(0x57)) { // W Key
+			keys_pressed += std::wstring(_T("w"));
+		}
+		if (GetAsyncKeyState(0x45)) { // E Key
+			keys_pressed += std::wstring(_T("e"));
+		}
+		if (GetAsyncKeyState(0x41)) { // A Key
+			keys_pressed += std::wstring(_T("a"));
+		}
+		if (GetAsyncKeyState(0x53)) { // S Key
+			keys_pressed += std::wstring(_T("s"));
+		}
+		if (GetAsyncKeyState(0x44)) { // D Key
+			keys_pressed += std::wstring(_T("d"));
+		}
+		if (GetAsyncKeyState(VK_SHIFT)) {
+			shift = TRUE;
+		}
+		else {
+			shift = FALSE;
+		}
+		for (int i = 0; i < 10; i++) {
+			if (GetAsyncKeyState(0x30 + i)) {
+				TCHAR c[1] = { _T('0') + i };
+				keys_pressed += c;
 			}
 		}
 	}
@@ -360,8 +381,8 @@ void CMainFrame::OpenConnection()
 		if (serial->is_connected()) {
 			print_to_output(_T("SUCCESS!"));
 		}
-		AfxBeginThread(CMainFrame::read_thread, this);
-		AfxBeginThread(CMainFrame::write_thread, this);
+		threads[0] = AfxBeginThread(CMainFrame::read_thread, this);
+		threads[1] = AfxBeginThread(CMainFrame::write_thread, this);
 	}
 	catch (std::runtime_error r) {
 		print_to_output(converter.from_bytes(r.what()));
@@ -373,7 +394,20 @@ void CMainFrame::CloseConnection()
 	if (serial) {
 		delete serial;
 		serial = NULL;
+		
+		HANDLE handles[2] = { 0 };
+		if (threads[0] != NULL) {
+			handles[0] = threads[0]->m_hThread;
+		}
+		if (threads[1] != NULL) {
+			handles[1] = threads[1]->m_hThread;
+		}
+		WaitForMultipleObjects(2, handles, TRUE, INFINITE);
+		threads[0] = NULL;
+		threads[1] = NULL;
+		print_to_output(_T("Closing Port"));
 	}
+
 }
 
 void CMainFrame::OnEditCopy()
@@ -454,6 +488,11 @@ LRESULT CMainFrame::WriteString(WPARAM w, LPARAM l)
 					double scale = sqrt(100 * 100 + 100 * 100) / 100.0;
 					x = (int)((double)x / scale);
 					y = (int)((double)y / scale);
+				}
+				if (shift) {
+					x = x / 2;
+					y = y / 2;
+					w = w / 2;
 				}
 				std::basic_ostringstream<TCHAR> oss;
 				oss << _T("X: ") << x << _T(" Y: ") << y << _T(" w: ") << w;
