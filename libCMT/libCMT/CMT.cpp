@@ -104,16 +104,15 @@ CMT::CMT()
     nbInitialKeypoints = 0;
 }
 
-void CMT::initialise(cv::Mat im_gray0, cv::Point2f topleft, cv::Point2f bottomright)
-{
-
-    //Initialise detector, descriptor, matcher
-    detector = cv::Algorithm::create<cv::FeatureDetector>(detectorType.c_str());
-    descriptorExtractor = cv::Algorithm::create<cv::DescriptorExtractor>(descriptorType.c_str());
-    descriptorMatcher = cv::DescriptorMatcher::create(matcherType.c_str());
-    std::vector<std::string> list;
-    cv::Algorithm::getList(list);
-
+void CMT::initialise(cv::Mat im_gray0, cv::Point2f topleft, cv::Point2f bottomright) {
+	//Initialise detector, descriptor, matcher
+	detector = cv::Algorithm::create<cv::FeatureDetector>(detectorType.c_str());
+	descriptorExtractor = cv::Algorithm::create<cv::DescriptorExtractor>(descriptorType.c_str());
+	descriptorMatcher = cv::DescriptorMatcher::create(matcherType.c_str());	// May cause "Bad argument (Unknown matcher name)
+	
+	std::vector<std::string> list;
+	cv::Algorithm::getList(list);
+	
     //Get initial keypoints in whole image
     std::vector<cv::KeyPoint> keypoints;
     detector->detect(im_gray0, keypoints);
