@@ -75,7 +75,7 @@ CMainFrame::~CMainFrame()
 		if (threads[1] != NULL) {
 			handles[1] = threads[1]->m_hThread;
 		}
-		WaitForMultipleObjects(2, handles, TRUE, INFINITE);
+		WaitForMultipleObjects(2, handles, TRUE, 2000);
 	}
 }
 
@@ -293,6 +293,16 @@ void CMainFrame::print_from_serial(std::basic_string<TCHAR> string_to_print, int
 	
 }
 
+void CMainFrame::print_from_serial(std::string string_to_print, int ioconfig)
+{
+	std::pair<std::vector<int>, BOOL> data = RobotMCtrl()(string_to_print);
+	if (data.second) {
+		GetActiveView()->SendMessage(WM_SEND_STRING, 0, (LPARAM)&(data.first));
+	}
+	print_from_serial(std::wstring(CString(string_to_print.c_str(), string_to_print.size())), ioconfig);
+
+}
+
 // CMainFrame threads
 
 // Read thread
@@ -300,10 +310,7 @@ void CMainFrame::print_from_serial(std::basic_string<TCHAR> string_to_print, int
 UINT __cdecl CMainFrame::read_thread(LPVOID app_ptr){
 	while (serial != NULL && serial->is_connected()){
 		if (serial->bytes_to_read()) {
-			std::string string = serial->read();
-			// std::wstring_convert<std::codecvt_utf8_utf16<wchar_t>> converter;
-			// Somehow using a CString to convert to a wstring seems to work well and prevents segfaults from happening
-			((CMainFrame*)app_ptr)->print_from_serial(std::wstring(CString(string.c_str(), string.size())));
+			((CMainFrame*)app_ptr)->print_from_serial(serial->read());
 		}
 		Sleep(20);
 	}
@@ -402,7 +409,7 @@ void CMainFrame::CloseConnection()
 		if (threads[1] != NULL) {
 			handles[1] = threads[1]->m_hThread;
 		}
-		WaitForMultipleObjects(2, handles, TRUE, INFINITE);
+		WaitForMultipleObjects(2, handles, TRUE, 2000);
 		threads[0] = NULL;
 		threads[1] = NULL;
 		print_to_output(_T("Closing Port"));
@@ -514,7 +521,7 @@ LRESULT CMainFrame::WriteString(WPARAM w, LPARAM l)
 	} else {
 		if (serial != NULL && serial->is_connected()){
 			CString* string = reinterpret_cast<CString*>(l);
-			serial->write(std::basic_string<TCHAR>(*string));
+			serial->write(std::string(CT2CA(*string)));
 			print_from_serial(std::basic_string<TCHAR>(*string), 1);
 		}
 		else {

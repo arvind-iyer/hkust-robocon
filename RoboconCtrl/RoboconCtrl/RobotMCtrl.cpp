@@ -2,6 +2,7 @@
 #include "RobotMCtrl.h"
 #include <math.h>
 #include <sstream>
+#include <iomanip>
 
 RobotMCtrl::RobotMCtrl()
 {
@@ -122,6 +123,44 @@ std::string RobotMCtrl::operator()(int speed) {
 	return o.str();
 	
 }
+
+std::pair<std::vector<int>, BOOL> RobotMCtrl::operator()(std::string string_received) {
+	if (string_received.find_first_of(0x12) != std::string::npos && string_received.find_first_of(0x34) != std::string::npos) {
+		std::string string = string_received.substr(string_received.find_first_of((char)0x12) + 1 , string_received.find_last_of((char)0x34) - string_received.find_first_of((char)0x12) - 1);
+
+		std::basic_ostringstream<TCHAR> oss;
+
+		for (int i = 0; i < string.size(); ++i) {
+			oss << std::hex << std::setfill(_T('0')) << std::setw(2) << (BYTE)string[i] << _T(" ");
+		}
+
+		OutputDebugString(oss.str().c_str());
+
+		if (string.size() == 11 && string[0] == 0x60 && string[1] == 6 && string[8] == 0x60) {
+			char data[6];
+			for (int i = 0; i < 6; i++) {
+				data[i] = string[i + 2];
+			}
+			char buffer[2] = { 0, 0 };
+			crc16(buffer, data, 6);
+			if (string[9] == buffer[0] && string[10] == buffer[1]) {
+				std::vector<int> coordinates;
+				short x = (string[2] << 8) | (string[3]);
+				coordinates.push_back(x);
+				short y = (string[4] << 8) | (string[5]);
+				coordinates.push_back(y);
+				unsigned short angle = (string[6] << 8) | (string[7]);
+				coordinates.push_back(angle);
+				std::basic_ostringstream<TCHAR> oss;
+				oss << _T("ROBOT x: ") << x << _T(" y: ") << y << _T(" angle: ") << angle;
+				OutputDebugString(oss.str().c_str());
+				return std::make_pair(coordinates, TRUE);
+			}
+		}
+	}
+	return std::make_pair(std::vector<int>(), FALSE);
+}
+
 
 RobotMCtrl::~RobotMCtrl()
 {

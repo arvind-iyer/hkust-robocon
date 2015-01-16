@@ -37,10 +37,17 @@ private:
 		float y;
 		BOOL valid;
 	};
-	GLCoord GetGLCoord(CPoint wndCoord);
 
+	GLCoord GetGLCoord(CPoint wndCoord);
+	std::pair<CPoint, BOOL> GetRobotCoord();
 	struct GLCoord current_pos;
 	struct GLCoord cursor_pos;
+
+	int robot_x_pos;
+	int robot_y_pos;
+	unsigned int robot_angle;
+	BOOL robot_pos_valid;
+
 // Implementation
 public:
 	virtual ~CRoboconCtrlView();
@@ -60,6 +67,7 @@ protected:
 	afx_msg BOOL OnEraseBkgnd(CDC* pDC);
 	afx_msg void OnLButtonDblClk(UINT nFlags, CPoint point);
 	afx_msg void OnMouseMove(UINT nFlags, CPoint point);
+	afx_msg LRESULT refresh_coordinates(WPARAM w, LPARAM l);
 	DECLARE_MESSAGE_MAP()
 };
 
