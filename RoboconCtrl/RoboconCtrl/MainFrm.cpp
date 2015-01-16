@@ -483,16 +483,16 @@ LRESULT CMainFrame::WriteString(WPARAM w, LPARAM l)
 				if (keys_pressed.find(_T('e')) != std::basic_string<TCHAR>::npos) {
 					w += 100;
 				}
+				if (shift) {
+					x = x / 2;
+					y = y / 2;
+					w = w / 2;
+				}
 				serial->write(RobotMCtrl()(x, y, w));
 				if (x != 0 && y != 0) {
 					double scale = sqrt(100 * 100 + 100 * 100) / 100.0;
 					x = (int)((double)x / scale);
 					y = (int)((double)y / scale);
-				}
-				if (shift) {
-					x = x / 2;
-					y = y / 2;
-					w = w / 2;
 				}
 				std::basic_ostringstream<TCHAR> oss;
 				oss << _T("X: ") << x << _T(" Y: ") << y << _T(" w: ") << w;
