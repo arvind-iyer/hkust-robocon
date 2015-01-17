@@ -14,6 +14,7 @@
 #include <utility>
 #include <algorithm>
 #include <math.h>
+#include <iomanip>
 
 #ifdef _DEBUG
 #define new DEBUG_NEW
@@ -474,10 +475,11 @@ LRESULT CMainFrame::WriteString(WPARAM w, LPARAM l)
 	if (serial == NULL) {
 		OpenConnection();
 	}
-	if (l == NULL){
-		if (serial != NULL && serial->is_connected()){
+	if (serial != NULL && serial->is_connected()){
+		switch (w) {
+		case 0: // manual mode printing
+		{
 			if (keys_pressed.find_first_of(_T("qweasd")) != std::basic_string<TCHAR>::npos) {
-				// manual mode printing
 				int x = 0;
 				int y = 0;
 				int w = 0;
@@ -522,21 +524,31 @@ LRESULT CMainFrame::WriteString(WPARAM w, LPARAM l)
 				oss << _T("Speed: ") << keys_pressed[found];
 				print_from_serial(oss.str(), 1);
 			}
+			break;
 		}
-		else {
-			OutputDebugString(_T("Port cannot be opened, cannot write"));
-			return 1;
-		}
-	} else {
-		if (serial != NULL && serial->is_connected()){
+		case 1: // string printing
+		{
 			CString* string = reinterpret_cast<CString*>(l);
 			serial->write(std::string(CT2CA(*string)));
 			print_from_serial(std::basic_string<TCHAR>(*string), 1);
+			break;
 		}
-		else {
-			OutputDebugString(_T("Port cannot be opened, cannot write"));
-			return 1;
+		case 2: // auto mode printing
+		{
+			std::vector<short> data = *reinterpret_cast<std::vector<short>*>(l);
+			serial->write(RobotMCtrl()(data[0], data[1], (unsigned short)data[2]));
+			std::basic_ostringstream<TCHAR> oss;
+			oss << _T("Sent Position: (") << (short)data[0] << _T(", ") << (short)data[1] << _T(", ") << (short)data[2] << _T(")");
+			print_from_serial(oss.str(), 1);
+			break;
 		}
+		default:
+			break;
+		}
+	}
+	else {
+		OutputDebugString(_T("Port cannot be opened, cannot write"));
+		return 1;
 	}
 	return 0;
 }

@@ -57,12 +57,6 @@ bool crc16(char* buffer, const char* message, int msg_l)
 }
 
 std::string RobotMCtrl::operator()(int x, int y, int w) {
-//	if (x != 0 && y != 0) {
-//		double x_coord = x;
-//		double y_coord = y;
-//		double r = sqrt(pow(x_coord, 2.0) + pow(y_coord, 2.0));
-//	}
-
 	// Bounds checking
 	if (x > 100) {
 		x = 100;
@@ -160,7 +154,45 @@ std::pair<std::vector<int>, BOOL> RobotMCtrl::operator()(std::string string_rece
 	return std::make_pair(std::vector<int>(), FALSE);
 }
 
+std::string RobotMCtrl::operator()(short x, short y, unsigned short angle)
+{
+	char soh = 0x12;
+	char id = 0x61;
+	char data_length = 0x06;
+	char data[6] = { x >> 8, x, y >> 8, y, angle >> 8, angle };
+	char buffer[2] = { 0, 0 };
+	char eot = 0x34;
+	crc16(buffer, data, 6);
 
+	// construct the string to send
+	std::stringstream o;
+	o << soh << id << data_length;
+	for (int i = 0; i < 6; ++i) {
+		o << data[i];
+	}
+	o << id << buffer[0] << buffer[1] << eot;
+
+	BYTE x1 = x >> 8;
+	BYTE x2 = x;
+
+	BYTE y1 = y >> 8;
+	BYTE y2 = y;
+
+	BYTE angle1 = angle >> 8;
+	BYTE angle2 = angle;
+
+	std::basic_ostringstream<TCHAR> oss;
+	oss << std::hex << std::setfill(_T('0')) << std::setw(2) << (BYTE)x1 << _T(" ") << std::setw(2) << (BYTE)x2 << _T(" ") << std::setw(2) << (BYTE)y1 << _T(" ") << std::setw(2) << (BYTE)y2 << _T(" ") << std::setw(2) << (BYTE)angle1 << _T(" ") << std::setw(2) << (BYTE)angle2 << _T(" ");
+	oss << std::endl;
+	OutputDebugString(oss.str().c_str());
+
+	std::basic_ostringstream<TCHAR> oss2;
+	oss2 << std::hex << std::setfill(_T('0')) << std::setw(4) << x << _T(" ") << std::setw(4) << y << _T(" ") << std::setw(4) << angle;
+	oss2 << std::endl;
+	OutputDebugString(oss2.str().c_str());
+
+	return o.str();
+}
 RobotMCtrl::~RobotMCtrl()
 {
 }

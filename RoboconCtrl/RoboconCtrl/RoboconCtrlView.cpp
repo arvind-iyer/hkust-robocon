@@ -11,6 +11,7 @@
 
 #include "RoboconCtrlDoc.h"
 #include "RoboconCtrlView.h"
+#include "MainFrm.h"
 
 #include "RobotMCtrl.h"
 
@@ -21,6 +22,7 @@
 #include <gl/GL.h>
 #include <gl/GLU.h>
 #include <sstream>
+#include <iomanip>
 
 // CRoboconCtrlView
 
@@ -325,6 +327,14 @@ void CRoboconCtrlView::OnLButtonDblClk(UINT nFlags, CPoint point)
 	CView::OnLButtonDblClk(nFlags, point);
 	current_pos = GetGLCoord(point);
 
+	if (grid_pos.valid){
+		std::vector<short> data;
+		data.push_back((short)grid_pos.x);
+		data.push_back((short)grid_pos.y);
+		data.push_back((unsigned short)grid_pos.angle);
+
+		AfxGetMainWnd()->SendMessage(WM_SEND_STRING, 2, (LPARAM)&data);
+	}
 	Invalidate();
 }
 
