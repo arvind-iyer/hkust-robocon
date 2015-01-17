@@ -157,7 +157,7 @@ std::pair<std::vector<int>, BOOL> RobotMCtrl::operator()(std::string string_rece
 std::string RobotMCtrl::operator()(short x, short y, unsigned short angle)
 {
 	char soh = 0x12;
-	char id = 0x61;
+	char id = 0x50;
 	char data_length = 0x06;
 	char data[6] = { x >> 8, x, y >> 8, y, angle >> 8, angle };
 	char buffer[2] = { 0, 0 };
