@@ -145,11 +145,17 @@ std::pair<std::vector<int>, BOOL> RobotMCtrl::operator()(std::string string_rece
 			crc16(buffer, data, 6);
 			if (string[9] == buffer[0] && string[10] == buffer[1]) {
 				std::vector<int> coordinates;
-				short x = (string[2] << 8) | (string[3]);
+
+				std::basic_ostringstream<TCHAR> oss;
+				unsigned short test = (0x00 | ((string[3]) & 0xff));
+				oss << _T("TEST: ") << test << std::endl;
+				OutputDebugString(oss.str().c_str());
+
+				short x = ((BYTE)string[2] << 8) | ((BYTE)string[3]);
 				coordinates.push_back(x);
-				short y = (string[4] << 8) | (string[5]);
+				short y = ((BYTE)string[4] << 8) | ((BYTE)string[5]);
 				coordinates.push_back(y);
-				unsigned short angle = (string[6] << 8) | (string[7]);
+				unsigned short angle = ((BYTE)string[6] << 8) | ((BYTE)string[7]);
 				coordinates.push_back(angle);
 
 				return std::make_pair(coordinates, TRUE);
