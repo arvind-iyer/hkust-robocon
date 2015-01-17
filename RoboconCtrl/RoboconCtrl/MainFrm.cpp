@@ -282,19 +282,24 @@ void CMainFrame::print_to_output(std::basic_string<TCHAR> string_to_print)
 {
 	m_wndOutput.PrintString(string_to_print);
 }
-void CMainFrame::print_from_serial(std::basic_string<TCHAR> string_to_print, int ioconfig)
+void CMainFrame::print_from_serial(std::basic_string<TCHAR> string_to_print)
 {
-	switch (ioconfig) {
-	case 1:
-		m_wndOutput.ReadFromSerial(_T("Write: ") + string_to_print); break;
-	case 0:
-	default:
-		m_wndOutput.ReadFromSerial(_T("Read: ") + string_to_print); break;
-	}
-	
+		m_wndOutput.ReadFromSerial(string_to_print);
 }
 
-void CMainFrame::print_from_serial(std::string string_to_print, int ioconfig)
+// Second parameter tells me whether or not to add "Write: " at the beginning of the string
+
+void CMainFrame::print_write_to_serial(std::basic_string<TCHAR> string_to_print, int prefix_enable)
+{
+	if (prefix_enable) {
+		print_from_serial(_T("Write: ") + string_to_print);
+	}
+	else {
+		print_from_serial(string_to_print);
+	}
+}
+
+void CMainFrame::print_read_from_serial(std::string string_to_print)
 {
 	if (readmode == 1) {
 		std::pair<std::vector<int>, BOOL> data = RobotMCtrl()(string_to_print);
@@ -302,12 +307,12 @@ void CMainFrame::print_from_serial(std::string string_to_print, int ioconfig)
 			GetActiveView()->SendMessage(WM_SEND_STRING, 0, (LPARAM)&(data.first));
 			std::basic_ostringstream<TCHAR> oss;
 			oss << _T("Received Coordinate: (") << (data.first)[0] << _T(", ") << (data.first)[1] << _T(", ") << (data.first)[2] << _T(")");
-			print_from_serial(oss.str().c_str(), ioconfig);
+			print_from_serial(oss.str());
 		}
 
 	}
 	else {
-		print_from_serial(std::wstring(CString(string_to_print.c_str(), string_to_print.size())), ioconfig);
+		print_from_serial(_T("Read: ") + std::wstring(CString(string_to_print.c_str(), string_to_print.size())));
 	}
 }
 
@@ -318,7 +323,7 @@ void CMainFrame::print_from_serial(std::string string_to_print, int ioconfig)
 UINT __cdecl CMainFrame::read_thread(LPVOID app_ptr){
 	while (serial != NULL && serial->is_connected()){
 		if (serial->bytes_to_read()) {
-			((CMainFrame*)app_ptr)->print_from_serial(serial->read());
+			((CMainFrame*)app_ptr)->print_read_from_serial(serial->read());
 		}
 		Sleep(10);
 	}
@@ -363,7 +368,7 @@ BOOL CMainFrame::PreTranslateMessage(MSG* msg)
 		if (GetAsyncKeyState(0x44)) { // D Key
 			keys_pressed += std::wstring(_T("d"));
 		}
-		if (GetAsyncKeyState(VK_SHIFT)) {
+		if (GetAsyncKeyState(VK_SHIFT)) { // Shift key
 			shift = TRUE;
 		}
 		else {
@@ -381,6 +386,12 @@ BOOL CMainFrame::PreTranslateMessage(MSG* msg)
 	}
 	return FALSE;
 }
+
+/* 
+ * OpenConnection
+ * Opens a connection to the serial port by dynamically allocating
+ * a SerialIO object and starts up the read and write threads.
+ */
 
 void CMainFrame::OpenConnection()
 {
@@ -405,6 +416,12 @@ void CMainFrame::OpenConnection()
 	}
 }
 
+/*
+ * CloseConnection
+ * Closes the serial port by deleting the object, and then does thread synchronization, 
+ * making sure all threads terminate.
+ */
+
 void CMainFrame::CloseConnection()
 {
 	if (serial) {
@@ -425,6 +442,11 @@ void CMainFrame::CloseConnection()
 	}
 
 }
+
+/* 
+ * OnEditCopy(), OnEditClear(), OnEditPaste(), OnEditSelectAll()
+ * Redirects the respective messages to the correct windows.
+ */
 
 void CMainFrame::OnEditCopy()
 {
@@ -512,16 +534,16 @@ LRESULT CMainFrame::WriteString(WPARAM w, LPARAM l)
 					y = (int)((double)y / scale);
 				}
 				std::basic_ostringstream<TCHAR> oss;
-				oss << _T("X: ") << x << _T(" Y: ") << y << _T(" w: ") << w;
-				print_from_serial(oss.str(), 1);
+				oss << _T("Sent Controls | X: ") << x << _T(" Y: ") << y << _T(" w: ") << w;
+				print_write_to_serial(oss.str(), 0);
 			}
 			// speed printing
 			std::size_t found = keys_pressed.find_last_of(_T("0123456789"));
 			if (found != std::basic_string<TCHAR>::npos) {
 				serial->write(RobotMCtrl()(keys_pressed[found] - '0'));
 				std::basic_ostringstream<TCHAR> oss;
-				oss << _T("Speed: ") << keys_pressed[found];
-				print_from_serial(oss.str(), 1);
+				oss << _T("Sent Speed: ") << keys_pressed[found];
+				print_write_to_serial(oss.str(), 0);
 			}
 			break;
 		}
@@ -529,7 +551,7 @@ LRESULT CMainFrame::WriteString(WPARAM w, LPARAM l)
 		{
 			CString* string = reinterpret_cast<CString*>(l);
 			serial->write(std::string(CT2CA(*string)));
-			print_from_serial(std::basic_string<TCHAR>(*string), 1);
+			print_write_to_serial(std::basic_string<TCHAR>(*string), 1);
 			break;
 		}
 		case 2: // auto mode printing
@@ -538,7 +560,7 @@ LRESULT CMainFrame::WriteString(WPARAM w, LPARAM l)
 			serial->write(RobotMCtrl()(data[0], data[1], (unsigned short)data[2]));
 			std::basic_ostringstream<TCHAR> oss;
 			oss << _T("Sent Position: (") << (short)data[0] << _T(", ") << (short)data[1] << _T(", ") << (short)data[2] << _T(")");
-			print_from_serial(oss.str(), 1);
+			print_write_to_serial(oss.str(), 0);
 			break;
 		}
 		default:
