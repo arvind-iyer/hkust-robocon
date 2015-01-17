@@ -296,7 +296,6 @@ void CMainFrame::print_from_serial(std::basic_string<TCHAR> string_to_print, int
 
 void CMainFrame::print_from_serial(std::string string_to_print, int ioconfig)
 {
-//	std::vector<std::basic_string<TCHAR>> settings = m_wndProperties.GetSettings();
 	if (readmode == 1) {
 		std::pair<std::vector<int>, BOOL> data = RobotMCtrl()(string_to_print);
 		if (data.second) {

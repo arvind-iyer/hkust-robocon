@@ -358,7 +358,7 @@ LRESULT CRoboconCtrlView::refresh_coordinates(WPARAM w, LPARAM l) {
 	r_pos.angle = coordinates[2];
 
 	robot_pos = ConvertGridCoordToGLCoord(r_pos);
-
+	Invalidate();
 	return 0;
 }
 
