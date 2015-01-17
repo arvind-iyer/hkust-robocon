@@ -50,6 +50,13 @@ CRoboconCtrlView::CRoboconCtrlView()
 	cursor_pos.x = 0.0f;
 	cursor_pos.y = 0.0f;
 	cursor_pos.valid = FALSE;
+
+	robot_pos.x = 0.0f;
+	robot_pos.y = 0.0f;
+	robot_pos.angle = 0;
+	robot_pos.valid = FALSE;
+
+	grid_pos.valid = FALSE;
 }
 
 CRoboconCtrlView::~CRoboconCtrlView()

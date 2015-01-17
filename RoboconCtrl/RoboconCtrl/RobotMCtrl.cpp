@@ -130,7 +130,7 @@ std::pair<std::vector<int>, BOOL> RobotMCtrl::operator()(std::string string_rece
 
 		std::basic_ostringstream<TCHAR> oss;
 
-		for (int i = 0; i < string.size(); ++i) {
+		for (int i = 0; i < (int)string.size(); ++i) {
 			oss << std::hex << std::setfill(_T('0')) << std::setw(2) << (BYTE)string[i] << _T(" ");
 		}
 		oss << std::endl;
@@ -145,11 +145,6 @@ std::pair<std::vector<int>, BOOL> RobotMCtrl::operator()(std::string string_rece
 			crc16(buffer, data, 6);
 			if (string[9] == buffer[0] && string[10] == buffer[1]) {
 				std::vector<int> coordinates;
-
-				std::basic_ostringstream<TCHAR> oss;
-				unsigned short test = (0x00 | ((string[3]) & 0xff));
-				oss << _T("TEST: ") << test << std::endl;
-				OutputDebugString(oss.str().c_str());
 
 				short x = ((BYTE)string[2] << 8) | ((BYTE)string[3]);
 				coordinates.push_back(x);
