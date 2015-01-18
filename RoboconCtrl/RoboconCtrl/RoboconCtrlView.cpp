@@ -252,21 +252,21 @@ void CRoboconCtrlView::GLDrawScene()
 	// Draw current position
 	if (current_pos.valid) {
 		glPointSize(10.0f);
-		glBegin(GL_POINT);
+		glBegin(GL_POINTS);
 			glColor3f(1.0f, 1.0f, 1.0f);
 			glVertex2f(current_pos.x, current_pos.y);
 		glEnd();
 	}
 	if (robot_pos.valid) {
 		glPointSize(7.0f);
-		glBegin(GL_POINT);
+		glBegin(GL_POINTS);
 		glColor3f(0.0f, 0.0f, 1.0f);
-		glVertex2f(robot_pos.x, robot_pos.y);
+			glVertex2f(robot_pos.x, robot_pos.y);
 		glEnd();
 	}
 
 	if (cursor_pos.valid) {
-		glBegin(GL_LINE);
+		glBegin(GL_LINES);
 			glColor3f(1.0f, 0.0f, 0.0f);
 			glVertex2f(cursor_pos.x + 0.0002f * 61, cursor_pos.y);
 			glVertex2f(cursor_pos.x - 0.0002f * 61, cursor_pos.y);

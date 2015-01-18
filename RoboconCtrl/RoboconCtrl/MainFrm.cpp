@@ -523,40 +523,47 @@ LRESULT CMainFrame::WriteString(WPARAM w, LPARAM l)
 	
 	switch (w) {
 	case 1: // string printing
+	{
+		std::shared_ptr< CString > string(reinterpret_cast<CString*>(l));
+
 		if (serial == NULL) {
 			OpenConnection();
+		}
+		if (serial != NULL && serial->is_connected())
+		{
+			serial->write(std::string(CT2CA(*string)));
+			PostMessage(WM_PRINT_OUTPUT_FROM_WRITE, 1, (LPARAM)new std::basic_string<TCHAR>(*string));
 
-			std::shared_ptr< CString > string(reinterpret_cast<CString*>(l));
-			if (serial != NULL && serial->is_connected())
-			{
-				serial->write(std::string(CT2CA(*string)));
-				PostMessage(WM_PRINT_OUTPUT_FROM_WRITE, 1, (LPARAM)new std::basic_string<TCHAR>(*string));
-
-			}
-			else {
-				OutputDebugString(_T("Port cannot be opened, cannot write"));
-				return 1;
-			}
+		}
+		else {
+			OutputDebugString(_T("Port cannot be opened, cannot write"));
+			return 1;
 		}
 		break;
+	}
 	case 2: // auto mode printing
+	{
+		std::shared_ptr< std::vector<short> > coordinates(reinterpret_cast<std::vector<short>*>(l));
 		if (serial == NULL) {
 			OpenConnection();
-			std::shared_ptr< std::vector<short> > data(reinterpret_cast<std::vector<short>*>(l));
-			if (serial != NULL && serial->is_connected())
-			{
-				serial->write(RobotMCtrl()((*data)[0], (*data)[1], (unsigned short)(*data)[2]));
-				std::basic_ostringstream<TCHAR> oss;
-				oss << _T("Sent Position: (") << (short)(*data)[0] << _T(", ") << (short)(*data)[1] << _T(", ") << (short)(*data)[2] << _T(")");
-				PostMessage(WM_PRINT_OUTPUT_FROM_WRITE, 0, (LPARAM)new std::basic_string<TCHAR>(oss.str()));
-				break;
-			}
-			else {
-				OutputDebugString(_T("Port cannot be opened, cannot write"));
-				return 1;
-			}
+		}
+		if (serial != NULL && serial->is_connected())
+		{
+			std::vector<short> data = *coordinates;
+			serial->write(RobotMCtrl()(data[0], data[1], (unsigned short)data[2]));
+			std::basic_ostringstream<TCHAR> oss;
+			oss << _T("Sent Position: (") << (short)data[0] << _T(", ") << (short)data[1] << _T(", ") << (short)data[2] << _T(")");
+			PostMessage(WM_PRINT_OUTPUT_FROM_WRITE, 0, (LPARAM)new std::basic_string<TCHAR>(oss.str()));
+			OutputDebugString(_T("End write \n"));
+
+			break;
+		}
+		else {
+			OutputDebugString(_T("Port cannot be opened, cannot write"));
+			return 1;
 		}
 		break;
+	}
 	default:
 		break;
 	}
