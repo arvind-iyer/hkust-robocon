@@ -142,8 +142,8 @@ BEGIN
     POPUP "&Edit"
     BEGIN
         MENUITEM "&Copy\tCtrl+C",               ID_EDIT_COPY
-        MENUITEM "&Paste\tCtrl+v",              ID_EDIT_PASTE
-        MENUITEM "&Clear",                      ID_EDIT_CLEAR
+        MENUITEM "&Paste\tCtrl+V",              ID_EDIT_PASTE
+        MENUITEM "&Clear\tCtrl+A",              ID_EDIT_CLEAR
         MENUITEM "&Select All",                 ID_EDIT_SELECT_ALL
     END
     POPUP "&View"
@@ -165,9 +165,9 @@ BEGIN
     POPUP "Edit"
     BEGIN
         MENUITEM "&Copy\tCtrl+C",               ID_EDIT_COPY
-        MENUITEM "&Clear",                      ID_EDIT_CLEAR
-		MENUITEM SEPARATOR
-		MENUITEM "&Hide",                       ID_VIEW_OUTPUTWND
+        MENUITEM "&Clear\tCtrl+A",              ID_EDIT_CLEAR
+        MENUITEM SEPARATOR
+        MENUITEM "&Hide",                       ID_VIEW_OUTPUTWND
     END
 END
 
@@ -198,6 +198,7 @@ BEGIN
     "O",            ID_FILE_OPEN,           VIRTKEY, CONTROL
     "C",            ID_EDIT_COPY,           VIRTKEY, CONTROL
     "V",            ID_EDIT_PASTE,          VIRTKEY, CONTROL
+    "A",            ID_EDIT_CLEAR,          VIRTKEY, CONTROL
     VK_F6,          ID_NEXT_PANE,           VIRTKEY 
     VK_F6,          ID_PREV_PANE,           VIRTKEY, SHIFT
 END
@@ -385,7 +386,7 @@ END
 STRINGTABLE
 BEGIN
     IDS_EDIT_MENU           "Edit"
-	IDS_OUTPUT_MENU         "Popup"
+    IDS_OUTPUT_MENU         "Popup"
 END
 
 #endif    // English (United States) resources

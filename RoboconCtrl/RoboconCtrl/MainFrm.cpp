@@ -344,39 +344,41 @@ UINT __cdecl CMainFrame::read_thread(LPVOID app_ptr){
 // Write thread
 
 UINT __cdecl CMainFrame::write_thread(LPVOID app_ptr){
+
 	while (serial != NULL && serial->is_connected()){
+		int x = 0;
+		int y = 0;
+		int w = 0;
+		int speed = -1;
 		if (writemode == 2){
-			int x = 0;
-			int y = 0;
-			int w = 0;
-			int speed = -1;
 			std::wstring keys_pressed;
-			if (GetAsyncKeyState(0x51)) { // Q Key
+			if (GetAsyncKeyState(0x51) & 0x8000) { // Q Key
 				w -= 100;
 			}
-			if (GetAsyncKeyState(0x57)) { // W Key
+			if (GetAsyncKeyState(0x57) & 0x8000) { // W Key
 				y += 100;
 			}
-			if (GetAsyncKeyState(0x45)) { // E Key
+			if (GetAsyncKeyState(0x45) & 0x8000) { // E Key
 				w += 100;
 			}
-			if (GetAsyncKeyState(0x41)) { // A Key
+			if (GetAsyncKeyState(0x41) & 0x8000) { // A Key
 				x -= 100;
 			}
-			if (GetAsyncKeyState(0x53)) { // S Key
+			if (GetAsyncKeyState(0x53) & 0x8000) { // S Key
 				y -= 100;
 			}
-			if (GetAsyncKeyState(0x44)) { // D Key
+			if (GetAsyncKeyState(0x44) & 0x8000) { // D Key
 				x += 100;
 			}
-			if (GetAsyncKeyState(VK_SHIFT)) { // Shift key
+			if (GetAsyncKeyState(VK_SHIFT) & 0x8000) { // Shift key
 				x = x / 2;
 				y = y / 2;
 				w = w / 2;
 			}
 			for (int i = 0; i < 10; i++) {
-				if (GetAsyncKeyState(0x30 + i)) {
+				if (GetAsyncKeyState(0x30 + i) & 0x8000) {
 					speed = i;
+					break;
 				}
 			}
 			// manual control printing

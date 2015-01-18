@@ -172,14 +172,14 @@ std::string RobotMCtrl::operator()(short x, short y, unsigned short angle)
 	}
 	o << id << buffer[0] << buffer[1] << eot;
 
-	BYTE x1 = x >> 8;
-	BYTE x2 = x;
+	BYTE x1 = (BYTE)x >> 8;
+	BYTE x2 = (BYTE)x;
 
-	BYTE y1 = y >> 8;
-	BYTE y2 = y;
+	BYTE y1 = (BYTE)y >> 8;
+	BYTE y2 = (BYTE)y;
 
-	BYTE angle1 = angle >> 8;
-	BYTE angle2 = angle;
+	BYTE angle1 = (BYTE)angle >> 8;
+	BYTE angle2 = (BYTE)angle;
 
 	std::basic_ostringstream<TCHAR> oss;
 	oss << std::hex << std::setfill(_T('0')) << std::setw(2) << (BYTE)x1 << _T(" ") << std::setw(2) << (BYTE)x2 << _T(" ") << std::setw(2) << (BYTE)y1 << _T(" ") << std::setw(2) << (BYTE)y2 << _T(" ") << std::setw(2) << (BYTE)angle1 << _T(" ") << std::setw(2) << (BYTE)angle2 << _T(" ");
