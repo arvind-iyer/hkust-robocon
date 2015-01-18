@@ -5,6 +5,7 @@
 #include "Resource.h"
 #include "MainFrm.h"
 #include <string.h>
+#include <memory>
 
 #ifdef _DEBUG
 #define new DEBUG_NEW
@@ -28,6 +29,8 @@ COutputWnd::~COutputWnd()
 BEGIN_MESSAGE_MAP(COutputWnd, CDockablePane)
 	ON_WM_CREATE()
 	ON_WM_SIZE()
+	ON_MESSAGE(WM_PRINT_OUTPUT, COutputWnd::PrintString)
+	ON_MESSAGE(WM_PRINT_FROM_SERIAL, COutputWnd::ReadFromSerial)
 END_MESSAGE_MAP()
 
 int COutputWnd::OnCreate(LPCREATESTRUCT lpCreateStruct)
@@ -82,48 +85,49 @@ void COutputWnd::OnSize(UINT nType, int cx, int cy)
 	m_wndTabs.SetWindowPos (NULL, -1, -1, cx, cy, SWP_NOMOVE | SWP_NOACTIVATE | SWP_NOZORDER);
 }
 
-void COutputWnd::AdjustHorzScroll(CListBox& wndListBox)
+void COutputWnd::AdjustHorzScroll(COutputList& wndListBox)
 {
 	CClientDC dc(this);
 	CFont* pOldFont = dc.SelectObject(&afxGlobalData.fontRegular);
 
-	int cxExtentMax = 0;
+	CString strItem;
+	wndListBox.GetText(wndListBox.GetCount()-1, strItem);
+	wndListBox.cxExtentMax = max(wndListBox.cxExtentMax, (int)dc.GetTextExtent(strItem).cx);
 
-	for (int i = 0; i < wndListBox.GetCount(); i ++)
-	{
-		CString strItem;
-		wndListBox.GetText(i, strItem);
-
-		cxExtentMax = max(cxExtentMax, (int)dc.GetTextExtent(strItem).cx);
-	}
-
-	wndListBox.SetHorizontalExtent(cxExtentMax);
+	wndListBox.SetHorizontalExtent(wndListBox.cxExtentMax);
 	dc.SelectObject(pOldFont);
 }
 
-void COutputWnd::PrintString(std::basic_string<TCHAR> string_to_print)
+LRESULT COutputWnd::PrintString(WPARAM w, LPARAM l)
 {
+	std::shared_ptr<std::basic_string<TCHAR>>  string_to_print(reinterpret_cast<std::basic_string<TCHAR>*>(l));
 	if (m_wndOutputBuild.GetCount() > MAX_STRINGS) {
 		m_wndOutputBuild.DeleteString(0);
 	}
 
-	m_wndOutputBuild.SetTopIndex(m_wndOutputBuild.AddString(string_to_print.c_str()));
+	m_wndOutputBuild.SetTopIndex(m_wndOutputBuild.AddString(string_to_print->c_str()));
 	AdjustHorzScroll(m_wndOutputBuild);
+
+	return 0;
 }
 
-void COutputWnd::ReadFromSerial(std::basic_string<TCHAR> string_read_from_serial)
+LRESULT COutputWnd::ReadFromSerial(WPARAM w, LPARAM l)
 {
+	std::shared_ptr<std::basic_string<TCHAR>>  string_read_from_serial(reinterpret_cast<std::basic_string<TCHAR>*>(l));
+
 	if (m_wndOutputRead.GetCount() > MAX_STRINGS) {
 		m_wndOutputRead.DeleteString(0);
 	}
-	m_wndOutputRead.SetTopIndex(m_wndOutputRead.AddString(string_read_from_serial.c_str()));
+	m_wndOutputRead.SetTopIndex(m_wndOutputRead.AddString(string_read_from_serial->c_str()));
 	AdjustHorzScroll(m_wndOutputRead);
 
 	if (m_wndOutputBuild.GetCount() > MAX_STRINGS) {
 		m_wndOutputBuild.DeleteString(0);
 	}
-	m_wndOutputBuild.SetTopIndex(m_wndOutputBuild.AddString(string_read_from_serial.c_str()));
+	m_wndOutputBuild.SetTopIndex(m_wndOutputBuild.AddString(string_read_from_serial->c_str()));
 	AdjustHorzScroll(m_wndOutputBuild);
+
+	return 0;
 }
 
 void COutputWnd::UpdateFonts()
@@ -135,7 +139,7 @@ void COutputWnd::UpdateFonts()
 /////////////////////////////////////////////////////////////////////////////
 // COutputList1
 
-COutputList::COutputList()
+COutputList::COutputList() : cxExtentMax(-1)
 {
 }
 

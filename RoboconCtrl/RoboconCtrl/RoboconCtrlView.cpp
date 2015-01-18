@@ -23,6 +23,7 @@
 #include <gl/GLU.h>
 #include <sstream>
 #include <iomanip>
+#include <memory>
 
 // CRoboconCtrlView
 
@@ -37,7 +38,7 @@ BEGIN_MESSAGE_MAP(CRoboconCtrlView, CView)
 	ON_WM_ERASEBKGND()
 	ON_WM_LBUTTONDBLCLK()
 	ON_WM_MOUSEMOVE()
-	ON_MESSAGE(WM_SEND_STRING, refresh_coordinates)
+	ON_MESSAGE(WM_RECEIVE_ROBOT_COORD, refresh_coordinates)
 END_MESSAGE_MAP()
 
 // CRoboconCtrlView construction/destruction
@@ -333,7 +334,7 @@ void CRoboconCtrlView::OnLButtonDblClk(UINT nFlags, CPoint point)
 		data.push_back((short)grid_pos.y);
 		data.push_back((unsigned short)grid_pos.angle);
 
-		AfxGetMainWnd()->SendMessage(WM_SEND_STRING, 2, (LPARAM)&data);
+		AfxGetMainWnd()->PostMessage(WM_SEND_STRING, 2, (LPARAM)new std::vector<short>(data));
 	}
 	Invalidate();
 }
@@ -350,12 +351,12 @@ CRoboconCtrlView::GLCoord CRoboconCtrlView::ConvertGridCoordToGLCoord(GridCoord 
 }
 
 LRESULT CRoboconCtrlView::refresh_coordinates(WPARAM w, LPARAM l) {
-	std::vector<int> coordinates = *(reinterpret_cast<std::vector<int>*>(l));
+	std::shared_ptr< std::vector<int> > coordinates(reinterpret_cast< std::vector<int>* >(l));
 
 	GridCoord r_pos;
-	r_pos.x = coordinates[0];
-	r_pos.y = coordinates[1];
-	r_pos.angle = coordinates[2];
+	r_pos.x = (*coordinates)[0];
+	r_pos.y = (*coordinates)[1];
+	r_pos.angle = (*coordinates)[2];
 
 	robot_pos = ConvertGridCoordToGLCoord(r_pos);
 	Invalidate();

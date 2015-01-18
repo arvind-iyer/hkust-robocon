@@ -15,6 +15,7 @@
 #include <algorithm>
 #include <math.h>
 #include <iomanip>
+#include <memory>
 
 #ifdef _DEBUG
 #define new DEBUG_NEW
@@ -29,6 +30,9 @@ const int  iMaxUserToolbars = 10;
 const UINT uiFirstUserToolBarId = AFX_IDW_CONTROLBAR_FIRST + 40;
 const UINT uiLastUserToolBarId = uiFirstUserToolBarId + iMaxUserToolbars - 1;
 
+int CMainFrame::readmode = 0;
+int CMainFrame::writemode = 0;
+
 BEGIN_MESSAGE_MAP(CMainFrame, CFrameWndEx)
 	ON_WM_CREATE()
 	ON_COMMAND(ID_VIEW_CUSTOMIZE, &CMainFrame::OnViewCustomize)
@@ -42,6 +46,8 @@ BEGIN_MESSAGE_MAP(CMainFrame, CFrameWndEx)
 	ON_COMMAND(ID_FILE_UPDATE, &CMainFrame::CloseConnection)
 	ON_REGISTERED_MESSAGE(AFX_WM_CREATETOOLBAR, &CMainFrame::OnToolbarCreateNew)
 	ON_MESSAGE(WM_SEND_STRING, &CMainFrame::WriteString)
+	ON_MESSAGE(WM_PRINT_OUTPUT_FROM_READ, &CMainFrame::print_read_from_serial)
+	ON_MESSAGE(WM_PRINT_OUTPUT_FROM_WRITE, &CMainFrame::print_write_to_serial)
 	ON_WM_KEYDOWN()
 	ON_WM_SETTINGCHANGE()
 END_MESSAGE_MAP()
@@ -56,7 +62,7 @@ static UINT indicators[] =
 
 // CMainFrame construction/destruction
 
-CMainFrame::CMainFrame() : send_msg(), keys_pressed()
+CMainFrame::CMainFrame() : send_msg()
 {
 	// TODO: add member initialization code here
 }
@@ -280,31 +286,35 @@ std::vector<std::basic_string<TCHAR>> CMainFrame::GetSettings()
 
 void CMainFrame::print_to_output(std::basic_string<TCHAR> string_to_print)
 {
-	m_wndOutput.PrintString(string_to_print);
+	m_wndOutput.PostMessage(WM_PRINT_OUTPUT, 0, (LPARAM)new std::basic_string<TCHAR>(string_to_print));
 }
 void CMainFrame::print_from_serial(std::basic_string<TCHAR> string_to_print)
 {
-		m_wndOutput.ReadFromSerial(string_to_print);
+		//m_wndOutput.ReadFromSerial(string_to_print);
+	m_wndOutput.PostMessage(WM_PRINT_FROM_SERIAL, 0, (LPARAM)new std::basic_string<TCHAR>(string_to_print));
 }
 
-// Second parameter tells me whether or not to add "Write: " at the beginning of the string
+// WPARAM - 1: Add "Write: " to beginning of string | 0: Don't add "Write: "
 
-void CMainFrame::print_write_to_serial(std::basic_string<TCHAR> string_to_print, int prefix_enable)
+LRESULT CMainFrame::print_write_to_serial(WPARAM w, LPARAM l)
 {
-	if (prefix_enable) {
-		print_from_serial(_T("Write: ") + string_to_print);
+	std::shared_ptr< std::basic_string<TCHAR> > string_to_print(reinterpret_cast<std::basic_string<TCHAR>*>(l));
+	if ((int)w) {
+		print_from_serial(_T("Write: ") + *string_to_print);
 	}
 	else {
-		print_from_serial(string_to_print);
+		print_from_serial(*string_to_print);
 	}
+	return 0;
 }
 
-void CMainFrame::print_read_from_serial(std::string string_to_print)
+LRESULT CMainFrame::print_read_from_serial(WPARAM w, LPARAM l)
 {
+	std::shared_ptr< std::string > string_to_print(reinterpret_cast<std::string*>(l));
 	if (readmode == 1) {
-		std::pair<std::vector<int>, BOOL> data = RobotMCtrl()(string_to_print);
+		std::pair<std::vector<int>, BOOL> data = RobotMCtrl()(*string_to_print);
 		if (data.second) {
-			GetActiveView()->SendMessage(WM_SEND_STRING, 0, (LPARAM)&(data.first));
+			GetActiveView()->PostMessage(WM_RECEIVE_ROBOT_COORD, 0, (LPARAM)(new std::vector<int>(data.first)));
 			std::basic_ostringstream<TCHAR> oss;
 			oss << _T("Received Coordinate: (") << (data.first)[0] << _T(", ") << (data.first)[1] << _T(", ") << (data.first)[2] << _T(")");
 			print_from_serial(oss.str());
@@ -312,8 +322,9 @@ void CMainFrame::print_read_from_serial(std::string string_to_print)
 
 	}
 	else {
-		print_from_serial(_T("Read: ") + std::wstring(CString(string_to_print.c_str(), string_to_print.size())));
+		print_from_serial(_T("Read: ") + std::wstring(CString(string_to_print->c_str(), string_to_print->size())));
 	}
+	return 0;
 }
 
 // CMainFrame threads
@@ -323,7 +334,7 @@ void CMainFrame::print_read_from_serial(std::string string_to_print)
 UINT __cdecl CMainFrame::read_thread(LPVOID app_ptr){
 	while (serial != NULL && serial->is_connected()){
 		if (serial->bytes_to_read()) {
-			((CMainFrame*)app_ptr)->print_read_from_serial(serial->read());
+			AfxGetMainWnd()->PostMessage(WM_PRINT_OUTPUT_FROM_READ, 0, (LPARAM)new std::string(serial->read()));
 		}
 		Sleep(10);
 	}
@@ -334,10 +345,61 @@ UINT __cdecl CMainFrame::read_thread(LPVOID app_ptr){
 
 UINT __cdecl CMainFrame::write_thread(LPVOID app_ptr){
 	while (serial != NULL && serial->is_connected()){
-		if (!((CMainFrame*)app_ptr)->keys_pressed.empty()){
-			((CMainFrame*)app_ptr)->SendMessage(WM_SEND_STRING, 0, 0);
-			Sleep(10);
+		if (writemode == 2){
+			int x = 0;
+			int y = 0;
+			int w = 0;
+			int speed = -1;
+			std::wstring keys_pressed;
+			if (GetAsyncKeyState(0x51)) { // Q Key
+				w -= 100;
+			}
+			if (GetAsyncKeyState(0x57)) { // W Key
+				y += 100;
+			}
+			if (GetAsyncKeyState(0x45)) { // E Key
+				w += 100;
+			}
+			if (GetAsyncKeyState(0x41)) { // A Key
+				x -= 100;
+			}
+			if (GetAsyncKeyState(0x53)) { // S Key
+				y -= 100;
+			}
+			if (GetAsyncKeyState(0x44)) { // D Key
+				x += 100;
+			}
+			if (GetAsyncKeyState(VK_SHIFT)) { // Shift key
+				x = x / 2;
+				y = y / 2;
+				w = w / 2;
+			}
+			for (int i = 0; i < 10; i++) {
+				if (GetAsyncKeyState(0x30 + i)) {
+					speed = i;
+				}
+			}
+			// manual control printing
+			if (x != 0 || y != 0 || w != 0) {
+				serial->write(RobotMCtrl()(x, y, w));
+				if (x != 0 && y != 0) {
+					double scale = sqrt(100 * 100 + 100 * 100) / 100.0;
+					x = (int)((double)x / scale);
+					y = (int)((double)y / scale);
+				}
+				std::basic_ostringstream<TCHAR> oss;
+				oss << _T("Sent Controls | X: ") << x << _T(" Y: ") << y << _T(" w: ") << w;
+				AfxGetMainWnd()->PostMessage(WM_PRINT_OUTPUT_FROM_WRITE, 0, (LPARAM)new std::basic_string<TCHAR>(oss.str()));
+			}
+			// speed printing
+			if (speed != -1) {
+				serial->write(RobotMCtrl()(speed));
+				std::basic_ostringstream<TCHAR> oss;
+				oss << _T("Sent Speed: ") << speed;
+				AfxGetMainWnd()->PostMessage(WM_PRINT_OUTPUT_FROM_WRITE, 0, (LPARAM)new std::basic_string<TCHAR>(oss.str()));
+			}
 		}
+		Sleep(10);
 	}
 	return 0;
 }
@@ -348,43 +410,8 @@ BOOL CMainFrame::PreTranslateMessage(MSG* msg)
 {
 	std::vector<std::basic_string<TCHAR>> settings = m_wndProperties.GetSettings();
 	readmode = stoi(settings[5]);
-	if (stoi(settings[3]) == 2 && GetFocus() != NULL){
-		keys_pressed.clear();
-		if (GetAsyncKeyState(0x51)) { // Q Key
-			keys_pressed += std::wstring(_T("q"));
-		}
-		if (GetAsyncKeyState(0x57)) { // W Key
-			keys_pressed += std::wstring(_T("w"));
-		}
-		if (GetAsyncKeyState(0x45)) { // E Key
-			keys_pressed += std::wstring(_T("e"));
-		}
-		if (GetAsyncKeyState(0x41)) { // A Key
-			keys_pressed += std::wstring(_T("a"));
-		}
-		if (GetAsyncKeyState(0x53)) { // S Key
-			keys_pressed += std::wstring(_T("s"));
-		}
-		if (GetAsyncKeyState(0x44)) { // D Key
-			keys_pressed += std::wstring(_T("d"));
-		}
-		if (GetAsyncKeyState(VK_SHIFT)) { // Shift key
-			shift = TRUE;
-		}
-		else {
-			shift = FALSE;
-		}
-		for (int i = 0; i < 10; i++) {
-			if (GetAsyncKeyState(0x30 + i)) {
-				TCHAR c[1] = { _T('0') + i };
-				keys_pressed += c;
-			}
-		}
-	}
-	else {
-		keys_pressed.clear();
-	}
-	return FALSE;
+	writemode = stoi(settings[3]);
+	return CFrameWndEx::PreTranslateMessage(msg);
 }
 
 /* 
@@ -493,83 +520,45 @@ void CMainFrame::OnEditSelectAll()
 
 LRESULT CMainFrame::WriteString(WPARAM w, LPARAM l)
 {
-	if (serial == NULL) {
-		OpenConnection();
-	}
-	if (serial != NULL && serial->is_connected()){
-		switch (w) {
-		case 0: // manual mode printing
-		{
-			if (keys_pressed.find_first_of(_T("qweasd")) != std::basic_string<TCHAR>::npos) {
-				int x = 0;
-				int y = 0;
-				int w = 0;
-				if (keys_pressed.find(_T('w')) != std::basic_string<TCHAR>::npos) {
-					y += 100;
-				}
-				if (keys_pressed.find(_T('s')) != std::basic_string<TCHAR>::npos) {
-					y -= 100;
-				}
-				if (keys_pressed.find(_T('d')) != std::basic_string<TCHAR>::npos) {
-					x += 100;
-				}
-				if (keys_pressed.find(_T('a')) != std::basic_string<TCHAR>::npos) {
-					x -= 100;
-				}
-				if (keys_pressed.find(_T('q')) != std::basic_string<TCHAR>::npos) {
-					w -= 100;
-				}
-				if (keys_pressed.find(_T('e')) != std::basic_string<TCHAR>::npos) {
-					w += 100;
-				}
-				if (shift) {
-					x = x / 2;
-					y = y / 2;
-					w = w / 2;
-				}
-				serial->write(RobotMCtrl()(x, y, w));
-				if (x != 0 && y != 0) {
-					double scale = sqrt(100 * 100 + 100 * 100) / 100.0;
-					x = (int)((double)x / scale);
-					y = (int)((double)y / scale);
-				}
-				std::basic_ostringstream<TCHAR> oss;
-				oss << _T("Sent Controls | X: ") << x << _T(" Y: ") << y << _T(" w: ") << w;
-				print_write_to_serial(oss.str(), 0);
+	
+	switch (w) {
+	case 1: // string printing
+		if (serial == NULL) {
+			OpenConnection();
+
+			std::shared_ptr< CString > string(reinterpret_cast<CString*>(l));
+			if (serial != NULL && serial->is_connected())
+			{
+				serial->write(std::string(CT2CA(*string)));
+				PostMessage(WM_PRINT_OUTPUT_FROM_WRITE, 1, (LPARAM)new std::basic_string<TCHAR>(*string));
+
 			}
-			// speed printing
-			std::size_t found = keys_pressed.find_last_of(_T("0123456789"));
-			if (found != std::basic_string<TCHAR>::npos) {
-				serial->write(RobotMCtrl()(keys_pressed[found] - '0'));
-				std::basic_ostringstream<TCHAR> oss;
-				oss << _T("Sent Speed: ") << keys_pressed[found];
-				print_write_to_serial(oss.str(), 0);
+			else {
+				OutputDebugString(_T("Port cannot be opened, cannot write"));
+				return 1;
 			}
-			break;
 		}
-		case 1: // string printing
-		{
-			CString* string = reinterpret_cast<CString*>(l);
-			serial->write(std::string(CT2CA(*string)));
-			print_write_to_serial(std::basic_string<TCHAR>(*string), 1);
-			break;
+		break;
+	case 2: // auto mode printing
+		if (serial == NULL) {
+			OpenConnection();
+			std::shared_ptr< std::vector<short> > data(reinterpret_cast<std::vector<short>*>(l));
+			if (serial != NULL && serial->is_connected())
+			{
+				serial->write(RobotMCtrl()((*data)[0], (*data)[1], (unsigned short)(*data)[2]));
+				std::basic_ostringstream<TCHAR> oss;
+				oss << _T("Sent Position: (") << (short)(*data)[0] << _T(", ") << (short)(*data)[1] << _T(", ") << (short)(*data)[2] << _T(")");
+				PostMessage(WM_PRINT_OUTPUT_FROM_WRITE, 0, (LPARAM)new std::basic_string<TCHAR>(oss.str()));
+				break;
+			}
+			else {
+				OutputDebugString(_T("Port cannot be opened, cannot write"));
+				return 1;
+			}
 		}
-		case 2: // auto mode printing
-		{
-			std::vector<short> data = *reinterpret_cast<std::vector<short>*>(l);
-			serial->write(RobotMCtrl()(data[0], data[1], (unsigned short)data[2]));
-			std::basic_ostringstream<TCHAR> oss;
-			oss << _T("Sent Position: (") << (short)data[0] << _T(", ") << (short)data[1] << _T(", ") << (short)data[2] << _T(")");
-			print_write_to_serial(oss.str(), 0);
-			break;
-		}
-		default:
-			break;
-		}
-	}
-	else {
-		OutputDebugString(_T("Port cannot be opened, cannot write"));
-		return 1;
+		break;
+	default:
+		break;
 	}
 	return 0;
 }

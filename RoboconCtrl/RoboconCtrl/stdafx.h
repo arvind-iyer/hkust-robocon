@@ -5,7 +5,12 @@
 
 #pragma once
 
-#define WM_SEND_STRING                 (WM_USER+1)
+#define WM_SEND_STRING                 (WM_APP + 1)
+#define WM_RECEIVE_ROBOT_COORD         (WM_APP + 2)
+#define WM_PRINT_OUTPUT_FROM_WRITE     (WM_APP + 3)
+#define WM_PRINT_OUTPUT_FROM_READ      (WM_APP + 4)
+#define WM_PRINT_OUTPUT                (WM_APP + 5)
+#define WM_PRINT_FROM_SERIAL           (WM_APP + 6)
 
 #ifndef VC_EXTRALEAN
 #define VC_EXTRALEAN            // Exclude rarely-used stuff from Windows headers

@@ -36,6 +36,7 @@ public:
 	std::vector<std::basic_string<TCHAR>> GetSettings();
 	void print_to_output(std::basic_string<TCHAR> string_to_print);
 	void print_from_serial(std::basic_string<TCHAR> string_to_print);
+
 	void print_read_from_serial(std::string string_to_print);
 	void print_write_to_serial(std::basic_string<TCHAR> string_to_print, int prefix_enable);
 
@@ -53,9 +54,10 @@ protected:
 	static SerialIO* serial;
 // buffer that stores keys pressed
 	std::string send_msg;
-	std::basic_string<TCHAR> keys_pressed;
 	BOOL shift;
-	int readmode;
+public:
+	static int readmode;
+	static int writemode;
 // Generated message map functions
 protected:
 	afx_msg void OnEditCopy();
@@ -72,6 +74,8 @@ protected:
 	afx_msg void OnUpdateFileNew(CCmdUI *pCmdUI);
 	afx_msg void OnUpdateFileSave(CCmdUI *pCmdUI);
 	afx_msg BOOL PreTranslateMessage(MSG* msg);
+	afx_msg LRESULT print_read_from_serial(WPARAM w, LPARAM l);
+	afx_msg LRESULT print_write_to_serial(WPARAM w, LPARAM l);
 
 // Thread functions
 protected:
@@ -83,5 +87,3 @@ protected:
 	BOOL CreateDockingWindows();
 	void SetDockingWindowIcons(BOOL bHiColorIcons);
 };
-
-

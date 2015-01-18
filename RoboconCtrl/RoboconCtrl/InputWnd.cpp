@@ -88,7 +88,7 @@ BOOL CInputBox::PreTranslateMessage(MSG* pMsg)
 		CString write_string;
 		GetWindowText(write_string);
 		OutputDebugString(write_string);
-		AfxGetMainWnd()->SendMessage(WM_SEND_STRING, 1,(LPARAM)&write_string);
+		AfxGetMainWnd()->PostMessage(WM_SEND_STRING, 1,(LPARAM)new CString(write_string));
 		SetSel(0, -1);
 		Clear();
 		return TRUE; // this doesn't need processing anymore
@@ -101,7 +101,7 @@ void CInputBox::OnChar(UINT nChar, UINT nRepCnt, UINT nFlags)
 	std::basic_ostringstream<TCHAR> oss;
 	oss << (TCHAR)nChar;
 	if (((CMainFrame*)AfxGetMainWnd())->GetSettings()[3] == _T("1")) {
-		AfxGetMainWnd()->SendMessage(WM_SEND_STRING, 1, (LPARAM)&(CString(oss.str().c_str())));
+		AfxGetMainWnd()->PostMessage(WM_SEND_STRING, 1, (LPARAM)(new CString(oss.str().c_str())));
 	}
 	OutputDebugString(oss.str().c_str());
 	CEdit::OnChar(nChar, nRepCnt, nFlags);
