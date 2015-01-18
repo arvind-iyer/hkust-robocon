@@ -119,17 +119,11 @@ std::string RobotMCtrl::operator()(int speed) {
 }
 
 std::pair<std::vector<int>, BOOL> RobotMCtrl::operator()(std::string string_received) {
+	// Determines whether or not both a start and a stop byte are present in the string
 	if (string_received.find_first_of(0x12) != std::string::npos && string_received.find_first_of(0x34) != std::string::npos) {
+		// Prune the start and stop bits from the string
 		std::string string = string_received.substr(string_received.find_first_of((char)0x12) + 1 , string_received.find_last_of((char)0x34) - string_received.find_first_of((char)0x12) - 1);
-
-		std::basic_ostringstream<TCHAR> oss;
-
-		for (int i = 0; i < (int)string.size(); ++i) {
-			oss << std::hex << std::setfill(_T('0')) << std::setw(2) << (BYTE)string[i] << _T(" ");
-		}
-		oss << std::endl;
-		OutputDebugString(oss.str().c_str());
-
+		// Checks if data size is correct, and ID is correct
 		if (string.size() == 11 && string[0] == 0x60 && string[1] == 6 && string[8] == 0x60) {
 			char data[6];
 			for (int i = 0; i < 6; i++) {
@@ -137,13 +131,19 @@ std::pair<std::vector<int>, BOOL> RobotMCtrl::operator()(std::string string_rece
 			}
 			char buffer[2] = { 0, 0 };
 			crc16(buffer, data, 6);
+			// Verifies data using CRC
 			if (string[9] == buffer[0] && string[10] == buffer[1]) {
+				
 				std::vector<int> coordinates;
 
+				// When reconstructing the bytes, casting to unsigned is required to prevent sign extension
 				short x = ((BYTE)string[2] << 8) | ((BYTE)string[3]);
 				coordinates.push_back(x);
 				short y = ((BYTE)string[4] << 8) | ((BYTE)string[5]);
 				coordinates.push_back(y);
+
+				// angle is unsigned to ensure the sign is not messed up
+				// don't you love automatic sign extension?
 				unsigned short angle = ((BYTE)string[6] << 8) | ((BYTE)string[7]);
 				coordinates.push_back(angle);
 
@@ -171,6 +171,8 @@ std::string RobotMCtrl::operator()(short x, short y, unsigned short angle)
 		o << data[i];
 	}
 	o << id << buffer[0] << buffer[1] << eot;
+
+	// Casting is needed to suppress warnings
 
 	BYTE x1 = (BYTE)(x >> 8);
 	BYTE x2 = (BYTE)(x);
