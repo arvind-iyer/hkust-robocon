@@ -1,3 +1,22 @@
+/**
+  ******************************************************************************
+  * @file    can.c
+  * @author  Kenneth Au
+  * @version V1.0.0
+  * @date    17-January-2015
+  * @brief   This file provides all the CAN basic functions, including
+	* 				 initialization and direct CAN transmission.
+  ******************************************************************************
+  * @attention
+  *
+  * This source is designed for application use. Unless necessary, try NOT to
+	* modify the function definition. The constants which are more likely to 
+	* vary with different schematic have been placed as pre-defined constant
+	* (those defined using "#define") in the header file.
+	*
+  ******************************************************************************
+  */
+	
 #include "can.h"
 
 
@@ -50,9 +69,8 @@ void can_init(void)
 	CAN_InitStructure.CAN_Prescaler = 6;
 	CAN_Init(CANn, &CAN_InitStructure);
 	
-	/* CAN FIFO0 message pending interrupt enable */ 
+	/* CAN Transmission Mailbox Empty interrupt enable */ 
 	CAN_ITConfig(CANn, CAN_IT_TME, ENABLE);
-  CAN_ITConfig(CANn, CAN_IT_FMP0, ENABLE);
 	
 	/* CAN TX interrupt */
 	{
@@ -71,7 +89,7 @@ void can_init(void)
 /**
 	* @brief Transfer a CAN message
 	* @param msg: the CAN message
-	* @retval True if the message can be tranferred
+	* @retval True if the message can be tranferred and can be assigned to a mailbox
 	*/
 u8 can_tx(CanTxMsg msg)
 {

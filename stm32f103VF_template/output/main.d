@@ -38,8 +38,9 @@
 .\output\main.o: src\user\can_protocol.h
 .\output\main.o: .\src\ustrobo_min_system\inc\uart.h
 .\output\main.o: .\src\ustrobo_min_system\inc\approx_math.h
-.\output\main.o: .\src\ustrobo_min_system\inc\motor_pwm.h
 .\output\main.o: .\src\ustrobo_min_system\inc\servo.h
 .\output\main.o: .\src\ustrobo_min_system\inc\gyro.h
 .\output\main.o: src\user\bluetooth.h
 .\output\main.o: src\user\crc.h
+.\output\main.o: src\user\wheel_base.h
+.\output\main.o: src\user\can_motor.h

@@ -18,12 +18,6 @@
 
 #define	CAN_RX_FILTER_LIMIT		28		// The number of filters can be applied at most
 
-typedef enum {
-	CAN_TX_FAILED 		= CAN_TxStatus_Failed,
-	CAN_TX_OKAY				= CAN_TxStatus_Ok,
-	CAN_TX_PENDING		= CAN_TxStatus_Pending,
-	CAN_TX_NOMAILBOX	= CAN_TxStatus_NoMailBox
-} CAN_TX_STATUS;
 
 void can_init(void);
 u8 can_tx(CanTxMsg msg);

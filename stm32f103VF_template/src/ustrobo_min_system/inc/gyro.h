@@ -28,6 +28,8 @@
 #define GYRO_FLAG_SET_POS		0x01
 #define GYRO_FLAG_CAL			0x02
 
+#define	X_FLIP						1
+#define	Y_FLIP						-1
 extern volatile u8 gyro_available;
 extern s16 SHIFT_X, SHIFT_Y;
 

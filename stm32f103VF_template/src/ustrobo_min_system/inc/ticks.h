@@ -15,6 +15,7 @@ extern volatile u16 seconds;
 
 u16 get_ticks(void);
 u16 get_seconds(void);
+u32 get_full_ticks(void);
 void ticks_init(void);
 
 #endif		/*  __TICKS_H */

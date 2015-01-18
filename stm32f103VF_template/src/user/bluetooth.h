@@ -4,6 +4,7 @@
 #include "uart.h"
 #include "ticks.h"
 #include "crc.h"
+#include "led.h"
 
 #define	BLUETOOTH_COM										COM2			/* UART Port */
 #define	BLUETOOTH_COM_BR								115200		/* Baudrate */
@@ -15,11 +16,11 @@
 #define	BLUETOOTH_PACKAGE_DATA_LENGTH			8		// 0 - 8
 #define	BLUETOOTH_PACKAGE_POST_LENGTH			4		// ID + checkbyte * 2 + sleep
 #define	BLUETOOTH_PACKAGE_LENGTH					(BLUETOOTH_PACKAGE_PRE_LENGTH+BLUETOOTH_PACKAGE_DATA_LENGTH+BLUETOOTH_PACKAGE_POST_LENGTH)
-#define	BLUETOOTH_WAKEUP									0x01
-#define	BLUETOOTH_SLEEP										0x04
+#define	BLUETOOTH_WAKEUP									0x12
+#define	BLUETOOTH_SLEEP										0x34
 
-#define BLUETOOTH_RX_RESET_TIMEOUT			300
-#define BLUETOOTH_RX_CHECKBYTES_FLAG		0		// True if rx uses check bytes for verification
+#define BLUETOOTH_RX_RESET_TIMEOUT			50
+#define BLUETOOTH_RX_CHECKBYTES_FLAG		1		// True if rx uses check bytes for verification
 
 
 typedef struct {
@@ -29,13 +30,16 @@ typedef struct {
 } BLUETOOTH_RX_FILTER;
 
 
+/*** TX ***/
 void bluetooth_init(void);
 void bluetooth_tx_byte(uc8 byte);
-void bluetooth_tx(uc8* tx_buf, ...);
+void bluetooth_tx(const char* tx_buf, ...);
+void bluetooth_tx_package(u8 id, u8 data_length, u8* data);
 
-
+/*** RX ***/
 void bluetooth_rx_add_filter(u8 id, u8 mask, void (*handler)(u8 id, u8 length, u8* data));
 u8 bluetooth_rx_state(void);
+u16 bluetooth_get_data_count(void);
 
 void bluetooth_update(void);
 

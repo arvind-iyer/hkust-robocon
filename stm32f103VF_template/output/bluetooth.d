@@ -23,3 +23,5 @@
 .\output\bluetooth.o: .\src\stm32f10x_std\inc\stm32f10x_tim.h
 .\output\bluetooth.o: .\src\ustrobo_min_system\inc\buzzer.h
 .\output\bluetooth.o: src\user\crc.h
+.\output\bluetooth.o: .\src\ustrobo_min_system\inc\led.h
+.\output\bluetooth.o: .\src\ustrobo_min_system\inc\gpio.h

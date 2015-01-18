@@ -5,6 +5,7 @@
 ".\output\can_motor.o"
 ".\output\bluetooth.o"
 ".\output\crc.o"
+".\output\wheel_base.o"
 ".\output\approx_math.o"
 ".\output\battery.o"
 ".\output\buzzer.o"

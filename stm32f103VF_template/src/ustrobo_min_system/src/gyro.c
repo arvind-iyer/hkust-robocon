@@ -27,8 +27,8 @@ void gyro_init(void)
 	uart_interrupt(GYRO_UART);
 }
 
-s16    SHIFT_X = 92;	//53//	193//  -163	//	98		//79
-s16    SHIFT_Y = -280;	//40// 	-50// 	-41	//	170		//336
+s16    SHIFT_X = -200;	//53//	193//  -163	//	98		//79
+s16    SHIFT_Y = -618;	//40// 	-50// 	-41	//	170		//336
 
 /**
   * @brief  Get the X coordinate
@@ -38,7 +38,7 @@ s16    SHIFT_Y = -280;	//40// 	-50// 	-41	//	170		//336
 s16 get_X(void)
 {
 	
-   s32 pos_x = (real_x*10000-SHIFT_X*10000+SHIFT_X*int_cos(angle)+SHIFT_Y*int_sin(angle))/10000;
+   s32 pos_x = (X_FLIP*real_x*10000-SHIFT_X*10000+SHIFT_X*int_cos(angle)+SHIFT_Y*int_sin(angle))/10000;
 	//return real_x;
 	return pos_x;//real_x;
 }
@@ -51,7 +51,7 @@ s16 get_X(void)
 s16 get_Y(void)
 {
 	
-	s32 pos_y = (real_y*10000-SHIFT_Y*10000+SHIFT_Y*int_cos(angle)-SHIFT_X*int_sin(angle))/10000;
+	s32 pos_y = (Y_FLIP*real_y*10000-SHIFT_Y*10000+SHIFT_Y*int_cos(angle)-SHIFT_X*int_sin(angle))/10000;
 	//return real_y;
 	return pos_y;//real_y;
 }
