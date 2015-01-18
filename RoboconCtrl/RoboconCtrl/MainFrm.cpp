@@ -522,7 +522,6 @@ void CMainFrame::OnEditSelectAll()
 
 LRESULT CMainFrame::WriteString(WPARAM w, LPARAM l)
 {
-	
 	switch (w) {
 	case 1: // string printing
 	{
