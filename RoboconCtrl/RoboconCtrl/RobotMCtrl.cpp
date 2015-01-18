@@ -159,7 +159,7 @@ std::string RobotMCtrl::operator()(short x, short y, unsigned short angle)
 	char soh = 0x12;
 	char id = 0x50;
 	char data_length = 0x06;
-	char data[6] = { x >> 8, x, y >> 8, y, angle >> 8, angle };
+	char data[6] = { (BYTE)(x >> 8), (BYTE)(x), (BYTE)(y >> 8), (BYTE)(y), (BYTE)(angle >> 8), (BYTE)(angle) };
 	char buffer[2] = { 0, 0 };
 	char eot = 0x34;
 	crc16(buffer, data, 6);
@@ -172,14 +172,14 @@ std::string RobotMCtrl::operator()(short x, short y, unsigned short angle)
 	}
 	o << id << buffer[0] << buffer[1] << eot;
 
-	BYTE x1 = (BYTE)x >> 8;
-	BYTE x2 = (BYTE)x;
+	BYTE x1 = (BYTE)(x >> 8);
+	BYTE x2 = (BYTE)(x);
 
-	BYTE y1 = (BYTE)y >> 8;
-	BYTE y2 = (BYTE)y;
+	BYTE y1 = (BYTE)(y >> 8);
+	BYTE y2 = (BYTE)(y);
 
-	BYTE angle1 = (BYTE)angle >> 8;
-	BYTE angle2 = (BYTE)angle;
+	BYTE angle1 = (BYTE)(angle >> 8);
+	BYTE angle2 = (BYTE)(angle);
 
 	std::basic_ostringstream<TCHAR> oss;
 	oss << std::hex << std::setfill(_T('0')) << std::setw(2) << (BYTE)x1 << _T(" ") << std::setw(2) << (BYTE)x2 << _T(" ") << std::setw(2) << (BYTE)y1 << _T(" ") << std::setw(2) << (BYTE)y2 << _T(" ") << std::setw(2) << (BYTE)angle1 << _T(" ") << std::setw(2) << (BYTE)angle2 << _T(" ");
