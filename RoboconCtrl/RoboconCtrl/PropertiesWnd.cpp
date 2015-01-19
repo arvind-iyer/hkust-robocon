@@ -177,6 +177,26 @@ std::basic_string<TCHAR> to_string(const OStreamable& o)
 std::vector<std::basic_string<TCHAR>> CPropertiesWnd::GetSettings()
 {
 	std::vector < std::basic_string<TCHAR> > string_vector;
+	// Makes sure that these properties are never empty (HACK)
+	if (((CString)m_wndPropList.GetProperty(0)->GetSubItem(0)->GetValue()).IsEmpty()) {
+		m_wndPropList.GetProperty(0)->GetSubItem(0)->SetValue(_T("COM30"));
+	}
+	if (((CString)m_wndPropList.GetProperty(0)->GetSubItem(1)->GetValue()).IsEmpty()) {
+		m_wndPropList.GetProperty(0)->GetSubItem(1)->SetValue(_T("115200"));
+	}
+	if (((CString)m_wndPropList.GetProperty(1)->GetSubItem(0)->GetValue()).IsEmpty()) {
+		m_wndPropList.GetProperty(1)->GetSubItem(0)->SetValue(_T("500"));
+	}
+	if (((CString)m_wndPropList.GetProperty(1)->GetSubItem(1)->GetValue()).IsEmpty()) {
+		m_wndPropList.GetProperty(1)->GetSubItem(1)->SetValue(_T("2"));
+	}
+	if (((CString)m_wndPropList.GetProperty(1)->GetSubItem(2)->GetValue()).IsEmpty()) {
+		m_wndPropList.GetProperty(1)->GetSubItem(2)->SetValue(_T("1"));
+	}
+	if (((CString)m_wndPropList.GetProperty(1)->GetSubItem(3)->GetValue()).IsEmpty()) {
+		m_wndPropList.GetProperty(1)->GetSubItem(3)->SetValue(_T("1"));
+	}
+
 	string_vector.push_back(((CString)m_wndPropList.GetProperty(0)->GetSubItem(0)->GetValue()).GetString());
 	string_vector.push_back(((CString)m_wndPropList.GetProperty(0)->GetSubItem(1)->GetValue()).GetString());
 	string_vector.push_back(((CString)m_wndPropList.GetProperty(1)->GetSubItem(0)->GetValue()).GetString());
@@ -194,7 +214,7 @@ void CPropertiesWnd::InitPropList()
 	m_wndPropList.EnableHeaderCtrl(FALSE);
 	m_wndPropList.EnableDescriptionArea();
 	m_wndPropList.SetVSDotNetLook();
-	m_wndPropList.MarkModifiedProperties();
+//	m_wndPropList.MarkModifiedProperties();
 
 	CMFCPropertyGridProperty* pGroup1 = new CMFCPropertyGridProperty(_T("Communication Settings"));
 
