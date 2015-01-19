@@ -3,6 +3,7 @@
 #define DVDAx100 ((SAMPLE_BATTERY_VOLTAGE_2-SAMPLE_BATTERY_VOLTAGE_1)*100/(SAMPLE_BATTERY_ADC_2-SAMPLE_BATTERY_ADC_1))
 	
 static u16 adc_value = 0;
+static char battery_string[] = "00.00V";
 
 /**
   * @brief  Inintialization of ADC for voltage calculation
@@ -78,13 +79,35 @@ u16 get_voltage(void)
 }
 
 /**
+	* @brief Get the string (array pointer) of the battery voltage
+	* @example "12.54V" / "04.30V" / "USB"
+	* @param None
+	* @retval A string (character array pointer)
+	*/
+char* get_voltage_string(void)
+{
+	u16 voltage = get_voltage();
+	/* if (battery_check() == BATTERY_USB) {
+		strcpy(battery_string, "USB");
+	} else */
+	{
+		strcpy(battery_string, "00.00V");
+		battery_string[0] += (voltage / 1000) % 10;
+		battery_string[1] += (voltage / 100) % 10;
+		battery_string[3] += (voltage / 10) % 10;
+		battery_string[4] += (voltage) % 10;
+	}
+	
+	return battery_string;
+}
+
+/**
 	* @brief Check the battery level and return the result enumator
 	* @param None.
 	* @retval The enum of battery check result.
 	*/
 BATTERY_CHECK_RESULT battery_check(void)
 {
-	battery_adc_update();
 	if (get_voltage() <= BATTERY_USB_LEVEL) {
 		return BATTERY_USB;
 	} else if (get_voltage() <= BATTERY_SUPER_LOW_LEVEL) {

@@ -128,6 +128,11 @@ WHEEL_BASE_VEL wheel_base_get_vel(void)
 	return wheel_base_vel;
 }
 
+/**
+	* @brief Check if the wheel base velocity is different from the previous one
+	* @param None
+	* @retval True if there is any different
+	*/
 u8 wheel_base_vel_diff(void)
 {
 	return wheel_base_vel.x != wheel_base_vel_prev.x || wheel_base_vel.y != wheel_base_vel_prev.y || wheel_base_vel.w != wheel_base_vel_prev.w;

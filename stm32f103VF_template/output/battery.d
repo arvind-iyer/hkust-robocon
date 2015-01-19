@@ -16,3 +16,4 @@
 .\output\battery.o: .\src\stm32f10x_std\inc\stm32f10x_usart.h
 .\output\battery.o: .\src\stm32f10x_std\inc\misc.h
 .\output\battery.o: .\src\stm32f10x_std\inc\stm32f10x_adc.h
+.\output\battery.o: C:\Keil_v5\ARM\ARMCC\Bin\..\include\string.h

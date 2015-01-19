@@ -15,3 +15,5 @@
 .\output\usart.o: .\src\stm32f10x_std\inc\stm32f10x_spi.h
 .\output\usart.o: .\src\stm32f10x_std\inc\stm32f10x_usart.h
 .\output\usart.o: .\src\stm32f10x_std\inc\misc.h
+.\output\usart.o: C:\Keil_v5\ARM\ARMCC\Bin\..\include\stdio.h
+.\output\usart.o: C:\Keil_v5\ARM\ARMCC\Bin\..\include\stdarg.h

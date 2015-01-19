@@ -2,6 +2,7 @@
 #define	__USART_H
 
 #include "stm32f10x.h"
+#include "stm32f10x_usart.h"
 
 #define	COMn	5
 
@@ -69,6 +70,13 @@ static USART_TYPE USART_DEF[COMn] = {
 	GPIOD, GPIO_Pin_2, RCC_APB2Periph_GPIOD,
 	UART5_IRQn}
 };
+
+void usart_init(COM_TypeDef COMx, u32 baudrate);
+void usart_rx_init(COM_TypeDef COMx, void (*handler)(u8 rx_data));
+u8 usart_tx_dequeue(COM_TypeDef COMx);
+u8 usart_tx_enqueue(COM_TypeDef COMx, u8 byte);
+u8 usart_tx_byte(COM_TypeDef COMx, u8 byte);
+void usart_tx(COM_TypeDef COM, uc8 * tx_buf, ...);
 
 
 #endif /* __USART_H */

@@ -3,6 +3,7 @@
 
 #include "stm32f10x.h"
 #include "stm32f10x_adc.h"
+#include <string.h>
 //#include "delay.h"
 
 #define SAMPLE_BATTERY_VOLTAGE_1 		1200 	// Voltage of first source
@@ -25,7 +26,7 @@ void battery_adc_init(void);
 void battery_adc_update(void);
 u16 get_voltage(void);
 u16 get_battery_adc(void);
-
+char* get_voltage_string(void);
 BATTERY_CHECK_RESULT battery_check(void);
 
 #endif /* __BATTERY_H */

@@ -13,7 +13,7 @@ static u16 buzzer_note_period = 1;
 
 // Song related
 u8 buzzer_song_flag = 0;	// 1 if a song is being played
-MUSIC_NOTE* buzzer_current_song = 0;
+const MUSIC_NOTE* buzzer_current_song = 0;
 u16 buzzer_current_song_note_id = 0;
 u16 buzzer_song_note_length = 0;
 u16 buzzer_song_note_length_left = 0;// Length left
@@ -219,7 +219,7 @@ u16 get_note_period(MUSIC_NOTE_LETTER note, u8 octave)
 }
 
 
-void buzzer_play_song(MUSIC_NOTE* song, u16 note_length, u16 note_break)
+void buzzer_play_song(const MUSIC_NOTE* song, u16 note_length, u16 note_break)
 {
 	if (song == 0) {return;}
 	// Cut buzzer_control

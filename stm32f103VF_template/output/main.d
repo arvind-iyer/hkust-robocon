@@ -22,14 +22,14 @@
 .\output\main.o: .\src\ustrobo_min_system\inc\buzzer.h
 .\output\main.o: .\src\ustrobo_min_system\inc\battery.h
 .\output\main.o: .\src\stm32f10x_std\inc\stm32f10x_adc.h
+.\output\main.o: C:\Keil_v5\ARM\ARMCC\Bin\..\include\string.h
 .\output\main.o: .\src\ustrobo_min_system\inc\delay.h
 .\output\main.o: .\src\ustrobo_min_system\inc\led.h
 .\output\main.o: .\src\ustrobo_min_system\inc\gpio.h
 .\output\main.o: .\src\ustrobo_min_system\inc\lcd_red.h
 .\output\main.o: C:\Keil_v5\ARM\ARMCC\Bin\..\include\stdarg.h
-.\output\main.o: .\src\ustrobo_min_system\inc\system.h
-.\output\main.o: C:\Keil_v5\ARM\ARMCC\Bin\..\include\string.h
-.\output\main.o: .\src\user\main.h
+.\output\main.o: src\user\interface.h
+.\output\main.o: src\user\buzzer_song.h
 .\output\main.o: .\src\ustrobo_min_system\inc\xbc_mb.h
 .\output\main.o: .\src\ustrobo_min_system\inc\button.h
 .\output\main.o: .\src\ustrobo_min_system\inc\encoder.h
@@ -42,5 +42,6 @@
 .\output\main.o: .\src\ustrobo_min_system\inc\gyro.h
 .\output\main.o: src\user\bluetooth.h
 .\output\main.o: src\user\crc.h
+.\output\main.o: src\user\robocon.h
 .\output\main.o: src\user\wheel_base.h
 .\output\main.o: src\user\can_motor.h

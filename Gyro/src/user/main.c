@@ -63,6 +63,7 @@ int main(void)
 			}
 		}
 	}
+
 }
 
 void send_pos(void)

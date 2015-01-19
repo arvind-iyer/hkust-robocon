@@ -1,4 +1,6 @@
 #include "usart.h"
+#include <stdio.h>
+#include <stdarg.h>
 
 u8 USART_QUEUE[COMn][USART_DEQUE_SIZE] = {{0}};
 
@@ -15,11 +17,13 @@ void usart_init(COM_TypeDef COMx, u32 baudrate)
 	switch (COMx) {
 		case COM1:
 			RCC_APB2PeriphClockCmd(usart->USART_RCC, ENABLE);
+			break;
 		case COM2:
 		case COM3:
 		case COM4:
 		case COM5:
 			RCC_APB1PeriphClockCmd(usart->USART_RCC, ENABLE);
+			break;
 	}
 	
 	/* Configure USART Tx as alternate function push-pull */
@@ -75,9 +79,13 @@ u8 usart_tx_dequeue(COM_TypeDef COMx)
 	if (USART_GetFlagStatus(USART_DEF[COMx].USART, USART_FLAG_TC) == SET) {
 		/* If USART TX is available (transmission complete flag is set) */
 		USART_DEQUE* deque = &USART_DEF[COMx].deque;
-		USART_SendData(USART_DEF[COMx].USART, deque->queue[deque->head]);
-		deque->head = (deque->head + 1) / deque->length; 
-		return 1;
+		if (deque->head != deque->tail) { // Non-empty deque
+			USART_SendData(USART_DEF[COMx].USART, deque->queue[deque->head]);
+			deque->head = (deque->head + 1) / deque->length; 
+			return 1;
+		} else {
+			return 2;
+		}
 	} else { 
 		/* Wait until the USART_FLAG_TC interrupt is called (NO WHILE-LOOP) */
 		return 0;
@@ -86,7 +94,7 @@ u8 usart_tx_dequeue(COM_TypeDef COMx)
 
 u8 usart_tx_enqueue(COM_TypeDef COMx, u8 byte)
 {
-	if (USART_GetFlagStatus(USART_DEF[COMx].USART, USART_FLAG_TC) != RESET) {
+	if (USART_GetITStatus(USART_DEF[COMx].USART, USART_FLAG_TC) != RESET) {
 		USART_SendData(USART_DEF[COMx].USART, byte);
 	} else {
 		USART_DEQUE* deque = &USART_DEF[COMx].deque;
@@ -103,11 +111,27 @@ u8 usart_tx_enqueue(COM_TypeDef COMx, u8 byte)
 		}
 		
 	}
+	
+	return 0;
 }
 
 u8 usart_tx_byte(COM_TypeDef COMx, u8 byte)
 {
 	return usart_tx_enqueue(COMx, byte);
+}
+
+void usart_tx(COM_TypeDef COM, uc8 * tx_buf, ...)
+{
+	va_list arglist;
+	u8 buf[40], *fp;
+	
+	va_start(arglist, tx_buf);
+	vsprintf((char*)buf, (const char*)tx_buf, arglist);
+	va_end(arglist);
+	
+	fp = buf;
+	while (*fp)
+		usart_tx_byte(COM,*fp++);
 }
 
 void USARTx_IRQHandler(COM_TypeDef COMx) 
@@ -116,12 +140,17 @@ void USARTx_IRQHandler(COM_TypeDef COMx)
 	
 	// Tranmission complete interrupt
 	if (USART_GetITStatus(usart, USART_IT_TC) != RESET) {
-		
+		USART_ClearFlag(usart, USART_IT_TC);
+		USART_ClearITPendingBit(usart, USART_IT_TC);
+		usart_tx_dequeue(COMx);
 	}
 	
 	// Receive interrupt
 	if (USART_GetITStatus(usart, USART_IT_RXNE) != RESET) {
-		
+		if (USART_DEF[COMx].rx_handler != 0) {
+			USART_DEF[COMx].rx_handler(USART_ReceiveData(usart));
+			USART_ClearFlag(usart, USART_IT_RXNE);
+		}
 	}
 
 }
@@ -131,8 +160,8 @@ void USART1_IRQHandler(void)
 	USARTx_IRQHandler(COM1);
 }
 
-void USART2_IRQHandler(void)
-{
-	USARTx_IRQHandler(COM2);
-}
+//void USART2_IRQHandler(void)
+//{
+//	USARTx_IRQHandler(COM2);
+//}
 

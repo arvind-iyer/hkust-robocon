@@ -409,14 +409,14 @@
           <GroupName>src</GroupName>
           <Files>
             <File>
-              <FileName>main.c</FileName>
+              <FileName>bluetooth.c</FileName>
               <FileType>1</FileType>
-              <FilePath>.\src\user\main.c</FilePath>
+              <FilePath>.\src\user\bluetooth.c</FilePath>
             </File>
             <File>
-              <FileName>can_protocol.c</FileName>
+              <FileName>buzzer_song.c</FileName>
               <FileType>1</FileType>
-              <FilePath>.\src\user\can_protocol.c</FilePath>
+              <FilePath>.\src\user\buzzer_song.c</FilePath>
             </File>
             <File>
               <FileName>can.c</FileName>
@@ -429,14 +429,29 @@
               <FilePath>.\src\user\can_motor.c</FilePath>
             </File>
             <File>
-              <FileName>bluetooth.c</FileName>
+              <FileName>can_protocol.c</FileName>
               <FileType>1</FileType>
-              <FilePath>.\src\user\bluetooth.c</FilePath>
+              <FilePath>.\src\user\can_protocol.c</FilePath>
             </File>
             <File>
               <FileName>crc.c</FileName>
               <FileType>1</FileType>
               <FilePath>.\src\user\crc.c</FilePath>
+            </File>
+            <File>
+              <FileName>interface.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\src\user\interface.c</FilePath>
+            </File>
+            <File>
+              <FileName>main.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\src\user\main.c</FilePath>
+            </File>
+            <File>
+              <FileName>robocon.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\src\user\robocon.c</FilePath>
             </File>
             <File>
               <FileName>wheel_base.c</FileName>

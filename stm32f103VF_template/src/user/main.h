@@ -12,9 +12,8 @@
 
 #include "buzzer.h"
 #include "led.h"
-//#include "tft_160x128.h"
 #include "lcd_red.h"
-#include "system.h"
+#include "interface.h"
 #include "xbc_mb.h"
 #include "button.h"
 #include "encoder.h"
@@ -27,13 +26,8 @@
 #include "servo.h"
 #include "gyro.h"
 #include "bluetooth.h"
+#include "robocon.h"
 #include "wheel_base.h"
 
-
-
-
-
-extern u16 ticks_img;
-extern u16 seconds_img;
 
 #endif /* __MAIN_H */
