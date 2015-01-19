@@ -51,7 +51,7 @@ typedef enum {
 } MUSIC_NOTE_LETTER;
 
 // Musical note period (1/freq) of the 0th octave in milliseconds (us)
-#define	C0_PERIOD			61158		
+#define	C0_PERIOD			61158
 #define	Db0_PERIOD		57725
 #define	D0_PERIOD			54485
 #define	Eb0_PERIOD		51426

@@ -19,8 +19,8 @@
 #define	BLUETOOTH_WAKEUP									0x12
 #define	BLUETOOTH_SLEEP										0x34
 
-#define BLUETOOTH_RX_RESET_TIMEOUT			50
-#define BLUETOOTH_RX_CHECKBYTES_FLAG		1		// True if rx uses check bytes for verification
+#define BLUETOOTH_RX_RESET_TIMEOUT				50
+#define BLUETOOTH_RX_CHECKBYTES_FLAG			1		// True if rx uses check bytes for verification
 
 
 typedef struct {

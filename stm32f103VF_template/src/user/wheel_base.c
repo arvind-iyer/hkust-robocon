@@ -198,7 +198,7 @@ void wheel_base_send_position(void)
 	data[2] = (y >> 8) & 0xFF;
 	data[3] = y & 0xFF;
 	data[4] = (w >> 8) & 0xFF;
-	data[5] = w & 0xFF;
+	data[5] = w & 0xFF;	
 	
 	bluetooth_tx_package(BLUETOOTH_WHEEL_BASE_POS_ID, 6, data);
 	

@@ -175,7 +175,7 @@
           </Flash1>
           <bUseTDR>0</bUseTDR>
           <Flash2>Segger\JL2CM3.dll</Flash2>
-          <Flash3>"flash.bat" (./output/@H.hex 30 256000 STM32F1_XL-density_768K)</Flash3>
+          <Flash3>"flash.bat" (./output/@H.hex 29 256000 STM32F1_XL-density_768K)</Flash3>
           <Flash4></Flash4>
           <pFcarmOut></pFcarmOut>
           <pFcarmGrp></pFcarmGrp>

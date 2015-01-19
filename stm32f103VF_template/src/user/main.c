@@ -14,6 +14,7 @@ int main(void)
 	gyro_init();
 	battery_adc_init();
 	can_init();
+	can_rx_init();
 	bluetooth_init();
 	wheel_base_init();
 	//usart_init(COM1, 115200);

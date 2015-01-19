@@ -5,6 +5,8 @@ void system_start(u16 duration)
 	led_control((LED) (LED_D1 | LED_D2 | LED_D3), LED_ON);
 	tft_clear();
 	
+	buzzer_play_song(START_UP, 150, 0);
+	
 	// Start-up battery check
 	battery_adc_update();
 	switch(battery_check()) {

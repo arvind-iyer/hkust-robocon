@@ -37,16 +37,16 @@
 	@if exist "C:\Program Files\STMicroelectronics\Software\Flash Loader Demo\STMFlashLoader.exe" (
 		@echo Start flashing...
 		@echo.
-		start "" /b /wait "C:\Program Files\STMicroelectronics\Software\Flash Loader Demo\STMFlashLoader.exe" -c --pn %2 --br %3 --to 1000 -i %4 -e --all -p --dwp --drp -d --a 8000000 --fn %1 --v
+		start "" /b /wait "C:\Program Files\STMicroelectronics\Software\Flash Loader Demo\STMFlashLoader.exe" -c --pn %2 --br %3 --to 1000 -i %4 -e --all -p --dwp --drp -d --a 8000000 --fn %1 
 		@exit
 	) else if exist "C:\Program Files (x86)\STMicroelectronics\Software\Flash Loader Demo\STMFlashLoader.exe" (
 		@echo Start flashing...
 		@echo.
-		start "" /b /wait "C:\Program Files (x86)\STMicroelectronics\Software\Flash Loader Demo\STMFlashLoader.exe" -c --pn %2 --br %3 --to 1000 -i %4 -e --all -p --dwp --drp -d --a 8000000 --fn %1 --v
+		start "" /b /wait "C:\Program Files (x86)\STMicroelectronics\Software\Flash Loader Demo\STMFlashLoader.exe" -c --pn %2 --br %3 --to 1000 -i %4 -e --all -p --dwp --drp -d --a 8000000 --fn %1 
 		@exit
 	) else (
 		@echo ERROR: The Flash Loader executable does not exist. Please check the followings:
-		@echo - You have already installed Flash Loader Demonstrator 2.1.0
+		@echo - You have already installed Flash Loader Demonstrator 2.7.0
 		@echo - You have installed Flash Loader Demonstrator under one of the following paths:
 		@echo     - C^:\Program Files\STMicroelectronics\Software\Flash Loader Demo\
 		@echo     - C^:\Program Files (x86^)\STMicroelectronics\Software\Flash Loader Demo\

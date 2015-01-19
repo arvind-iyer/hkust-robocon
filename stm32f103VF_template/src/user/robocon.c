@@ -26,9 +26,17 @@ void robocon_main(void)
 				// Every 10 seconds (0.1 Hz)
 				battery_regular_check();
 			}
+
 			
-			if (ticks_img % 10 == 3) {
-				// Every 10 ms (100 Hz)
+			if (ticks_img % 100 == 3) {
+				// Every 100 ms (10 Hz)
+				wheel_base_send_position();
+				//uart_tx_byte(COM1, 0xAB);
+			}
+			
+			if (ticks_img % 50 == 7) {
+				// Every 50 ms (20 Hz)
+				/** Warning: try not to do many things after tft_update(), as it takes time **/
 				WHEEL_BASE_VEL vel = wheel_base_get_vel();
 				tft_clear();
 				tft_prints(0, 0, "Battery: %s", get_voltage_string());
@@ -43,10 +51,7 @@ void robocon_main(void)
 				tft_update();
 			}
 			
-			if (ticks_img % 100 == 6) {
-				// Every 10 ms (100 Hz)
-				wheel_base_send_position();
-			}
+			
 		}
 	}	
 }
