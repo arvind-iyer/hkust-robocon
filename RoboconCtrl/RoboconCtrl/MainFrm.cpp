@@ -13,7 +13,7 @@
 #include <string>
 #include <utility>
 #include <algorithm>
-#include <math.h>
+#include <cmath>
 #include <iomanip>
 #include <memory>
 

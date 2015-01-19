@@ -275,7 +275,7 @@ void CRoboconCtrlView::GLDrawScene()
 	}
 }
 
-void CRoboconCtrlView::OnDraw(CDC* /*pDC*/)
+void CRoboconCtrlView::OnDraw(CDC* pDC)
 {
 	CRoboconCtrlDoc* pDoc = GetDocument();
 	ASSERT_VALID(pDoc);
@@ -283,18 +283,42 @@ void CRoboconCtrlView::OnDraw(CDC* /*pDC*/)
 		return;
 
 	// TODO: add draw code for native data here
+
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 	GLDrawScene();
 	SwapBuffers(m_hDC);
-	CPaintDC dc(this);
-	CClientDC pDC(this);
-	OnPrepareDC(&pDC);
 
 	if (grid_pos.valid) {
 		std::basic_ostringstream<TCHAR> oss;
 		oss << _T("Mouse coordinates: (") << grid_pos.x << _T(", ") << grid_pos.y << _T(")");
-		TextOut(pDC.GetSafeHdc(), 1, 2, oss.str().c_str(), oss.str().size());
+		TextOut(pDC->GetSafeHdc(), 1, 2, oss.str().c_str(), oss.str().size());
 	}
+
+	// get our client rectangle
+	CRect rect;
+	GetClientRect(rect);
+
+	std::basic_string<TCHAR> status = std::basic_string<TCHAR>(_T("Comm Status: "));
+
+	TextOut(pDC->GetSafeHdc(), rect.Width() - 110, 0, status.c_str(), status.size());
+
+	CBrush* pOldBrush;
+	CBrush brushRed(RGB(255, 0, 0));
+	CBrush brushGreen(RGB(0, 255, 0));
+
+	if (((CMainFrame*)AfxGetMainWnd())->serial != NULL && ((CMainFrame*)AfxGetMainWnd())->serial->is_connected()) {
+		pOldBrush = pDC->SelectObject(&brushGreen);
+	}
+	else {
+		pOldBrush = pDC->SelectObject(&brushRed);
+	}
+
+	// draw a thick black rectangle filled with blue
+	pDC->Rectangle(rect.Width() - 20, 0, rect.Width(), 20);
+
+	// put back the old objects
+	pDC->SelectObject(pOldBrush);
+
 }
 
 void CRoboconCtrlView::OnMouseMove(UINT nFlags, CPoint point)

@@ -49,9 +49,10 @@ protected:  // control bar embedded members
 	CPropertiesWnd    m_wndProperties;
 	CInputWnd         m_wndInput;
 
-protected: 
+public: 
 // serial port member
 	static SerialIO* serial;
+protected:
 // buffer that stores keys pressed
 	std::string send_msg;
 	BOOL shift;

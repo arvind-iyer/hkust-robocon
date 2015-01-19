@@ -1,6 +1,6 @@
 #include "stdafx.h"
 #include "RobotMCtrl.h"
-#include <math.h>
+#include <cmath>
 #include <sstream>
 #include <iomanip>
 
