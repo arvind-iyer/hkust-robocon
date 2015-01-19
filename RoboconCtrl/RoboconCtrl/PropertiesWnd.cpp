@@ -196,7 +196,6 @@ std::vector<std::basic_string<TCHAR>> CPropertiesWnd::GetSettings()
 	if (((CString)m_wndPropList.GetProperty(1)->GetSubItem(3)->GetValue()).IsEmpty()) {
 		m_wndPropList.GetProperty(1)->GetSubItem(3)->SetValue(_T("1"));
 	}
-
 	string_vector.push_back(((CString)m_wndPropList.GetProperty(0)->GetSubItem(0)->GetValue()).GetString());
 	string_vector.push_back(((CString)m_wndPropList.GetProperty(0)->GetSubItem(1)->GetValue()).GetString());
 	string_vector.push_back(((CString)m_wndPropList.GetProperty(1)->GetSubItem(0)->GetValue()).GetString());
