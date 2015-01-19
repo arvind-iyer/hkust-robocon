@@ -196,12 +196,20 @@ std::vector<std::basic_string<TCHAR>> CPropertiesWnd::GetSettings()
 	if (((CString)m_wndPropList.GetProperty(1)->GetSubItem(3)->GetValue()).IsEmpty()) {
 		m_wndPropList.GetProperty(1)->GetSubItem(3)->SetValue(_T("1"));
 	}
+	if (((CString)m_wndPropList.GetProperty(1)->GetSubItem(4)->GetValue()).IsEmpty()) {
+		m_wndPropList.GetProperty(1)->GetSubItem(3)->SetValue(_T("10"));
+	}
+	if (((CString)m_wndPropList.GetProperty(1)->GetSubItem(5)->GetValue()).IsEmpty()) {
+		m_wndPropList.GetProperty(1)->GetSubItem(3)->SetValue(_T("10"));
+	}
 	string_vector.push_back(((CString)m_wndPropList.GetProperty(0)->GetSubItem(0)->GetValue()).GetString());
 	string_vector.push_back(((CString)m_wndPropList.GetProperty(0)->GetSubItem(1)->GetValue()).GetString());
 	string_vector.push_back(((CString)m_wndPropList.GetProperty(1)->GetSubItem(0)->GetValue()).GetString());
 	string_vector.push_back(((CString)m_wndPropList.GetProperty(1)->GetSubItem(1)->GetValue()).GetString());
 	string_vector.push_back(((CString)m_wndPropList.GetProperty(1)->GetSubItem(2)->GetValue()).GetString());
 	string_vector.push_back(((CString)m_wndPropList.GetProperty(1)->GetSubItem(3)->GetValue()).GetString());
+	string_vector.push_back(((CString)m_wndPropList.GetProperty(1)->GetSubItem(4)->GetValue()).GetString());
+	string_vector.push_back(((CString)m_wndPropList.GetProperty(1)->GetSubItem(5)->GetValue()).GetString());
 
 	return string_vector;
 }
@@ -258,6 +266,12 @@ void CPropertiesWnd::InitPropList()
 	pGroup2->AddSubItem(pProp);
 
 	pProp = new CMFCPropertyGridProperty(_T("Read Mode"), (_variant_t)to_string(1).c_str(), _T("0 - Regular Read\n1 - Robot coordinates"));
+	pGroup2->AddSubItem(pProp);
+
+	pProp = new CMFCPropertyGridProperty(_T("Repeat Delay"), (_variant_t)to_string(10).c_str(), _T("Sets repeat delay in milliseconds."));
+	pGroup2->AddSubItem(pProp);
+
+	pProp = new CMFCPropertyGridProperty(_T("Read Delay"), (_variant_t)to_string(10).c_str(), _T("Sets read delay in milliseconds."));
 	pGroup2->AddSubItem(pProp);
 
 	m_wndPropList.AddProperty(pGroup2);

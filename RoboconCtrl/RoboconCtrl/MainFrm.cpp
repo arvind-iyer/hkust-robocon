@@ -21,6 +21,13 @@
 #define new DEBUG_NEW
 #endif
 
+namespace {
+	int readmode;
+	int writemode;
+	DWORD write_sleep_duration;
+	DWORD read_sleep_duration;
+
+}
 
 // CMainFrame
 
@@ -29,9 +36,6 @@ IMPLEMENT_DYNCREATE(CMainFrame, CFrameWndEx)
 const int  iMaxUserToolbars = 10;
 const UINT uiFirstUserToolBarId = AFX_IDW_CONTROLBAR_FIRST + 40;
 const UINT uiLastUserToolBarId = uiFirstUserToolBarId + iMaxUserToolbars - 1;
-
-int CMainFrame::readmode = 0;
-int CMainFrame::writemode = 0;
 
 BEGIN_MESSAGE_MAP(CMainFrame, CFrameWndEx)
 	ON_WM_CREATE()
@@ -336,7 +340,7 @@ UINT __cdecl CMainFrame::read_thread(LPVOID app_ptr){
 		if (serial->bytes_to_read()) {
 			AfxGetMainWnd()->PostMessage(WM_PRINT_OUTPUT_FROM_READ, 0, (LPARAM)new std::string(serial->read()));
 		}
-		Sleep(10);
+		Sleep(read_sleep_duration);
 	}
 	return 0;
 }
@@ -409,7 +413,7 @@ UINT __cdecl CMainFrame::write_thread(LPVOID app_ptr){
 				AfxGetMainWnd()->PostMessage(WM_PRINT_OUTPUT_FROM_WRITE, 0, (LPARAM)new std::basic_string<TCHAR>(oss.str()));
 			}
 		}
-		Sleep(10);
+		Sleep(write_sleep_duration);
 	}
 	return 0;
 }
@@ -421,6 +425,9 @@ BOOL CMainFrame::PreTranslateMessage(MSG* msg)
 	std::vector<std::basic_string<TCHAR>> settings = m_wndProperties.GetSettings();
 	readmode = stoi(settings[5]);
 	writemode = stoi(settings[3]);
+	write_sleep_duration = stoi(settings[6]);
+	read_sleep_duration = stoi(settings[7]);
+
 	return CFrameWndEx::PreTranslateMessage(msg);
 }
 

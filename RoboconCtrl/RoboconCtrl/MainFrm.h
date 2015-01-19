@@ -56,8 +56,7 @@ protected:
 	std::string send_msg;
 	BOOL shift;
 public:
-	static int readmode;
-	static int writemode;
+
 // Generated message map functions
 protected:
 	afx_msg void OnEditCopy();
