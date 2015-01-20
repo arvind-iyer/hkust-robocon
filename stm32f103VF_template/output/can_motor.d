@@ -1,6 +1,6 @@
 .\output\can_motor.o: src\user\can_motor.c
 .\output\can_motor.o: src\user\can_motor.h
-.\output\can_motor.o: src\user\can.h
+.\output\can_motor.o: src\user\can_protocol.h
 .\output\can_motor.o: C:\Keil_v5\ARM\ARMCC\Bin\..\include\stdio.h
 .\output\can_motor.o: .\src\stm32f10x_std\inc\stm32f10x.h
 .\output\can_motor.o: .\src\stm32f10x_std\inc\core_cm3.h
@@ -18,7 +18,6 @@
 .\output\can_motor.o: .\src\stm32f10x_std\inc\stm32f10x_usart.h
 .\output\can_motor.o: .\src\stm32f10x_std\inc\misc.h
 .\output\can_motor.o: .\src\stm32f10x_std\inc\stm32f10x_can.h
-.\output\can_motor.o: src\user\can_protocol.h
 .\output\can_motor.o: .\src\ustrobo_min_system\inc\ticks.h
 .\output\can_motor.o: .\src\stm32f10x_std\inc\stm32f10x_tim.h
 .\output\can_motor.o: .\src\ustrobo_min_system\inc\buzzer.h

@@ -2,23 +2,23 @@
 
 
 // Buzzer control related
-u8 buzzer_on_flag = 0;
-u16 buzzer_period = 0;
-u16 buzzer_time_ms = 0;		// Period left
-u8 buzzer_count = 0;
+static u8 buzzer_on_flag = 0;
+static u16 buzzer_period = 0;
+static u16 buzzer_time_ms = 0;		// Period left
+static u8 buzzer_count = 0;
 
 // Note frequency related
 static u8 buzzer_volume = 30;		// 0 - 100 (101 for full buzz)
 static u16 buzzer_note_period = 1;
 
 // Song related
-u8 buzzer_song_flag = 0;	// 1 if a song is being played
-const MUSIC_NOTE* buzzer_current_song = 0;
-u16 buzzer_current_song_note_id = 0;
-u16 buzzer_song_note_length = 0;
-u16 buzzer_song_note_length_left = 0;// Length left
-u16 buzzer_song_note_break = 0;	// break length between notes (can be 0)
-u8 buzzer_song_note_break_flag = 0;
+static u8 buzzer_song_flag = 0;	// 1 if a song is being played
+static const MUSIC_NOTE* buzzer_current_song = 0;
+static u16 buzzer_current_song_note_id = 0;
+static u16 buzzer_song_note_length = 0;
+static u16 buzzer_song_note_length_left = 0;// Length left
+static u16 buzzer_song_note_break = 0;	// break length between notes (can be 0)
+static u8 buzzer_song_note_break_flag = 0;
 
 /**
   * @brief  Initialization of buzzer

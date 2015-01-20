@@ -33,9 +33,8 @@
 .\output\main.o: .\src\ustrobo_min_system\inc\xbc_mb.h
 .\output\main.o: .\src\ustrobo_min_system\inc\button.h
 .\output\main.o: .\src\ustrobo_min_system\inc\encoder.h
-.\output\main.o: src\user\can.h
-.\output\main.o: .\src\stm32f10x_std\inc\stm32f10x_can.h
 .\output\main.o: src\user\can_protocol.h
+.\output\main.o: .\src\stm32f10x_std\inc\stm32f10x_can.h
 .\output\main.o: .\src\ustrobo_min_system\inc\uart.h
 .\output\main.o: .\src\ustrobo_min_system\inc\approx_math.h
 .\output\main.o: .\src\ustrobo_min_system\inc\servo.h
@@ -45,3 +44,5 @@
 .\output\main.o: src\user\robocon.h
 .\output\main.o: src\user\wheel_base.h
 .\output\main.o: src\user\can_motor.h
+.\output\main.o: src\user\wheel_base_pid.h
+.\output\main.o: src\user\wheel_base.h

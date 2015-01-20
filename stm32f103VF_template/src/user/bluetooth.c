@@ -114,11 +114,19 @@ void bluetooth_rx_add_filter(u8 id, u8 mask, void (*handler)(u8 id, u8 length, u
 	++rx_filter_count;
 }
 
+/**
+	* @brief RX_STATE getter (mainly for debug)
+	*/
 u8 bluetooth_rx_state(void)
 {
 	return rx_state;
 }
 
+/**
+	* @brief Get the number of successful received Bluetooth package
+	* @param None
+	* @retval The number of successful received Bluetooth package 
+	*/
 u16 bluetooth_get_data_count(void)
 {
 	return rx_successful_rx_data_count;
@@ -220,6 +228,14 @@ BLUETOOTH_COM_IRQHandler
 	rx_last_update = get_seconds() * 1000 + get_ticks();	
 }
 
+
+/**
+	* @brief Function handler for bluetooth RX 
+	* @param id: Data package ID
+	* @param length: Data length
+	* @param data: Data array
+	* @retval None.
+	*/
 void bluetooth_data_handler(u8 id, u8 length, u8* data)
 {
 	u8 i = 0;
@@ -232,6 +248,11 @@ void bluetooth_data_handler(u8 id, u8 length, u8* data)
 	}
 }
 
+/**
+	* @brief Call this when a package receive is successful. 
+	*	@param None.
+	* @retval None.
+	*/
 void bluetooth_rx_successful(void)
 {
 	++rx_successful_rx_data_count;
@@ -239,6 +260,14 @@ void bluetooth_rx_successful(void)
 	led_control(LED_D1, (LED_STATE) rx_successful_toggle);
 }
 
+
+/**
+	* @brief Regular check of the bluetooth rx. 
+	* 				Reset the rx_state if there is not any data received after BLUETOOTH_RX_RESET_TIMEOUT ms.
+	*					Also toggle the LED for every successful receive.
+	* @param None.
+	* @retval None.
+	*/
 void bluetooth_update(void)
 {
 	u32 current_time = get_seconds() * 1000 + get_ticks();

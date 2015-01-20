@@ -1,15 +1,32 @@
 #ifndef __CAN_PROTOCOL_H
 #define __CAN_PROTOCOL_H
 
+#include <stdio.h>
+#include "stm32f10x.h"
+#include "stm32f10x_can.h"
+#include "misc.h"
 #include "ticks.h"
-#include "can.h"
 #include "uart.h"
 
+/*** CAN Config ***/
+#define	CANn							CAN1
+#define CAN_RCC						RCC_APB1Periph_CAN1
+
+#define	CAN_Rx_GPIO_Pin		GPIO_Pin_11
+#define	CAN_Tx_GPIO_Pin		GPIO_Pin_12
+#define	CAN_GPIO_PORT			GPIOA
+#define CAN_GPIO_RCC			RCC_APB2Periph_GPIOA
+
+/*** CAN TX CONST ***/
 #define CAN_TX_QUEUE_MAX_SIZE				2000
+#define	CAN_TX_IRQn									USB_HP_CAN1_TX_IRQn
 #define CAN_TX_IRQHander						void USB_HP_CAN1_TX_IRQHandler(void)
-	
+
+/*** CAN RX CONST ***/
 #define CAN_Rx_IRQn									USB_LP_CAN1_RX0_IRQn
 #define	CAN_Rx_IRQHandler						void USB_LP_CAN1_RX0_IRQHandler(void)
+#define	CAN_RX_FILTER_LIMIT		28		// The number of filters can be applied at most
+
 
 /*** X = the ID bit that must be equal 	***/
 /*** ? = the ID bit that can varies 		***/
@@ -35,15 +52,18 @@ typedef struct {
 } CAN_QUEUE;
 
 
+void can_init(void);
+//u8 can_tx(CanTxMsg msg);
+
 /*** CAN Tx ***/
 u16 can_tx_queue_head(void);
 u16 can_tx_queue_tail(void);
 u16 can_tx_queue_size(void);
 u8 can_tx_queue_empty(void);
 u8 can_empty_mailbox(void);
-u8 can_tx_enqueue(CAN_MESSAGE msg);		// <--- The main function for can_tx
-u8 can_tx_dequeue(void);
-void can_tx_queue_clear(void);
+u8 can_tx_enqueue(CAN_MESSAGE msg);		// <--- The main function for CAN transmission
+u8 can_tx_dequeue(void);							// <--- To be called through interrupt
+void can_tx_queue_clear(void);	
 
 /*** CAN Rx ***/
 void can_rx_init(void);

@@ -19,7 +19,6 @@
 #include "encoder.h"
 
 /*** Optional ***/
-#include "can.h"
 #include "can_protocol.h"
 #include "uart.h"
 #include "approx_math.h"

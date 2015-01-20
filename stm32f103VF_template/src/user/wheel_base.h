@@ -6,13 +6,11 @@
 #include "bluetooth.h"
 #include "ticks.h"
 #include "gyro.h"
+#include "wheel_base_pid.h"
 
 // Protocol
 #define	BLUETOOTH_WHEEL_BASE_MANUAL_ID				0x40
 #define	BLUETOOTH_WHEEL_BASE_SPEED_MODE_ID		0x41
-
-#define	BLUETOOTH_WHEEL_BASE_AUTO_ID					0x50
-#define	BLUETOOTH_WHEEL_BASE_AUTO_STOP_ID			0x51
 
 #define BLUETOOTH_WHEEL_BASE_POS_ID						0x60
 
@@ -58,7 +56,7 @@ void wheel_base_tx_acc(void);
 void wheel_base_set_vel(s32 x, s32 y, s32 w);
 WHEEL_BASE_VEL wheel_base_get_vel(void);
 void wheel_base_update(void);
-void wheel_base_send_position(void);
+void wheel_base_tx_position(void);
 
 
 #endif	/* __WHEEL_BASE_H */

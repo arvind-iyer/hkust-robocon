@@ -7,18 +7,7 @@ static u8 wheel_base_speed_mode = WHEEL_BASE_DEFAULT_SPEED_MODE;
 static u32 wheel_base_bluetooth_last_update = 0;
 static u32 wheel_base_last_can_tx = 0;
 
-/**
-	* @brief Initialization of wheel base, including bluetooth rx filter, and all related variables
-	*/
-void wheel_base_init(void)
-{
-	void motor_control_bluetooth_decode(u8 id, u8 length, u8* data);
-	bluetooth_rx_add_filter(BLUETOOTH_WHEEL_BASE_MANUAL_ID, 0xF0, motor_control_bluetooth_decode);
-	wheel_base_vel.x = wheel_base_vel.y = wheel_base_vel.w = 0;
-	wheel_base_bluetooth_last_update = 0;
-	wheel_base_last_can_tx = 0;
-	wheel_base_tx_acc();
-}
+
 
 /**
 	* @brief Handler for the bluetooth RX with id 0x4?
@@ -27,7 +16,7 @@ void wheel_base_init(void)
 	* @param data: The array with the data length
 	* @retval None
 	*/
-void motor_control_bluetooth_decode(u8 id, u8 length, u8* data)
+static void wheel_base_bluetooth_decode(u8 id, u8 length, u8* data)
 {
 	switch (id) {
 		case BLUETOOTH_WHEEL_BASE_MANUAL_ID:
@@ -55,7 +44,7 @@ void motor_control_bluetooth_decode(u8 id, u8 length, u8* data)
 		break;
 			
 			
-		case BLUETOOTH_WHEEL_BASE_AUTO_ID:
+		case BLUETOOTH_WHEEL_BASE_AUTO_POS_ID:
 			if (length == 6) {
 				s16 x, y, w;
 				x = ((data[0] >> 8) & 0xFF) | (data[1] & 0xFF);
@@ -65,6 +54,18 @@ void motor_control_bluetooth_decode(u8 id, u8 length, u8* data)
 				
 			}
 	}
+}
+
+/**
+	* @brief Initialization of wheel base, including bluetooth rx filter, and all related variables
+	*/
+void wheel_base_init(void)
+{
+	bluetooth_rx_add_filter(BLUETOOTH_WHEEL_BASE_MANUAL_ID, 0xF0, wheel_base_bluetooth_decode);
+	wheel_base_vel.x = wheel_base_vel.y = wheel_base_vel.w = 0;
+	wheel_base_bluetooth_last_update = 0;
+	wheel_base_last_can_tx = 0;
+	wheel_base_tx_acc();
 }
 
 /**
@@ -100,7 +101,6 @@ void wheel_base_tx_acc(void)
 	motor_set_acceleration(MOTOR_BOTTOM_LEFT,WHEEL_BASE_BL_ACC);
 	motor_set_acceleration(MOTOR_TOP_LEFT,WHEEL_BASE_TL_ACC);
 	motor_set_acceleration(MOTOR_TOP_RIGHT,WHEEL_BASE_TR_ACC);
-
 }
 
 
@@ -184,11 +184,11 @@ void wheel_base_update(void)
 	* @param None.
 	* @retval None.
 	*/
-void wheel_base_send_position(void)
+void wheel_base_tx_position(void)
 {
-	s16 x = get_X(),
-			y = get_Y(),
-			w = get_angle();
+	s16 x = get_pos()->x,
+			y = get_pos()->y,
+			w = get_pos()->angle;
 	
 	u8 data[6];
 	

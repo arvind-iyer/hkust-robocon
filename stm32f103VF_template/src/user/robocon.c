@@ -1,7 +1,7 @@
 #include "robocon.h"
 
-u16 ticks_img 	= (u16)-1;
-u16 seconds_img = (u16)-1;
+static u16 ticks_img 	= (u16)-1;
+static u16 seconds_img = (u16)-1;
 
 void robocon_main(void)
 {
@@ -15,6 +15,7 @@ void robocon_main(void)
 				// Every 10 ms (100 Hz)
 				bluetooth_update();
 				wheel_base_update();
+				wheel_base_pid_loop();
 			}
 			
 			if (ticks_img % 250 == 1) {
@@ -30,8 +31,7 @@ void robocon_main(void)
 			
 			if (ticks_img % 100 == 3) {
 				// Every 100 ms (10 Hz)
-				wheel_base_send_position();
-				//uart_tx_byte(COM1, 0xAB);
+				wheel_base_tx_position();
 			}
 			
 			if (ticks_img % 50 == 7) {
@@ -45,8 +45,8 @@ void robocon_main(void)
 				tft_prints(0, 3, "VY: %d", vel.y);
 				tft_prints(0, 4, "VW: %d", vel.w);
 				tft_prints(0, 5, "Speed: %d", wheel_base_get_speed_mode());
-				tft_prints(0, 6, "Pos: %-4d,%-4d", get_X(), get_Y());
-				tft_prints(0, 7, "Ang: %-4d", get_angle());
+				tft_prints(0, 6, "Pos: %-4d,%-4d", get_pos()->x, get_pos()->y);
+				tft_prints(0, 7, "Ang: %-4d", get_pos()->angle);
 				tft_prints(0, 9, "Time: %d'%03d\"", get_seconds(), get_ticks());
 				tft_update();
 			}

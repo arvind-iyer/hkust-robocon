@@ -16,10 +16,9 @@
 .\output\wheel_base.o: .\src\stm32f10x_std\inc\stm32f10x_usart.h
 .\output\wheel_base.o: .\src\stm32f10x_std\inc\misc.h
 .\output\wheel_base.o: src\user\can_motor.h
-.\output\wheel_base.o: src\user\can.h
+.\output\wheel_base.o: src\user\can_protocol.h
 .\output\wheel_base.o: C:\Keil_v5\ARM\ARMCC\Bin\..\include\stdio.h
 .\output\wheel_base.o: .\src\stm32f10x_std\inc\stm32f10x_can.h
-.\output\wheel_base.o: src\user\can_protocol.h
 .\output\wheel_base.o: .\src\ustrobo_min_system\inc\ticks.h
 .\output\wheel_base.o: .\src\stm32f10x_std\inc\stm32f10x_tim.h
 .\output\wheel_base.o: .\src\ustrobo_min_system\inc\buzzer.h
@@ -32,3 +31,5 @@
 .\output\wheel_base.o: .\src\ustrobo_min_system\inc\gyro.h
 .\output\wheel_base.o: .\src\ustrobo_min_system\inc\delay.h
 .\output\wheel_base.o: .\src\ustrobo_min_system\inc\approx_math.h
+.\output\wheel_base.o: src\user\wheel_base_pid.h
+.\output\wheel_base.o: src\user\wheel_base.h

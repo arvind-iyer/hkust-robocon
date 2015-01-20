@@ -1,16 +1,15 @@
 #include "gyro.h"
 #include "approx_math.h"
 
-s16 angle = 0, real_x = 0, real_y = 0;
-s16 angle_offset = 0, x_offset = 0, y_offset = 0;
+static POSITION gyro_pos = {0, 0, 0};
 
-u8 rx_state = 0; 
-u8 rx_command = 0;
-u8 buf_rec = 0;
-u8 buf_data[10] = {0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
+static u8 rx_state = 0; 
+static u8 rx_command = 0;
+static u8 buf_rec = 0;
+static u8 buf_data[10] = {0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
 
-u8 rx_command_arr[GYRO_COMMAND_LENGTH] = {GYRO_UPDATED, GYRO_REPLY};
-u8 buf_len[GYRO_COMMAND_LENGTH] = {0x06, 0x01};		//data size, for confirm data
+static u8 rx_command_arr[GYRO_COMMAND_LENGTH] = {GYRO_UPDATED, GYRO_REPLY};
+static u8 buf_len[GYRO_COMMAND_LENGTH] = {0x06, 0x01};		//data size, for confirm data
 
 volatile u8 reply_flag = 0;
 
@@ -27,8 +26,18 @@ void gyro_init(void)
 	uart_interrupt(GYRO_UART);
 }
 
-s16    SHIFT_X = -200;	//53//	193//  -163	//	98		//79
-s16    SHIFT_Y = -618;	//40// 	-50// 	-41	//	170		//336
+s16    SHIFT_X = 0; // -200;	//53//	193//  -163	//	98		//79
+s16    SHIFT_Y = 0; // -618;	//40// 	-50// 	-41	//	170		//336
+
+/**
+	* @brief Get the position object
+	* @param None
+	* @retval The position object
+	*/
+const POSITION* get_pos(void)
+{
+	return &gyro_pos;
+}
 
 /**
   * @brief  Get the X coordinate
@@ -38,9 +47,8 @@ s16    SHIFT_Y = -618;	//40// 	-50// 	-41	//	170		//336
 s16 get_X(void)
 {
 	
-   s32 pos_x = (X_FLIP*real_x*10000-SHIFT_X*10000+SHIFT_X*int_cos(angle)+SHIFT_Y*int_sin(angle))/10000;
-	//return real_x;
-	return pos_x;//real_x;
+  s16 pos_x = (X_FLIP*gyro_pos.x*10000-SHIFT_X*10000+SHIFT_X*int_cos(gyro_pos.angle)+SHIFT_Y*int_sin(gyro_pos.angle))/10000;
+	return pos_x;
 }
 
 /**
@@ -51,9 +59,8 @@ s16 get_X(void)
 s16 get_Y(void)
 {
 	
-	s32 pos_y = (Y_FLIP*real_y*10000-SHIFT_Y*10000+SHIFT_Y*int_cos(angle)-SHIFT_X*int_sin(angle))/10000;
-	//return real_y;
-	return pos_y;//real_y;
+	s16 pos_y = (Y_FLIP*gyro_pos.y*10000-SHIFT_Y*10000+SHIFT_Y*int_cos(gyro_pos.angle)-SHIFT_X*int_sin(gyro_pos.angle))/10000;
+	return pos_y;
 }
 
 /**
@@ -63,7 +70,7 @@ s16 get_Y(void)
   */
 s16 get_angle(void)
 {
-	return angle;
+	return gyro_pos.angle;
 }
 
 /**
@@ -202,9 +209,9 @@ void USART3_IRQHandler(void)
 						if (a < 3600) {
 							gyro_available = 1;
 							
-							real_x = (s16) x;
-							real_y = (s16) y;
-							angle = (s16) a;
+							gyro_pos.x = (s16) x;
+							gyro_pos.y = (s16) y;
+							gyro_pos.angle = (s16) a;
 						} else {
 							gyro_available = 0;
 						}

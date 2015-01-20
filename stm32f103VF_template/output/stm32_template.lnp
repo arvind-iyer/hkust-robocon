@@ -1,7 +1,6 @@
 --cpu Cortex-M3
 ".\output\bluetooth.o"
 ".\output\buzzer_song.o"
-".\output\can.o"
 ".\output\can_motor.o"
 ".\output\can_protocol.o"
 ".\output\crc.o"
@@ -9,6 +8,7 @@
 ".\output\main.o"
 ".\output\robocon.o"
 ".\output\wheel_base.o"
+".\output\wheel_base_pid.o"
 ".\output\approx_math.o"
 ".\output\battery.o"
 ".\output\buzzer.o"

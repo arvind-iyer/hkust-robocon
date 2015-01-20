@@ -33,6 +33,11 @@
 extern volatile u8 gyro_available;
 extern s16 SHIFT_X, SHIFT_Y;
 
+typedef struct {
+	s16 x, y, angle;
+} POSITION;
+
+const POSITION* get_pos(void);	// Get the position ({x, y, angle})
 s16 get_X(void);	//get x-coordinate
 s16 get_Y(void);	//get y-coordinate
 s16 get_angle(void);	////get angle

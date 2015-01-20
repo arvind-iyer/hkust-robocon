@@ -1,7 +1,6 @@
 #ifndef __CAN_MOTOR_H
 #define __CAN_MOTOR_H
 
-#include "can.h"
 #include "can_protocol.h"
 
 #define CAN_MOTOR_COUNT								16
