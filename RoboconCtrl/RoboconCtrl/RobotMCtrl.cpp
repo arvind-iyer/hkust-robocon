@@ -56,7 +56,7 @@ bool crc16(char* buffer, const char* message, int msg_l)
 	return true;
 }
 
-std::string RobotMCtrl::operator()(int x, int y, int w) {
+std::string RobotMCtrl::manual_mode(int x, int y, int w) {
 	// Bounds checking
 	if (x > 100) {
 		x = 100;
@@ -96,7 +96,7 @@ std::string RobotMCtrl::operator()(int x, int y, int w) {
 	return o.str();
 }
 
-std::string RobotMCtrl::operator()(int speed) {
+std::string RobotMCtrl::speed_mode(int speed) {
 	if (speed < 0) {
 		speed = 0;
 	}
@@ -118,7 +118,7 @@ std::string RobotMCtrl::operator()(int speed) {
 	
 }
 
-std::pair<std::vector<int>, BOOL> RobotMCtrl::operator()(std::string string_received) {
+std::pair<std::vector<int>, BOOL> RobotMCtrl::read(std::string string_received) {
 	// Determines whether or not both a start and a stop byte are present in the string
 	if (string_received.find_first_of(0x12) != std::string::npos && string_received.find_first_of(0x34) != std::string::npos) {
 		// Prune the start and stop bits from the string
@@ -154,7 +154,7 @@ std::pair<std::vector<int>, BOOL> RobotMCtrl::operator()(std::string string_rece
 	return std::make_pair(std::vector<int>(), FALSE);
 }
 
-std::string RobotMCtrl::operator()(short x, short y, unsigned short angle)
+std::string RobotMCtrl::coordinates(short x, short y, unsigned short angle)
 {
 	char soh = 0x12;
 	char id = 0x50;
@@ -195,6 +195,42 @@ std::string RobotMCtrl::operator()(short x, short y, unsigned short angle)
 
 	return o.str();
 }
+
+std::string RobotMCtrl::pid_toggle(BOOL pid)
+{
+	if (pid) {
+		char soh = 0x12;
+		char id = 0x51;
+		char data_length = 0x00;
+		char data = 0;
+		char buffer[2] = { 0, 0 };
+		char eot = 0x34;
+
+		crc16(buffer, &data, 0);
+
+		// construct the string to send
+		std::stringstream o;
+		o << soh << id << data_length << id << buffer[0] << buffer[1] << eot;
+		return o.str();
+	}
+	else {
+
+		char soh = 0x12;
+		char id = 0x52;
+		char data_length = 0x00;
+		char* data = 0;
+		char buffer[2] = { 0, 0 };
+		char eot = 0x34;
+
+		crc16(buffer, data, 0);
+
+		// construct the string to send
+		std::stringstream o;
+		o << soh << id << data_length << id << buffer[0] << buffer[1] << eot;
+		return o.str();
+	}
+}
+
 RobotMCtrl::~RobotMCtrl()
 {
 }

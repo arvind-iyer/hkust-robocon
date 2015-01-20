@@ -26,7 +26,7 @@ namespace {
 	int writemode;
 	DWORD write_sleep_duration;
 	DWORD read_sleep_duration;
-
+	BOOL pid_mode;
 }
 
 // CMainFrame
@@ -316,7 +316,7 @@ LRESULT CMainFrame::print_read_from_serial(WPARAM w, LPARAM l)
 {
 	std::shared_ptr< std::string > string_to_print(reinterpret_cast<std::string*>(l));
 	if (readmode == 1) {
-		std::pair<std::vector<int>, BOOL> data = RobotMCtrl()(*string_to_print);
+		std::pair<std::vector<int>, BOOL> data = RobotMCtrl().read(*string_to_print);
 		if (data.second) {
 			GetActiveView()->PostMessage(WM_RECEIVE_ROBOT_COORD, 0, (LPARAM)(new std::vector<int>(data.first)));
 			std::basic_ostringstream<TCHAR> oss;
@@ -348,15 +348,15 @@ UINT __cdecl CMainFrame::read_thread(LPVOID app_ptr){
 // Write thread
 
 UINT __cdecl CMainFrame::write_thread(LPVOID app_ptr){
-
 	while (serial != NULL && serial->is_connected()){
 		int x = 0;
 		int y = 0;
 		int w = 0;
 		int speed = -1;
 		bool pressed = FALSE;
+		bool pid_toggled = FALSE;
+
 		if (writemode == 2){
-			std::wstring keys_pressed;
 			if (GetAsyncKeyState(0x51) & 0x8000) { // Q Key
 				w -= 100;
 				pressed = TRUE;
@@ -393,9 +393,17 @@ UINT __cdecl CMainFrame::write_thread(LPVOID app_ptr){
 					break;
 				}
 			}
+			if (GetAsyncKeyState(VK_RETURN) & 0x8000) {
+				pid_mode = TRUE;
+				pid_toggled = TRUE;
+			}
+			if (GetAsyncKeyState(VK_ESCAPE) & 0x8000) {
+				pid_mode = FALSE;
+				pid_toggled = TRUE;
+			}
 			// manual control printing
 			if (pressed) {
-				serial->write(RobotMCtrl()(x, y, w));
+				serial->write(RobotMCtrl().manual_mode(x, y, w));
 				if (x != 0 && y != 0) {
 					double scale = sqrt(100 * 100 + 100 * 100) / 100.0;
 					x = (int)((double)x / scale);
@@ -407,14 +415,24 @@ UINT __cdecl CMainFrame::write_thread(LPVOID app_ptr){
 			}
 			// speed printing
 			if (speed != -1) {
-				serial->write(RobotMCtrl()(speed));
+				serial->write(RobotMCtrl().speed_mode(speed));
 				std::basic_ostringstream<TCHAR> oss;
 				oss << _T("Sent Speed: ") << speed;
 				AfxGetMainWnd()->PostMessage(WM_PRINT_OUTPUT_FROM_WRITE, 0, (LPARAM)new std::basic_string<TCHAR>(oss.str()));
 			}
+			if (pid_toggled) {
+				serial->write(RobotMCtrl().pid_toggle(pid_mode));
+				if (pid_mode) {
+					AfxGetMainWnd()->PostMessage(WM_PRINT_OUTPUT_FROM_WRITE, 0, (LPARAM)new std::basic_string<TCHAR>(_T("PID Start!")));
+				}
+				else {
+					AfxGetMainWnd()->PostMessage(WM_PRINT_OUTPUT_FROM_WRITE, 0, (LPARAM)new std::basic_string<TCHAR>(_T("PID Stop!")));
+				}
+			}
 		}
 		Sleep(write_sleep_duration);
 	}
+	pid_mode = FALSE;
 	return 0;
 }
 
@@ -566,7 +584,7 @@ LRESULT CMainFrame::WriteString(WPARAM w, LPARAM l)
 		if (serial != NULL && serial->is_connected())
 		{
 			std::vector<short> data = *coordinates;
-			serial->write(RobotMCtrl()(data[0], data[1], (unsigned short)data[2]));
+			serial->write(RobotMCtrl().coordinates(data[0], data[1], (unsigned short)data[2]));
 			std::basic_ostringstream<TCHAR> oss;
 			oss << _T("Sent Position: (") << (short)data[0] << _T(", ") << (short)data[1] << _T(", ") << (short)data[2] << _T(")");
 			PostMessage(WM_PRINT_OUTPUT_FROM_WRITE, 0, (LPARAM)new std::basic_string<TCHAR>(oss.str()));

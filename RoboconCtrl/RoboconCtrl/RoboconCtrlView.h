@@ -49,10 +49,13 @@ private:
 	GLCoord GetGLCoord(CPoint wndCoord);
 	GridCoord GetRobotCoord(CPoint wndCoord, unsigned int angle = 0);
 	GLCoord ConvertGridCoordToGLCoord(GridCoord g);
+
+	// Positions for OpenGL
 	struct GLCoord current_pos;
 	struct GLCoord cursor_pos;
 	struct GLCoord robot_pos;
 
+	// Mouse position on the virtual grid
 	struct GridCoord grid_pos;
 
 // Implementation
@@ -75,6 +78,8 @@ protected:
 	afx_msg void OnLButtonDblClk(UINT nFlags, CPoint point);
 	afx_msg void OnMouseMove(UINT nFlags, CPoint point);
 	afx_msg LRESULT refresh_coordinates(WPARAM w, LPARAM l);
+	afx_msg BOOL PreTranslateMessage(MSG* pMsg);
+
 	DECLARE_MESSAGE_MAP()
 };
 

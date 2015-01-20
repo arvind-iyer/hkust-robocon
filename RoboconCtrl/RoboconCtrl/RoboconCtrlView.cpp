@@ -48,10 +48,12 @@ CRoboconCtrlView::CRoboconCtrlView()
 	// TODO: add construction code here
 	current_pos.x = 0.0f;
 	current_pos.y = 0.0f;
+	current_pos.angle = 0;
 	current_pos.valid = FALSE;
 
 	cursor_pos.x = 0.0f;
 	cursor_pos.y = 0.0f;
+	cursor_pos.angle = 0;
 	cursor_pos.valid = FALSE;
 
 	robot_pos.x = 0.0f;
@@ -64,6 +66,21 @@ CRoboconCtrlView::CRoboconCtrlView()
 
 CRoboconCtrlView::~CRoboconCtrlView()
 {
+}
+
+BOOL CRoboconCtrlView::PreTranslateMessage(MSG* pMsg)
+{
+	if (pMsg->message == WM_KEYDOWN) {
+		if (GetAsyncKeyState(VK_TAB) & 0x8000) {
+			cursor_pos.angle == 0 ? cursor_pos.angle = 358 : cursor_pos.angle -= 2;
+			Invalidate();
+		}
+		if (GetAsyncKeyState(0x52) & 0x8000) {
+			cursor_pos.angle >= 358 ? cursor_pos.angle = 0 : cursor_pos.angle += 2;
+			Invalidate();
+		}
+	}
+	return CWnd::PreTranslateMessage(pMsg);
 }
 
 BOOL CRoboconCtrlView::PreCreateWindow(CREATESTRUCT& cs)
@@ -250,16 +267,75 @@ void CRoboconCtrlView::GLDrawScene()
 	glLineWidth(1.0f);
 	// Draw current position
 	if (current_pos.valid) {
-		glPointSize(10.0f);
+		// calculate position
+		double length = 0.0005;
+		double angle_of_quad = 40.0 * std::atan2(0, -1) / 180.0;
+
+		double angle = current_pos.angle * std::atan2(0, -1) / 180.0;
+
+		double quad_xpos1 = 61.0 * (cos(-angle) * -length) + current_pos.x;
+		double quad_ypos1 = 134.0 * (sin(-angle) * -length) + current_pos.y;
+
+		double quad_xpos2 = 61.0 * (cos(-angle) * length * cos(angle_of_quad / 2) - sin(-angle) * length * sin(angle_of_quad / 2)) + current_pos.x;
+		double quad_ypos2 = 134.0 * (sin(-angle) * length * cos(angle_of_quad / 2) + cos(-angle) * length * sin(angle_of_quad / 2)) + current_pos.y;
+
+		double quad_xpos3 = 61.0 * (cos(-angle) * length * (cos(angle_of_quad / 2) - sin(angle_of_quad / 2))) + current_pos.x;
+		double quad_ypos3 = 134.0 * (sin(-angle) * length * (cos(angle_of_quad / 2) - sin(angle_of_quad / 2))) + current_pos.y;
+
+		double quad_xpos4 = 61.0 * (cos(-angle) * length * cos(angle_of_quad / 2) - sin(-angle) * -length * sin(angle_of_quad / 2)) + current_pos.x;
+		double quad_ypos4 = 134.0 * (sin(-angle) * length * cos(angle_of_quad / 2) + cos(-angle) * -length * sin(angle_of_quad / 2)) + current_pos.y;
+
+		std::basic_ostringstream<TCHAR> oss;
+		oss << _T("Coords: (") << quad_xpos1 << _T(", ") << quad_ypos1 << _T(") (") << quad_xpos2 << _T(", ") << quad_ypos2 << _T(") (") << quad_xpos3 << _T(", ") << quad_ypos3 << _T(") (") << quad_xpos4 << _T(", ") << quad_ypos4 << _T(")") << std::endl;
+
+		OutputDebugString(oss.str().c_str());
+
+		glBegin(GL_TRIANGLE_FAN);
+			glColor3f((92.0f / 255.0f), (196.0f / 255.0f), (255.0f / 255.0f));
+			glVertex2d(quad_xpos1, quad_ypos1);
+			glColor3f((0.0f / 255.0f), (0.0f / 255.0f), (255.0f / 255.0f));
+			glVertex2d(quad_xpos2, quad_ypos2);
+			glVertex2d(quad_xpos3, quad_ypos3);
+			glVertex2d(quad_xpos4, quad_ypos4);
+		glEnd();
+		glPointSize(3.0f);
 		glBegin(GL_POINTS);
-			glColor3f(1.0f, 1.0f, 1.0f);
-			glVertex2f(current_pos.x, current_pos.y);
+			glColor3f(0.0f, 0.0f, 0.0f);
+			glVertex2d(current_pos.x, current_pos.y);
 		glEnd();
 	}
 	if (robot_pos.valid) {
-		glPointSize(7.0f);
+		// std::atan2(0, -1) is pi
+		double angle = std::atan2(0, -1) * robot_pos.angle / 180.0;
+		double side_length = 0.07;
+
+		// Rotation equations
+		double triangle_xpos1 = 61.0 * (cos(-angle) * (-side_length * sqrt(3) / 3)) + robot_pos.x;
+		double triangle_ypos1 = 134.0 * (sin(-angle) * (-side_length * sqrt(3) / 3)) + robot_pos.y;
+
+		double triangle_xpos2 = 61.0 * (cos(-angle) * (side_length * sqrt(3) / 6) - sin(-angle) * (side_length * 0.5)) + robot_pos.x;
+		double triangle_ypos2 = 134.0 * (sin(-angle) * (side_length * sqrt(3) / 6) + cos(-angle) * (side_length * 0.5)) + robot_pos.y;
+
+		double triangle_xpos3 = 61.0 * (cos(-angle) * (side_length * sqrt(3) / 6) - sin(-angle) * (-side_length * 0.5)) + robot_pos.x;
+		double triangle_ypos3 = 134.0 * (sin(-angle) * (side_length * sqrt(3) / 6) + cos(-angle) * (-side_length * 0.5)) + robot_pos.y;
+
+		glBegin(GL_TRIANGLES);
+			// width 0.0005
+			glColor3f(3.0f / 255.0f, 78.0f / 255.0f, 164.0f / 255.0f);
+			glVertex2d(triangle_xpos1, triangle_ypos1);
+			glColor3f(71.0f / 255.0f, 231.0f / 255.0f, 255.0f / 255.0f);
+			glVertex2d(triangle_xpos2, triangle_ypos2);
+			glVertex2d(triangle_xpos3, triangle_ypos3);
+		glEnd();
+		glBegin(GL_LINE_LOOP);
+			glColor3f(3.0f / 255.0f, 78.0f / 255.0f, 164.0f / 255.0f);
+			glVertex2d(triangle_xpos1, triangle_ypos1);
+			glVertex2d(triangle_xpos2, triangle_ypos2);
+			glVertex2d(triangle_xpos3, triangle_ypos3);
+		glEnd();
+		glPointSize(3.0f);
 		glBegin(GL_POINTS);
-		glColor3f(0.0f, 0.0f, 1.0f);
+			glColor3f(205.0f / 255.0f, 0.0f, 205.0f / 255.0f);
 			glVertex2f(robot_pos.x, robot_pos.y);
 		glEnd();
 	}
@@ -290,7 +366,7 @@ void CRoboconCtrlView::OnDraw(CDC* pDC)
 
 	if (grid_pos.valid) {
 		std::basic_ostringstream<TCHAR> oss;
-		oss << _T("Mouse coordinates: (") << grid_pos.x << _T(", ") << grid_pos.y << _T(")");
+		oss << _T("Mouse coordinates: (") << grid_pos.x << _T(", ") << grid_pos.y << _T(", ) Angle: ") << cursor_pos.angle;
 		TextOut(pDC->GetSafeHdc(), 1, 2, oss.str().c_str(), oss.str().size());
 	}
 
@@ -300,7 +376,7 @@ void CRoboconCtrlView::OnDraw(CDC* pDC)
 
 	std::basic_string<TCHAR> status = std::basic_string<TCHAR>(_T("Comm Status: "));
 
-	TextOut(pDC->GetSafeHdc(), rect.Width() - 110, 0, status.c_str(), status.size());
+	TextOut(pDC->GetSafeHdc(), rect.Width() - 115, 0, status.c_str(), status.size());
 
 	CBrush* pOldBrush;
 	CBrush brushRed(RGB(255, 0, 0));
@@ -323,7 +399,10 @@ void CRoboconCtrlView::OnDraw(CDC* pDC)
 
 void CRoboconCtrlView::OnMouseMove(UINT nFlags, CPoint point)
 {
-	cursor_pos = GetGLCoord(point);
+	GLCoord g = GetGLCoord(point);
+	cursor_pos.x = g.x;
+	cursor_pos.y = g.y;
+	cursor_pos.valid = g.valid;
 	grid_pos = GetRobotCoord(point);
 	Invalidate();
 }
@@ -349,7 +428,14 @@ void CRoboconCtrlView::OnContextMenu(CWnd* /* pWnd */, CPoint point)
 void CRoboconCtrlView::OnLButtonDblClk(UINT nFlags, CPoint point)
 {
 	CView::OnLButtonDblClk(nFlags, point);
-	current_pos = GetGLCoord(point);
+	GLCoord g = GetGLCoord(point);
+
+	current_pos.x = g.x;
+	current_pos.y = g.y;
+	current_pos.angle = cursor_pos.angle;
+	current_pos.valid = g.valid;
+
+	grid_pos.angle = cursor_pos.angle;
 
 	if (grid_pos.valid){
 		std::vector<short> data;
