@@ -26,34 +26,16 @@ Project File Date:  01/20/2015
 
 <h2>Output:</h2>
 Build target 'stm32_template'
-compiling can_motor.c...
-compiling can_protocol.c...
 compiling main.c...
-src\user\main.c(3): warning:  #177-D: variable "ticks_img" was declared but never referenced
-  static u16 ticks_img  = (u16)-1;
+src\user\main.c(53): warning:  #111-D: statement is unreachable
+        system_start(1200);
 src\user\main.c(4): warning:  #177-D: variable "seconds_img" was declared but never referenced
   static u16 seconds_img = (u16)-1;
 src\user\main.c: 2 warnings, 0 errors
-compiling robocon.c...
-src\user\robocon.c(4): warning:  #177-D: variable "seconds_img" was declared but never referenced
-  static u16 seconds_img = (u16)-1;
-src\user\robocon.c: 1 warning, 0 errors
-compiling wheel_base.c...
-src\user\wheel_base.c(49): warning:  #550-D: variable "x" was set but never used
-                                s16 x, y, w;
-src\user\wheel_base.c(49): warning:  #550-D: variable "y" was set but never used
-                                s16 x, y, w;
-src\user\wheel_base.c(49): warning:  #550-D: variable "w" was set but never used
-                                s16 x, y, w;
-src\user\wheel_base.c: 3 warnings, 0 errors
-compiling wheel_base_pid.c...
-src\user\wheel_base_pid.c(6): warning:  #550-D: variable "wheel_base_pid" was set but never used
-  static PID wheel_base_pid = {0, 0, 0};
-src\user\wheel_base_pid.c: 1 warning, 0 errors
 linking...
-Program Size: Code=25128 RO-data=1024 RW-data=2204 ZI-data=35692  
+Program Size: Code=24736 RO-data=1092 RW-data=2224 ZI-data=35680  
 FromELF: creating hex file...
-".\output\stm32_template.axf" - 0 Error(s), 7 Warning(s).
+".\output\stm32_template.axf" - 0 Error(s), 2 Warning(s).
 
 <h2>Collection of Component include folders:</h2>
   C:\Users\Kenneth Au\Dropbox\Documents\HKUST\Robocon 2015\Software\STM32_Program\Robocon2015\stm32f103VF_template\RTE

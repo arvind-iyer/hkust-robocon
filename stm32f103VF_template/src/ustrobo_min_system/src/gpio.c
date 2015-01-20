@@ -126,18 +126,21 @@ const GPIO
 			
 			;
 
-void gpio_init(GPIO gpio, GPIOSpeed_TypeDef speed, GPIOMode_TypeDef mode)
+void gpio_init(const GPIO* gpio, GPIOSpeed_TypeDef speed, GPIOMode_TypeDef mode, u8 rcc_init)
 {
 	GPIO_InitTypeDef GPIO_InitStructure;
 	GPIO_InitStructure.GPIO_Speed = speed;
 	GPIO_InitStructure.GPIO_Mode = mode;
-	GPIO_InitStructure.GPIO_Pin = gpio.gpio_pin;
-	GPIO_Init(gpio.gpio, &GPIO_InitStructure);
+	GPIO_InitStructure.GPIO_Pin = gpio->gpio_pin;
+	GPIO_Init(gpio->gpio, &GPIO_InitStructure);
+	
+	if (rcc_init) {gpio_rcc_init(gpio);}
 }
 
-void gpio_rcc_init(GPIO gpio)
+
+void gpio_rcc_init(const GPIO* gpio)
 {
-	switch ((u32) gpio.gpio) {
+	switch ((u32) gpio->gpio) {
 		case ((u32)GPIOA):
 			RCC_APB2PeriphClockCmd(RCC_APB2Periph_GPIOA, ENABLE);
 		break;
@@ -166,6 +169,21 @@ void gpio_rcc_init(GPIO gpio)
 			RCC_APB2PeriphClockCmd(RCC_APB2Periph_GPIOG, ENABLE);
 		break;
 	}
+}
+
+u8 gpio_read_input(const GPIO* gpio)
+{
+	return GPIO_ReadInputDataBit(gpio->gpio, gpio->gpio_pin);
+}
+
+u8 gpio_read_output(const GPIO* gpio)
+{
+	return GPIO_ReadOutputDataBit(gpio->gpio, gpio->gpio_pin);
+}
+
+u8 gpio_write(const GPIO* gpio, BitAction BitVal)
+{
+	GPIO_WriteBit(gpio->gpio, gpio->gpio_pin, BitVal);
 }
 
 

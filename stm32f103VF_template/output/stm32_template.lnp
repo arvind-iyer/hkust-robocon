@@ -11,6 +11,7 @@
 ".\output\wheel_base_pid.o"
 ".\output\approx_math.o"
 ".\output\battery.o"
+".\output\button.o"
 ".\output\buzzer.o"
 ".\output\delay.o"
 ".\output\lcd_red.o"
@@ -49,5 +50,5 @@
 ".\output\stm32f10x_wwdg.o"
 ".\output\system_stm32f10x.o"
 ".\output\startup_stm32f10x_xl.o"
---library_type=microlib --strict --scatter ".\output\stm32_template.sct"
+--library_type=microlib --nodebug --strict --scatter ".\output\stm32_template.sct"
 --summary_stderr --info summarysizes -o .\output\stm32_template.axf

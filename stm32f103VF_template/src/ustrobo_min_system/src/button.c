@@ -1,5 +1,19 @@
 #include "button.h"
 
+static const GPIO* buttons[BUTTON_COUNT] = {
+	BUTTON_J1_UP_GPIO,
+	BUTTON_J1_LEFT_GPIO,
+	BUTTON_J1_DOWN_GPIO,
+	BUTTON_J1_RIGHT_GPIO,
+	BUTTON_J1_CENTER_GPIO,
+	BUTTON_J2_UP_GPIO,
+	BUTTON_J2_LEFT_GPIO,
+	BUTTON_J2_DOWN_GPIO,
+	BUTTON_J2_RIGHT_GPIO,
+	BUTTON_J2_CENTER_GPIO
+};
+
+
 /**
   * @brief  Initialization of button (joystick)'s gpio.
   * @param  None
@@ -7,15 +21,15 @@
   */
 void button_init(void)
 {
-	// RCC init
-	RCC_APB2PeriphClockCmd(BUTTON_DIR_GPIO_RCC, ENABLE);
-	RCC_APB2PeriphClockCmd(BUTTON_CLICK_GPIO_RCC, ENABLE);
-
 	// GPIO init
-	gpio_init(*BUTTON_UP_GPIO, GPIO_Speed_2MHz, GPIO_Mode_IPU);
-	gpio_init(*BUTTON_DOWN_GPIO, GPIO_Speed_2MHz, GPIO_Mode_IPU);
-	gpio_init(*BUTTON_LEFT_GPIO, GPIO_Speed_2MHz, GPIO_Mode_IPU);
-	gpio_init(*BUTTON_RIGHT_GPIO, GPIO_Speed_2MHz, GPIO_Mode_IPU);
-	gpio_init(*BUTTON_CENTER_GPIO, GPIO_Speed_2MHz, GPIO_Mode_IPU);
+	gpio_rcc_init(buttons[0]);
+	for (u8 i = 0; i < sizeof(buttons) / sizeof(GPIO*); ++i) {
+		gpio_init(buttons[i], GPIO_Speed_2MHz, GPIO_Mode_IPU, 0);
+	}
+	
+}
 
+void button_update(void)
+{
+	
 }

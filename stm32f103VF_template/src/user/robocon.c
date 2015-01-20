@@ -47,6 +47,9 @@ void robocon_main(void)
 				tft_prints(0, 5, "Speed: %d", wheel_base_get_speed_mode());
 				tft_prints(0, 6, "Pos: %-4d,%-4d", get_pos()->x, get_pos()->y);
 				tft_prints(0, 7, "Ang: %-4d", get_pos()->angle);
+				tft_prints(0, 8, "%d%d%d%d%d%d%d%d%d%d", 
+				gpio_read_input(BUTTON_J1_UP_GPIO), gpio_read_input(BUTTON_J1_DOWN_GPIO), gpio_read_input(BUTTON_J1_LEFT_GPIO), gpio_read_input(BUTTON_J1_RIGHT_GPIO), gpio_read_input(BUTTON_J1_CENTER_GPIO),
+				gpio_read_input(BUTTON_J2_UP_GPIO), gpio_read_input(BUTTON_J2_DOWN_GPIO), gpio_read_input(BUTTON_J2_LEFT_GPIO), gpio_read_input(BUTTON_J2_RIGHT_GPIO), gpio_read_input(BUTTON_J2_CENTER_GPIO));
 				tft_prints(0, 9, "Time: %d'%03d\"", get_seconds(), get_ticks());
 				tft_update();
 			}

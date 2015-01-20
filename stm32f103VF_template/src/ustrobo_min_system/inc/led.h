@@ -6,17 +6,11 @@
 #include "gpio.h"
 #include "stm32f10x_tim.h"
 
-#define	LED_GPIO		GPIOC
-#define	LED_RCC			RCC_APB2Periph_GPIOC
-#define	LED_D1_Pin	GPIO_Pin_1
-#define	LED_D2_Pin	GPIO_Pin_2
-#define	LED_D3_Pin	GPIO_Pin_3
 
 
-static const GPIO* LED_D1_GPIO = &PC1;
-static const GPIO* LED_D2_GPIO = &PC2;
-static const GPIO* LED_D3_GPIO = &PC3;
-	
+#define	LED_D1_GPIO				((GPIO*) &PC1)
+#define	LED_D2_GPIO				((GPIO*) &PC2)
+#define	LED_D3_GPIO				((GPIO*) &PC3)
 
 typedef enum {
 	LED_D1 = 1 << 1,	// 1 (001)
