@@ -9,9 +9,9 @@ int main(void)
 	/* Note: Init order is important! */
 	ticks_init();
 	buzzer_init();
-	//button_init();
+	button_init();
 	led_init();
-	tft_init(0, BLACK, WHITE, RED);
+	tft_init(0, WHITE, BLACK, RED);
 	gyro_init();
 	battery_adc_init();
 	can_init();
@@ -23,7 +23,16 @@ int main(void)
 	//usart_init(COM1, 115200);
 
 
-	system_start(1200);
+	system_start("Robocon 2015  STM32VG System", 1200);
+	
+	menu_add("Main program1", 0);
+	menu_add("Main program2", 0);
+	menu_add("Position test", 0);
+	menu_add("Motor test", 0);
+	menu_add("Battery test", 0);
+	menu_add("Buzzer test", 0);
+	menu_add("Button test", 0);
+	menu(0);
 	robocon_main();
 
 		while (1) {
@@ -31,6 +40,7 @@ int main(void)
 			ticks_img = get_ticks();
 			
 			if (ticks_img % 50 == 7) {
+				button_update();
 				// Every 50 ms (20 Hz)
 				/** Warning: try not to do many things after tft_update(), as it takes time **/
 				WHEEL_BASE_VEL vel = wheel_base_get_vel();
@@ -41,11 +51,18 @@ int main(void)
 				tft_prints(0, 3, "VY: %d", vel.y);
 				tft_prints(0, 4, "VW: %d", vel.w);
 				tft_prints(0, 5, "Speed: %d", wheel_base_get_speed_mode());
-				tft_prints(0, 6, "Pos: %-4d,%-4d", get_pos()->x, get_pos()->y);
-				tft_prints(0, 7, "Ang: %-4d", get_pos()->angle);
-				tft_prints(0, 8, "%d%d%d%d%d%d%d%d%d%d", 
-				gpio_read_input(BUTTON_J1_UP_GPIO), gpio_read_input(BUTTON_J1_DOWN_GPIO), gpio_read_input(BUTTON_J1_LEFT_GPIO), gpio_read_input(BUTTON_J1_RIGHT_GPIO), gpio_read_input(BUTTON_J1_CENTER_GPIO),
-				gpio_read_input(BUTTON_J2_UP_GPIO), gpio_read_input(BUTTON_J2_DOWN_GPIO), gpio_read_input(BUTTON_J2_LEFT_GPIO), gpio_read_input(BUTTON_J2_RIGHT_GPIO), gpio_read_input(BUTTON_J2_CENTER_GPIO));
+				tft_prints(0, 6, "(%-4d,%-4d,%-4d)", get_pos()->x, get_pos()->y, get_pos()->angle);
+
+				//tft_prints(0, 8, "%lld", hello);
+				tft_prints(0, 7, "%d%d%d%d%d%d%d%d%d%d", \
+				button_pressed(BUTTON_JS1_UP) % 10, button_pressed(BUTTON_JS1_DOWN) % 10, button_pressed(BUTTON_JS1_LEFT) % 10, button_pressed(BUTTON_JS1_RIGHT) % 10, button_pressed(BUTTON_JS1_CENTER) % 10, \
+				button_pressed(BUTTON_JS2_UP) % 10, button_pressed(BUTTON_JS2_DOWN) % 10, button_pressed(BUTTON_JS2_LEFT) % 10, button_pressed(BUTTON_JS2_RIGHT) % 10, button_pressed(BUTTON_JS2_CENTER) % 10);
+				
+				tft_prints(0, 7, "%d%d%d%d%d%d%d%d%d%d", \
+				button_released(BUTTON_JS1_UP) % 10, button_released(BUTTON_JS1_DOWN) % 10, button_released(BUTTON_JS1_LEFT) % 10, button_released(BUTTON_JS1_RIGHT) % 10, button_released(BUTTON_JS1_CENTER) % 10, \
+				button_released(BUTTON_JS2_UP) % 10, button_released(BUTTON_JS2_DOWN) % 10, button_released(BUTTON_JS2_LEFT) % 10, button_released(BUTTON_JS2_RIGHT) % 10, button_released(BUTTON_JS2_CENTER) % 10);
+	
+
 				tft_prints(0, 9, "Time: %d'%03d\"", get_seconds(), get_ticks());
 				tft_update();
 			}

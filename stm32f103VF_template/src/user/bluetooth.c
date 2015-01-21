@@ -1,5 +1,6 @@
 #include "bluetooth.h"
 
+static u8 bluetooth_init_flag = 0;
 static u8 rx_state = 0;	// 0 as initial state
 static u8 rx_data_length = 0;
 static u8 rx_data_id = 0;		// The data ID
@@ -26,11 +27,14 @@ void bluetooth_init(void)
 	BLUETOOTH_USART = COM_USART[BLUETOOTH_COM];
 	rx_filter_count = 0;
 	rx_successful_rx_data_count = 0;
+	bluetooth_init_flag = 1;
 }
 
 void bluetooth_tx_byte(uc8 byte)
 {
-	uart_tx_byte(BLUETOOTH_COM, byte);
+	if (bluetooth_init_flag) {
+		uart_tx_byte(BLUETOOTH_COM, byte);
+	}
 }
 
 void bluetooth_tx(const char* tx_buf, ...)
@@ -56,22 +60,24 @@ void bluetooth_tx(const char* tx_buf, ...)
 	*/
 void bluetooth_tx_package(u8 id, u8 data_length, u8* data)
 {
-	u8 tx_package[BLUETOOTH_PACKAGE_LENGTH];
-	u8 tx_state = 0, i;
-	if (data_length <= BLUETOOTH_PACKAGE_DATA_LENGTH) {
-		tx_package[tx_state++] = BLUETOOTH_WAKEUP;
-		tx_package[tx_state++] = id;
-		tx_package[tx_state++] = data_length;
-		for (i = 0; i < data_length; ++i) {
-			tx_package[tx_state++] = data[i];
-		}
-		tx_package[tx_state++] = id;
-		crc16(&tx_package[tx_state], data, data_length);
-		tx_state += 2;
-		tx_package[tx_state++] = BLUETOOTH_SLEEP;
-		
-		for (i = 0; i < tx_state; ++i) {
-			bluetooth_tx_byte(tx_package[i]);
+	if (bluetooth_init_flag) {
+		u8 tx_package[BLUETOOTH_PACKAGE_LENGTH];
+		u8 tx_state = 0, i;
+		if (data_length <= BLUETOOTH_PACKAGE_DATA_LENGTH) {
+			tx_package[tx_state++] = BLUETOOTH_WAKEUP;
+			tx_package[tx_state++] = id;
+			tx_package[tx_state++] = data_length;
+			for (i = 0; i < data_length; ++i) {
+				tx_package[tx_state++] = data[i];
+			}
+			tx_package[tx_state++] = id;
+			crc16(&tx_package[tx_state], data, data_length);
+			tx_state += 2;
+			tx_package[tx_state++] = BLUETOOTH_SLEEP;
+			
+			for (i = 0; i < tx_state; ++i) {
+				bluetooth_tx_byte(tx_package[i]);
+			}
 		}
 	}
 }

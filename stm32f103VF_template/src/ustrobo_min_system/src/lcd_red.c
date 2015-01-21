@@ -307,13 +307,23 @@ void tft_disable(void)
 }
 
 /**
-  * @brief  Set the current background color
+  * @brief  Set the current background color in RGB565
   * @param  None
   * @retval None
   */
 void tft_set_bg_color(u16 in_bg_color)
 {
 	curr_bg_color = in_bg_color;
+}
+
+/**
+	* @brief Get the current background color
+	* @param None
+	* @retval Current background color in RGB565
+	*/
+u16 tft_get_bg_color(void)
+{
+	return curr_bg_color;
 }
 
 /**
@@ -327,6 +337,17 @@ void tft_set_text_color(u16 in_text_color)
 }
 
 /**
+	* @brief Set the current text color in RGB565
+	* @param None
+	* @retval Current text color in RGB565
+	*/
+u16 tft_get_text_color(void)
+{
+	return curr_text_color;
+}
+
+
+/**
   * @brief  Set the current special text color
   * @param  None
   * @retval None
@@ -336,6 +357,25 @@ void tft_set_special_color(u16 text_color_sp)
 	curr_text_color_sp = text_color_sp;
 }
 
+/**
+	* @brief Set the current text color in RGB565
+	* @param None
+	* @retval Current text color in RGB565
+	*/
+u16 tft_get_special_text_color(void)
+{
+	return curr_text_color_sp;
+}
+
+u8 tft_get_orientation(void)
+{
+	return tft_orientation;
+}
+
+void tft_set_orientation(u8 o)
+{
+	tft_orientation = o;
+}
 /**
   * @brief  Set the position of one pixel
   * @param  None

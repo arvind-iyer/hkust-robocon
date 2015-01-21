@@ -175,7 +175,7 @@
           </Flash1>
           <bUseTDR>0</bUseTDR>
           <Flash2>Segger\JL2CM3.dll</Flash2>
-          <Flash3>"flash.bat" (./output/@H.hex 30 256000 STM32F1_XL-density_768K)</Flash3>
+          <Flash3>"flash.bat" (.\output\@h.hex 30 256000 STM32F1_XL-density_768K)</Flash3>
           <Flash4></Flash4>
           <pFcarmOut></pFcarmOut>
           <pFcarmGrp></pFcarmGrp>
@@ -414,6 +414,11 @@
               <FilePath>.\src\user\bluetooth.c</FilePath>
             </File>
             <File>
+              <FileName>can_protocol.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\src\user\can_protocol.c</FilePath>
+            </File>
+            <File>
               <FileName>buzzer_song.c</FileName>
               <FileType>1</FileType>
               <FilePath>.\src\user\buzzer_song.c</FilePath>
@@ -422,11 +427,6 @@
               <FileName>can_motor.c</FileName>
               <FileType>1</FileType>
               <FilePath>.\src\user\can_motor.c</FilePath>
-            </File>
-            <File>
-              <FileName>can_protocol.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>.\src\user\can_protocol.c</FilePath>
             </File>
             <File>
               <FileName>crc.c</FileName>

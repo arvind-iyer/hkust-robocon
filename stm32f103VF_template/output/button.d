@@ -17,3 +17,7 @@
 .\output\button.o: .\src\stm32f10x_std\inc\misc.h
 .\output\button.o: .\src\ustrobo_min_system\inc\gpio.h
 .\output\button.o: .\src\stm32f10x_std\inc\stm32f10x_tim.h
+.\output\button.o: .\src\ustrobo_min_system\inc\lcd_red.h
+.\output\button.o: C:\Keil_v5\ARM\ARMCC\Bin\..\include\stdio.h
+.\output\button.o: C:\Keil_v5\ARM\ARMCC\Bin\..\include\stdarg.h
+.\output\button.o: .\src\ustrobo_min_system\inc\delay.h

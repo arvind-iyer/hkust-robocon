@@ -21,6 +21,6 @@ void gpio_init(const GPIO* gpio, GPIOSpeed_TypeDef speed, GPIOMode_TypeDef mode,
 void gpio_rcc_init(const GPIO* gpio);
 u8 gpio_read_input(const GPIO* gpio);
 u8 gpio_read_output(const GPIO* gpio);
-u8 gpio_write(const GPIO* gpio, BitAction BitVal);
+void gpio_write(const GPIO* gpio, BitAction BitVal);
 
 #endif /* __GPIO_H */

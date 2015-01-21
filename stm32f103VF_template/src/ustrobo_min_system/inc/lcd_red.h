@@ -21,17 +21,30 @@
 #define GPIO_CS			GPIOD
 
 // Color
-#define WHITE			0xFFFF
-#define BLACK			0x0000
-#define DARK_GREY		0x5A8B
-#define GREY			0xC718
-#define BLUE			0x001F
-#define BLUE2			0x051F
-#define RED				0xF800
-#define MAGENTA			0xF81F
-#define GREEN			0x07E0
-#define CYAN			0x7FFF
-#define YELLOW			0xFFE0
+#define	BGR888_MODE		1
+
+#if (!BGR888_MODE)
+#define	RGB888TO565(RGB888)  (((RGB888 >> 8) & 0xF800) |((RGB888 >> 5) & 0x07E0) | ((RGB888 >> 3) & 0x001F))
+#else 
+#define	RGB888TO565(BGR888)  (((BGR888 >> 19) & 0x001F) |((BGR888 >> 5) & 0x07E0) | ((BGR888 << 8) & 0xF800))
+#endif
+
+#define WHITE					((u16) RGB888TO565(0xFFFFFF))
+#define BLACK					((u16) RGB888TO565(0x000000))
+#define DARK_GREY			((u16) RGB888TO565(0x555555))
+#define GREY					((u16) RGB888TO565(0xAAAAAA))
+#define RED						((u16) RGB888TO565(0xFF0000))
+#define ORANGE				((u16) RGB888TO565(0xFF9900))
+#define YELLOW				((u16) RGB888TO565(0xFFFF00))
+#define GREEN					((u16) RGB888TO565(0x00FF00))
+#define	DARK_GREEN		((u16) RGB888TO565(0x00CC00))
+#define BLUE					((u16) RGB888TO565(0x0000FF))
+#define	BLUE2					((u16) RGB888TO565(0x202060))
+#define CYAN					((u16) RGB888TO565(0x8888FF))
+#define PURPLE				((u16) RGB888TO565(0x00AAAA))
+
+
+
 
 #define MAX_WIDTH				128
 #define MAX_HEIGHT				160
@@ -69,8 +82,14 @@ void tft_init(u8 orientation, u16 in_bg_color, u16 in_text_color, u16 in_text_co
 void tft_enable(void);
 void tft_disable(void);
 void tft_set_bg_color(u16 in_bg_color);
+u16 tft_get_bg_color(void);
 void tft_set_text_color(u16 in_text_color);
+u16 tft_get_text_color(void);
 void tft_set_special_color(u16 text_color_sp);
+u16 tft_get_special_text_color(void);
+u8 tft_get_orientation(void);
+void tft_set_orientation(u8 o);
+	
 void tft_set_pixel_pos(u8 x, u8 y);
 void tft_set_char_pos(u8 x1, u8 y1, u8 x2, u8 y2);
 void tft_force_clear(void);

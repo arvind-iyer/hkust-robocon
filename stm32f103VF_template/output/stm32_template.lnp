@@ -1,8 +1,8 @@
 --cpu Cortex-M3
 ".\output\bluetooth.o"
+".\output\can_protocol.o"
 ".\output\buzzer_song.o"
 ".\output\can_motor.o"
-".\output\can_protocol.o"
 ".\output\crc.o"
 ".\output\interface.o"
 ".\output\main.o"

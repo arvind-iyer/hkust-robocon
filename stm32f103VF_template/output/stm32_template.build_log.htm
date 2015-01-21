@@ -22,20 +22,60 @@ Dialog DLL:      TCM.DLL V1.14.4.0
  
 <h2>Project:</h2>
 C:\Users\Kenneth Au\Dropbox\Documents\HKUST\Robocon 2015\Software\STM32_Program\Robocon2015\stm32f103VF_template\Project.uvprojx
-Project File Date:  01/20/2015
+Project File Date:  01/22/2015
 
 <h2>Output:</h2>
 Build target 'stm32_template'
+compiling interface.c...
+src\user\interface.c(48): warning:  #61-D: integer operation result is out of range
+                        tft_set_text_color(ORANGE);
+src\user\interface.c(55): warning:  #61-D: integer operation result is out of range
+                        tft_set_text_color(RED);
+src\user\interface.c(114): warning:  #61-D: integer operation result is out of range
+        batt_color = batt <= 114 ? RED : (batt <= 120 ? 0xFCC0 : GREEN);
+src\user\interface.c(115): warning:  #61-D: integer operation result is out of range
+        batt_boundary = batt <= 114 ? RED : WHITE;
+src\user\interface.c(115): warning:  #61-D: integer operation result is out of range
+        batt_boundary = batt <= 114 ? RED : WHITE;
+src\user\interface.c(170): warning:  #61-D: integer operation result is out of range
+                                tft_set_text_color(WHITE);
+src\user\interface.c(175): warning:  #61-D: integer operation result is out of range
+                                tft_set_text_color(WHITE);
+src\user\interface.c(188): warning:  #61-D: integer operation result is out of range
+                                                tft_set_text_color(WHITE);
+src\user\interface.c(190): warning:  #61-D: integer operation result is out of range
+                                                tft_set_bg_color(WHITE);
+src\user\interface.c(179): warning:  #177-D: variable "pos" was declared but never referenced
+                                u8 pos = (tft_orientation % 2 ? MAX_HEIGHT : MAX_WIDTH);
+src\user\interface.c(210): warning:  #513-D: a value of type "void *" cannot be assigned to an entity of type "void (*)(void)"
+                menu_list[menu_count].fx = fx;
+src\user\interface.c(4): warning:  #177-D: variable "seconds_img" was declared but never referenced
+  static u16 seconds_img = (u16)-1;
+src\user\interface.c: 12 warnings, 0 errors
 compiling main.c...
-src\user\main.c(53): warning:  #111-D: statement is unreachable
-        system_start(1200);
+src\user\main.c(14): warning:  #61-D: integer operation result is out of range
+        tft_init(0, WHITE, BLACK, RED);
+src\user\main.c(14): warning:  #61-D: integer operation result is out of range
+        tft_init(0, WHITE, BLACK, RED);
 src\user\main.c(4): warning:  #177-D: variable "seconds_img" was declared but never referenced
   static u16 seconds_img = (u16)-1;
-src\user\main.c: 2 warnings, 0 errors
+src\user\main.c: 3 warnings, 0 errors
+compiling robocon.c...
+src\user\robocon.c(56): warning:  #61-D: integer operation result is out of range
+                                tft_set_bg_color(WHITE);
+src\user\robocon.c(4): warning:  #177-D: variable "seconds_img" was declared but never referenced
+  static u16 seconds_img = (u16)-1;
+src\user\robocon.c: 2 warnings, 0 errors
+compiling button.c...
+src\ustrobo_min_system\src\button.c(61): warning:  #186-D: pointless comparison of unsigned integer with zero
+        if (b >= 0 && b <= 3) {
+src\ustrobo_min_system\src\button.c(62): warning:  #188-D: enumerated type mixed with another type
+                b = (b + 4 - o + 1) % 4;
+src\ustrobo_min_system\src\button.c: 2 warnings, 0 errors
 linking...
-Program Size: Code=24736 RO-data=1092 RW-data=2224 ZI-data=35680  
+Program Size: Code=28016 RO-data=1104 RW-data=2244 ZI-data=36252  
 FromELF: creating hex file...
-".\output\stm32_template.axf" - 0 Error(s), 2 Warning(s).
+".\output\stm32_template.axf" - 0 Error(s), 19 Warning(s).
 
 <h2>Collection of Component include folders:</h2>
   C:\Users\Kenneth Au\Dropbox\Documents\HKUST\Robocon 2015\Software\STM32_Program\Robocon2015\stm32f103VF_template\RTE

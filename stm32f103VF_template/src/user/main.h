@@ -28,5 +28,8 @@
 #include "robocon.h"
 #include "wheel_base.h"
 
+typedef struct {
+	u8 p, i, d;
+} william;
 
 #endif /* __MAIN_H */

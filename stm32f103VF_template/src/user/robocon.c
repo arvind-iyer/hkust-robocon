@@ -34,9 +34,15 @@ void robocon_main(void)
 				wheel_base_tx_position();
 			}
 			
+			if (ticks_img % 500 == 0) {
+				led_control(LED_D3, (LED_STATE) (ticks_img == 0));
+			}
+			
 			if (ticks_img % 50 == 7) {
 				// Every 50 ms (20 Hz)
 				/** Warning: try not to do many things after tft_update(), as it takes time **/
+				button_update();
+				
 				WHEEL_BASE_VEL vel = wheel_base_get_vel();
 				tft_clear();
 				tft_prints(0, 0, "Battery: %s", get_voltage_string());
@@ -45,11 +51,17 @@ void robocon_main(void)
 				tft_prints(0, 3, "VY: %d", vel.y);
 				tft_prints(0, 4, "VW: %d", vel.w);
 				tft_prints(0, 5, "Speed: %d", wheel_base_get_speed_mode());
-				tft_prints(0, 6, "Pos: %-4d,%-4d", get_pos()->x, get_pos()->y);
-				tft_prints(0, 7, "Ang: %-4d", get_pos()->angle);
-				tft_prints(0, 8, "%d%d%d%d%d%d%d%d%d%d", 
-				gpio_read_input(BUTTON_J1_UP_GPIO), gpio_read_input(BUTTON_J1_DOWN_GPIO), gpio_read_input(BUTTON_J1_LEFT_GPIO), gpio_read_input(BUTTON_J1_RIGHT_GPIO), gpio_read_input(BUTTON_J1_CENTER_GPIO),
-				gpio_read_input(BUTTON_J2_UP_GPIO), gpio_read_input(BUTTON_J2_DOWN_GPIO), gpio_read_input(BUTTON_J2_LEFT_GPIO), gpio_read_input(BUTTON_J2_RIGHT_GPIO), gpio_read_input(BUTTON_J2_CENTER_GPIO));
+				tft_set_bg_color(BLACK);
+				tft_clear_line(5);
+				tft_set_bg_color(WHITE);
+				tft_prints(0, 6, "(%-4d,%-4d,%-4d)", get_pos()->x, get_pos()->y,get_pos()->angle);
+				tft_prints(0, 7, "%d%d%d%d%d%d%d%d%d%d", \
+				button_pressed(BUTTON_JS1_UP) % 10, button_pressed(BUTTON_JS1_DOWN) % 10, button_pressed(BUTTON_JS1_LEFT) % 10, button_pressed(BUTTON_JS1_RIGHT) % 10, button_pressed(BUTTON_JS1_CENTER) % 10, \
+				button_pressed(BUTTON_JS2_UP) % 10, button_pressed(BUTTON_JS2_DOWN) % 10, button_pressed(BUTTON_JS2_LEFT) % 10, button_pressed(BUTTON_JS2_RIGHT) % 10, button_pressed(BUTTON_JS2_CENTER) % 10);
+				tft_prints(0, 8, "%d%d%d%d%d%d%d%d%d%d", \
+				button_released(BUTTON_JS1_UP) % 10, button_released(BUTTON_JS1_DOWN) % 10, button_released(BUTTON_JS1_LEFT) % 10, button_released(BUTTON_JS1_RIGHT) % 10, button_released(BUTTON_JS1_CENTER) % 10, \
+				button_released(BUTTON_JS2_UP) % 10, button_released(BUTTON_JS2_DOWN) % 10, button_released(BUTTON_JS2_LEFT) % 10, button_released(BUTTON_JS2_RIGHT) % 10, button_released(BUTTON_JS2_CENTER) % 10);
+
 				tft_prints(0, 9, "Time: %d'%03d\"", get_seconds(), get_ticks());
 				tft_update();
 			}

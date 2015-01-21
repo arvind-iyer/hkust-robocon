@@ -126,18 +126,29 @@ const GPIO
 			
 			;
 
+/**
+	* @brief GPIO Pin initailizer
+	* @param gpio: The gpio pointer
+	* @param speed: GPIO speed with type "GPIOSpeed_TypeDef"
+	* @param rcc_init: True if the GPIO port rcc also needs to be initialized
+	* @retval None
+	*/
 void gpio_init(const GPIO* gpio, GPIOSpeed_TypeDef speed, GPIOMode_TypeDef mode, u8 rcc_init)
 {
+	if (rcc_init) {gpio_rcc_init(gpio);}
 	GPIO_InitTypeDef GPIO_InitStructure;
 	GPIO_InitStructure.GPIO_Speed = speed;
 	GPIO_InitStructure.GPIO_Mode = mode;
 	GPIO_InitStructure.GPIO_Pin = gpio->gpio_pin;
 	GPIO_Init(gpio->gpio, &GPIO_InitStructure);
-	
-	if (rcc_init) {gpio_rcc_init(gpio);}
+
 }
 
-
+/**
+	* @brief GPIO Real-time Clock Initialization
+	* @param GPIO pointer
+	* @retval None.
+	*/
 void gpio_rcc_init(const GPIO* gpio)
 {
 	switch ((u32) gpio->gpio) {
@@ -171,17 +182,32 @@ void gpio_rcc_init(const GPIO* gpio)
 	}
 }
 
+/**
+	* @brief Read GPIO input value
+	* @param GPIO pointer
+	* @retval The GPIO Pin input value
+	*/
 u8 gpio_read_input(const GPIO* gpio)
 {
 	return GPIO_ReadInputDataBit(gpio->gpio, gpio->gpio_pin);
 }
 
+/**
+	* @brief Read GPIO output value
+	* @param GPIO pointer
+	* @retval The GPIO Pin output value
+	*/
 u8 gpio_read_output(const GPIO* gpio)
 {
 	return GPIO_ReadOutputDataBit(gpio->gpio, gpio->gpio_pin);
 }
 
-u8 gpio_write(const GPIO* gpio, BitAction BitVal)
+/**
+	* @brief Write GPIO value
+	* @param GPIO pointer
+	* @retval None
+	*/
+void gpio_write(const GPIO* gpio, BitAction BitVal)
 {
 	GPIO_WriteBit(gpio->gpio, gpio->gpio_pin, BitVal);
 }

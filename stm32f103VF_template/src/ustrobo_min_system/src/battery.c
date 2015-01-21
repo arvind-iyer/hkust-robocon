@@ -3,6 +3,9 @@
 #define DVDAx100 ((SAMPLE_BATTERY_VOLTAGE_2-SAMPLE_BATTERY_VOLTAGE_1)*100/(SAMPLE_BATTERY_ADC_2-SAMPLE_BATTERY_ADC_1))
 	
 static u16 adc_value = 0;
+static u16 battery_values[BATTERY_VALUE_COUNT] = {0};
+static u16 battery_value_taken = 0;
+static u16 battery_value_id = 0;
 static char battery_string[] = "00.00V";
 
 /**
@@ -56,6 +59,12 @@ void battery_adc_init(void)
 void battery_adc_update(void)
 {
 	adc_value = ADC1->DR;
+	
+	battery_values[battery_value_id] = get_voltage();
+	battery_value_id = (battery_value_id + 1) % BATTERY_VALUE_COUNT;
+	if (battery_value_taken <= BATTERY_VALUE_COUNT) {
+		++battery_value_taken;
+	}
 }
 
 /**
@@ -76,6 +85,20 @@ u16 get_battery_adc(void)
 u16 get_voltage(void)
 { 
 	return (u16)(DVDAx100 * (adc_value - SAMPLE_BATTERY_ADC_1) / 100 + SAMPLE_BATTERY_VOLTAGE_1);
+}
+
+u16 get_voltage_avg(void)
+{
+	u32 voltage_sum = 0;
+	if (battery_value_taken == 0) {
+		return get_voltage();
+	} else {
+		for (u8 i = 0; i < BATTERY_VALUE_COUNT && i < battery_value_taken; ++i) {
+			voltage_sum += battery_values[i];
+		}
+		
+		return voltage_sum / battery_value_taken;
+	}
 }
 
 /**
