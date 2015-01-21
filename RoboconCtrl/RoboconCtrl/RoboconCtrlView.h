@@ -73,7 +73,7 @@ private:
 	// Stores path of robot for OpenGL
 	std::deque<GLCoord> robot_path;
 
-	std::vector<GLCoord> robot_path_data;
+	std::vector<GridCoord> robot_path_data;
 
 // Implementation
 public:

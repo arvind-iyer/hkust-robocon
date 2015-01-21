@@ -68,6 +68,36 @@ CRoboconCtrlView::CRoboconCtrlView()
 
 CRoboconCtrlView::~CRoboconCtrlView()
 {
+	bool exist = TRUE;
+	int i = 1;
+
+	TCHAR path[MAX_PATH] = { 0 };
+	GetModuleFileName(NULL, path, MAX_PATH);
+	PathRemoveFileSpec(path);
+
+	SetCurrentDirectory(path);
+
+	while (exist) {
+		std::basic_ostringstream<TCHAR> oss;
+		oss << _T("data") << i << _T(".csv");
+		if (GetFileAttributes(oss.str().c_str()) == INVALID_FILE_ATTRIBUTES) {
+			if (!robot_path_data.empty()) {
+				std::stringstream file_path;
+				file_path << "data" << i << ".csv";
+
+				std::ofstream output_data;
+				output_data.open(file_path.str());
+				for (size_t i = 0; i < robot_path_data.size(); ++i) {
+					output_data << robot_path_data[i].x << ", " << robot_path_data[i].y << std::endl;
+				}
+				output_data.close();
+			}
+			exist = FALSE;
+		}
+		else {
+			++i;
+		}
+	}
 }
 
 BOOL CRoboconCtrlView::PreTranslateMessage(MSG* pMsg)
@@ -507,7 +537,7 @@ LRESULT CRoboconCtrlView::refresh_coordinates(WPARAM w, LPARAM l) {
 	r_pos.valid = TRUE;
 	robot_pos = ConvertGridCoordToGLCoord(r_pos);
 	robot_path.push_back(robot_pos);
-	robot_path_data.push_back(robot_pos);
+	robot_path_data.push_back(r_pos);
 	Invalidate();
 	return 0;
 }
