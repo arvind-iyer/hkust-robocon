@@ -358,15 +358,20 @@ void CRoboconCtrlView::GLDrawScene()
 			0.0f
 		};
 		DrawIndicator(cursor_pos, point_ind, back_ind, point_color, 1);
-		/*
-		glBegin(GL_LINES);
-			glColor3f(1.0f, 0.0f, 0.0f);
-			glVertex2f(cursor_pos.x + 0.0002f * 61, cursor_pos.y);
-			glVertex2f(cursor_pos.x - 0.0002f * 61, cursor_pos.y);
-			glVertex2f(cursor_pos.x, cursor_pos.y + 0.0002f * 134);
-			glVertex2f(cursor_pos.x, cursor_pos.y - 0.0002f * 134);
+	}
+	if (!robot_path.empty()) {
+		if (robot_path.size() > 500) {
+			robot_path.pop_front;
+		}
+		glBegin(GL_LINE_STRIP);
+			glColor3f(238.0f / 255.0f, 252.0f / 255.0f, 73.0f / 255.0f);
+			for (int i = 0; i < robot_path.size(); ++i) {
+				std::basic_ostringstream<TCHAR> oss;
+				oss << _T("Coord: (") << robot_path[i].x << _T(", ") << robot_path[i].y << _T(")") << std::endl;
+				OutputDebugString(oss.str().c_str());
+				glVertex2f(robot_path[i].x, robot_path[i].y);
+			}
 		glEnd();
-		*/
 	}
 }
 
@@ -497,8 +502,9 @@ LRESULT CRoboconCtrlView::refresh_coordinates(WPARAM w, LPARAM l) {
 	r_pos.x = (*coordinates)[0];
 	r_pos.y = (*coordinates)[1];
 	r_pos.angle = (*coordinates)[2];
-
+	r_pos.valid = TRUE;
 	robot_pos = ConvertGridCoordToGLCoord(r_pos);
+	robot_path.push_back(robot_pos);
 	Invalidate();
 	return 0;
 }
