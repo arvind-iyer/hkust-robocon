@@ -40,6 +40,8 @@ public:
 	void print_read_from_serial(std::string string_to_print);
 	void print_write_to_serial(std::basic_string<TCHAR> string_to_print, int prefix_enable);
 
+	BOOL get_pid_mode();
+
 protected:  // control bar embedded members
 	CMFCMenuBar       m_wndMenuBar;
 	CMFCToolBar       m_wndToolBar;

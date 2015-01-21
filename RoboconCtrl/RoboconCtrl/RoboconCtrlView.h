@@ -2,6 +2,8 @@
 // RoboconCtrlView.h : interface of the CRoboconCtrlView class
 //
 
+#include <deque>
+
 #pragma once
 
 class CRoboconCtrlView : public CView
@@ -19,6 +21,7 @@ protected:
 	void GLDrawScene();
 	int gl_width;
 	int gl_height;
+
 // Device and Rendering context storing
 public:
 	HGLRC m_hRC; // Rendering context
@@ -46,9 +49,17 @@ private:
 		BOOL valid;
 	};
 
+	struct GLColor {
+		float r;
+		float g;
+		float b;
+	};
+
 	GLCoord GetGLCoord(CPoint wndCoord);
 	GridCoord GetRobotCoord(CPoint wndCoord, unsigned int angle = 0);
 	GLCoord ConvertGridCoordToGLCoord(GridCoord g);
+
+	void DrawIndicator(GLCoord coordinates, GLColor point_ind_color, GLColor back_ind_color, GLColor point_color, int mode = 0);
 
 	// Positions for OpenGL
 	struct GLCoord current_pos;
@@ -57,6 +68,9 @@ private:
 
 	// Mouse position on the virtual grid
 	struct GridCoord grid_pos;
+
+	// Stores path of robot
+	std::deque<GLCoord> robot_path;
 
 // Implementation
 public:

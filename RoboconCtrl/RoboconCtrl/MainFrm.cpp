@@ -331,6 +331,11 @@ LRESULT CMainFrame::print_read_from_serial(WPARAM w, LPARAM l)
 	return 0;
 }
 
+BOOL CMainFrame::get_pid_mode()
+{
+	return pid_mode;
+}
+
 // CMainFrame threads
 
 // Read thread
