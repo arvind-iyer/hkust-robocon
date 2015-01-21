@@ -374,7 +374,11 @@ u8 tft_get_orientation(void)
 
 void tft_set_orientation(u8 o)
 {
-	tft_orientation = o;
+	tft_orientation = o % 4;
+	tft_force_clear();
+	tft_width = (tft_orientation % 2) ? CHAR_MAX_X_HORIZONTAL : CHAR_MAX_X_VERTICAL;
+	tft_height = (tft_orientation % 2) ? CHAR_MAX_Y_HORIZONTAL : CHAR_MAX_Y_VERTICAL;
+
 }
 /**
   * @brief  Set the position of one pixel

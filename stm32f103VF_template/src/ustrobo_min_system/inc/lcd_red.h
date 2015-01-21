@@ -40,6 +40,7 @@
 #define	DARK_GREEN		((u16) RGB888TO565(0x00CC00))
 #define BLUE					((u16) RGB888TO565(0x0000FF))
 #define	BLUE2					((u16) RGB888TO565(0x202060))
+#define	SKY_BLUE			((u16) RGB888TO565(0x11CFFF))
 #define CYAN					((u16) RGB888TO565(0x8888FF))
 #define PURPLE				((u16) RGB888TO565(0x00AAAA))
 
@@ -60,7 +61,7 @@
 #define CHAR_MAX_X				20		// max between CHAR_MAX_X_VERTICAL and CHAR_MAX_X_HORIZONTAL
 #define CHAR_MAX_Y				10		// max between CHAR_MAX_Y_VERTICAL and CHAR_MAX_Y_HORIZONTAL
 
-extern u8 tft_orientation;
+//extern u8 tft_orientation;
 extern u8 tft_width;
 extern u8 tft_height;
 extern u16 curr_bg_color;

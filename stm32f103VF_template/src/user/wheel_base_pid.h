@@ -15,6 +15,8 @@ typedef	struct {
 
 void wheel_base_pid_init(void);
 void wheel_base_set_pid(PID pid);
+POSITION wheel_base_get_target_pos(void);
+void wheel_base_set_target_pos(POSITION pos);
 void wheel_base_pid_on(void);
 void wheel_base_pid_off(void);
 u8 wheel_base_get_pid_flag(void);

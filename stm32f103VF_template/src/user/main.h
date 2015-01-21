@@ -17,6 +17,7 @@
 #include "xbc_mb.h"
 #include "button.h"
 #include "encoder.h"
+#include "system_test.h"
 
 /*** Optional ***/
 #include "can_protocol.h"

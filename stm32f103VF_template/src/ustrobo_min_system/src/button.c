@@ -10,7 +10,9 @@ static const GPIO* buttons[BUTTON_COUNT] = {
 	BUTTON_JS2_LEFT_GPIO,
 	BUTTON_JS2_DOWN_GPIO,
 	BUTTON_JS2_RIGHT_GPIO,
-	BUTTON_JS2_CENTER_GPIO
+	BUTTON_JS2_CENTER_GPIO,
+	BUTTON_1_GPIO,
+	BUTTON_2_GPIO
 };
 
 static u16 button_pressed_count[BUTTON_COUNT];
@@ -60,6 +62,12 @@ static BUTTON rotate_js_button(BUTTON b) {
 	u8 o = tft_get_orientation();
 	if (b >= 0 && b <= 3) {
 		b = (b + 4 - o + 1) % 4;
+	}
+	
+	if (b >= 5 && b <= 8) {
+		b -= 5;
+		b = (b + 4 - o + 1) % 4;
+		b += 5;
 	}
 	
 	return b;

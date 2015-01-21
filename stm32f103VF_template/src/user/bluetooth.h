@@ -29,9 +29,13 @@ typedef struct {
 	void (*handler)(u8 id, u8 length, u8* data);
 } BLUETOOTH_RX_FILTER;
 
-
-/*** TX ***/
+/*** General ****/
 void bluetooth_init(void);
+void bluetooth_enable(void);
+void bluetooth_disable(void);
+u8 bluetooth_get_enabled(void);
+	
+/*** TX ***/
 void bluetooth_tx_byte(uc8 byte);
 void bluetooth_tx(const char* tx_buf, ...);
 void bluetooth_tx_package(u8 id, u8 data_length, u8* data);
@@ -40,6 +44,10 @@ void bluetooth_tx_package(u8 id, u8 data_length, u8* data);
 void bluetooth_rx_add_filter(u8 id, u8 mask, void (*handler)(u8 id, u8 length, u8* data));
 u8 bluetooth_rx_state(void);
 u16 bluetooth_get_data_count(void);
+
+u8 bluetooth_recent_rx_id(void);
+u8 bluetooth_recent_rx_data_length(void);
+const u8* bluetooth_recent_rx_data(void);
 
 void bluetooth_update(void);
 

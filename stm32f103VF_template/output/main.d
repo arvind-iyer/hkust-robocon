@@ -34,6 +34,7 @@
 .\output\main.o: src\user\buzzer_song.h
 .\output\main.o: .\src\ustrobo_min_system\inc\xbc_mb.h
 .\output\main.o: .\src\ustrobo_min_system\inc\encoder.h
+.\output\main.o: src\user\system_test.h
 .\output\main.o: src\user\can_protocol.h
 .\output\main.o: .\src\stm32f10x_std\inc\stm32f10x_can.h
 .\output\main.o: .\src\ustrobo_min_system\inc\uart.h

@@ -23,15 +23,16 @@ int main(void)
 	//usart_init(COM1, 115200);
 
 
-	system_start("Robocon 2015  STM32VG System", 1200);
+	system_start("Robocon 2015  Min System 1.0.0", 1200);
 	
-	menu_add("Main program1", 0);
-	menu_add("Main program2", 0);
-	menu_add("Position test", 0);
+	menu_add("Your program", robocon_main);
+	menu_add("Position test", position_test);
 	menu_add("Motor test", 0);
-	menu_add("Battery test", 0);
+	menu_add("Battery test", battery_test);
+	menu_add("Bluetooth test", bluetooth_test);
 	menu_add("Buzzer test", 0);
 	menu_add("Button test", 0);
+	menu_add("ASCII test", ascii_test);
 	menu(0);
 	robocon_main();
 

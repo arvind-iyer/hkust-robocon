@@ -19,7 +19,9 @@
 #define BUTTON_JS2_RIGHT_GPIO			((GPIO*) &PA7)
 #define BUTTON_JS2_CENTER_GPIO		((GPIO*) &PC4)
 
-#define	BUTTON_COUNT							10
+#define	BUTTON_1_GPIO							((GPIO*) &PB6)
+#define	BUTTON_2_GPIO							((GPIO*) &PB7)
+#define	BUTTON_COUNT							12
 #define BUTTON_RELEASED_LIMIT			20
 
 typedef enum {
@@ -32,7 +34,9 @@ typedef enum {
 	BUTTON_JS2_LEFT			= 6,
 	BUTTON_JS2_DOWN			= 7,
 	BUTTON_JS2_RIGHT		= 8,
-	BUTTON_JS2_CENTER		= 9
+	BUTTON_JS2_CENTER		= 9,
+	BUTTON_1						= 10,
+	BUTTON_2						= 11
 
 } BUTTON;
 

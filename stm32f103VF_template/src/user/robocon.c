@@ -23,7 +23,8 @@ void robocon_main(void)
 				battery_adc_update();
 			}
 			
-			if (get_seconds() % 10 == 0 && ticks_img == 2) {
+			
+			if (get_seconds() % 10 == 2 && ticks_img == 2) {
 				// Every 10 seconds (0.1 Hz)
 				battery_regular_check();
 			}
@@ -34,35 +35,33 @@ void robocon_main(void)
 				wheel_base_tx_position();
 			}
 			
-			if (ticks_img % 500 == 0) {
+			if (ticks_img % 500 == 4) {
 				led_control(LED_D3, (LED_STATE) (ticks_img == 0));
+			}
+			
+			if (ticks_img % 50 == 5) {
+				button_update();
+				if (button_pressed(BUTTON_1) > 10 || button_pressed(BUTTON_2) > 10) {
+					/** Stop the wheel base before return **/
+					return; 
+				}
 			}
 			
 			if (ticks_img % 50 == 7) {
 				// Every 50 ms (20 Hz)
 				/** Warning: try not to do many things after tft_update(), as it takes time **/
-				button_update();
-				
+
 				WHEEL_BASE_VEL vel = wheel_base_get_vel();
 				tft_clear();
-				tft_prints(0, 0, "Battery: %s", get_voltage_string());
-				tft_prints(0, 1, "ADC: %d", get_battery_adc());
-				tft_prints(0, 2, "VX: %d", vel.x);
-				tft_prints(0, 3, "VY: %d", vel.y);
-				tft_prints(0, 4, "VW: %d", vel.w);
-				tft_prints(0, 5, "Speed: %d", wheel_base_get_speed_mode());
-				tft_set_bg_color(BLACK);
-				tft_clear_line(5);
-				tft_set_bg_color(WHITE);
-				tft_prints(0, 6, "(%-4d,%-4d,%-4d)", get_pos()->x, get_pos()->y,get_pos()->angle);
-				tft_prints(0, 7, "%d%d%d%d%d%d%d%d%d%d", \
-				button_pressed(BUTTON_JS1_UP) % 10, button_pressed(BUTTON_JS1_DOWN) % 10, button_pressed(BUTTON_JS1_LEFT) % 10, button_pressed(BUTTON_JS1_RIGHT) % 10, button_pressed(BUTTON_JS1_CENTER) % 10, \
-				button_pressed(BUTTON_JS2_UP) % 10, button_pressed(BUTTON_JS2_DOWN) % 10, button_pressed(BUTTON_JS2_LEFT) % 10, button_pressed(BUTTON_JS2_RIGHT) % 10, button_pressed(BUTTON_JS2_CENTER) % 10);
-				tft_prints(0, 8, "%d%d%d%d%d%d%d%d%d%d", \
-				button_released(BUTTON_JS1_UP) % 10, button_released(BUTTON_JS1_DOWN) % 10, button_released(BUTTON_JS1_LEFT) % 10, button_released(BUTTON_JS1_RIGHT) % 10, button_released(BUTTON_JS1_CENTER) % 10, \
-				button_released(BUTTON_JS2_UP) % 10, button_released(BUTTON_JS2_DOWN) % 10, button_released(BUTTON_JS2_LEFT) % 10, button_released(BUTTON_JS2_RIGHT) % 10, button_released(BUTTON_JS2_CENTER) % 10);
+				draw_top_bar();
 
-				tft_prints(0, 9, "Time: %d'%03d\"", get_seconds(), get_ticks());
+				tft_prints(0, 1, "V:(%3d,%3d,%3d)", vel.x, vel.y, vel.w);
+				tft_prints(0, 2, "Speed: %d", wheel_base_get_speed_mode());
+				tft_prints(0, 3, "(%-4d,%-4d,%-4d)", get_pos()->x, get_pos()->y,get_pos()->angle);
+				tft_prints(0, 4, "%s", wheel_base_get_pid_flag() ? "[AUTO]" : "MANUAL");
+				tft_prints(0, 5, "(%-4d,%-4d,%-4d)", wheel_base_get_target_pos().x, wheel_base_get_target_pos().y, wheel_base_get_target_pos().angle);
+				
+
 				tft_update();
 			}
 			

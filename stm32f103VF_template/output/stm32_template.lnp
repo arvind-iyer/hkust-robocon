@@ -24,6 +24,7 @@
 ".\output\led.o"
 ".\output\gpio.o"
 ".\output\encoder.o"
+".\output\system_test_1.o"
 ".\output\core_cm3.o"
 ".\output\misc.o"
 ".\output\stm32f10x_adc.o"

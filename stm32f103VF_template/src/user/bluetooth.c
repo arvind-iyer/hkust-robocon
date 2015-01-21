@@ -1,6 +1,6 @@
 #include "bluetooth.h"
 
-static u8 bluetooth_init_flag = 0;
+static u8 bluetooth_enable_flag = 0;
 static u8 rx_state = 0;	// 0 as initial state
 static u8 rx_data_length = 0;
 static u8 rx_data_id = 0;		// The data ID
@@ -9,6 +9,11 @@ static u8 rx_successful_data[BLUETOOTH_PACKAGE_DATA_LENGTH] = {0};
 static u16 rx_successful_rx_data_count = 0;
 static u32 rx_last_update = 0;
 static u32 rx_successful_toggle = 0;
+
+/** Recent successful data **/
+static u8 rx_recent_data_id = 0;
+static u8 rx_recent_data_length = 0;
+static u8 rx_recent_data[8] = {0};
 
 static BLUETOOTH_RX_FILTER rx_filter[BLUETOOTH_RX_FILTER_NUM] = {0};
 static u8 rx_filter_count = 0;
@@ -27,12 +32,27 @@ void bluetooth_init(void)
 	BLUETOOTH_USART = COM_USART[BLUETOOTH_COM];
 	rx_filter_count = 0;
 	rx_successful_rx_data_count = 0;
-	bluetooth_init_flag = 1;
+	bluetooth_enable_flag = 1;
+}
+
+void bluetooth_enable(void)
+{
+	bluetooth_enable_flag = 1;
+}
+
+void bluetooth_disable(void)
+{
+	bluetooth_enable_flag = 0;
+}
+
+u8 bluetooth_get_enabled(void)
+{
+	return bluetooth_enable_flag;
 }
 
 void bluetooth_tx_byte(uc8 byte)
 {
-	if (bluetooth_init_flag) {
+	if (bluetooth_enable_flag) {
 		uart_tx_byte(BLUETOOTH_COM, byte);
 	}
 }
@@ -60,7 +80,7 @@ void bluetooth_tx(const char* tx_buf, ...)
 	*/
 void bluetooth_tx_package(u8 id, u8 data_length, u8* data)
 {
-	if (bluetooth_init_flag) {
+	if (bluetooth_enable_flag) {
 		u8 tx_package[BLUETOOTH_PACKAGE_LENGTH];
 		u8 tx_state = 0, i;
 		if (data_length <= BLUETOOTH_PACKAGE_DATA_LENGTH) {
@@ -215,6 +235,12 @@ BLUETOOTH_COM_IRQHandler
 							// Successful data package transmission
 							void bluetooth_data_handler(u8 id, u8 length, u8* data);
 							void bluetooth_rx_successful(void);
+							// Copy it to the recent data sets
+							rx_recent_data_id = rx_data_id;
+							rx_recent_data_length = rx_data_length;
+							for (u8 i = 0; i < 8; ++i) {
+								rx_recent_data[i] = rx_successful_data[i];
+							}
 							bluetooth_data_handler(rx_data_id, rx_data_length, rx_successful_data);
 							bluetooth_rx_successful();
 							bluetooth_rx_data_reset();
@@ -266,6 +292,20 @@ void bluetooth_rx_successful(void)
 	led_control(LED_D1, (LED_STATE) rx_successful_toggle);
 }
 
+u8 bluetooth_recent_rx_id(void)
+{
+	return rx_recent_data_id;
+}
+
+u8 bluetooth_recent_rx_data_length(void)
+{
+	return rx_recent_data_length;
+}
+
+const u8* bluetooth_recent_rx_data(void)
+{
+	return rx_recent_data;
+}
 
 /**
 	* @brief Regular check of the bluetooth rx. 

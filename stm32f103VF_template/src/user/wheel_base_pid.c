@@ -10,9 +10,9 @@ static void wheel_base_auto_bluetooth_decode(u8 id, u8 length, u8* data)
 	switch (id) {
 		case BLUETOOTH_WHEEL_BASE_AUTO_POS_ID:
 			if (length == 6) {
-				target_pos.x = ((data[0] << 8) & 0xFF) | (data[1] & 0xFF);
-				target_pos.y = ((data[2] << 8) & 0xFF) | (data[3] & 0xFF);
-				target_pos.angle = ((data[4] << 8) & 0xFF) | (data[5] & 0xFF);
+				target_pos.x = ((data[0] << 8) & 0xFF00) | (data[1] & 0xFF);
+				target_pos.y = ((data[2] << 8) & 0xFF00) | (data[3] & 0xFF);
+				target_pos.angle = ((data[4] << 8) & 0xFF00) | (data[5] & 0xFF);
 				
 			}
 		break;
@@ -52,7 +52,8 @@ POSITION wheel_base_get_target_pos(void)
 	return target_pos;
 }
 
-void wheel_base_set_target_pos(POSITION pos) {
+void wheel_base_set_target_pos(POSITION pos)
+{
 	target_pos = pos;
 }
 
