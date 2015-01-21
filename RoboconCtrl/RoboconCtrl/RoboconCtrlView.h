@@ -3,6 +3,7 @@
 //
 
 #include <deque>
+#include <vector>
 
 #pragma once
 
@@ -69,8 +70,10 @@ private:
 	// Mouse position on the virtual grid
 	struct GridCoord grid_pos;
 
-	// Stores path of robot
+	// Stores path of robot for OpenGL
 	std::deque<GLCoord> robot_path;
+
+	std::vector<GLCoord> robot_path_data;
 
 // Implementation
 public:
