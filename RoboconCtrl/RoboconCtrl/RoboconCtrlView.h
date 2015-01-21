@@ -93,6 +93,7 @@ protected:
 	afx_msg void OnMouseMove(UINT nFlags, CPoint point);
 	afx_msg LRESULT refresh_coordinates(WPARAM w, LPARAM l);
 	afx_msg BOOL PreTranslateMessage(MSG* pMsg);
+	afx_msg LRESULT reset_coord(WPARAM w, LPARAM l);
 
 	DECLARE_MESSAGE_MAP()
 };

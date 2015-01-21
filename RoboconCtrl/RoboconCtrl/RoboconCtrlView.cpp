@@ -39,6 +39,7 @@ BEGIN_MESSAGE_MAP(CRoboconCtrlView, CView)
 	ON_WM_LBUTTONDBLCLK()
 	ON_WM_MOUSEMOVE()
 	ON_MESSAGE(WM_RECEIVE_ROBOT_COORD, refresh_coordinates)
+	ON_MESSAGE(WM_RESET_ROBOT_POS, reset_coord)
 END_MESSAGE_MAP()
 
 // CRoboconCtrlView construction/destruction
@@ -361,14 +362,11 @@ void CRoboconCtrlView::GLDrawScene()
 	}
 	if (!robot_path.empty()) {
 		if (robot_path.size() > 500) {
-			robot_path.pop_front;
+			robot_path.pop_front();
 		}
 		glBegin(GL_LINE_STRIP);
 			glColor3f(238.0f / 255.0f, 252.0f / 255.0f, 73.0f / 255.0f);
-			for (int i = 0; i < robot_path.size(); ++i) {
-				std::basic_ostringstream<TCHAR> oss;
-				oss << _T("Coord: (") << robot_path[i].x << _T(", ") << robot_path[i].y << _T(")") << std::endl;
-				OutputDebugString(oss.str().c_str());
+			for (size_t i = 0; i < robot_path.size(); ++i) {
 				glVertex2f(robot_path[i].x, robot_path[i].y);
 			}
 		glEnd();
@@ -508,6 +506,14 @@ LRESULT CRoboconCtrlView::refresh_coordinates(WPARAM w, LPARAM l) {
 	Invalidate();
 	return 0;
 }
+
+LRESULT CRoboconCtrlView::reset_coord(WPARAM w, LPARAM l) {
+	robot_pos.valid = FALSE;
+	robot_path.clear();
+	Invalidate();
+	return 0;
+}
+
 
 // CRoboconCtrlView diagnostics
 

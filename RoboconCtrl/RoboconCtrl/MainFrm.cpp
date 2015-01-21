@@ -492,6 +492,8 @@ void CMainFrame::OpenConnection()
 void CMainFrame::CloseConnection()
 {
 	if (serial) {
+		GetActiveView()->PostMessage(WM_RESET_ROBOT_POS, 0, 0);
+
 		delete serial;
 		serial = NULL;
 		

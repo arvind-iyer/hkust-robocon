@@ -12,6 +12,7 @@
 #define WM_PRINT_OUTPUT                (WM_APP + 5)
 #define WM_PRINT_FROM_SERIAL           (WM_APP + 6)
 #define WM_ADJUST_ANGLE                (WM_APP + 7)
+#define WM_RESET_ROBOT_POS             (WM_APP + 8)
 
 #ifndef VC_EXTRALEAN
 #define VC_EXTRALEAN            // Exclude rarely-used stuff from Windows headers
