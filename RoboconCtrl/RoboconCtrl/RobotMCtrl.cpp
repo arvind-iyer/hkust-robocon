@@ -124,7 +124,7 @@ std::pair<std::vector<int>, BOOL> RobotMCtrl::read(std::string string_received) 
 		// Prune the start and stop bits from the string
 		std::string string = string_received.substr(string_received.find_first_of((char)0x12) + 1 , string_received.find_last_of((char)0x34) - string_received.find_first_of((char)0x12) - 1);
 		// Checks if data size is correct, and ID is correct
-		if (string.size() == 11 && string[0] == 0x50 && string[1] == 6 && string[8] == 0x50) {
+		if (string.size() == 11 && string[0] == 0x60 && string[1] == 6 && string[8] == 0x60) {
 			char data[6];
 			for (int i = 0; i < 6; i++) {
 				data[i] = string[i + 2];
