@@ -5,15 +5,6 @@
 
 #pragma once
 
-#define WM_SEND_STRING                 (WM_APP + 1)
-#define WM_RECEIVE_ROBOT_COORD         (WM_APP + 2)
-#define WM_PRINT_OUTPUT_FROM_WRITE     (WM_APP + 3)
-#define WM_PRINT_OUTPUT_FROM_READ      (WM_APP + 4)
-#define WM_PRINT_OUTPUT                (WM_APP + 5)
-#define WM_PRINT_FROM_SERIAL           (WM_APP + 6)
-#define WM_ADJUST_ANGLE                (WM_APP + 7)
-#define WM_RESET_ROBOT_POS             (WM_APP + 8)
-
 #ifndef VC_EXTRALEAN
 #define VC_EXTRALEAN            // Exclude rarely-used stuff from Windows headers
 #endif
@@ -28,10 +19,6 @@
 #include <afxwin.h>         // MFC core and standard components
 #include <afxext.h>         // MFC extensions
 
-
-
-
-
 #ifndef _AFX_NO_OLE_SUPPORT
 #include <afxdtctl.h>           // MFC support for Internet Explorer 4 Common Controls
 #endif
@@ -40,14 +27,6 @@
 #endif // _AFX_NO_AFXCMN_SUPPORT
 
 #include <afxcontrolbars.h>     // MFC support for ribbons and control bars
-
-
-
-
-
-
-
-
 
 #ifdef _UNICODE
 #if defined _M_IX86
@@ -59,4 +38,13 @@
 #endif
 #endif
 
+#include <Windows.h>
 
+static const UINT UWM_SEND_STRING = ::RegisterWindowMessage(_T("UWM_SEND_STRING-{37DDD185-55FB-4D77-899E-EDBCFA2E638E}"));
+static const UINT UWM_RECEIVE_ROBOT_COORD = ::RegisterWindowMessage(_T("UWM_RECEIVE_ROBOT_COORD-{37DDD185-55FB-4D77-899E-EDBCFA2E638E}"));
+static const UINT UWM_PRINT_OUTPUT_FROM_WRITE = ::RegisterWindowMessage(_T("UWM_PRINT_OUTPUT_FROM_WRITE-{37DDD185-55FB-4D77-899E-EDBCFA2E638E}"));
+static const UINT UWM_PRINT_OUTPUT_FROM_READ = ::RegisterWindowMessage(_T("UWM_PRINT_OUTPUT_FROM_READ-{37DDD185-55FB-4D77-899E-EDBCFA2E638E}"));
+static const UINT UWM_PRINT_OUTPUT = ::RegisterWindowMessage(_T("UWM_PRINT_OUTPUT-{37DDD185-55FB-4D77-899E-EDBCFA2E638E}"));
+static const UINT UWM_PRINT_FROM_SERIAL = ::RegisterWindowMessage(_T("UWM_PRINT_FROM_SERIAL-{37DDD185-55FB-4D77-899E-EDBCFA2E638E}"));
+static const UINT UWM_ADJUST_ANGLE = ::RegisterWindowMessage(_T("UWM_ADJUST_ANGLE-{37DDD185-55FB-4D77-899E-EDBCFA2E638E}"));
+static const UINT UWM_RESET_ROBOT_POS = ::RegisterWindowMessage(_T("UWM_RESET_ROBOT_POS-{37DDD185-55FB-4D77-899E-EDBCFA2E638E}"));

@@ -116,42 +116,6 @@ bool SerialIO::_internal_write(std::string string_to_write)
 	CloseHandle(osWrite.hEvent);
 	return fRes;
 }
-/*
-bool fletcher16(char* buffer, const char* message, size_t msg_length) {
-	
-//	unsigned int sum1 = 0, sum2 = 0;
-//	for (int i = 0; i < msg_length; ++i) {
-//		sum1 = (sum1 + (unsigned int)(message[i])) % 255;
-//		sum2 = (sum2 + sum1) % 255;
-//	}
-//	buffer[0] = (unsigned char)(sum2);
-//	buffer[1] = (unsigned char)(sum1);
-	
-	
-	// This code is adapted from wikipedia
-
-	UINT16 sum1 = 0xff, sum2 = 0xff;
-
-	while (msg_length) {
-		size_t tlen = msg_length > 20 ? 20 : msg_length;
-		msg_length -= tlen;
-		do {
-			sum2 += sum1 += *(BYTE*)(message++);
-		} while (--tlen);
-		sum1 = (sum1 & 0xff) + (sum1 >> 8);
-		sum2 = (sum2 & 0xff) + (sum2 >> 8);
-	}
-	
-	//Second reduction step to reduce sums to 8 bits
-	sum1 = (sum1 & 0xff) + (sum1 >> 8);
-	sum2 = (sum2 & 0xff) + (sum2 >> 8);
-
-	buffer[0] = (unsigned char)sum2;
-	buffer[1] = (unsigned char)sum1;
-	
-	return true;
-}
-*/
 
 bool SerialIO::write(std::basic_string<TCHAR> msg_string)
 {
@@ -195,9 +159,6 @@ std::string SerialIO::read()
 	dwBytesRead = (DWORD)ComStat.cbInQue;
 	if (buffer_size < dwBytesRead) {
 		dwBytesRead = buffer_size;
-		std::basic_ostringstream<TCHAR> oss;
-		oss << dwBytesRead;
-		OutputDebugString(oss.str().c_str());
 	}
 
 	osRead.hEvent = CreateEvent(NULL, TRUE, FALSE, NULL);

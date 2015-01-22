@@ -44,8 +44,8 @@ BEGIN_MESSAGE_MAP(CRoboconCtrlView, CView)
 	ON_WM_ERASEBKGND()
 	ON_WM_LBUTTONDBLCLK()
 	ON_WM_MOUSEMOVE()
-	ON_MESSAGE(WM_RECEIVE_ROBOT_COORD, refresh_coordinates)
-	ON_MESSAGE(WM_RESET_ROBOT_POS, reset_coord)
+	ON_REGISTERED_MESSAGE(UWM_RECEIVE_ROBOT_COORD, refresh_coordinates)
+	ON_REGISTERED_MESSAGE(UWM_RESET_ROBOT_POS, reset_coord)
 END_MESSAGE_MAP()
 
 // CRoboconCtrlView construction/destruction
@@ -189,8 +189,8 @@ CRoboconCtrlView::GLCoord CRoboconCtrlView::GetGLCoord(CPoint wndCoord)
 	CRect rect;
 	GetClientRect(rect);
 	GLCoord g;
-	g.x = (float)((double)(wndCoord.x) - (double)(rect.Width() / 2)) * 16400.0 / gl_width;
-	g.y = (float)((double)(rect.Height() / 2) - (double)(wndCoord.y)) *   8500.0 / gl_height;
+	g.x = (float)(((double)(wndCoord.x) - (double)(rect.Width() / 2)) * 16400.0 / gl_width);
+	g.y = (float)(((double)(rect.Height() / 2) - (double)(wndCoord.y)) *   8500.0 / gl_height);
 
 	if (g.x > 8200.0f || g.x < -8250.0f || g.y > 4250.0f || g.y < -4250.0f) {
 		g.valid = FALSE;
@@ -565,7 +565,7 @@ void CRoboconCtrlView::OnLButtonDblClk(UINT nFlags, CPoint point)
 		data.push_back((short)grid_pos.y);
 		data.push_back((unsigned short)grid_pos.angle);
 
-		AfxGetMainWnd()->PostMessage(WM_SEND_STRING, 2, (LPARAM)new std::vector<short>(data));
+		AfxGetMainWnd()->PostMessage(UWM_SEND_STRING, 2, (LPARAM)new std::vector<short>(data));
 	}
 	Invalidate();
 }
@@ -573,8 +573,8 @@ void CRoboconCtrlView::OnLButtonDblClk(UINT nFlags, CPoint point)
 CRoboconCtrlView::GLCoord CRoboconCtrlView::ConvertGridCoordToGLCoord(GridCoord g)
 {
 	GLCoord r_pos;
-	r_pos.x = 6700.0f - g.y;
-	r_pos.y = g.x;
+	r_pos.x = (float)(6700.0f - g.y);
+	r_pos.y = (float)g.x;
 	r_pos.angle = g.angle;
 	r_pos.valid = g.valid;
 

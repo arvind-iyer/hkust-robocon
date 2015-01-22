@@ -49,9 +49,9 @@ BEGIN_MESSAGE_MAP(CMainFrame, CFrameWndEx)
 	ON_COMMAND(ID_FILE_OPEN, &CMainFrame::OpenConnection)
 	ON_COMMAND(ID_FILE_UPDATE, &CMainFrame::CloseConnection)
 	ON_REGISTERED_MESSAGE(AFX_WM_CREATETOOLBAR, &CMainFrame::OnToolbarCreateNew)
-	ON_MESSAGE(WM_SEND_STRING, &CMainFrame::WriteString)
-	ON_MESSAGE(WM_PRINT_OUTPUT_FROM_READ, &CMainFrame::print_read_from_serial)
-	ON_MESSAGE(WM_PRINT_OUTPUT_FROM_WRITE, &CMainFrame::print_write_to_serial)
+	ON_REGISTERED_MESSAGE(UWM_SEND_STRING, &CMainFrame::WriteString)
+	ON_REGISTERED_MESSAGE(UWM_PRINT_OUTPUT_FROM_READ, &CMainFrame::print_read_from_serial)
+	ON_REGISTERED_MESSAGE(UWM_PRINT_OUTPUT_FROM_WRITE, &CMainFrame::print_write_to_serial)
 	ON_WM_KEYDOWN()
 	ON_WM_SETTINGCHANGE()
 END_MESSAGE_MAP()
@@ -290,12 +290,12 @@ std::vector<std::basic_string<TCHAR>> CMainFrame::GetSettings()
 
 void CMainFrame::print_to_output(std::basic_string<TCHAR> string_to_print)
 {
-	m_wndOutput.PostMessage(WM_PRINT_OUTPUT, 0, (LPARAM)new std::basic_string<TCHAR>(string_to_print));
+	m_wndOutput.PostMessage(UWM_PRINT_OUTPUT, 0, (LPARAM)new std::basic_string<TCHAR>(string_to_print));
 }
 void CMainFrame::print_from_serial(std::basic_string<TCHAR> string_to_print)
 {
 		//m_wndOutput.ReadFromSerial(string_to_print);
-	m_wndOutput.PostMessage(WM_PRINT_FROM_SERIAL, 0, (LPARAM)new std::basic_string<TCHAR>(string_to_print));
+	m_wndOutput.PostMessage(UWM_PRINT_FROM_SERIAL, 0, (LPARAM)new std::basic_string<TCHAR>(string_to_print));
 }
 
 // WPARAM - 1: Add "Write: " to beginning of string | 0: Don't add "Write: "
@@ -318,7 +318,7 @@ LRESULT CMainFrame::print_read_from_serial(WPARAM w, LPARAM l)
 	if (readmode == 1) {
 		std::pair<std::vector<int>, BOOL> data = RobotMCtrl().read(*string_to_print);
 		if (data.second) {
-			GetActiveView()->PostMessage(WM_RECEIVE_ROBOT_COORD, 0, (LPARAM)(new std::vector<int>(data.first)));
+			GetActiveView()->PostMessage(UWM_RECEIVE_ROBOT_COORD, 0, (LPARAM)(new std::vector<int>(data.first)));
 			std::basic_ostringstream<TCHAR> oss;
 			oss << _T("Received Coordinate: (") << (data.first)[0] << _T(", ") << (data.first)[1] << _T(", ") << (data.first)[2] << _T(")");
 			print_from_serial(oss.str());
@@ -343,7 +343,7 @@ BOOL CMainFrame::get_pid_mode()
 UINT __cdecl CMainFrame::read_thread(LPVOID app_ptr){
 	while (serial != NULL && serial->is_connected()){
 		if (serial->bytes_to_read()) {
-			AfxGetMainWnd()->PostMessage(WM_PRINT_OUTPUT_FROM_READ, 0, (LPARAM)new std::string(serial->read()));
+			AfxGetMainWnd()->PostMessage(UWM_PRINT_OUTPUT_FROM_READ, 0, (LPARAM)new std::string(serial->read()));
 		}
 		Sleep(read_sleep_duration);
 	}
@@ -416,23 +416,24 @@ UINT __cdecl CMainFrame::write_thread(LPVOID app_ptr){
 				}
 				std::basic_ostringstream<TCHAR> oss;
 				oss << _T("Sent Controls | X: ") << x << _T(" Y: ") << y << _T(" w: ") << w;
-				AfxGetMainWnd()->PostMessage(WM_PRINT_OUTPUT_FROM_WRITE, 0, (LPARAM)new std::basic_string<TCHAR>(oss.str()));
+				AfxGetMainWnd()->PostMessage(UWM_PRINT_OUTPUT_FROM_WRITE, 0, (LPARAM)new std::basic_string<TCHAR>(oss.str()));
 			}
 			// speed printing
 			if (speed != -1) {
 				serial->write(RobotMCtrl().speed_mode(speed));
 				std::basic_ostringstream<TCHAR> oss;
 				oss << _T("Sent Speed: ") << speed;
-				AfxGetMainWnd()->PostMessage(WM_PRINT_OUTPUT_FROM_WRITE, 0, (LPARAM)new std::basic_string<TCHAR>(oss.str()));
+				AfxGetMainWnd()->PostMessage(UWM_PRINT_OUTPUT_FROM_WRITE, 0, (LPARAM)new std::basic_string<TCHAR>(oss.str()));
 			}
 			if (pid_toggled) {
 				serial->write(RobotMCtrl().pid_toggle(pid_mode));
 				if (pid_mode) {
-					AfxGetMainWnd()->PostMessage(WM_PRINT_OUTPUT_FROM_WRITE, 0, (LPARAM)new std::basic_string<TCHAR>(_T("PID Start!")));
+					AfxGetMainWnd()->PostMessage(UWM_PRINT_OUTPUT_FROM_WRITE, 0, (LPARAM)new std::basic_string<TCHAR>(_T("PID Start!")));
 				}
 				else {
-					AfxGetMainWnd()->PostMessage(WM_PRINT_OUTPUT_FROM_WRITE, 0, (LPARAM)new std::basic_string<TCHAR>(_T("PID Stop!")));
+					AfxGetMainWnd()->PostMessage(UWM_PRINT_OUTPUT_FROM_WRITE, 0, (LPARAM)new std::basic_string<TCHAR>(_T("PID Stop!")));
 				}
+				AfxGetMainWnd()->Invalidate();
 			}
 		}
 		Sleep(write_sleep_duration);
@@ -492,7 +493,7 @@ void CMainFrame::OpenConnection()
 void CMainFrame::CloseConnection()
 {
 	if (serial) {
-		GetActiveView()->PostMessage(WM_RESET_ROBOT_POS, 0, 0);
+		GetActiveView()->PostMessage(UWM_RESET_ROBOT_POS, 0, 0);
 
 		delete serial;
 		serial = NULL;
@@ -573,7 +574,7 @@ LRESULT CMainFrame::WriteString(WPARAM w, LPARAM l)
 		if (serial != NULL && serial->is_connected())
 		{
 			serial->write(std::string(CT2CA(*string)));
-			PostMessage(WM_PRINT_OUTPUT_FROM_WRITE, 1, (LPARAM)new std::basic_string<TCHAR>(*string));
+			PostMessage(UWM_PRINT_OUTPUT_FROM_WRITE, 1, (LPARAM)new std::basic_string<TCHAR>(*string));
 
 		}
 		else {
@@ -594,9 +595,7 @@ LRESULT CMainFrame::WriteString(WPARAM w, LPARAM l)
 			serial->write(RobotMCtrl().coordinates(data[0], data[1], (unsigned short)data[2]));
 			std::basic_ostringstream<TCHAR> oss;
 			oss << _T("Sent Position: (") << (short)data[0] << _T(", ") << (short)data[1] << _T(", ") << (short)data[2] << _T(")");
-			PostMessage(WM_PRINT_OUTPUT_FROM_WRITE, 0, (LPARAM)new std::basic_string<TCHAR>(oss.str()));
-			OutputDebugString(_T("End write \n"));
-
+			PostMessage(UWM_PRINT_OUTPUT_FROM_WRITE, 0, (LPARAM)new std::basic_string<TCHAR>(oss.str()));
 			break;
 		}
 		else {
