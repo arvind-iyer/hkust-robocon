@@ -4,6 +4,7 @@
 
 #include <deque>
 #include <vector>
+#include <chrono>
 
 #pragma once
 
@@ -47,6 +48,7 @@ private:
 		int x;
 		int y;
 		unsigned int angle;
+		std::chrono::duration<double> elapsed_time;
 		BOOL valid;
 	};
 

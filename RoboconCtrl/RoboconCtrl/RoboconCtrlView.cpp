@@ -26,6 +26,11 @@
 #include <memory>
 #include <fstream>
 
+namespace {
+	std::chrono::high_resolution_clock::time_point start_time;
+	bool reset_clock = TRUE;
+}
+
 // CRoboconCtrlView
 
 IMPLEMENT_DYNCREATE(CRoboconCtrlView, CView)
@@ -88,7 +93,7 @@ CRoboconCtrlView::~CRoboconCtrlView()
 				std::ofstream output_data;
 				output_data.open(file_path.str());
 				for (size_t i = 0; i < robot_path_data.size(); ++i) {
-					output_data << robot_path_data[i].x << ", " << robot_path_data[i].y << std::endl;
+					output_data << robot_path_data[i].elapsed_time.count() << ", " << robot_path_data[i].x << ", " << robot_path_data[i].y << std::endl;
 				}
 				output_data.close();
 			}
@@ -530,10 +535,16 @@ CRoboconCtrlView::GLCoord CRoboconCtrlView::ConvertGridCoordToGLCoord(GridCoord 
 LRESULT CRoboconCtrlView::refresh_coordinates(WPARAM w, LPARAM l) {
 	std::shared_ptr< std::vector<int> > coordinates(reinterpret_cast< std::vector<int>* >(l));
 
+	if (reset_clock) {
+		start_time = std::chrono::high_resolution_clock::now();
+		reset_clock = FALSE;
+	}
+
 	GridCoord r_pos;
 	r_pos.x = (*coordinates)[0];
 	r_pos.y = (*coordinates)[1];
 	r_pos.angle = (*coordinates)[2];
+	r_pos.elapsed_time = std::chrono::high_resolution_clock::now() - start_time;
 	r_pos.valid = TRUE;
 	robot_pos = ConvertGridCoordToGLCoord(r_pos);
 	robot_path.push_back(robot_pos);
@@ -566,7 +577,7 @@ LRESULT CRoboconCtrlView::reset_coord(WPARAM w, LPARAM l) {
 				std::ofstream output_data;
 				output_data.open(file_path.str());
 				for (size_t i = 0; i < robot_path_data.size(); ++i) {
-					output_data << robot_path_data[i].x << ", " << robot_path_data[i].y << std::endl;
+					output_data << robot_path_data[i].elapsed_time.count() << ", " << robot_path_data[i].x << ", " << robot_path_data[i].y << std::endl;
 				}
 				output_data.close();
 			}
@@ -576,6 +587,8 @@ LRESULT CRoboconCtrlView::reset_coord(WPARAM w, LPARAM l) {
 			++i;
 		}
 	}
+
+	reset_clock = TRUE;
 
 	robot_path_data.clear();
 	Invalidate();
