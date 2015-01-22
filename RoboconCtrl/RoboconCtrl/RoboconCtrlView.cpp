@@ -192,7 +192,7 @@ CRoboconCtrlView::GLCoord CRoboconCtrlView::GetGLCoord(CPoint wndCoord)
 	g.x = (float)((double)(wndCoord.x) - (double)(rect.Width() / 2)) * 16400.0 / gl_width;
 	g.y = (float)((double)(rect.Height() / 2) - (double)(wndCoord.y)) *   8500.0 / gl_height;
 
-	if (g.x > 16400.0f || g.y > 8500.0f) {
+	if (g.x > 8200.0f || g.x < -8250.0f || g.y > 4250.0f || g.y < -4250.0f) {
 		g.valid = FALSE;
 	}
 	else {
