@@ -83,7 +83,7 @@ u16 button_pressed(BUTTON b)
 }
 
 u8 button_hold(BUTTON b, u16 threshold, u8 mod) {
-	return button_pressed(b) > threshold && (button_pressed(b) - threshold) % mod;
+	return (button_pressed(b) > threshold) && ((button_pressed(b) - threshold) % mod == 0);
 }
 
 

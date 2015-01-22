@@ -21,7 +21,7 @@
 #define GPIO_CS			GPIOD
 
 // Color
-#define	BGR888_MODE		1
+#define	BGR888_MODE		1    
 
 #if (!BGR888_MODE)
 #define	RGB888TO565(RGB888)  (((RGB888 >> 8) & 0xF800) |((RGB888 >> 5) & 0x07E0) | ((RGB888 >> 3) & 0x001F))

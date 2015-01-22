@@ -5,7 +5,7 @@ static s32 can_motor_encoder_value[CAN_MOTOR_COUNT] = {0};
 
 void can_motor_init(void)
 {
-	can_rx_add_filter(CAN_MOTOR_BASE, CAN_RX_MASK_DIGIT_0_F, 0);
+	can_rx_add_filter(CAN_MOTOR_BASE, CAN_RX_MASK_DIGIT_0_F, can_motor_feedback_encoder);
 }
 
 /*** TX ***/

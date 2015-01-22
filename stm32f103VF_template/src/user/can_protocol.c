@@ -4,15 +4,15 @@
   * @author  Kenneth Au
   * @version V1.0.0
   * @date    17-January-2015
-  * @brief   This file provides all the CAN basic functions, including
-	* 				 initialization and direct CAN transmission.
+  * @brief   This file provides all the CAN basic protocol functions, including
+	* 				 initialization, CAN transmission and receive handlers .
   ******************************************************************************
   * @attention
   *
   * This source is designed for application use. Unless necessary, try NOT to
 	* modify the function definition. The constants which are more likely to 
-	* vary with different schematic have been placed as pre-defined constant
-	* (those defined using "#define") in the header file.
+	* vary among different schematics have been placed as pre-defined constant
+	* (i.e., "#define") in the header file.
 	*
   ******************************************************************************
   */
@@ -23,7 +23,7 @@
 CAN_MESSAGE CAN_Tx_Queue_Array[CAN_TX_QUEUE_MAX_SIZE];
 CAN_QUEUE CAN_Tx_Queue = {0, 0, CAN_TX_QUEUE_MAX_SIZE, CAN_Tx_Queue_Array};
 u8 CAN_FilterCount = 0;
-
+static u32 can_rx_count = 0;		// Number of rx received
 // Array storing all the handler function for CAN Rx (element id equals to filter id)
 void (*CAN_Rx_Handlers[CAN_RX_FILTER_LIMIT])(CanRxMsg msg) ;
 
@@ -309,8 +309,15 @@ void can_rx_add_filter(u16 id, u16 mask, void (*handler)(CanRxMsg msg))
 	++CAN_FilterCount;
 }
 
-
-
+/**
+	* @brief Get the number of handled CAN Rx data
+	* @param None
+	* @retval None
+	*/
+u32 can_get_rx_count(void)
+{
+	return can_rx_count;
+}
 
 /** 
 	* @brief Interrupt for CAN Rx
@@ -328,6 +335,7 @@ CAN_Rx_IRQHandler
 			if (filter_id < CAN_FilterCount && filter_id < CAN_RX_FILTER_LIMIT && CAN_Rx_Handlers[filter_id] != 0) {
 				CAN_Rx_Handlers[filter_id](RxMessage);
 			}
+			++can_rx_count;
 		}		
 	}
 

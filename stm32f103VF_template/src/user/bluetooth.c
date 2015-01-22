@@ -1,3 +1,24 @@
+/**
+  ******************************************************************************
+  * @file    bluetooth.c
+  * @author  Kenneth Au
+  * @version V1.0.0
+  * @date    22-January-2015
+  * @brief   This file provides Bluetooth (acts as an USART port) function, 
+	*					 including initialization, package transmission with encoding,
+	*					 received data package handler with package decoding.
+	*
+  ******************************************************************************
+  * @attention
+  *
+  * This source is designed for application use. Unless necessary, try NOT to
+	* modify the function definition. The constants which are more likely to 
+	* vary among different schematics have been placed as pre-defined constant
+	* (i.e., "#define") in the header file.
+	*
+  ******************************************************************************
+  */
+
 #include "bluetooth.h"
 
 static u8 bluetooth_enable_flag = 0;
@@ -35,16 +56,31 @@ void bluetooth_init(void)
 	bluetooth_enable_flag = 1;
 }
 
+/**
+	* @brief Enable Bluetooth transmission
+	* @param None
+	* @retval None
+	*/
 void bluetooth_enable(void)
 {
 	bluetooth_enable_flag = 1;
 }
 
+/**
+	* @brief Disable Bluetooth transmission
+	* @param None
+	* @retval None
+	*/
 void bluetooth_disable(void)
 {
 	bluetooth_enable_flag = 0;
 }
 
+/**
+	* @brief Get the current status of Bluetooth transmission (whether it is enabled)
+	* @param None
+	* @retval The status of Bluetooth (1: enabled, 0: disabled)
+	*/
 u8 bluetooth_get_enabled(void)
 {
 	return bluetooth_enable_flag;

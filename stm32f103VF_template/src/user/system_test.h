@@ -20,6 +20,7 @@
 
 /*** Optional ***/
 #include "can_protocol.h"
+#include "can_motor.h"
 #include "uart.h"
 #include "approx_math.h"
 #include "servo.h"
@@ -30,7 +31,9 @@
 
 void bluetooth_test(void);
 void ascii_test(void);
+void motor_test(void);
 void battery_test(void);
 void position_test(void);
+void button_test(void);
 
 #endif /* __SYSTEM_TEST_H */

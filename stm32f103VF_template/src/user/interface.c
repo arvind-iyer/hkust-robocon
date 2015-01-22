@@ -122,16 +122,22 @@ static void draw_battery_icon(u8 batt)
 			tft_put_pixel(pos-19+i, 5+j, i < batt_w ? batt_color : DARK_GREY);
 		}
 	}
+	
+	// Top and bottom line
 	for (u8 i = 0; i < 17; i++) {
 		tft_put_pixel(pos-21+i, 3, batt_boundary);
 		tft_put_pixel(pos-21+i, 12, batt_boundary);
 	}
+	
+	// Left and right line
 	for (u8 i = 0; i < 8; i++) {
 		tft_put_pixel(pos-21, 4+i, batt_boundary);
 		tft_put_pixel(pos-5, 4+i, batt_boundary);
 	}
+	// The right extra lines
 	for (u8 i = 0; i < 6; i++) {
 		tft_put_pixel(pos-4, 5+i, batt_boundary);
+		tft_put_pixel(pos-3, 5+i, batt_boundary);
 	}
 }
 
@@ -176,14 +182,14 @@ void menu(u8 default_id)
 				// Check button input
 				button_update();
 				/** Menu item shift **/
-				if (button_pressed(BUTTON_JS2_DOWN) == 1 || button_hold(BUTTON_JS2_DOWN, 15, 5)) {
+				if (button_pressed(BUTTON_JS2_DOWN) == 1 || button_hold(BUTTON_JS2_DOWN, 15, 3)) {
 					// Go down the list
 					if (menu_selected < menu_count - 1) {
 						++menu_selected; 
 					} else {
 						FAIL_MUSIC;
 					}
-				} else if (button_pressed(BUTTON_JS2_UP) == 1 || button_hold(BUTTON_JS2_UP, 15, 5)) {
+				} else if (button_pressed(BUTTON_JS2_UP) == 1 || button_hold(BUTTON_JS2_UP, 15, 3)) {
 					if (menu_selected > 0) {
 						--menu_selected;
 					} else {
@@ -247,7 +253,7 @@ void menu(u8 default_id)
 					tft_prints(1, y+1, "%s", menu_list[i].title);
 				}
 				
-				// Bottom bar - page number and temperature
+				// Bottom bar - page number
 				tft_set_text_color(WHITE);
 				tft_set_bg_color(BLUE2);
 				tft_clear_line(tft_height-1);

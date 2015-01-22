@@ -37,12 +37,12 @@
 .\output\system_test_1.o: src\user\can_protocol.h
 .\output\system_test_1.o: .\src\stm32f10x_std\inc\stm32f10x_can.h
 .\output\system_test_1.o: .\src\ustrobo_min_system\inc\uart.h
+.\output\system_test_1.o: src\user\can_motor.h
 .\output\system_test_1.o: .\src\ustrobo_min_system\inc\servo.h
 .\output\system_test_1.o: .\src\ustrobo_min_system\inc\gyro.h
 .\output\system_test_1.o: src\user\bluetooth.h
 .\output\system_test_1.o: src\user\crc.h
 .\output\system_test_1.o: src\user\robocon.h
 .\output\system_test_1.o: src\user\wheel_base.h
-.\output\system_test_1.o: src\user\can_motor.h
 .\output\system_test_1.o: src\user\wheel_base_pid.h
 .\output\system_test_1.o: src\user\wheel_base.h
