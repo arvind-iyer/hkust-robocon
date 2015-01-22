@@ -9,6 +9,8 @@ Original Video Capture footage
 #include <iostream>
 #include "opencv2/highgui/highgui.hpp"
 #include "opencv2/imgproc/imgproc.hpp"
+#include <opencv2\opencv.hpp>
+
 
 
 using namespace cv;
@@ -16,8 +18,8 @@ using namespace std;
 
 
 static Mat imgOriginal;
-static Mat imgThresholded;
-static Mat imgPrev;
+
+BackgroundSubtractorMOG2 bg(50, 10, false);//reduced to 50 cause my computer is slowwwwww
 
 static int iLowB = 0;
 static int iHighB = 255;
@@ -29,9 +31,9 @@ static int iLowR = 0;
 static int iHighR = 255;
 
 //"delta" represents the sensitivity allowed.
-#define delta 35
+#define delta 40
 
-void CallBack1(int event, int x, int y, int flags, void* userdata)
+void CallBack2(int event, int x, int y, int flags, void* userdata)
 {
 	if (event == EVENT_LBUTTONDOWN)
 	{
@@ -65,75 +67,54 @@ int main(int argc, char** argv)
 		cout << "Cannot open the web cam" << endl;
 		return -1;
 	}
-	
+
 	double dWidth = cap.get(CV_CAP_PROP_FRAME_WIDTH); //get the width of frames of the video
 	double dHeight = cap.get(CV_CAP_PROP_FRAME_HEIGHT); //get the height of frames of the video
 
-
-	int iLastX = -1;
-	int iLastY = -1;
-
+	Mat imgThresholded;
+	Mat imgPrev;
+	Mat imgFG;
+	Mat mogMasked;
 	//Capture a temporary image from the camera
 	cap.read(imgPrev);
-	imgPrev -= imgPrev;
 
-	
-	//Create a black image with the size as the camera output
-	Mat imgLines = Mat::zeros(imgPrev.size(), CV_8UC3);;
 
 	while (true)
 	{
 
 		bool bSuccess = cap.read(imgOriginal); // read a new frame from video
-
-
-
 		if (!bSuccess) //if not success, break loop
 		{
 			cout << "Cannot read a frame from video stream" << endl;
 			break;
 		}
 
-		Mat imgHSV;
-		imgOriginal.copyTo(imgHSV);
-		//cvtColor(imgOriginal, imgHSV, COLOR_BGR2HSV); //Convert the captured frame from BGR to HSV
+		bg.operator()(imgOriginal, imgFG);
+		//imshow("MOG", imgFG);//only moving pixels
+		inRange(imgOriginal, Scalar(iLowB, iLowG, iLowR), Scalar(iHighB, iHighG, iHighR), imgThresholded); //Threshold the image
 
-		//Mat imgThresholded;
-
-		inRange(imgHSV, Scalar(iLowB, iLowG, iLowR), Scalar(iHighB, iHighG, iHighR), imgThresholded); //Threshold the image
-
-
-		//imgThresholded.copyTo(imgOriginal, );
 		Mat out;
+		//Apply imgThresholded as mask on imgOriginal to out
 		imgOriginal.copyTo(out, imgThresholded);
 
-		//morphological opening (removes small objects from the foreground)
-		erode(out, out, getStructuringElement(MORPH_ELLIPSE, Size(7, 7)));
-		dilate(out, out, getStructuringElement(MORPH_ELLIPSE, Size(5, 5)));
-
-		//morphological closing (removes small holes from the foreground)
-		dilate(out, out, getStructuringElement(MORPH_ELLIPSE, Size(7, 7)));
-		erode(out, out, getStructuringElement(MORPH_ELLIPSE, Size(5, 5)));
-
-
-
-		imshow("Thresholded Image", imgThresholded); //show the thresholded image
-		
-		//imgOriginal = imgOriginal - imgPrev;
+		//imshow("Thresholded Image", imgThresholded); //only selected colour shown as B/W
 		imshow("Original", imgOriginal); //show the original image
-		
-		imshow("Masked", out-imgPrev);
-		//set the callback function for any mouse event
-		setMouseCallback("Original", CallBack1, NULL);
+		//imshow("Masked", out); //only selected colour with retained RGB values
 
-		if (waitKey(30) == 27) //wait for 'esc' key press for 30ms. If 'esc' key is pressed, break loop
+
+		//Apply imgFg as mask on out to mogMasked
+		out.copyTo(mogMasked, imgFG);
+		imshow("MOG'd", mogMasked); //only the selected colour and only if it is moving, i.e. not background
+		bg.operator()(mogMasked.clone(), mogMasked);
+		//set the callback function for any mouse event
+		setMouseCallback("Original", CallBack2, NULL);
+
+		if (waitKey(1) == 27) //wait for 'esc' key press for 30ms. If 'esc' key is pressed, break loop
 		{
 			cout << "esc key is pressed by user" << endl;
 			break;
 		}
 
-		imgPrev=out.clone();
-		waitKey(1);
 	}
 
 	return 0;
