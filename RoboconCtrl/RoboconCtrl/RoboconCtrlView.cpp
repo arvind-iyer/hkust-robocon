@@ -386,7 +386,20 @@ void CRoboconCtrlView::GLDrawScene()
 			0.0f,
 			0.0f
 		};
-		DrawIndicator(current_pos, point_ind, back_ind, point_color);
+		if (current_pos.x < 0) {
+			GLCoord flipped_pos;
+			flipped_pos = current_pos;
+			if (current_pos.angle > 180) {
+				flipped_pos.angle = current_pos.angle - 180;
+			}
+			else {
+				flipped_pos.angle = 180 + current_pos.angle;
+			}
+			DrawIndicator(flipped_pos, point_ind, back_ind, point_color);
+		}
+		else {
+			DrawIndicator(current_pos, point_ind, back_ind, point_color);
+		}
 	}
 	if (robot_pos.valid) {
 		GLColor point_ind = {
@@ -416,7 +429,21 @@ void CRoboconCtrlView::GLDrawScene()
 			0.0f,
 			0.0f
 		};
-		DrawIndicator(cursor_pos, point_ind, back_ind, point_color, 1);
+
+		if (cursor_pos.x < 0) {
+			GLCoord flipped_pos;
+			flipped_pos = cursor_pos;
+			if (cursor_pos.angle > 180) {
+				flipped_pos.angle = cursor_pos.angle - 180;
+			}
+			else {
+				flipped_pos.angle = 180 + cursor_pos.angle;
+			}
+			DrawIndicator(flipped_pos, point_ind, back_ind, point_color, 1);
+		}
+		else {
+			DrawIndicator(cursor_pos, point_ind, back_ind, point_color, 1);
+		}
 	}
 	if (!robot_path.empty()) {
 		if (robot_path.size() > 500) {
