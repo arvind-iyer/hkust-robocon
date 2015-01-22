@@ -189,10 +189,10 @@ CRoboconCtrlView::GLCoord CRoboconCtrlView::GetGLCoord(CPoint wndCoord)
 	CRect rect;
 	GetClientRect(rect);
 	GLCoord g;
-	g.x = -(float)(((double)rect.Width() / 2 - (double)(wndCoord.x + 1)) / ((double)gl_width / 2));
-	g.y = (float)(((double)rect.Height() / 2 - (double)(wndCoord.y + 1)) / ((double)gl_height / 2));
+	g.x = (float)((double)(wndCoord.x) - (double)(rect.Width() / 2)) * 16400.0 / gl_width;
+	g.y = (float)((double)(rect.Height() / 2) - (double)(wndCoord.y)) *   8500.0 / gl_height;
 
-	if (g.x > 1.0f || g.y > 1.0f) {
+	if (g.x > 16400.0f || g.y > 8500.0f) {
 		g.valid = FALSE;
 	}
 	else {
@@ -209,18 +209,18 @@ CRoboconCtrlView::GridCoord CRoboconCtrlView::GetRobotCoord(CPoint wndCoord, uns
 	int x, y = 0;
 
 	if (wndCoord.x < rect.Width() / 2) {
-		x = (-3050 * (rect.Height() - 2 * (wndCoord.y + 1))) / gl_height;
-		y = (-6700 * (rect.Width() - 2 * wndCoord.x - gl_width - 2)) / gl_width;
+		x = -((rect.Height() / 2 - wndCoord.y) * 8500) / gl_height;
+		y = ((wndCoord.x - (rect.Width() - 13400 * gl_width / 16400) / 2) * 16400)/gl_width;
 	}
 	else {
-		x = (3050 * (rect.Height() - 2 * (wndCoord.y + 1))) / gl_height;
-		y = (6700 * (rect.Width() - 2 * wndCoord.x + gl_width - 2)) / gl_width;
+		x = ((rect.Height() / 2 - wndCoord.y) * 8500) / gl_height;
+		y = ((rect.Width() - wndCoord.x - (rect.Width() - 13400 * gl_width / 16400) / 2) * 16400)/gl_width;
 	}
 	GridCoord g;
 	g.x = x;
 	g.y = y;
 	g.angle = angle;
-	if (x > 3050 || x < -3050 || y < 0) {
+	if (x > 4250 || x < -4250 || y < -1500) {
 		g.valid = FALSE;
 	}
 	else {
@@ -232,22 +232,22 @@ CRoboconCtrlView::GridCoord CRoboconCtrlView::GetRobotCoord(CPoint wndCoord, uns
 void CRoboconCtrlView::DrawIndicator(GLCoord coordinates, GLColor point_ind_color, GLColor back_ind_color, GLColor point_color, int mode)
 {
 	// calculate position
-	double length = 0.0007;
+	double length = 400.0;
 	double angle_of_quad = 40.0 * std::atan2(0, -1) / 180.0;
 
 	double angle = coordinates.angle * std::atan2(0, -1) / 180.0;
 
-	double quad_xpos1 = 61.0 * (cos(-angle) * -length) + coordinates.x;
-	double quad_ypos1 = 134.0 * (sin(-angle) * -length) + coordinates.y;
+	double quad_xpos1 = (cos(-angle) * -length) + coordinates.x;
+	double quad_ypos1 = (sin(-angle) * -length) + coordinates.y;
 
-	double quad_xpos2 = 61.0 * (cos(-angle) * length * cos(angle_of_quad / 2) - sin(-angle) * length * sin(angle_of_quad / 2)) + coordinates.x;
-	double quad_ypos2 = 134.0 * (sin(-angle) * length * cos(angle_of_quad / 2) + cos(-angle) * length * sin(angle_of_quad / 2)) + coordinates.y;
+	double quad_xpos2 = (cos(-angle) * length * cos(angle_of_quad / 2) - sin(-angle) * length * sin(angle_of_quad / 2)) + coordinates.x;
+	double quad_ypos2 = (sin(-angle) * length * cos(angle_of_quad / 2) + cos(-angle) * length * sin(angle_of_quad / 2)) + coordinates.y;
 
-	double quad_xpos3 = 61.0 * (cos(-angle) * length * (cos(angle_of_quad / 2) - sin(angle_of_quad / 2))) + coordinates.x;
-	double quad_ypos3 = 134.0 * (sin(-angle) * length * (cos(angle_of_quad / 2) - sin(angle_of_quad / 2))) + coordinates.y;
+	double quad_xpos3 = (cos(-angle) * length * (cos(angle_of_quad / 2) - sin(angle_of_quad / 2))) + coordinates.x;
+	double quad_ypos3 = (sin(-angle) * length * (cos(angle_of_quad / 2) - sin(angle_of_quad / 2))) + coordinates.y;
 
-	double quad_xpos4 = 61.0 * (cos(-angle) * length * cos(angle_of_quad / 2) - sin(-angle) * -length * sin(angle_of_quad / 2)) + coordinates.x;
-	double quad_ypos4 = 134.0 * (sin(-angle) * length * cos(angle_of_quad / 2) + cos(-angle) * -length * sin(angle_of_quad / 2)) + coordinates.y;
+	double quad_xpos4 = (cos(-angle) * length * cos(angle_of_quad / 2) - sin(-angle) * -length * sin(angle_of_quad / 2)) + coordinates.x;
+	double quad_ypos4 = (sin(-angle) * length * cos(angle_of_quad / 2) + cos(-angle) * -length * sin(angle_of_quad / 2)) + coordinates.y;
 	if (mode == 0) {
 		glBegin(GL_TRIANGLE_FAN);
 		glColor3f(point_ind_color.r, point_ind_color.g, point_ind_color.b);
@@ -274,78 +274,99 @@ void CRoboconCtrlView::DrawIndicator(GLCoord coordinates, GLColor point_ind_colo
 
 void CRoboconCtrlView::GLDrawScene()
 {
+	glMatrixMode(GL_PROJECTION);
+	glLoadIdentity();
+	gluOrtho2D(-8200.0, 8200.0, -4250.0, 4250.0);
+
+	glMatrixMode(GL_MODELVIEW);
+	glLoadIdentity();
+
 	glBegin(GL_QUADS);
-		glColor3f((103.0f / 255.0f), (196.0f / 255.0f), (100.0f / 255.0f));
+		// white background for gray zone
+		glColor3f((0.0f / 255.0f), (0.0f / 255.0f), (0.0f / 255.0f));
 
-		// Rectangle for game field
-		glVertex2f(-1.0f, -1.0f);
-		glVertex2f(-1.0f, 1.0f);
-		glVertex2f(1.0f, 1.0f);
-		glVertex2f(1.0f, -1.0f);
+		glVertex2f(-8200.0f, -4250.0f);
+		glVertex2f(-8200.0f, 4250.0f);
+		glVertex2f(8200.0f, 4250.0f);
+		glVertex2f(8200.0f, -4250.0f);
 
-		glColor3f((255.0f / 255.0f), (196.0f / 255.0f), (100.0f / 255.0f));
+		// Rectangle for gray zone
+		glColor3f((160.0f / 255.0f), (160.0f / 255.0f), (160.0f / 255.0f));
 
-		// Serving zones
-		glVertex2f(3.945f / 6.7f, 0.55f / 3.05f);
-		glVertex2f(3.945f / 6.7f, 2.57f / 3.05f);
-		glVertex2f(5.195f / 6.7f, 2.57f / 3.05f);
-		glVertex2f(5.195f / 6.7f, 0.55f / 3.05f);
+		glVertex2f(-8160.0f, -4210.0f);
+		glVertex2f(-8160.0f, 4210.0f);
+		glVertex2f(8160.0f, 4210.0f);
+		glVertex2f(8160.0f, -4210.0f);
 
-		glVertex2f(-3.945f / 6.7f, -0.55f / 3.05f);
-		glVertex2f(-3.945f / 6.7f, -2.57f / 3.05f);
-		glVertex2f(-5.195f / 6.7f, -2.57f / 3.05f);
-		glVertex2f(-5.195f / 6.7f, -0.55f / 3.05f);
+		glColor3f((255.0f / 255.0f), (255.0f / 255.0f), (255.0f / 255.0f));
+
+		// white line background
+		glVertex2f(-6700.0f, -3050.0f);
+		glVertex2f(-6700.0f, 3050.0f);
+		glVertex2f(6700.0f, 3050.0f);
+		glVertex2f(6700.0f, -3050.0f);
+		//game field
+		glColor3f((0.0f / 255.0f), (102.0f / 255.0f), (0.0f / 255.0f));
+
+		glVertex2f(6660.0f, 3010.0f);
+		glVertex2f(6660.0f, -3010.0f);
+		glVertex2f(-6660.0f, -3010.0f);
+		glVertex2f(-6660.0f, 3010.0f);
+
+		// yellow zones
+		glColor3f((255.0f / 255.0f), (255.0f / 255.0f), (0.0f / 255.0f));
+
+		glVertex2f(3945.0f, 550.0f);
+		glVertex2f(3945.0f, 2570.0f);
+		glVertex2f(5195.0f, 2570.0f);
+		glVertex2f(5195.0f, 550.0f);
+
+		glVertex2f(-3945.0f, -550.0f);
+		glVertex2f(-3945.0f, -2570.0f);
+		glVertex2f(-5195.0f, -2570.0f);
+		glVertex2f(-5195.0f, -550.0f);
+
 	glEnd();
 
-	// Drawing game field lines
 	glBegin(GL_LINES);
-		glColor3f(0.0f, 0.0f, 0.0f);
+		glLineWidth(2.0f);
+
+		glColor3f(1.0f, 1.0f, 1.0f);
 
 		// Serving lines
-		glVertex2f(2.0f / 6.7f, 1.0f);
-		glVertex2f(2.0f / 6.7f, -1.0f);
-		glVertex2f(-2.0f / 6.7f, 1.0f);
-		glVertex2f(-2.0f / 6.7f, -1.0f);
+		glVertex2f(2000.0f, 3050.0f);
+		glVertex2f(2000.0f, -3050.0f);
+		glVertex2f(-2000.0f, 3050.0f);
+		glVertex2f(-2000.0f, -3050.0f);
 
 		// Long service lines for doubles
-		glVertex2f(5.92f / 6.7f, 1.0f);
-		glVertex2f(5.92f / 6.7f, -1.0f);
-		glVertex2f(-5.92f / 6.7f, 1.0f);
-		glVertex2f(-5.92f / 6.7f, -1.0f);
+		glVertex2f(5920.0f, 3050.0f);
+		glVertex2f(5920.0f, -3050.0f);
+		glVertex2f(-5920.0f, 3050.0f);
+		glVertex2f(-5920.0f, -3050.0f);
 
+	
 		// Center lines
-		glVertex2f(-1.0f, 0.0f);
-		glVertex2f(-2.0f / 6.7f, 0.0f);
-		glVertex2f(1.0f, 0.0f);
-		glVertex2f(2.0f / 6.7f, 0.0f);
+		glVertex2f(-6700.0f, 0.0f);
+		glVertex2f(-2000.0f, 0.0f);
+		glVertex2f(6700.0f, 0.0f);
+		glVertex2f(2000.0f, 0.0f);
 
 		// Side lines for singles
-		glVertex2f(-1.0f, 2.57f / 3.05f);
-		glVertex2f(1.0f, 2.57f / 3.05f);
-		glVertex2f(-1.0f, -2.57f / 3.05f);
-		glVertex2f(1.0f, -2.57f / 3.05f);
+		glVertex2f(-6700.0f, 2570.0f);
+		glVertex2f(6700.0f, 2570.0f);
+		glVertex2f(-6700.0f, -2570.0f);
+		glVertex2f(6700.0f, -2570.0f);
 
 		glColor3f(1.0f, 0.0f, 0.0f);
 
-		glLineWidth(2.0f);
+		glVertex2f(0.0f, -3050.0f);
+		glVertex2f(0.0f, 3050.0f);
 
-		// Net
-		glVertex2f(0.0f, -1.0f);
-		glVertex2f(0.0f, 1.0f);
-		
 		glLineWidth(1.0f);
 
 	glEnd();
 
-	glLineWidth(2.0f);
-	glBegin(GL_LINE_LOOP);
-		// Game field border
-		glVertex2f(-1.0f, 1.0f);
-		glVertex2f(1.0f, 1.0f);
-		glVertex2f(1.0f, -1.0f);
-		glVertex2f(-1.0f, -1.0f);
-	glEnd();
-	glLineWidth(1.0f);
 	// Draw current position
 	if (current_pos.valid) {
 		GLColor point_ind = {
@@ -402,12 +423,13 @@ void CRoboconCtrlView::GLDrawScene()
 			robot_path.pop_front();
 		}
 		glBegin(GL_LINE_STRIP);
-			glColor3f(238.0f / 255.0f, 252.0f / 255.0f, 73.0f / 255.0f);
-			for (size_t i = 0; i < robot_path.size(); ++i) {
-				glVertex2f(robot_path[i].x, robot_path[i].y);
-			}
+		glColor3f(238.0f / 255.0f, 252.0f / 255.0f, 73.0f / 255.0f);
+		for (size_t i = 0; i < robot_path.size(); ++i) {
+			glVertex2f(robot_path[i].x, robot_path[i].y);
+		}
 		glEnd();
 	}
+
 }
 
 void CRoboconCtrlView::OnDraw(CDC* pDC)
@@ -524,8 +546,8 @@ void CRoboconCtrlView::OnLButtonDblClk(UINT nFlags, CPoint point)
 CRoboconCtrlView::GLCoord CRoboconCtrlView::ConvertGridCoordToGLCoord(GridCoord g)
 {
 	GLCoord r_pos;
-	r_pos.x = (float)(1.0 - (g.y / 6700.0));
-	r_pos.y = (float)(g.x / 3050.0);
+	r_pos.x = 6700.0f - g.y;
+	r_pos.y = g.x;
 	r_pos.angle = g.angle;
 	r_pos.valid = g.valid;
 
@@ -620,7 +642,7 @@ CRoboconCtrlDoc* CRoboconCtrlView::GetDocument() const // non-debug version is i
 
 void CRoboconCtrlView::OnSize(UINT nType, int cx, int cy)
 {
-	double ratio = 61.0 / 134.0;
+	double ratio = 85.0 / 164.0;
 	if ((cx * ratio) > (double)(cy)) {
 		gl_height = cy * 90 / 100;
 		gl_width = (int)round(gl_height / ratio);

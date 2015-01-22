@@ -214,9 +214,6 @@ std::string SerialIO::read()
 		return std::string();
 	}
 	CloseHandle(osRead.hEvent);
-	if (buffer[500] != '\0') {
-		OutputDebugString(_T("Oh"));
-	}
 	return std::string(buffer, dwBytesRead);
 }
 
