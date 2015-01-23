@@ -95,7 +95,8 @@
     <ClCompile Include="MouseClickDemo.cpp" />
     <ClCompile Include="Multithreading.cpp" />
     <ClCompile Include="ColourExtraction.cpp" />
-    <ClCompile Include="Source.cpp" />
+    <ClCompile Include="ShuttleTrack.cpp" />
+    <ClCompile Include="testing.cpp" />
     <ClCompile Include="TrackingTest.cpp">
       <AdditionalIncludeDirectories Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(OPENCV_DIR)\..\..\include;C:\</AdditionalIncludeDirectories>
     </ClCompile>
