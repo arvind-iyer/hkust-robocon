@@ -1,0 +1,846 @@
+Dependencies for Project 'STM32-FD-ADC', Target 'STM32-FD-ADC': (DO NOT MODIFY !)
+F (.\startup\startup_stm32f10x_md.s)(0x4D783CD2)(--cpu Cortex-M3 -g --apcs=interwork --pd "__MICROLIB SETA 1"-I "Z:\William On My Mac\motor_driver\RTE"-I C:\Keil_v5\ARM\PACK\Keil\STM32F1xx_DFP\1.0.5\Device\Include-I C:\Keil_v5\ARM\CMSIS\Include--pd "__UVISION_VERSION SETA 513" --pd "STM32F10X_MD SETA 1"-o .\obj\startup_stm32f10x_md.o --depend .\obj\startup_stm32f10x_md.d)
+F (.\user\main.c)(0x54C39BC0)(--c99 -c --cpu Cortex-M3 -D__MICROLIB -g -O0 --apcs=interwork --split_sections -I.\FWlib\inc -I.\user-I "Z:\William On My Mac\motor_driver\RTE"-I C:\Keil_v5\ARM\PACK\Keil\STM32F1xx_DFP\1.0.5\Device\Include-I C:\Keil_v5\ARM\CMSIS\Include-D__UVISION_VERSION="513" -DSTM32F10X_MD -DUSE_STDPERIPH_DRIVER -DSTM32F10X_MD-o .\obj\main.o --omf_browse .\obj\main.crf --depend .\obj\main.d)
+I (user\main.h)(0x54C355C2)
+I (C:\Keil_v5\ARM\ARMCC\include\stdio.h)(0x5475F300)
+I (C:\Keil_v5\ARM\PACK\Keil\STM32F1xx_DFP\1.0.5\Device\Include\stm32f10x.h)(0x528979E6)
+I (.\FWlib\inc\core_cm3.h)(0x4D523B58)
+I (C:\Keil_v5\ARM\ARMCC\include\stdint.h)(0x5475F300)
+I (C:\Keil_v5\ARM\PACK\Keil\STM32F1xx_DFP\1.0.5\Device\Include\system_stm32f10x.h)(0x4F1E2E3C)
+I (.\FWlib\inc\stm32f10x_conf.h)(0x54BD1A20)
+I (.\FWlib\inc\stm32f10x_adc.h)(0x4D783BB4)
+I (.\FWlib\inc\stm32f10x_bkp.h)(0x4D783BB4)
+I (.\FWlib\inc\stm32f10x_can.h)(0x4D783BB4)
+I (.\FWlib\inc\stm32f10x_cec.h)(0x4D783BB4)
+I (.\FWlib\inc\stm32f10x_crc.h)(0x4D783BB4)
+I (.\FWlib\inc\stm32f10x_dac.h)(0x4D783BB4)
+I (.\FWlib\inc\stm32f10x_dbgmcu.h)(0x4D783BB4)
+I (.\FWlib\inc\stm32f10x_dma.h)(0x4D783BB4)
+I (.\FWlib\inc\stm32f10x_exti.h)(0x4D783BB4)
+I (.\FWlib\inc\stm32f10x_flash.h)(0x4D783BB4)
+I (.\FWlib\inc\stm32f10x_fsmc.h)(0x4D783BB4)
+I (.\FWlib\inc\stm32f10x_gpio.h)(0x4D783BB4)
+I (.\FWlib\inc\stm32f10x_i2c.h)(0x4D783BB4)
+I (.\FWlib\inc\stm32f10x_iwdg.h)(0x4D783BB4)
+I (.\FWlib\inc\stm32f10x_pwr.h)(0x4D783BB4)
+I (.\FWlib\inc\stm32f10x_rcc.h)(0x4D783BB4)
+I (.\FWlib\inc\stm32f10x_rtc.h)(0x4D783BB4)
+I (.\FWlib\inc\stm32f10x_sdio.h)(0x4D783BB4)
+I (.\FWlib\inc\stm32f10x_spi.h)(0x4D783BB4)
+I (.\FWlib\inc\stm32f10x_tim.h)(0x4D783BB4)
+I (.\FWlib\inc\stm32f10x_usart.h)(0x4D783BB4)
+I (.\FWlib\inc\stm32f10x_wwdg.h)(0x4D783BB4)
+I (.\FWlib\inc\misc.h)(0x4D783BB4)
+I (user\system.h)(0x54C35D3A)
+I (user\ticks.h)(0x54C39B41)
+I (user\uart.h)(0x54AE424C)
+I (C:\Keil_v5\ARM\ARMCC\include\stdarg.h)(0x5475F2FA)
+I (user\velocity.h)(0x54C372F1)
+I (user\approx_math.h)(0x54BCCB18)
+I (user\motor.h)(0x54C37CF8)
+I (C:\Keil_v5\ARM\ARMCC\include\stdbool.h)(0x5475F300)
+I (user\encoder.h)(0x54C375A9)
+I (user\led.h)(0x54C39BC0)
+I (user\can.h)(0x54BCCB18)
+I (user\can_protocol.h)(0x54BF31BA)
+I (user\can_motor.h)(0x54C37DE0)
+F (.\user\system.c)(0x54C37963)(--c99 -c --cpu Cortex-M3 -D__MICROLIB -g -O0 --apcs=interwork --split_sections -I.\FWlib\inc -I.\user-I "Z:\William On My Mac\motor_driver\RTE"-I C:\Keil_v5\ARM\PACK\Keil\STM32F1xx_DFP\1.0.5\Device\Include-I C:\Keil_v5\ARM\CMSIS\Include-D__UVISION_VERSION="513" -DSTM32F10X_MD -DUSE_STDPERIPH_DRIVER -DSTM32F10X_MD-o .\obj\system.o --omf_browse .\obj\system.crf --depend .\obj\system.d)
+I (user\system.h)(0x54C35D3A)
+I (C:\Keil_v5\ARM\ARMCC\include\stdio.h)(0x5475F300)
+I (C:\Keil_v5\ARM\PACK\Keil\STM32F1xx_DFP\1.0.5\Device\Include\stm32f10x.h)(0x528979E6)
+I (.\FWlib\inc\core_cm3.h)(0x4D523B58)
+I (C:\Keil_v5\ARM\ARMCC\include\stdint.h)(0x5475F300)
+I (C:\Keil_v5\ARM\PACK\Keil\STM32F1xx_DFP\1.0.5\Device\Include\system_stm32f10x.h)(0x4F1E2E3C)
+I (.\FWlib\inc\stm32f10x_conf.h)(0x54BD1A20)
+I (.\FWlib\inc\stm32f10x_adc.h)(0x4D783BB4)
+I (.\FWlib\inc\stm32f10x_bkp.h)(0x4D783BB4)
+I (.\FWlib\inc\stm32f10x_can.h)(0x4D783BB4)
+I (.\FWlib\inc\stm32f10x_cec.h)(0x4D783BB4)
+I (.\FWlib\inc\stm32f10x_crc.h)(0x4D783BB4)
+I (.\FWlib\inc\stm32f10x_dac.h)(0x4D783BB4)
+I (.\FWlib\inc\stm32f10x_dbgmcu.h)(0x4D783BB4)
+I (.\FWlib\inc\stm32f10x_dma.h)(0x4D783BB4)
+I (.\FWlib\inc\stm32f10x_exti.h)(0x4D783BB4)
+I (.\FWlib\inc\stm32f10x_flash.h)(0x4D783BB4)
+I (.\FWlib\inc\stm32f10x_fsmc.h)(0x4D783BB4)
+I (.\FWlib\inc\stm32f10x_gpio.h)(0x4D783BB4)
+I (.\FWlib\inc\stm32f10x_i2c.h)(0x4D783BB4)
+I (.\FWlib\inc\stm32f10x_iwdg.h)(0x4D783BB4)
+I (.\FWlib\inc\stm32f10x_pwr.h)(0x4D783BB4)
+I (.\FWlib\inc\stm32f10x_rcc.h)(0x4D783BB4)
+I (.\FWlib\inc\stm32f10x_rtc.h)(0x4D783BB4)
+I (.\FWlib\inc\stm32f10x_sdio.h)(0x4D783BB4)
+I (.\FWlib\inc\stm32f10x_spi.h)(0x4D783BB4)
+I (.\FWlib\inc\stm32f10x_tim.h)(0x4D783BB4)
+I (.\FWlib\inc\stm32f10x_usart.h)(0x4D783BB4)
+I (.\FWlib\inc\stm32f10x_wwdg.h)(0x4D783BB4)
+I (.\FWlib\inc\misc.h)(0x4D783BB4)
+I (user\ticks.h)(0x54C39B41)
+I (user\uart.h)(0x54AE424C)
+I (C:\Keil_v5\ARM\ARMCC\include\stdarg.h)(0x5475F2FA)
+I (user\velocity.h)(0x54C372F1)
+I (user\approx_math.h)(0x54BCCB18)
+I (user\motor.h)(0x54C37CF8)
+I (C:\Keil_v5\ARM\ARMCC\include\stdbool.h)(0x5475F300)
+I (user\encoder.h)(0x54C375A9)
+I (user\led.h)(0x54C39BC0)
+I (user\can.h)(0x54BCCB18)
+I (user\can_protocol.h)(0x54BF31BA)
+I (user\can_motor.h)(0x54C37DE0)
+F (.\user\stm32f10x_it.c)(0x54BFBC98)(--c99 -c --cpu Cortex-M3 -D__MICROLIB -g -O0 --apcs=interwork --split_sections -I.\FWlib\inc -I.\user-I "Z:\William On My Mac\motor_driver\RTE"-I C:\Keil_v5\ARM\PACK\Keil\STM32F1xx_DFP\1.0.5\Device\Include-I C:\Keil_v5\ARM\CMSIS\Include-D__UVISION_VERSION="513" -DSTM32F10X_MD -DUSE_STDPERIPH_DRIVER -DSTM32F10X_MD-o .\obj\stm32f10x_it.o --omf_browse .\obj\stm32f10x_it.crf --depend .\obj\stm32f10x_it.d)
+I (user\stm32f10x_it.h)(0x54BD1A21)
+I (C:\Keil_v5\ARM\PACK\Keil\STM32F1xx_DFP\1.0.5\Device\Include\stm32f10x.h)(0x528979E6)
+I (.\FWlib\inc\core_cm3.h)(0x4D523B58)
+I (C:\Keil_v5\ARM\ARMCC\include\stdint.h)(0x5475F300)
+I (C:\Keil_v5\ARM\PACK\Keil\STM32F1xx_DFP\1.0.5\Device\Include\system_stm32f10x.h)(0x4F1E2E3C)
+I (.\FWlib\inc\stm32f10x_conf.h)(0x54BD1A20)
+I (.\FWlib\inc\stm32f10x_adc.h)(0x4D783BB4)
+I (.\FWlib\inc\stm32f10x_bkp.h)(0x4D783BB4)
+I (.\FWlib\inc\stm32f10x_can.h)(0x4D783BB4)
+I (.\FWlib\inc\stm32f10x_cec.h)(0x4D783BB4)
+I (.\FWlib\inc\stm32f10x_crc.h)(0x4D783BB4)
+I (.\FWlib\inc\stm32f10x_dac.h)(0x4D783BB4)
+I (.\FWlib\inc\stm32f10x_dbgmcu.h)(0x4D783BB4)
+I (.\FWlib\inc\stm32f10x_dma.h)(0x4D783BB4)
+I (.\FWlib\inc\stm32f10x_exti.h)(0x4D783BB4)
+I (.\FWlib\inc\stm32f10x_flash.h)(0x4D783BB4)
+I (.\FWlib\inc\stm32f10x_fsmc.h)(0x4D783BB4)
+I (.\FWlib\inc\stm32f10x_gpio.h)(0x4D783BB4)
+I (.\FWlib\inc\stm32f10x_i2c.h)(0x4D783BB4)
+I (.\FWlib\inc\stm32f10x_iwdg.h)(0x4D783BB4)
+I (.\FWlib\inc\stm32f10x_pwr.h)(0x4D783BB4)
+I (.\FWlib\inc\stm32f10x_rcc.h)(0x4D783BB4)
+I (.\FWlib\inc\stm32f10x_rtc.h)(0x4D783BB4)
+I (.\FWlib\inc\stm32f10x_sdio.h)(0x4D783BB4)
+I (.\FWlib\inc\stm32f10x_spi.h)(0x4D783BB4)
+I (.\FWlib\inc\stm32f10x_tim.h)(0x4D783BB4)
+I (.\FWlib\inc\stm32f10x_usart.h)(0x4D783BB4)
+I (.\FWlib\inc\stm32f10x_wwdg.h)(0x4D783BB4)
+I (.\FWlib\inc\misc.h)(0x4D783BB4)
+I (user\velocity.h)(0x54C372F1)
+I (user\approx_math.h)(0x54BCCB18)
+I (user\motor.h)(0x54C37CF8)
+I (C:\Keil_v5\ARM\ARMCC\include\stdbool.h)(0x5475F300)
+I (user\encoder.h)(0x54C375A9)
+F (.\user\ticks.c)(0x54C39668)(--c99 -c --cpu Cortex-M3 -D__MICROLIB -g -O0 --apcs=interwork --split_sections -I.\FWlib\inc -I.\user-I "Z:\William On My Mac\motor_driver\RTE"-I C:\Keil_v5\ARM\PACK\Keil\STM32F1xx_DFP\1.0.5\Device\Include-I C:\Keil_v5\ARM\CMSIS\Include-D__UVISION_VERSION="513" -DSTM32F10X_MD -DUSE_STDPERIPH_DRIVER -DSTM32F10X_MD-o .\obj\ticks.o --omf_browse .\obj\ticks.crf --depend .\obj\ticks.d)
+I (user\ticks.h)(0x54C39B41)
+I (.\FWlib\inc\stm32f10x_tim.h)(0x4D783BB4)
+I (C:\Keil_v5\ARM\PACK\Keil\STM32F1xx_DFP\1.0.5\Device\Include\stm32f10x.h)(0x528979E6)
+I (.\FWlib\inc\core_cm3.h)(0x4D523B58)
+I (C:\Keil_v5\ARM\ARMCC\include\stdint.h)(0x5475F300)
+I (C:\Keil_v5\ARM\PACK\Keil\STM32F1xx_DFP\1.0.5\Device\Include\system_stm32f10x.h)(0x4F1E2E3C)
+I (.\FWlib\inc\stm32f10x_conf.h)(0x54BD1A20)
+I (.\FWlib\inc\stm32f10x_adc.h)(0x4D783BB4)
+I (.\FWlib\inc\stm32f10x_bkp.h)(0x4D783BB4)
+I (.\FWlib\inc\stm32f10x_can.h)(0x4D783BB4)
+I (.\FWlib\inc\stm32f10x_cec.h)(0x4D783BB4)
+I (.\FWlib\inc\stm32f10x_crc.h)(0x4D783BB4)
+I (.\FWlib\inc\stm32f10x_dac.h)(0x4D783BB4)
+I (.\FWlib\inc\stm32f10x_dbgmcu.h)(0x4D783BB4)
+I (.\FWlib\inc\stm32f10x_dma.h)(0x4D783BB4)
+I (.\FWlib\inc\stm32f10x_exti.h)(0x4D783BB4)
+I (.\FWlib\inc\stm32f10x_flash.h)(0x4D783BB4)
+I (.\FWlib\inc\stm32f10x_fsmc.h)(0x4D783BB4)
+I (.\FWlib\inc\stm32f10x_gpio.h)(0x4D783BB4)
+I (.\FWlib\inc\stm32f10x_i2c.h)(0x4D783BB4)
+I (.\FWlib\inc\stm32f10x_iwdg.h)(0x4D783BB4)
+I (.\FWlib\inc\stm32f10x_pwr.h)(0x4D783BB4)
+I (.\FWlib\inc\stm32f10x_rcc.h)(0x4D783BB4)
+I (.\FWlib\inc\stm32f10x_rtc.h)(0x4D783BB4)
+I (.\FWlib\inc\stm32f10x_sdio.h)(0x4D783BB4)
+I (.\FWlib\inc\stm32f10x_spi.h)(0x4D783BB4)
+I (.\FWlib\inc\stm32f10x_usart.h)(0x4D783BB4)
+I (.\FWlib\inc\stm32f10x_wwdg.h)(0x4D783BB4)
+I (.\FWlib\inc\misc.h)(0x4D783BB4)
+F (.\user\uart.c)(0x54AE424C)(--c99 -c --cpu Cortex-M3 -D__MICROLIB -g -O0 --apcs=interwork --split_sections -I.\FWlib\inc -I.\user-I "Z:\William On My Mac\motor_driver\RTE"-I C:\Keil_v5\ARM\PACK\Keil\STM32F1xx_DFP\1.0.5\Device\Include-I C:\Keil_v5\ARM\CMSIS\Include-D__UVISION_VERSION="513" -DSTM32F10X_MD -DUSE_STDPERIPH_DRIVER -DSTM32F10X_MD-o .\obj\uart.o --omf_browse .\obj\uart.crf --depend .\obj\uart.d)
+I (user\uart.h)(0x54AE424C)
+I (.\FWlib\inc\stm32f10x_gpio.h)(0x4D783BB4)
+I (C:\Keil_v5\ARM\PACK\Keil\STM32F1xx_DFP\1.0.5\Device\Include\stm32f10x.h)(0x528979E6)
+I (.\FWlib\inc\core_cm3.h)(0x4D523B58)
+I (C:\Keil_v5\ARM\ARMCC\include\stdint.h)(0x5475F300)
+I (C:\Keil_v5\ARM\PACK\Keil\STM32F1xx_DFP\1.0.5\Device\Include\system_stm32f10x.h)(0x4F1E2E3C)
+I (.\FWlib\inc\stm32f10x_conf.h)(0x54BD1A20)
+I (.\FWlib\inc\stm32f10x_adc.h)(0x4D783BB4)
+I (.\FWlib\inc\stm32f10x_bkp.h)(0x4D783BB4)
+I (.\FWlib\inc\stm32f10x_can.h)(0x4D783BB4)
+I (.\FWlib\inc\stm32f10x_cec.h)(0x4D783BB4)
+I (.\FWlib\inc\stm32f10x_crc.h)(0x4D783BB4)
+I (.\FWlib\inc\stm32f10x_dac.h)(0x4D783BB4)
+I (.\FWlib\inc\stm32f10x_dbgmcu.h)(0x4D783BB4)
+I (.\FWlib\inc\stm32f10x_dma.h)(0x4D783BB4)
+I (.\FWlib\inc\stm32f10x_exti.h)(0x4D783BB4)
+I (.\FWlib\inc\stm32f10x_flash.h)(0x4D783BB4)
+I (.\FWlib\inc\stm32f10x_fsmc.h)(0x4D783BB4)
+I (.\FWlib\inc\stm32f10x_i2c.h)(0x4D783BB4)
+I (.\FWlib\inc\stm32f10x_iwdg.h)(0x4D783BB4)
+I (.\FWlib\inc\stm32f10x_pwr.h)(0x4D783BB4)
+I (.\FWlib\inc\stm32f10x_rcc.h)(0x4D783BB4)
+I (.\FWlib\inc\stm32f10x_rtc.h)(0x4D783BB4)
+I (.\FWlib\inc\stm32f10x_sdio.h)(0x4D783BB4)
+I (.\FWlib\inc\stm32f10x_spi.h)(0x4D783BB4)
+I (.\FWlib\inc\stm32f10x_tim.h)(0x4D783BB4)
+I (.\FWlib\inc\stm32f10x_usart.h)(0x4D783BB4)
+I (.\FWlib\inc\stm32f10x_wwdg.h)(0x4D783BB4)
+I (.\FWlib\inc\misc.h)(0x4D783BB4)
+I (C:\Keil_v5\ARM\ARMCC\include\stdio.h)(0x5475F300)
+I (C:\Keil_v5\ARM\ARMCC\include\stdarg.h)(0x5475F2FA)
+F (.\user\approx_math.c)(0x54BCCB18)(--c99 -c --cpu Cortex-M3 -D__MICROLIB -g -O0 --apcs=interwork --split_sections -I.\FWlib\inc -I.\user-I "Z:\William On My Mac\motor_driver\RTE"-I C:\Keil_v5\ARM\PACK\Keil\STM32F1xx_DFP\1.0.5\Device\Include-I C:\Keil_v5\ARM\CMSIS\Include-D__UVISION_VERSION="513" -DSTM32F10X_MD -DUSE_STDPERIPH_DRIVER -DSTM32F10X_MD-o .\obj\approx_math.o --omf_browse .\obj\approx_math.crf --depend .\obj\approx_math.d)
+I (user\approx_math.h)(0x54BCCB18)
+I (C:\Keil_v5\ARM\PACK\Keil\STM32F1xx_DFP\1.0.5\Device\Include\stm32f10x.h)(0x528979E6)
+I (.\FWlib\inc\core_cm3.h)(0x4D523B58)
+I (C:\Keil_v5\ARM\ARMCC\include\stdint.h)(0x5475F300)
+I (C:\Keil_v5\ARM\PACK\Keil\STM32F1xx_DFP\1.0.5\Device\Include\system_stm32f10x.h)(0x4F1E2E3C)
+I (.\FWlib\inc\stm32f10x_conf.h)(0x54BD1A20)
+I (.\FWlib\inc\stm32f10x_adc.h)(0x4D783BB4)
+I (.\FWlib\inc\stm32f10x_bkp.h)(0x4D783BB4)
+I (.\FWlib\inc\stm32f10x_can.h)(0x4D783BB4)
+I (.\FWlib\inc\stm32f10x_cec.h)(0x4D783BB4)
+I (.\FWlib\inc\stm32f10x_crc.h)(0x4D783BB4)
+I (.\FWlib\inc\stm32f10x_dac.h)(0x4D783BB4)
+I (.\FWlib\inc\stm32f10x_dbgmcu.h)(0x4D783BB4)
+I (.\FWlib\inc\stm32f10x_dma.h)(0x4D783BB4)
+I (.\FWlib\inc\stm32f10x_exti.h)(0x4D783BB4)
+I (.\FWlib\inc\stm32f10x_flash.h)(0x4D783BB4)
+I (.\FWlib\inc\stm32f10x_fsmc.h)(0x4D783BB4)
+I (.\FWlib\inc\stm32f10x_gpio.h)(0x4D783BB4)
+I (.\FWlib\inc\stm32f10x_i2c.h)(0x4D783BB4)
+I (.\FWlib\inc\stm32f10x_iwdg.h)(0x4D783BB4)
+I (.\FWlib\inc\stm32f10x_pwr.h)(0x4D783BB4)
+I (.\FWlib\inc\stm32f10x_rcc.h)(0x4D783BB4)
+I (.\FWlib\inc\stm32f10x_rtc.h)(0x4D783BB4)
+I (.\FWlib\inc\stm32f10x_sdio.h)(0x4D783BB4)
+I (.\FWlib\inc\stm32f10x_spi.h)(0x4D783BB4)
+I (.\FWlib\inc\stm32f10x_tim.h)(0x4D783BB4)
+I (.\FWlib\inc\stm32f10x_usart.h)(0x4D783BB4)
+I (.\FWlib\inc\stm32f10x_wwdg.h)(0x4D783BB4)
+I (.\FWlib\inc\misc.h)(0x4D783BB4)
+F (.\user\can.c)(0x54C34B10)(--c99 -c --cpu Cortex-M3 -D__MICROLIB -g -O0 --apcs=interwork --split_sections -I.\FWlib\inc -I.\user-I "Z:\William On My Mac\motor_driver\RTE"-I C:\Keil_v5\ARM\PACK\Keil\STM32F1xx_DFP\1.0.5\Device\Include-I C:\Keil_v5\ARM\CMSIS\Include-D__UVISION_VERSION="513" -DSTM32F10X_MD -DUSE_STDPERIPH_DRIVER -DSTM32F10X_MD-o .\obj\can.o --omf_browse .\obj\can.crf --depend .\obj\can.d)
+I (user\can.h)(0x54BCCB18)
+I (C:\Keil_v5\ARM\ARMCC\include\stdio.h)(0x5475F300)
+I (C:\Keil_v5\ARM\PACK\Keil\STM32F1xx_DFP\1.0.5\Device\Include\stm32f10x.h)(0x528979E6)
+I (.\FWlib\inc\core_cm3.h)(0x4D523B58)
+I (C:\Keil_v5\ARM\ARMCC\include\stdint.h)(0x5475F300)
+I (C:\Keil_v5\ARM\PACK\Keil\STM32F1xx_DFP\1.0.5\Device\Include\system_stm32f10x.h)(0x4F1E2E3C)
+I (.\FWlib\inc\stm32f10x_conf.h)(0x54BD1A20)
+I (.\FWlib\inc\stm32f10x_adc.h)(0x4D783BB4)
+I (.\FWlib\inc\stm32f10x_bkp.h)(0x4D783BB4)
+I (.\FWlib\inc\stm32f10x_can.h)(0x4D783BB4)
+I (.\FWlib\inc\stm32f10x_cec.h)(0x4D783BB4)
+I (.\FWlib\inc\stm32f10x_crc.h)(0x4D783BB4)
+I (.\FWlib\inc\stm32f10x_dac.h)(0x4D783BB4)
+I (.\FWlib\inc\stm32f10x_dbgmcu.h)(0x4D783BB4)
+I (.\FWlib\inc\stm32f10x_dma.h)(0x4D783BB4)
+I (.\FWlib\inc\stm32f10x_exti.h)(0x4D783BB4)
+I (.\FWlib\inc\stm32f10x_flash.h)(0x4D783BB4)
+I (.\FWlib\inc\stm32f10x_fsmc.h)(0x4D783BB4)
+I (.\FWlib\inc\stm32f10x_gpio.h)(0x4D783BB4)
+I (.\FWlib\inc\stm32f10x_i2c.h)(0x4D783BB4)
+I (.\FWlib\inc\stm32f10x_iwdg.h)(0x4D783BB4)
+I (.\FWlib\inc\stm32f10x_pwr.h)(0x4D783BB4)
+I (.\FWlib\inc\stm32f10x_rcc.h)(0x4D783BB4)
+I (.\FWlib\inc\stm32f10x_rtc.h)(0x4D783BB4)
+I (.\FWlib\inc\stm32f10x_sdio.h)(0x4D783BB4)
+I (.\FWlib\inc\stm32f10x_spi.h)(0x4D783BB4)
+I (.\FWlib\inc\stm32f10x_tim.h)(0x4D783BB4)
+I (.\FWlib\inc\stm32f10x_usart.h)(0x4D783BB4)
+I (.\FWlib\inc\stm32f10x_wwdg.h)(0x4D783BB4)
+I (.\FWlib\inc\misc.h)(0x4D783BB4)
+F (.\user\can_motor.c)(0x54BF8027)(--c99 -c --cpu Cortex-M3 -D__MICROLIB -g -O0 --apcs=interwork --split_sections -I.\FWlib\inc -I.\user-I "Z:\William On My Mac\motor_driver\RTE"-I C:\Keil_v5\ARM\PACK\Keil\STM32F1xx_DFP\1.0.5\Device\Include-I C:\Keil_v5\ARM\CMSIS\Include-D__UVISION_VERSION="513" -DSTM32F10X_MD -DUSE_STDPERIPH_DRIVER -DSTM32F10X_MD-o .\obj\can_motor.o --omf_browse .\obj\can_motor.crf --depend .\obj\can_motor.d)
+I (user\can_motor.h)(0x54C37DE0)
+I (user\can.h)(0x54BCCB18)
+I (C:\Keil_v5\ARM\ARMCC\include\stdio.h)(0x5475F300)
+I (C:\Keil_v5\ARM\PACK\Keil\STM32F1xx_DFP\1.0.5\Device\Include\stm32f10x.h)(0x528979E6)
+I (.\FWlib\inc\core_cm3.h)(0x4D523B58)
+I (C:\Keil_v5\ARM\ARMCC\include\stdint.h)(0x5475F300)
+I (C:\Keil_v5\ARM\PACK\Keil\STM32F1xx_DFP\1.0.5\Device\Include\system_stm32f10x.h)(0x4F1E2E3C)
+I (.\FWlib\inc\stm32f10x_conf.h)(0x54BD1A20)
+I (.\FWlib\inc\stm32f10x_adc.h)(0x4D783BB4)
+I (.\FWlib\inc\stm32f10x_bkp.h)(0x4D783BB4)
+I (.\FWlib\inc\stm32f10x_can.h)(0x4D783BB4)
+I (.\FWlib\inc\stm32f10x_cec.h)(0x4D783BB4)
+I (.\FWlib\inc\stm32f10x_crc.h)(0x4D783BB4)
+I (.\FWlib\inc\stm32f10x_dac.h)(0x4D783BB4)
+I (.\FWlib\inc\stm32f10x_dbgmcu.h)(0x4D783BB4)
+I (.\FWlib\inc\stm32f10x_dma.h)(0x4D783BB4)
+I (.\FWlib\inc\stm32f10x_exti.h)(0x4D783BB4)
+I (.\FWlib\inc\stm32f10x_flash.h)(0x4D783BB4)
+I (.\FWlib\inc\stm32f10x_fsmc.h)(0x4D783BB4)
+I (.\FWlib\inc\stm32f10x_gpio.h)(0x4D783BB4)
+I (.\FWlib\inc\stm32f10x_i2c.h)(0x4D783BB4)
+I (.\FWlib\inc\stm32f10x_iwdg.h)(0x4D783BB4)
+I (.\FWlib\inc\stm32f10x_pwr.h)(0x4D783BB4)
+I (.\FWlib\inc\stm32f10x_rcc.h)(0x4D783BB4)
+I (.\FWlib\inc\stm32f10x_rtc.h)(0x4D783BB4)
+I (.\FWlib\inc\stm32f10x_sdio.h)(0x4D783BB4)
+I (.\FWlib\inc\stm32f10x_spi.h)(0x4D783BB4)
+I (.\FWlib\inc\stm32f10x_tim.h)(0x4D783BB4)
+I (.\FWlib\inc\stm32f10x_usart.h)(0x4D783BB4)
+I (.\FWlib\inc\stm32f10x_wwdg.h)(0x4D783BB4)
+I (.\FWlib\inc\misc.h)(0x4D783BB4)
+I (user\can_protocol.h)(0x54BF31BA)
+I (user\ticks.h)(0x54C39B41)
+I (user\uart.h)(0x54AE424C)
+I (C:\Keil_v5\ARM\ARMCC\include\stdarg.h)(0x5475F2FA)
+I (user\velocity.h)(0x54C372F1)
+I (user\approx_math.h)(0x54BCCB18)
+I (user\motor.h)(0x54C37CF8)
+I (C:\Keil_v5\ARM\ARMCC\include\stdbool.h)(0x5475F300)
+I (user\encoder.h)(0x54C375A9)
+F (.\user\can_protocol.c)(0x54BF6247)(--c99 -c --cpu Cortex-M3 -D__MICROLIB -g -O0 --apcs=interwork --split_sections -I.\FWlib\inc -I.\user-I "Z:\William On My Mac\motor_driver\RTE"-I C:\Keil_v5\ARM\PACK\Keil\STM32F1xx_DFP\1.0.5\Device\Include-I C:\Keil_v5\ARM\CMSIS\Include-D__UVISION_VERSION="513" -DSTM32F10X_MD -DUSE_STDPERIPH_DRIVER -DSTM32F10X_MD-o .\obj\can_protocol.o --omf_browse .\obj\can_protocol.crf --depend .\obj\can_protocol.d)
+I (user\can_protocol.h)(0x54BF31BA)
+I (user\ticks.h)(0x54C39B41)
+I (.\FWlib\inc\stm32f10x_tim.h)(0x4D783BB4)
+I (C:\Keil_v5\ARM\PACK\Keil\STM32F1xx_DFP\1.0.5\Device\Include\stm32f10x.h)(0x528979E6)
+I (.\FWlib\inc\core_cm3.h)(0x4D523B58)
+I (C:\Keil_v5\ARM\ARMCC\include\stdint.h)(0x5475F300)
+I (C:\Keil_v5\ARM\PACK\Keil\STM32F1xx_DFP\1.0.5\Device\Include\system_stm32f10x.h)(0x4F1E2E3C)
+I (.\FWlib\inc\stm32f10x_conf.h)(0x54BD1A20)
+I (.\FWlib\inc\stm32f10x_adc.h)(0x4D783BB4)
+I (.\FWlib\inc\stm32f10x_bkp.h)(0x4D783BB4)
+I (.\FWlib\inc\stm32f10x_can.h)(0x4D783BB4)
+I (.\FWlib\inc\stm32f10x_cec.h)(0x4D783BB4)
+I (.\FWlib\inc\stm32f10x_crc.h)(0x4D783BB4)
+I (.\FWlib\inc\stm32f10x_dac.h)(0x4D783BB4)
+I (.\FWlib\inc\stm32f10x_dbgmcu.h)(0x4D783BB4)
+I (.\FWlib\inc\stm32f10x_dma.h)(0x4D783BB4)
+I (.\FWlib\inc\stm32f10x_exti.h)(0x4D783BB4)
+I (.\FWlib\inc\stm32f10x_flash.h)(0x4D783BB4)
+I (.\FWlib\inc\stm32f10x_fsmc.h)(0x4D783BB4)
+I (.\FWlib\inc\stm32f10x_gpio.h)(0x4D783BB4)
+I (.\FWlib\inc\stm32f10x_i2c.h)(0x4D783BB4)
+I (.\FWlib\inc\stm32f10x_iwdg.h)(0x4D783BB4)
+I (.\FWlib\inc\stm32f10x_pwr.h)(0x4D783BB4)
+I (.\FWlib\inc\stm32f10x_rcc.h)(0x4D783BB4)
+I (.\FWlib\inc\stm32f10x_rtc.h)(0x4D783BB4)
+I (.\FWlib\inc\stm32f10x_sdio.h)(0x4D783BB4)
+I (.\FWlib\inc\stm32f10x_spi.h)(0x4D783BB4)
+I (.\FWlib\inc\stm32f10x_usart.h)(0x4D783BB4)
+I (.\FWlib\inc\stm32f10x_wwdg.h)(0x4D783BB4)
+I (.\FWlib\inc\misc.h)(0x4D783BB4)
+I (user\can.h)(0x54BCCB18)
+I (C:\Keil_v5\ARM\ARMCC\include\stdio.h)(0x5475F300)
+I (user\uart.h)(0x54AE424C)
+I (C:\Keil_v5\ARM\ARMCC\include\stdarg.h)(0x5475F2FA)
+F (.\user\velocity.c)(0x54C39AA8)(--c99 -c --cpu Cortex-M3 -D__MICROLIB -g -O0 --apcs=interwork --split_sections -I.\FWlib\inc -I.\user-I "Z:\William On My Mac\motor_driver\RTE"-I C:\Keil_v5\ARM\PACK\Keil\STM32F1xx_DFP\1.0.5\Device\Include-I C:\Keil_v5\ARM\CMSIS\Include-D__UVISION_VERSION="513" -DSTM32F10X_MD -DUSE_STDPERIPH_DRIVER -DSTM32F10X_MD-o .\obj\velocity.o --omf_browse .\obj\velocity.crf --depend .\obj\velocity.d)
+I (user\velocity.h)(0x54C372F1)
+I (C:\Keil_v5\ARM\PACK\Keil\STM32F1xx_DFP\1.0.5\Device\Include\stm32f10x.h)(0x528979E6)
+I (.\FWlib\inc\core_cm3.h)(0x4D523B58)
+I (C:\Keil_v5\ARM\ARMCC\include\stdint.h)(0x5475F300)
+I (C:\Keil_v5\ARM\PACK\Keil\STM32F1xx_DFP\1.0.5\Device\Include\system_stm32f10x.h)(0x4F1E2E3C)
+I (.\FWlib\inc\stm32f10x_conf.h)(0x54BD1A20)
+I (.\FWlib\inc\stm32f10x_adc.h)(0x4D783BB4)
+I (.\FWlib\inc\stm32f10x_bkp.h)(0x4D783BB4)
+I (.\FWlib\inc\stm32f10x_can.h)(0x4D783BB4)
+I (.\FWlib\inc\stm32f10x_cec.h)(0x4D783BB4)
+I (.\FWlib\inc\stm32f10x_crc.h)(0x4D783BB4)
+I (.\FWlib\inc\stm32f10x_dac.h)(0x4D783BB4)
+I (.\FWlib\inc\stm32f10x_dbgmcu.h)(0x4D783BB4)
+I (.\FWlib\inc\stm32f10x_dma.h)(0x4D783BB4)
+I (.\FWlib\inc\stm32f10x_exti.h)(0x4D783BB4)
+I (.\FWlib\inc\stm32f10x_flash.h)(0x4D783BB4)
+I (.\FWlib\inc\stm32f10x_fsmc.h)(0x4D783BB4)
+I (.\FWlib\inc\stm32f10x_gpio.h)(0x4D783BB4)
+I (.\FWlib\inc\stm32f10x_i2c.h)(0x4D783BB4)
+I (.\FWlib\inc\stm32f10x_iwdg.h)(0x4D783BB4)
+I (.\FWlib\inc\stm32f10x_pwr.h)(0x4D783BB4)
+I (.\FWlib\inc\stm32f10x_rcc.h)(0x4D783BB4)
+I (.\FWlib\inc\stm32f10x_rtc.h)(0x4D783BB4)
+I (.\FWlib\inc\stm32f10x_sdio.h)(0x4D783BB4)
+I (.\FWlib\inc\stm32f10x_spi.h)(0x4D783BB4)
+I (.\FWlib\inc\stm32f10x_tim.h)(0x4D783BB4)
+I (.\FWlib\inc\stm32f10x_usart.h)(0x4D783BB4)
+I (.\FWlib\inc\stm32f10x_wwdg.h)(0x4D783BB4)
+I (.\FWlib\inc\misc.h)(0x4D783BB4)
+I (user\approx_math.h)(0x54BCCB18)
+I (user\motor.h)(0x54C37CF8)
+I (C:\Keil_v5\ARM\ARMCC\include\stdbool.h)(0x5475F300)
+I (user\encoder.h)(0x54C375A9)
+F (.\user\led.c)(0x54C398C8)(--c99 -c --cpu Cortex-M3 -D__MICROLIB -g -O0 --apcs=interwork --split_sections -I.\FWlib\inc -I.\user-I "Z:\William On My Mac\motor_driver\RTE"-I C:\Keil_v5\ARM\PACK\Keil\STM32F1xx_DFP\1.0.5\Device\Include-I C:\Keil_v5\ARM\CMSIS\Include-D__UVISION_VERSION="513" -DSTM32F10X_MD -DUSE_STDPERIPH_DRIVER -DSTM32F10X_MD-o .\obj\led.o --omf_browse .\obj\led.crf --depend .\obj\led.d)
+I (user\led.h)(0x54C39BC0)
+I (C:\Keil_v5\ARM\PACK\Keil\STM32F1xx_DFP\1.0.5\Device\Include\stm32f10x.h)(0x528979E6)
+I (.\FWlib\inc\core_cm3.h)(0x4D523B58)
+I (C:\Keil_v5\ARM\ARMCC\include\stdint.h)(0x5475F300)
+I (C:\Keil_v5\ARM\PACK\Keil\STM32F1xx_DFP\1.0.5\Device\Include\system_stm32f10x.h)(0x4F1E2E3C)
+I (.\FWlib\inc\stm32f10x_conf.h)(0x54BD1A20)
+I (.\FWlib\inc\stm32f10x_adc.h)(0x4D783BB4)
+I (.\FWlib\inc\stm32f10x_bkp.h)(0x4D783BB4)
+I (.\FWlib\inc\stm32f10x_can.h)(0x4D783BB4)
+I (.\FWlib\inc\stm32f10x_cec.h)(0x4D783BB4)
+I (.\FWlib\inc\stm32f10x_crc.h)(0x4D783BB4)
+I (.\FWlib\inc\stm32f10x_dac.h)(0x4D783BB4)
+I (.\FWlib\inc\stm32f10x_dbgmcu.h)(0x4D783BB4)
+I (.\FWlib\inc\stm32f10x_dma.h)(0x4D783BB4)
+I (.\FWlib\inc\stm32f10x_exti.h)(0x4D783BB4)
+I (.\FWlib\inc\stm32f10x_flash.h)(0x4D783BB4)
+I (.\FWlib\inc\stm32f10x_fsmc.h)(0x4D783BB4)
+I (.\FWlib\inc\stm32f10x_gpio.h)(0x4D783BB4)
+I (.\FWlib\inc\stm32f10x_i2c.h)(0x4D783BB4)
+I (.\FWlib\inc\stm32f10x_iwdg.h)(0x4D783BB4)
+I (.\FWlib\inc\stm32f10x_pwr.h)(0x4D783BB4)
+I (.\FWlib\inc\stm32f10x_rcc.h)(0x4D783BB4)
+I (.\FWlib\inc\stm32f10x_rtc.h)(0x4D783BB4)
+I (.\FWlib\inc\stm32f10x_sdio.h)(0x4D783BB4)
+I (.\FWlib\inc\stm32f10x_spi.h)(0x4D783BB4)
+I (.\FWlib\inc\stm32f10x_tim.h)(0x4D783BB4)
+I (.\FWlib\inc\stm32f10x_usart.h)(0x4D783BB4)
+I (.\FWlib\inc\stm32f10x_wwdg.h)(0x4D783BB4)
+I (.\FWlib\inc\misc.h)(0x4D783BB4)
+I (user\ticks.h)(0x54C39B41)
+F (.\user\encoder.c)(0x54C39BE8)(--c99 -c --cpu Cortex-M3 -D__MICROLIB -g -O0 --apcs=interwork --split_sections -I.\FWlib\inc -I.\user-I "Z:\William On My Mac\motor_driver\RTE"-I C:\Keil_v5\ARM\PACK\Keil\STM32F1xx_DFP\1.0.5\Device\Include-I C:\Keil_v5\ARM\CMSIS\Include-D__UVISION_VERSION="513" -DSTM32F10X_MD -DUSE_STDPERIPH_DRIVER -DSTM32F10X_MD-o .\obj\encoder.o --omf_browse .\obj\encoder.crf --depend .\obj\encoder.d)
+I (user\encoder.h)(0x54C375A9)
+I (C:\Keil_v5\ARM\PACK\Keil\STM32F1xx_DFP\1.0.5\Device\Include\stm32f10x.h)(0x528979E6)
+I (.\FWlib\inc\core_cm3.h)(0x4D523B58)
+I (C:\Keil_v5\ARM\ARMCC\include\stdint.h)(0x5475F300)
+I (C:\Keil_v5\ARM\PACK\Keil\STM32F1xx_DFP\1.0.5\Device\Include\system_stm32f10x.h)(0x4F1E2E3C)
+I (.\FWlib\inc\stm32f10x_conf.h)(0x54BD1A20)
+I (.\FWlib\inc\stm32f10x_adc.h)(0x4D783BB4)
+I (.\FWlib\inc\stm32f10x_bkp.h)(0x4D783BB4)
+I (.\FWlib\inc\stm32f10x_can.h)(0x4D783BB4)
+I (.\FWlib\inc\stm32f10x_cec.h)(0x4D783BB4)
+I (.\FWlib\inc\stm32f10x_crc.h)(0x4D783BB4)
+I (.\FWlib\inc\stm32f10x_dac.h)(0x4D783BB4)
+I (.\FWlib\inc\stm32f10x_dbgmcu.h)(0x4D783BB4)
+I (.\FWlib\inc\stm32f10x_dma.h)(0x4D783BB4)
+I (.\FWlib\inc\stm32f10x_exti.h)(0x4D783BB4)
+I (.\FWlib\inc\stm32f10x_flash.h)(0x4D783BB4)
+I (.\FWlib\inc\stm32f10x_fsmc.h)(0x4D783BB4)
+I (.\FWlib\inc\stm32f10x_gpio.h)(0x4D783BB4)
+I (.\FWlib\inc\stm32f10x_i2c.h)(0x4D783BB4)
+I (.\FWlib\inc\stm32f10x_iwdg.h)(0x4D783BB4)
+I (.\FWlib\inc\stm32f10x_pwr.h)(0x4D783BB4)
+I (.\FWlib\inc\stm32f10x_rcc.h)(0x4D783BB4)
+I (.\FWlib\inc\stm32f10x_rtc.h)(0x4D783BB4)
+I (.\FWlib\inc\stm32f10x_sdio.h)(0x4D783BB4)
+I (.\FWlib\inc\stm32f10x_spi.h)(0x4D783BB4)
+I (.\FWlib\inc\stm32f10x_tim.h)(0x4D783BB4)
+I (.\FWlib\inc\stm32f10x_usart.h)(0x4D783BB4)
+I (.\FWlib\inc\stm32f10x_wwdg.h)(0x4D783BB4)
+I (.\FWlib\inc\misc.h)(0x4D783BB4)
+F (.\user\motor.c)(0x54C3985E)(--c99 -c --cpu Cortex-M3 -D__MICROLIB -g -O0 --apcs=interwork --split_sections -I.\FWlib\inc -I.\user-I "Z:\William On My Mac\motor_driver\RTE"-I C:\Keil_v5\ARM\PACK\Keil\STM32F1xx_DFP\1.0.5\Device\Include-I C:\Keil_v5\ARM\CMSIS\Include-D__UVISION_VERSION="513" -DSTM32F10X_MD -DUSE_STDPERIPH_DRIVER -DSTM32F10X_MD-o .\obj\motor.o --omf_browse .\obj\motor.crf --depend .\obj\motor.d)
+I (user\motor.h)(0x54C37CF8)
+I (C:\Keil_v5\ARM\ARMCC\include\stdbool.h)(0x5475F300)
+I (C:\Keil_v5\ARM\PACK\Keil\STM32F1xx_DFP\1.0.5\Device\Include\stm32f10x.h)(0x528979E6)
+I (.\FWlib\inc\core_cm3.h)(0x4D523B58)
+I (C:\Keil_v5\ARM\ARMCC\include\stdint.h)(0x5475F300)
+I (C:\Keil_v5\ARM\PACK\Keil\STM32F1xx_DFP\1.0.5\Device\Include\system_stm32f10x.h)(0x4F1E2E3C)
+I (.\FWlib\inc\stm32f10x_conf.h)(0x54BD1A20)
+I (.\FWlib\inc\stm32f10x_adc.h)(0x4D783BB4)
+I (.\FWlib\inc\stm32f10x_bkp.h)(0x4D783BB4)
+I (.\FWlib\inc\stm32f10x_can.h)(0x4D783BB4)
+I (.\FWlib\inc\stm32f10x_cec.h)(0x4D783BB4)
+I (.\FWlib\inc\stm32f10x_crc.h)(0x4D783BB4)
+I (.\FWlib\inc\stm32f10x_dac.h)(0x4D783BB4)
+I (.\FWlib\inc\stm32f10x_dbgmcu.h)(0x4D783BB4)
+I (.\FWlib\inc\stm32f10x_dma.h)(0x4D783BB4)
+I (.\FWlib\inc\stm32f10x_exti.h)(0x4D783BB4)
+I (.\FWlib\inc\stm32f10x_flash.h)(0x4D783BB4)
+I (.\FWlib\inc\stm32f10x_fsmc.h)(0x4D783BB4)
+I (.\FWlib\inc\stm32f10x_gpio.h)(0x4D783BB4)
+I (.\FWlib\inc\stm32f10x_i2c.h)(0x4D783BB4)
+I (.\FWlib\inc\stm32f10x_iwdg.h)(0x4D783BB4)
+I (.\FWlib\inc\stm32f10x_pwr.h)(0x4D783BB4)
+I (.\FWlib\inc\stm32f10x_rcc.h)(0x4D783BB4)
+I (.\FWlib\inc\stm32f10x_rtc.h)(0x4D783BB4)
+I (.\FWlib\inc\stm32f10x_sdio.h)(0x4D783BB4)
+I (.\FWlib\inc\stm32f10x_spi.h)(0x4D783BB4)
+I (.\FWlib\inc\stm32f10x_tim.h)(0x4D783BB4)
+I (.\FWlib\inc\stm32f10x_usart.h)(0x4D783BB4)
+I (.\FWlib\inc\stm32f10x_wwdg.h)(0x4D783BB4)
+I (.\FWlib\inc\misc.h)(0x4D783BB4)
+I (user\approx_math.h)(0x54BCCB18)
+F (.\user\debug.c)(0x54C39AA8)(--c99 -c --cpu Cortex-M3 -D__MICROLIB -g -O0 --apcs=interwork --split_sections -I.\FWlib\inc -I.\user-I "Z:\William On My Mac\motor_driver\RTE"-I C:\Keil_v5\ARM\PACK\Keil\STM32F1xx_DFP\1.0.5\Device\Include-I C:\Keil_v5\ARM\CMSIS\Include-D__UVISION_VERSION="513" -DSTM32F10X_MD -DUSE_STDPERIPH_DRIVER -DSTM32F10X_MD-o .\obj\debug.o --omf_browse .\obj\debug.crf --depend .\obj\debug.d)
+I (user\debug.h)(0x54C35BC9)
+I (user\system.h)(0x54C35D3A)
+I (C:\Keil_v5\ARM\ARMCC\include\stdio.h)(0x5475F300)
+I (C:\Keil_v5\ARM\PACK\Keil\STM32F1xx_DFP\1.0.5\Device\Include\stm32f10x.h)(0x528979E6)
+I (.\FWlib\inc\core_cm3.h)(0x4D523B58)
+I (C:\Keil_v5\ARM\ARMCC\include\stdint.h)(0x5475F300)
+I (C:\Keil_v5\ARM\PACK\Keil\STM32F1xx_DFP\1.0.5\Device\Include\system_stm32f10x.h)(0x4F1E2E3C)
+I (.\FWlib\inc\stm32f10x_conf.h)(0x54BD1A20)
+I (.\FWlib\inc\stm32f10x_adc.h)(0x4D783BB4)
+I (.\FWlib\inc\stm32f10x_bkp.h)(0x4D783BB4)
+I (.\FWlib\inc\stm32f10x_can.h)(0x4D783BB4)
+I (.\FWlib\inc\stm32f10x_cec.h)(0x4D783BB4)
+I (.\FWlib\inc\stm32f10x_crc.h)(0x4D783BB4)
+I (.\FWlib\inc\stm32f10x_dac.h)(0x4D783BB4)
+I (.\FWlib\inc\stm32f10x_dbgmcu.h)(0x4D783BB4)
+I (.\FWlib\inc\stm32f10x_dma.h)(0x4D783BB4)
+I (.\FWlib\inc\stm32f10x_exti.h)(0x4D783BB4)
+I (.\FWlib\inc\stm32f10x_flash.h)(0x4D783BB4)
+I (.\FWlib\inc\stm32f10x_fsmc.h)(0x4D783BB4)
+I (.\FWlib\inc\stm32f10x_gpio.h)(0x4D783BB4)
+I (.\FWlib\inc\stm32f10x_i2c.h)(0x4D783BB4)
+I (.\FWlib\inc\stm32f10x_iwdg.h)(0x4D783BB4)
+I (.\FWlib\inc\stm32f10x_pwr.h)(0x4D783BB4)
+I (.\FWlib\inc\stm32f10x_rcc.h)(0x4D783BB4)
+I (.\FWlib\inc\stm32f10x_rtc.h)(0x4D783BB4)
+I (.\FWlib\inc\stm32f10x_sdio.h)(0x4D783BB4)
+I (.\FWlib\inc\stm32f10x_spi.h)(0x4D783BB4)
+I (.\FWlib\inc\stm32f10x_tim.h)(0x4D783BB4)
+I (.\FWlib\inc\stm32f10x_usart.h)(0x4D783BB4)
+I (.\FWlib\inc\stm32f10x_wwdg.h)(0x4D783BB4)
+I (.\FWlib\inc\misc.h)(0x4D783BB4)
+I (user\ticks.h)(0x54C39B41)
+I (user\uart.h)(0x54AE424C)
+I (C:\Keil_v5\ARM\ARMCC\include\stdarg.h)(0x5475F2FA)
+I (user\velocity.h)(0x54C372F1)
+I (user\approx_math.h)(0x54BCCB18)
+I (user\motor.h)(0x54C37CF8)
+I (C:\Keil_v5\ARM\ARMCC\include\stdbool.h)(0x5475F300)
+I (user\encoder.h)(0x54C375A9)
+I (user\led.h)(0x54C39BC0)
+I (user\can.h)(0x54BCCB18)
+I (user\can_protocol.h)(0x54BF31BA)
+I (user\can_motor.h)(0x54C37DE0)
+F (.\FWlib\SRC\stm32f10x_adc.c)(0x4D783BB4)(--c99 -c --cpu Cortex-M3 -D__MICROLIB -g -O0 --apcs=interwork --split_sections -I.\FWlib\inc -I.\user-I "Z:\William On My Mac\motor_driver\RTE"-I C:\Keil_v5\ARM\PACK\Keil\STM32F1xx_DFP\1.0.5\Device\Include-I C:\Keil_v5\ARM\CMSIS\Include-D__UVISION_VERSION="513" -DSTM32F10X_MD -DUSE_STDPERIPH_DRIVER -DSTM32F10X_MD-o .\obj\stm32f10x_adc.o --omf_browse .\obj\stm32f10x_adc.crf --depend .\obj\stm32f10x_adc.d)
+I (.\FWlib\inc\stm32f10x_adc.h)(0x4D783BB4)
+I (C:\Keil_v5\ARM\PACK\Keil\STM32F1xx_DFP\1.0.5\Device\Include\stm32f10x.h)(0x528979E6)
+I (.\FWlib\inc\core_cm3.h)(0x4D523B58)
+I (C:\Keil_v5\ARM\ARMCC\include\stdint.h)(0x5475F300)
+I (C:\Keil_v5\ARM\PACK\Keil\STM32F1xx_DFP\1.0.5\Device\Include\system_stm32f10x.h)(0x4F1E2E3C)
+I (.\FWlib\inc\stm32f10x_conf.h)(0x54BD1A20)
+I (.\FWlib\inc\stm32f10x_bkp.h)(0x4D783BB4)
+I (.\FWlib\inc\stm32f10x_can.h)(0x4D783BB4)
+I (.\FWlib\inc\stm32f10x_cec.h)(0x4D783BB4)
+I (.\FWlib\inc\stm32f10x_crc.h)(0x4D783BB4)
+I (.\FWlib\inc\stm32f10x_dac.h)(0x4D783BB4)
+I (.\FWlib\inc\stm32f10x_dbgmcu.h)(0x4D783BB4)
+I (.\FWlib\inc\stm32f10x_dma.h)(0x4D783BB4)
+I (.\FWlib\inc\stm32f10x_exti.h)(0x4D783BB4)
+I (.\FWlib\inc\stm32f10x_flash.h)(0x4D783BB4)
+I (.\FWlib\inc\stm32f10x_fsmc.h)(0x4D783BB4)
+I (.\FWlib\inc\stm32f10x_gpio.h)(0x4D783BB4)
+I (.\FWlib\inc\stm32f10x_i2c.h)(0x4D783BB4)
+I (.\FWlib\inc\stm32f10x_iwdg.h)(0x4D783BB4)
+I (.\FWlib\inc\stm32f10x_pwr.h)(0x4D783BB4)
+I (.\FWlib\inc\stm32f10x_rcc.h)(0x4D783BB4)
+I (.\FWlib\inc\stm32f10x_rtc.h)(0x4D783BB4)
+I (.\FWlib\inc\stm32f10x_sdio.h)(0x4D783BB4)
+I (.\FWlib\inc\stm32f10x_spi.h)(0x4D783BB4)
+I (.\FWlib\inc\stm32f10x_tim.h)(0x4D783BB4)
+I (.\FWlib\inc\stm32f10x_usart.h)(0x4D783BB4)
+I (.\FWlib\inc\stm32f10x_wwdg.h)(0x4D783BB4)
+I (.\FWlib\inc\misc.h)(0x4D783BB4)
+F (.\FWlib\SRC\stm32f10x_dma.c)(0x4D783BB4)(--c99 -c --cpu Cortex-M3 -D__MICROLIB -g -O0 --apcs=interwork --split_sections -I.\FWlib\inc -I.\user-I "Z:\William On My Mac\motor_driver\RTE"-I C:\Keil_v5\ARM\PACK\Keil\STM32F1xx_DFP\1.0.5\Device\Include-I C:\Keil_v5\ARM\CMSIS\Include-D__UVISION_VERSION="513" -DSTM32F10X_MD -DUSE_STDPERIPH_DRIVER -DSTM32F10X_MD-o .\obj\stm32f10x_dma.o --omf_browse .\obj\stm32f10x_dma.crf --depend .\obj\stm32f10x_dma.d)
+I (.\FWlib\inc\stm32f10x_dma.h)(0x4D783BB4)
+I (C:\Keil_v5\ARM\PACK\Keil\STM32F1xx_DFP\1.0.5\Device\Include\stm32f10x.h)(0x528979E6)
+I (.\FWlib\inc\core_cm3.h)(0x4D523B58)
+I (C:\Keil_v5\ARM\ARMCC\include\stdint.h)(0x5475F300)
+I (C:\Keil_v5\ARM\PACK\Keil\STM32F1xx_DFP\1.0.5\Device\Include\system_stm32f10x.h)(0x4F1E2E3C)
+I (.\FWlib\inc\stm32f10x_conf.h)(0x54BD1A20)
+I (.\FWlib\inc\stm32f10x_adc.h)(0x4D783BB4)
+I (.\FWlib\inc\stm32f10x_bkp.h)(0x4D783BB4)
+I (.\FWlib\inc\stm32f10x_can.h)(0x4D783BB4)
+I (.\FWlib\inc\stm32f10x_cec.h)(0x4D783BB4)
+I (.\FWlib\inc\stm32f10x_crc.h)(0x4D783BB4)
+I (.\FWlib\inc\stm32f10x_dac.h)(0x4D783BB4)
+I (.\FWlib\inc\stm32f10x_dbgmcu.h)(0x4D783BB4)
+I (.\FWlib\inc\stm32f10x_exti.h)(0x4D783BB4)
+I (.\FWlib\inc\stm32f10x_flash.h)(0x4D783BB4)
+I (.\FWlib\inc\stm32f10x_fsmc.h)(0x4D783BB4)
+I (.\FWlib\inc\stm32f10x_gpio.h)(0x4D783BB4)
+I (.\FWlib\inc\stm32f10x_i2c.h)(0x4D783BB4)
+I (.\FWlib\inc\stm32f10x_iwdg.h)(0x4D783BB4)
+I (.\FWlib\inc\stm32f10x_pwr.h)(0x4D783BB4)
+I (.\FWlib\inc\stm32f10x_rcc.h)(0x4D783BB4)
+I (.\FWlib\inc\stm32f10x_rtc.h)(0x4D783BB4)
+I (.\FWlib\inc\stm32f10x_sdio.h)(0x4D783BB4)
+I (.\FWlib\inc\stm32f10x_spi.h)(0x4D783BB4)
+I (.\FWlib\inc\stm32f10x_tim.h)(0x4D783BB4)
+I (.\FWlib\inc\stm32f10x_usart.h)(0x4D783BB4)
+I (.\FWlib\inc\stm32f10x_wwdg.h)(0x4D783BB4)
+I (.\FWlib\inc\misc.h)(0x4D783BB4)
+F (.\FWlib\SRC\stm32f10x_gpio.c)(0x4D79EEC6)(--c99 -c --cpu Cortex-M3 -D__MICROLIB -g -O0 --apcs=interwork --split_sections -I.\FWlib\inc -I.\user-I "Z:\William On My Mac\motor_driver\RTE"-I C:\Keil_v5\ARM\PACK\Keil\STM32F1xx_DFP\1.0.5\Device\Include-I C:\Keil_v5\ARM\CMSIS\Include-D__UVISION_VERSION="513" -DSTM32F10X_MD -DUSE_STDPERIPH_DRIVER -DSTM32F10X_MD-o .\obj\stm32f10x_gpio.o --omf_browse .\obj\stm32f10x_gpio.crf --depend .\obj\stm32f10x_gpio.d)
+I (.\FWlib\inc\stm32f10x_gpio.h)(0x4D783BB4)
+I (C:\Keil_v5\ARM\PACK\Keil\STM32F1xx_DFP\1.0.5\Device\Include\stm32f10x.h)(0x528979E6)
+I (.\FWlib\inc\core_cm3.h)(0x4D523B58)
+I (C:\Keil_v5\ARM\ARMCC\include\stdint.h)(0x5475F300)
+I (C:\Keil_v5\ARM\PACK\Keil\STM32F1xx_DFP\1.0.5\Device\Include\system_stm32f10x.h)(0x4F1E2E3C)
+I (.\FWlib\inc\stm32f10x_conf.h)(0x54BD1A20)
+I (.\FWlib\inc\stm32f10x_adc.h)(0x4D783BB4)
+I (.\FWlib\inc\stm32f10x_bkp.h)(0x4D783BB4)
+I (.\FWlib\inc\stm32f10x_can.h)(0x4D783BB4)
+I (.\FWlib\inc\stm32f10x_cec.h)(0x4D783BB4)
+I (.\FWlib\inc\stm32f10x_crc.h)(0x4D783BB4)
+I (.\FWlib\inc\stm32f10x_dac.h)(0x4D783BB4)
+I (.\FWlib\inc\stm32f10x_dbgmcu.h)(0x4D783BB4)
+I (.\FWlib\inc\stm32f10x_dma.h)(0x4D783BB4)
+I (.\FWlib\inc\stm32f10x_exti.h)(0x4D783BB4)
+I (.\FWlib\inc\stm32f10x_flash.h)(0x4D783BB4)
+I (.\FWlib\inc\stm32f10x_fsmc.h)(0x4D783BB4)
+I (.\FWlib\inc\stm32f10x_i2c.h)(0x4D783BB4)
+I (.\FWlib\inc\stm32f10x_iwdg.h)(0x4D783BB4)
+I (.\FWlib\inc\stm32f10x_pwr.h)(0x4D783BB4)
+I (.\FWlib\inc\stm32f10x_rcc.h)(0x4D783BB4)
+I (.\FWlib\inc\stm32f10x_rtc.h)(0x4D783BB4)
+I (.\FWlib\inc\stm32f10x_sdio.h)(0x4D783BB4)
+I (.\FWlib\inc\stm32f10x_spi.h)(0x4D783BB4)
+I (.\FWlib\inc\stm32f10x_tim.h)(0x4D783BB4)
+I (.\FWlib\inc\stm32f10x_usart.h)(0x4D783BB4)
+I (.\FWlib\inc\stm32f10x_wwdg.h)(0x4D783BB4)
+I (.\FWlib\inc\misc.h)(0x4D783BB4)
+F (.\FWlib\SRC\stm32f10x_rcc.c)(0x4D783BB4)(--c99 -c --cpu Cortex-M3 -D__MICROLIB -g -O0 --apcs=interwork --split_sections -I.\FWlib\inc -I.\user-I "Z:\William On My Mac\motor_driver\RTE"-I C:\Keil_v5\ARM\PACK\Keil\STM32F1xx_DFP\1.0.5\Device\Include-I C:\Keil_v5\ARM\CMSIS\Include-D__UVISION_VERSION="513" -DSTM32F10X_MD -DUSE_STDPERIPH_DRIVER -DSTM32F10X_MD-o .\obj\stm32f10x_rcc.o --omf_browse .\obj\stm32f10x_rcc.crf --depend .\obj\stm32f10x_rcc.d)
+I (.\FWlib\inc\stm32f10x_rcc.h)(0x4D783BB4)
+I (C:\Keil_v5\ARM\PACK\Keil\STM32F1xx_DFP\1.0.5\Device\Include\stm32f10x.h)(0x528979E6)
+I (.\FWlib\inc\core_cm3.h)(0x4D523B58)
+I (C:\Keil_v5\ARM\ARMCC\include\stdint.h)(0x5475F300)
+I (C:\Keil_v5\ARM\PACK\Keil\STM32F1xx_DFP\1.0.5\Device\Include\system_stm32f10x.h)(0x4F1E2E3C)
+I (.\FWlib\inc\stm32f10x_conf.h)(0x54BD1A20)
+I (.\FWlib\inc\stm32f10x_adc.h)(0x4D783BB4)
+I (.\FWlib\inc\stm32f10x_bkp.h)(0x4D783BB4)
+I (.\FWlib\inc\stm32f10x_can.h)(0x4D783BB4)
+I (.\FWlib\inc\stm32f10x_cec.h)(0x4D783BB4)
+I (.\FWlib\inc\stm32f10x_crc.h)(0x4D783BB4)
+I (.\FWlib\inc\stm32f10x_dac.h)(0x4D783BB4)
+I (.\FWlib\inc\stm32f10x_dbgmcu.h)(0x4D783BB4)
+I (.\FWlib\inc\stm32f10x_dma.h)(0x4D783BB4)
+I (.\FWlib\inc\stm32f10x_exti.h)(0x4D783BB4)
+I (.\FWlib\inc\stm32f10x_flash.h)(0x4D783BB4)
+I (.\FWlib\inc\stm32f10x_fsmc.h)(0x4D783BB4)
+I (.\FWlib\inc\stm32f10x_gpio.h)(0x4D783BB4)
+I (.\FWlib\inc\stm32f10x_i2c.h)(0x4D783BB4)
+I (.\FWlib\inc\stm32f10x_iwdg.h)(0x4D783BB4)
+I (.\FWlib\inc\stm32f10x_pwr.h)(0x4D783BB4)
+I (.\FWlib\inc\stm32f10x_rtc.h)(0x4D783BB4)
+I (.\FWlib\inc\stm32f10x_sdio.h)(0x4D783BB4)
+I (.\FWlib\inc\stm32f10x_spi.h)(0x4D783BB4)
+I (.\FWlib\inc\stm32f10x_tim.h)(0x4D783BB4)
+I (.\FWlib\inc\stm32f10x_usart.h)(0x4D783BB4)
+I (.\FWlib\inc\stm32f10x_wwdg.h)(0x4D783BB4)
+I (.\FWlib\inc\misc.h)(0x4D783BB4)
+F (.\FWlib\SRC\stm32f10x_usart.c)(0x4D783BB4)(--c99 -c --cpu Cortex-M3 -D__MICROLIB -g -O0 --apcs=interwork --split_sections -I.\FWlib\inc -I.\user-I "Z:\William On My Mac\motor_driver\RTE"-I C:\Keil_v5\ARM\PACK\Keil\STM32F1xx_DFP\1.0.5\Device\Include-I C:\Keil_v5\ARM\CMSIS\Include-D__UVISION_VERSION="513" -DSTM32F10X_MD -DUSE_STDPERIPH_DRIVER -DSTM32F10X_MD-o .\obj\stm32f10x_usart.o --omf_browse .\obj\stm32f10x_usart.crf --depend .\obj\stm32f10x_usart.d)
+I (.\FWlib\inc\stm32f10x_usart.h)(0x4D783BB4)
+I (C:\Keil_v5\ARM\PACK\Keil\STM32F1xx_DFP\1.0.5\Device\Include\stm32f10x.h)(0x528979E6)
+I (.\FWlib\inc\core_cm3.h)(0x4D523B58)
+I (C:\Keil_v5\ARM\ARMCC\include\stdint.h)(0x5475F300)
+I (C:\Keil_v5\ARM\PACK\Keil\STM32F1xx_DFP\1.0.5\Device\Include\system_stm32f10x.h)(0x4F1E2E3C)
+I (.\FWlib\inc\stm32f10x_conf.h)(0x54BD1A20)
+I (.\FWlib\inc\stm32f10x_adc.h)(0x4D783BB4)
+I (.\FWlib\inc\stm32f10x_bkp.h)(0x4D783BB4)
+I (.\FWlib\inc\stm32f10x_can.h)(0x4D783BB4)
+I (.\FWlib\inc\stm32f10x_cec.h)(0x4D783BB4)
+I (.\FWlib\inc\stm32f10x_crc.h)(0x4D783BB4)
+I (.\FWlib\inc\stm32f10x_dac.h)(0x4D783BB4)
+I (.\FWlib\inc\stm32f10x_dbgmcu.h)(0x4D783BB4)
+I (.\FWlib\inc\stm32f10x_dma.h)(0x4D783BB4)
+I (.\FWlib\inc\stm32f10x_exti.h)(0x4D783BB4)
+I (.\FWlib\inc\stm32f10x_flash.h)(0x4D783BB4)
+I (.\FWlib\inc\stm32f10x_fsmc.h)(0x4D783BB4)
+I (.\FWlib\inc\stm32f10x_gpio.h)(0x4D783BB4)
+I (.\FWlib\inc\stm32f10x_i2c.h)(0x4D783BB4)
+I (.\FWlib\inc\stm32f10x_iwdg.h)(0x4D783BB4)
+I (.\FWlib\inc\stm32f10x_pwr.h)(0x4D783BB4)
+I (.\FWlib\inc\stm32f10x_rcc.h)(0x4D783BB4)
+I (.\FWlib\inc\stm32f10x_rtc.h)(0x4D783BB4)
+I (.\FWlib\inc\stm32f10x_sdio.h)(0x4D783BB4)
+I (.\FWlib\inc\stm32f10x_spi.h)(0x4D783BB4)
+I (.\FWlib\inc\stm32f10x_tim.h)(0x4D783BB4)
+I (.\FWlib\inc\stm32f10x_wwdg.h)(0x4D783BB4)
+I (.\FWlib\inc\misc.h)(0x4D783BB4)
+F (.\FWlib\SRC\misc.c)(0x4D783BB4)(--c99 -c --cpu Cortex-M3 -D__MICROLIB -g -O0 --apcs=interwork --split_sections -I.\FWlib\inc -I.\user-I "Z:\William On My Mac\motor_driver\RTE"-I C:\Keil_v5\ARM\PACK\Keil\STM32F1xx_DFP\1.0.5\Device\Include-I C:\Keil_v5\ARM\CMSIS\Include-D__UVISION_VERSION="513" -DSTM32F10X_MD -DUSE_STDPERIPH_DRIVER -DSTM32F10X_MD-o .\obj\misc.o --omf_browse .\obj\misc.crf --depend .\obj\misc.d)
+I (.\FWlib\inc\misc.h)(0x4D783BB4)
+I (C:\Keil_v5\ARM\PACK\Keil\STM32F1xx_DFP\1.0.5\Device\Include\stm32f10x.h)(0x528979E6)
+I (.\FWlib\inc\core_cm3.h)(0x4D523B58)
+I (C:\Keil_v5\ARM\ARMCC\include\stdint.h)(0x5475F300)
+I (C:\Keil_v5\ARM\PACK\Keil\STM32F1xx_DFP\1.0.5\Device\Include\system_stm32f10x.h)(0x4F1E2E3C)
+I (.\FWlib\inc\stm32f10x_conf.h)(0x54BD1A20)
+I (.\FWlib\inc\stm32f10x_adc.h)(0x4D783BB4)
+I (.\FWlib\inc\stm32f10x_bkp.h)(0x4D783BB4)
+I (.\FWlib\inc\stm32f10x_can.h)(0x4D783BB4)
+I (.\FWlib\inc\stm32f10x_cec.h)(0x4D783BB4)
+I (.\FWlib\inc\stm32f10x_crc.h)(0x4D783BB4)
+I (.\FWlib\inc\stm32f10x_dac.h)(0x4D783BB4)
+I (.\FWlib\inc\stm32f10x_dbgmcu.h)(0x4D783BB4)
+I (.\FWlib\inc\stm32f10x_dma.h)(0x4D783BB4)
+I (.\FWlib\inc\stm32f10x_exti.h)(0x4D783BB4)
+I (.\FWlib\inc\stm32f10x_flash.h)(0x4D783BB4)
+I (.\FWlib\inc\stm32f10x_fsmc.h)(0x4D783BB4)
+I (.\FWlib\inc\stm32f10x_gpio.h)(0x4D783BB4)
+I (.\FWlib\inc\stm32f10x_i2c.h)(0x4D783BB4)
+I (.\FWlib\inc\stm32f10x_iwdg.h)(0x4D783BB4)
+I (.\FWlib\inc\stm32f10x_pwr.h)(0x4D783BB4)
+I (.\FWlib\inc\stm32f10x_rcc.h)(0x4D783BB4)
+I (.\FWlib\inc\stm32f10x_rtc.h)(0x4D783BB4)
+I (.\FWlib\inc\stm32f10x_sdio.h)(0x4D783BB4)
+I (.\FWlib\inc\stm32f10x_spi.h)(0x4D783BB4)
+I (.\FWlib\inc\stm32f10x_tim.h)(0x4D783BB4)
+I (.\FWlib\inc\stm32f10x_usart.h)(0x4D783BB4)
+I (.\FWlib\inc\stm32f10x_wwdg.h)(0x4D783BB4)
+F (.\FWlib\SRC\stm32f10x_flash.c)(0x4D783BB4)(--c99 -c --cpu Cortex-M3 -D__MICROLIB -g -O0 --apcs=interwork --split_sections -I.\FWlib\inc -I.\user-I "Z:\William On My Mac\motor_driver\RTE"-I C:\Keil_v5\ARM\PACK\Keil\STM32F1xx_DFP\1.0.5\Device\Include-I C:\Keil_v5\ARM\CMSIS\Include-D__UVISION_VERSION="513" -DSTM32F10X_MD -DUSE_STDPERIPH_DRIVER -DSTM32F10X_MD-o .\obj\stm32f10x_flash.o --omf_browse .\obj\stm32f10x_flash.crf --depend .\obj\stm32f10x_flash.d)
+I (.\FWlib\inc\stm32f10x_flash.h)(0x4D783BB4)
+I (C:\Keil_v5\ARM\PACK\Keil\STM32F1xx_DFP\1.0.5\Device\Include\stm32f10x.h)(0x528979E6)
+I (.\FWlib\inc\core_cm3.h)(0x4D523B58)
+I (C:\Keil_v5\ARM\ARMCC\include\stdint.h)(0x5475F300)
+I (C:\Keil_v5\ARM\PACK\Keil\STM32F1xx_DFP\1.0.5\Device\Include\system_stm32f10x.h)(0x4F1E2E3C)
+I (.\FWlib\inc\stm32f10x_conf.h)(0x54BD1A20)
+I (.\FWlib\inc\stm32f10x_adc.h)(0x4D783BB4)
+I (.\FWlib\inc\stm32f10x_bkp.h)(0x4D783BB4)
+I (.\FWlib\inc\stm32f10x_can.h)(0x4D783BB4)
+I (.\FWlib\inc\stm32f10x_cec.h)(0x4D783BB4)
+I (.\FWlib\inc\stm32f10x_crc.h)(0x4D783BB4)
+I (.\FWlib\inc\stm32f10x_dac.h)(0x4D783BB4)
+I (.\FWlib\inc\stm32f10x_dbgmcu.h)(0x4D783BB4)
+I (.\FWlib\inc\stm32f10x_dma.h)(0x4D783BB4)
+I (.\FWlib\inc\stm32f10x_exti.h)(0x4D783BB4)
+I (.\FWlib\inc\stm32f10x_fsmc.h)(0x4D783BB4)
+I (.\FWlib\inc\stm32f10x_gpio.h)(0x4D783BB4)
+I (.\FWlib\inc\stm32f10x_i2c.h)(0x4D783BB4)
+I (.\FWlib\inc\stm32f10x_iwdg.h)(0x4D783BB4)
+I (.\FWlib\inc\stm32f10x_pwr.h)(0x4D783BB4)
+I (.\FWlib\inc\stm32f10x_rcc.h)(0x4D783BB4)
+I (.\FWlib\inc\stm32f10x_rtc.h)(0x4D783BB4)
+I (.\FWlib\inc\stm32f10x_sdio.h)(0x4D783BB4)
+I (.\FWlib\inc\stm32f10x_spi.h)(0x4D783BB4)
+I (.\FWlib\inc\stm32f10x_tim.h)(0x4D783BB4)
+I (.\FWlib\inc\stm32f10x_usart.h)(0x4D783BB4)
+I (.\FWlib\inc\stm32f10x_wwdg.h)(0x4D783BB4)
+I (.\FWlib\inc\misc.h)(0x4D783BB4)
+F (.\FWlib\SRC\stm32f10x_spi.c)(0x4D783BB4)(--c99 -c --cpu Cortex-M3 -D__MICROLIB -g -O0 --apcs=interwork --split_sections -I.\FWlib\inc -I.\user-I "Z:\William On My Mac\motor_driver\RTE"-I C:\Keil_v5\ARM\PACK\Keil\STM32F1xx_DFP\1.0.5\Device\Include-I C:\Keil_v5\ARM\CMSIS\Include-D__UVISION_VERSION="513" -DSTM32F10X_MD -DUSE_STDPERIPH_DRIVER -DSTM32F10X_MD-o .\obj\stm32f10x_spi.o --omf_browse .\obj\stm32f10x_spi.crf --depend .\obj\stm32f10x_spi.d)
+I (.\FWlib\inc\stm32f10x_spi.h)(0x4D783BB4)
+I (C:\Keil_v5\ARM\PACK\Keil\STM32F1xx_DFP\1.0.5\Device\Include\stm32f10x.h)(0x528979E6)
+I (.\FWlib\inc\core_cm3.h)(0x4D523B58)
+I (C:\Keil_v5\ARM\ARMCC\include\stdint.h)(0x5475F300)
+I (C:\Keil_v5\ARM\PACK\Keil\STM32F1xx_DFP\1.0.5\Device\Include\system_stm32f10x.h)(0x4F1E2E3C)
+I (.\FWlib\inc\stm32f10x_conf.h)(0x54BD1A20)
+I (.\FWlib\inc\stm32f10x_adc.h)(0x4D783BB4)
+I (.\FWlib\inc\stm32f10x_bkp.h)(0x4D783BB4)
+I (.\FWlib\inc\stm32f10x_can.h)(0x4D783BB4)
+I (.\FWlib\inc\stm32f10x_cec.h)(0x4D783BB4)
+I (.\FWlib\inc\stm32f10x_crc.h)(0x4D783BB4)
+I (.\FWlib\inc\stm32f10x_dac.h)(0x4D783BB4)
+I (.\FWlib\inc\stm32f10x_dbgmcu.h)(0x4D783BB4)
+I (.\FWlib\inc\stm32f10x_dma.h)(0x4D783BB4)
+I (.\FWlib\inc\stm32f10x_exti.h)(0x4D783BB4)
+I (.\FWlib\inc\stm32f10x_flash.h)(0x4D783BB4)
+I (.\FWlib\inc\stm32f10x_fsmc.h)(0x4D783BB4)
+I (.\FWlib\inc\stm32f10x_gpio.h)(0x4D783BB4)
+I (.\FWlib\inc\stm32f10x_i2c.h)(0x4D783BB4)
+I (.\FWlib\inc\stm32f10x_iwdg.h)(0x4D783BB4)
+I (.\FWlib\inc\stm32f10x_pwr.h)(0x4D783BB4)
+I (.\FWlib\inc\stm32f10x_rcc.h)(0x4D783BB4)
+I (.\FWlib\inc\stm32f10x_rtc.h)(0x4D783BB4)
+I (.\FWlib\inc\stm32f10x_sdio.h)(0x4D783BB4)
+I (.\FWlib\inc\stm32f10x_tim.h)(0x4D783BB4)
+I (.\FWlib\inc\stm32f10x_usart.h)(0x4D783BB4)
+I (.\FWlib\inc\stm32f10x_wwdg.h)(0x4D783BB4)
+I (.\FWlib\inc\misc.h)(0x4D783BB4)
+F (.\FWlib\SRC\stm32f10x_tim.c)(0x4D783BB4)(--c99 -c --cpu Cortex-M3 -D__MICROLIB -g -O0 --apcs=interwork --split_sections -I.\FWlib\inc -I.\user-I "Z:\William On My Mac\motor_driver\RTE"-I C:\Keil_v5\ARM\PACK\Keil\STM32F1xx_DFP\1.0.5\Device\Include-I C:\Keil_v5\ARM\CMSIS\Include-D__UVISION_VERSION="513" -DSTM32F10X_MD -DUSE_STDPERIPH_DRIVER -DSTM32F10X_MD-o .\obj\stm32f10x_tim.o --omf_browse .\obj\stm32f10x_tim.crf --depend .\obj\stm32f10x_tim.d)
+I (.\FWlib\inc\stm32f10x_tim.h)(0x4D783BB4)
+I (C:\Keil_v5\ARM\PACK\Keil\STM32F1xx_DFP\1.0.5\Device\Include\stm32f10x.h)(0x528979E6)
+I (.\FWlib\inc\core_cm3.h)(0x4D523B58)
+I (C:\Keil_v5\ARM\ARMCC\include\stdint.h)(0x5475F300)
+I (C:\Keil_v5\ARM\PACK\Keil\STM32F1xx_DFP\1.0.5\Device\Include\system_stm32f10x.h)(0x4F1E2E3C)
+I (.\FWlib\inc\stm32f10x_conf.h)(0x54BD1A20)
+I (.\FWlib\inc\stm32f10x_adc.h)(0x4D783BB4)
+I (.\FWlib\inc\stm32f10x_bkp.h)(0x4D783BB4)
+I (.\FWlib\inc\stm32f10x_can.h)(0x4D783BB4)
+I (.\FWlib\inc\stm32f10x_cec.h)(0x4D783BB4)
+I (.\FWlib\inc\stm32f10x_crc.h)(0x4D783BB4)
+I (.\FWlib\inc\stm32f10x_dac.h)(0x4D783BB4)
+I (.\FWlib\inc\stm32f10x_dbgmcu.h)(0x4D783BB4)
+I (.\FWlib\inc\stm32f10x_dma.h)(0x4D783BB4)
+I (.\FWlib\inc\stm32f10x_exti.h)(0x4D783BB4)
+I (.\FWlib\inc\stm32f10x_flash.h)(0x4D783BB4)
+I (.\FWlib\inc\stm32f10x_fsmc.h)(0x4D783BB4)
+I (.\FWlib\inc\stm32f10x_gpio.h)(0x4D783BB4)
+I (.\FWlib\inc\stm32f10x_i2c.h)(0x4D783BB4)
+I (.\FWlib\inc\stm32f10x_iwdg.h)(0x4D783BB4)
+I (.\FWlib\inc\stm32f10x_pwr.h)(0x4D783BB4)
+I (.\FWlib\inc\stm32f10x_rcc.h)(0x4D783BB4)
+I (.\FWlib\inc\stm32f10x_rtc.h)(0x4D783BB4)
+I (.\FWlib\inc\stm32f10x_sdio.h)(0x4D783BB4)
+I (.\FWlib\inc\stm32f10x_spi.h)(0x4D783BB4)
+I (.\FWlib\inc\stm32f10x_usart.h)(0x4D783BB4)
+I (.\FWlib\inc\stm32f10x_wwdg.h)(0x4D783BB4)
+I (.\FWlib\inc\misc.h)(0x4D783BB4)
+F (.\FWlib\SRC\stm32f10x_can.c)(0x4D783BB4)(--c99 -c --cpu Cortex-M3 -D__MICROLIB -g -O0 --apcs=interwork --split_sections -I.\FWlib\inc -I.\user-I "Z:\William On My Mac\motor_driver\RTE"-I C:\Keil_v5\ARM\PACK\Keil\STM32F1xx_DFP\1.0.5\Device\Include-I C:\Keil_v5\ARM\CMSIS\Include-D__UVISION_VERSION="513" -DSTM32F10X_MD -DUSE_STDPERIPH_DRIVER -DSTM32F10X_MD-o .\obj\stm32f10x_can.o --omf_browse .\obj\stm32f10x_can.crf --depend .\obj\stm32f10x_can.d)
+I (.\FWlib\inc\stm32f10x_can.h)(0x4D783BB4)
+I (C:\Keil_v5\ARM\PACK\Keil\STM32F1xx_DFP\1.0.5\Device\Include\stm32f10x.h)(0x528979E6)
+I (.\FWlib\inc\core_cm3.h)(0x4D523B58)
+I (C:\Keil_v5\ARM\ARMCC\include\stdint.h)(0x5475F300)
+I (C:\Keil_v5\ARM\PACK\Keil\STM32F1xx_DFP\1.0.5\Device\Include\system_stm32f10x.h)(0x4F1E2E3C)
+I (.\FWlib\inc\stm32f10x_conf.h)(0x54BD1A20)
+I (.\FWlib\inc\stm32f10x_adc.h)(0x4D783BB4)
+I (.\FWlib\inc\stm32f10x_bkp.h)(0x4D783BB4)
+I (.\FWlib\inc\stm32f10x_cec.h)(0x4D783BB4)
+I (.\FWlib\inc\stm32f10x_crc.h)(0x4D783BB4)
+I (.\FWlib\inc\stm32f10x_dac.h)(0x4D783BB4)
+I (.\FWlib\inc\stm32f10x_dbgmcu.h)(0x4D783BB4)
+I (.\FWlib\inc\stm32f10x_dma.h)(0x4D783BB4)
+I (.\FWlib\inc\stm32f10x_exti.h)(0x4D783BB4)
+I (.\FWlib\inc\stm32f10x_flash.h)(0x4D783BB4)
+I (.\FWlib\inc\stm32f10x_fsmc.h)(0x4D783BB4)
+I (.\FWlib\inc\stm32f10x_gpio.h)(0x4D783BB4)
+I (.\FWlib\inc\stm32f10x_i2c.h)(0x4D783BB4)
+I (.\FWlib\inc\stm32f10x_iwdg.h)(0x4D783BB4)
+I (.\FWlib\inc\stm32f10x_pwr.h)(0x4D783BB4)
+I (.\FWlib\inc\stm32f10x_rcc.h)(0x4D783BB4)
+I (.\FWlib\inc\stm32f10x_rtc.h)(0x4D783BB4)
+I (.\FWlib\inc\stm32f10x_sdio.h)(0x4D783BB4)
+I (.\FWlib\inc\stm32f10x_spi.h)(0x4D783BB4)
+I (.\FWlib\inc\stm32f10x_tim.h)(0x4D783BB4)
+I (.\FWlib\inc\stm32f10x_usart.h)(0x4D783BB4)
+I (.\FWlib\inc\stm32f10x_wwdg.h)(0x4D783BB4)
+I (.\FWlib\inc\misc.h)(0x4D783BB4)
+F (.\FWlib\SRC\stm32f10x_exti.c)(0x4D783BB4)(--c99 -c --cpu Cortex-M3 -D__MICROLIB -g -O0 --apcs=interwork --split_sections -I.\FWlib\inc -I.\user-I "Z:\William On My Mac\motor_driver\RTE"-I C:\Keil_v5\ARM\PACK\Keil\STM32F1xx_DFP\1.0.5\Device\Include-I C:\Keil_v5\ARM\CMSIS\Include-D__UVISION_VERSION="513" -DSTM32F10X_MD -DUSE_STDPERIPH_DRIVER -DSTM32F10X_MD-o .\obj\stm32f10x_exti.o --omf_browse .\obj\stm32f10x_exti.crf --depend .\obj\stm32f10x_exti.d)
+I (.\FWlib\inc\stm32f10x_exti.h)(0x4D783BB4)
+I (C:\Keil_v5\ARM\PACK\Keil\STM32F1xx_DFP\1.0.5\Device\Include\stm32f10x.h)(0x528979E6)
+I (.\FWlib\inc\core_cm3.h)(0x4D523B58)
+I (C:\Keil_v5\ARM\ARMCC\include\stdint.h)(0x5475F300)
+I (C:\Keil_v5\ARM\PACK\Keil\STM32F1xx_DFP\1.0.5\Device\Include\system_stm32f10x.h)(0x4F1E2E3C)
+I (.\FWlib\inc\stm32f10x_conf.h)(0x54BD1A20)
+I (.\FWlib\inc\stm32f10x_adc.h)(0x4D783BB4)
+I (.\FWlib\inc\stm32f10x_bkp.h)(0x4D783BB4)
+I (.\FWlib\inc\stm32f10x_can.h)(0x4D783BB4)
+I (.\FWlib\inc\stm32f10x_cec.h)(0x4D783BB4)
+I (.\FWlib\inc\stm32f10x_crc.h)(0x4D783BB4)
+I (.\FWlib\inc\stm32f10x_dac.h)(0x4D783BB4)
+I (.\FWlib\inc\stm32f10x_dbgmcu.h)(0x4D783BB4)
+I (.\FWlib\inc\stm32f10x_dma.h)(0x4D783BB4)
+I (.\FWlib\inc\stm32f10x_flash.h)(0x4D783BB4)
+I (.\FWlib\inc\stm32f10x_fsmc.h)(0x4D783BB4)
+I (.\FWlib\inc\stm32f10x_gpio.h)(0x4D783BB4)
+I (.\FWlib\inc\stm32f10x_i2c.h)(0x4D783BB4)
+I (.\FWlib\inc\stm32f10x_iwdg.h)(0x4D783BB4)
+I (.\FWlib\inc\stm32f10x_pwr.h)(0x4D783BB4)
+I (.\FWlib\inc\stm32f10x_rcc.h)(0x4D783BB4)
+I (.\FWlib\inc\stm32f10x_rtc.h)(0x4D783BB4)
+I (.\FWlib\inc\stm32f10x_sdio.h)(0x4D783BB4)
+I (.\FWlib\inc\stm32f10x_spi.h)(0x4D783BB4)
+I (.\FWlib\inc\stm32f10x_tim.h)(0x4D783BB4)
+I (.\FWlib\inc\stm32f10x_usart.h)(0x4D783BB4)
+I (.\FWlib\inc\stm32f10x_wwdg.h)(0x4D783BB4)
+I (.\FWlib\inc\misc.h)(0x4D783BB4)
+F (.\CM3\core_cm3.c)(0x4C0C587E)(--c99 -c --cpu Cortex-M3 -D__MICROLIB -g -O0 --apcs=interwork --split_sections -I.\FWlib\inc -I.\user-I "Z:\William On My Mac\motor_driver\RTE"-I C:\Keil_v5\ARM\PACK\Keil\STM32F1xx_DFP\1.0.5\Device\Include-I C:\Keil_v5\ARM\CMSIS\Include-D__UVISION_VERSION="513" -DSTM32F10X_MD -DUSE_STDPERIPH_DRIVER -DSTM32F10X_MD-o .\obj\core_cm3.o --omf_browse .\obj\core_cm3.crf --depend .\obj\core_cm3.d)
+I (C:\Keil_v5\ARM\ARMCC\include\stdint.h)(0x5475F300)
+F (.\CM3\system_stm32f10x.c)(0x4D783CB0)(--c99 -c --cpu Cortex-M3 -D__MICROLIB -g -O0 --apcs=interwork --split_sections -I.\FWlib\inc -I.\user-I "Z:\William On My Mac\motor_driver\RTE"-I C:\Keil_v5\ARM\PACK\Keil\STM32F1xx_DFP\1.0.5\Device\Include-I C:\Keil_v5\ARM\CMSIS\Include-D__UVISION_VERSION="513" -DSTM32F10X_MD -DUSE_STDPERIPH_DRIVER -DSTM32F10X_MD-o .\obj\system_stm32f10x.o --omf_browse .\obj\system_stm32f10x.crf --depend .\obj\system_stm32f10x.d)
+I (CM3\stm32f10x.h)(0x4D783CB4)
+I (CM3\core_cm3.h)(0x4D523B58)
+I (C:\Keil_v5\ARM\ARMCC\include\stdint.h)(0x5475F300)
+I (CM3\system_stm32f10x.h)(0x4D783CAA)
+I (.\FWlib\inc\stm32f10x_conf.h)(0x54BD1A20)
+I (.\FWlib\inc\stm32f10x_adc.h)(0x4D783BB4)
+I (C:\Keil_v5\ARM\PACK\Keil\STM32F1xx_DFP\1.0.5\Device\Include\stm32f10x.h)(0x528979E6)
+I (.\FWlib\inc\stm32f10x_bkp.h)(0x4D783BB4)
+I (.\FWlib\inc\stm32f10x_can.h)(0x4D783BB4)
+I (.\FWlib\inc\stm32f10x_cec.h)(0x4D783BB4)
+I (.\FWlib\inc\stm32f10x_crc.h)(0x4D783BB4)
+I (.\FWlib\inc\stm32f10x_dac.h)(0x4D783BB4)
+I (.\FWlib\inc\stm32f10x_dbgmcu.h)(0x4D783BB4)
+I (.\FWlib\inc\stm32f10x_dma.h)(0x4D783BB4)
+I (.\FWlib\inc\stm32f10x_exti.h)(0x4D783BB4)
+I (.\FWlib\inc\stm32f10x_flash.h)(0x4D783BB4)
+I (.\FWlib\inc\stm32f10x_fsmc.h)(0x4D783BB4)
+I (.\FWlib\inc\stm32f10x_gpio.h)(0x4D783BB4)
+I (.\FWlib\inc\stm32f10x_i2c.h)(0x4D783BB4)
+I (.\FWlib\inc\stm32f10x_iwdg.h)(0x4D783BB4)
+I (.\FWlib\inc\stm32f10x_pwr.h)(0x4D783BB4)
+I (.\FWlib\inc\stm32f10x_rcc.h)(0x4D783BB4)
+I (.\FWlib\inc\stm32f10x_rtc.h)(0x4D783BB4)
+I (.\FWlib\inc\stm32f10x_sdio.h)(0x4D783BB4)
+I (.\FWlib\inc\stm32f10x_spi.h)(0x4D783BB4)
+I (.\FWlib\inc\stm32f10x_tim.h)(0x4D783BB4)
+I (.\FWlib\inc\stm32f10x_usart.h)(0x4D783BB4)
+I (.\FWlib\inc\stm32f10x_wwdg.h)(0x4D783BB4)
+I (.\FWlib\inc\misc.h)(0x4D783BB4)
+F (.\readme.txt)(0x00000000)()
