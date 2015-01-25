@@ -19,6 +19,7 @@
 .\output\wheel_base_pid.o: src\user\can_motor.h
 .\output\wheel_base_pid.o: src\user\can_protocol.h
 .\output\wheel_base_pid.o: C:\Keil_v5\ARM\ARMCC\Bin\..\include\stdio.h
+.\output\wheel_base_pid.o: C:\Keil_v5\ARM\ARMCC\Bin\..\include\stdlib.h
 .\output\wheel_base_pid.o: .\src\stm32f10x_std\inc\stm32f10x_can.h
 .\output\wheel_base_pid.o: .\src\ustrobo_min_system\inc\ticks.h
 .\output\wheel_base_pid.o: .\src\stm32f10x_std\inc\stm32f10x_tim.h

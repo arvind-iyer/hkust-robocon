@@ -2,6 +2,7 @@
 #define __CAN_PROTOCOL_H
 
 #include <stdio.h>
+#include <stdlib.h> 
 #include "stm32f10x.h"
 #include "stm32f10x_can.h"
 #include "misc.h"

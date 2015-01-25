@@ -1,6 +1,7 @@
 .\output\can_protocol.o: src\user\can_protocol.c
 .\output\can_protocol.o: src\user\can_protocol.h
 .\output\can_protocol.o: C:\Keil_v5\ARM\ARMCC\Bin\..\include\stdio.h
+.\output\can_protocol.o: C:\Keil_v5\ARM\ARMCC\Bin\..\include\stdlib.h
 .\output\can_protocol.o: .\src\stm32f10x_std\inc\stm32f10x.h
 .\output\can_protocol.o: .\src\stm32f10x_std\inc\core_cm3.h
 .\output\can_protocol.o: C:\Keil_v5\ARM\ARMCC\Bin\..\include\stdint.h

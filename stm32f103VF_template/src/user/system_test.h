@@ -2,6 +2,7 @@
 #define	__SYSTEM_TEST_H
 
 #include <stdio.h>
+#include <stdbool.h>
 #include "stm32f10x.h"
 #include "stm32f10x_crc.h"
 
@@ -35,5 +36,8 @@ void motor_test(void);
 void battery_test(void);
 void position_test(void);
 void button_test(void);
+void buzzer_test(void);
+void can_test(void);
+void xbc_test(void);
 
 #endif /* __SYSTEM_TEST_H */

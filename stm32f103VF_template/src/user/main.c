@@ -30,9 +30,9 @@ int main(void)
 	menu_add("Motor test", motor_test);
 	menu_add("Battery test", battery_test);
 	menu_add("Bluetooth test", bluetooth_test);
-	//menu_add("CAN test", can_test);
-	//menu_add("XBox test", xbox_test);
-	//menu_add("Buzzer test", buzzer_test);
+	menu_add("CAN test", can_test);
+	menu_add("XBox test", xbc_test);
+	menu_add("Buzzer test", buzzer_test);
 	menu_add("Button test", button_test);
 	menu_add("ASCII test", ascii_test);
 	

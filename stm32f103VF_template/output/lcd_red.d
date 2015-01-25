@@ -15,7 +15,7 @@
 .\output\lcd_red.o: .\src\stm32f10x_std\inc\stm32f10x_spi.h
 .\output\lcd_red.o: .\src\stm32f10x_std\inc\stm32f10x_usart.h
 .\output\lcd_red.o: .\src\stm32f10x_std\inc\misc.h
+.\output\lcd_red.o: .\src\ustrobo_min_system\inc\lcd_font.h
 .\output\lcd_red.o: C:\Keil_v5\ARM\ARMCC\Bin\..\include\stdio.h
 .\output\lcd_red.o: C:\Keil_v5\ARM\ARMCC\Bin\..\include\stdarg.h
 .\output\lcd_red.o: .\src\ustrobo_min_system\inc\delay.h
-.\output\lcd_red.o: .\src\ustrobo_min_system\inc\lcd_font.h

@@ -27,14 +27,17 @@
 .\output\robocon.o: .\src\ustrobo_min_system\inc\led.h
 .\output\robocon.o: .\src\ustrobo_min_system\inc\gpio.h
 .\output\robocon.o: .\src\ustrobo_min_system\inc\lcd_red.h
+.\output\robocon.o: .\src\ustrobo_min_system\inc\lcd_font.h
 .\output\robocon.o: C:\Keil_v5\ARM\ARMCC\Bin\..\include\stdarg.h
 .\output\robocon.o: src\user\interface.h
+.\output\robocon.o: C:\Keil_v5\ARM\ARMCC\Bin\..\include\stdbool.h
 .\output\robocon.o: .\src\ustrobo_min_system\inc\approx_math.h
 .\output\robocon.o: .\src\ustrobo_min_system\inc\button.h
 .\output\robocon.o: src\user\buzzer_song.h
 .\output\robocon.o: .\src\ustrobo_min_system\inc\xbc_mb.h
 .\output\robocon.o: .\src\ustrobo_min_system\inc\encoder.h
 .\output\robocon.o: src\user\can_protocol.h
+.\output\robocon.o: C:\Keil_v5\ARM\ARMCC\Bin\..\include\stdlib.h
 .\output\robocon.o: .\src\stm32f10x_std\inc\stm32f10x_can.h
 .\output\robocon.o: .\src\ustrobo_min_system\inc\uart.h
 .\output\robocon.o: .\src\ustrobo_min_system\inc\servo.h

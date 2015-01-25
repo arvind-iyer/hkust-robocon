@@ -4,11 +4,11 @@
 #include "stm32f10x.h"
 
 // 8x16 ASCII
-#define STARTING_ASCII 												0x00		// 32 (space bar)
-#define CHECKBOX_ASCII												0x80
-#define	HIGHLIGHTED_CHECKBOX_ASCII						0x81
-#define	CHECKED_CHECKBOX_ASCII								0x82
-#define	HIGHLIGHTED_CHECKED_CHECKBOX_ASCII		0x83
+#define STARTING_ASCII 									0x00		// 32 (space bar)
+#define CHECKBOX												0x80
+#define	HIGHLIGHTED_CHECKBOX						0x81
+#define	CHECKED_CHECKBOX								0x82
+#define	HIGHLIGHTED_CHECKED_CHECKBOX		0x83
 
 static u8 ascii_8x16[] = {
 //0x00,0x00,0x00,0xFF,0x81,0x81,0x81,0x81,0x81,0x81,0xFF,0x00,0x00,0x00,0x00,0x00, // 0x19

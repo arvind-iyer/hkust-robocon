@@ -1,6 +1,8 @@
 #ifndef	__INTERFACE_H
 #define	__INTERFACE_H
 
+#include <stdbool.h>
+#include "stm32f10x.h"
 #include "approx_math.h"
 #include "battery.h"
 #include "button.h"
@@ -16,10 +18,47 @@ typedef struct {
 	void (*fx)(void);
 } MENU_ITEM;
 
+typedef enum {
+	tft_ui_checkbox,
+	tft_ui_list
+} TFT_UI_ITEM_TYPE;
+
+typedef struct {
+	bool checked; 
+} TFT_UI_CHECKBOX;
+
+typedef struct {
+	const u8 width;
+	const struct {
+		u32 lower, upper;
+	} range; 
+	u32 selected_int;
+} TFT_UI_LIST;
+
+typedef struct {
+	const TFT_UI_ITEM_TYPE type;
+	const u8 x, y;
+	union {
+		TFT_UI_CHECKBOX checkbox;
+		TFT_UI_LIST list;
+	} ui_item;
+} TFT_UI_ITEM;
+
+typedef struct {
+	const u8 item_count;
+	TFT_UI_ITEM* item_list; 
+	u8 selected_item;
+} TFT_UI;
+
+
+
+
 void system_start(const char* title, u16 duration);
 void battery_regular_check(void);
 void draw_top_bar(void);
 void menu(u8 default_id);
 void menu_add(const char* title, void (*fx));
+
+void tft_ui_update(const TFT_UI* ui, bool toggle);
 
 #endif /* __INTERFACE_H */

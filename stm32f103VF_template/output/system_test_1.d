@@ -1,6 +1,7 @@
 .\output\system_test_1.o: src\user\system_test.c
 .\output\system_test_1.o: src\user\system_test.h
 .\output\system_test_1.o: C:\Keil_v5\ARM\ARMCC\Bin\..\include\stdio.h
+.\output\system_test_1.o: C:\Keil_v5\ARM\ARMCC\Bin\..\include\stdbool.h
 .\output\system_test_1.o: .\src\stm32f10x_std\inc\stm32f10x.h
 .\output\system_test_1.o: .\src\stm32f10x_std\inc\core_cm3.h
 .\output\system_test_1.o: C:\Keil_v5\ARM\ARMCC\Bin\..\include\stdint.h
@@ -27,6 +28,7 @@
 .\output\system_test_1.o: .\src\ustrobo_min_system\inc\led.h
 .\output\system_test_1.o: .\src\ustrobo_min_system\inc\gpio.h
 .\output\system_test_1.o: .\src\ustrobo_min_system\inc\lcd_red.h
+.\output\system_test_1.o: .\src\ustrobo_min_system\inc\lcd_font.h
 .\output\system_test_1.o: C:\Keil_v5\ARM\ARMCC\Bin\..\include\stdarg.h
 .\output\system_test_1.o: src\user\interface.h
 .\output\system_test_1.o: .\src\ustrobo_min_system\inc\approx_math.h
@@ -35,6 +37,7 @@
 .\output\system_test_1.o: .\src\ustrobo_min_system\inc\xbc_mb.h
 .\output\system_test_1.o: .\src\ustrobo_min_system\inc\encoder.h
 .\output\system_test_1.o: src\user\can_protocol.h
+.\output\system_test_1.o: C:\Keil_v5\ARM\ARMCC\Bin\..\include\stdlib.h
 .\output\system_test_1.o: .\src\stm32f10x_std\inc\stm32f10x_can.h
 .\output\system_test_1.o: .\src\ustrobo_min_system\inc\uart.h
 .\output\system_test_1.o: src\user\can_motor.h

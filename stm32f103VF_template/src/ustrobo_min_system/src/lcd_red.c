@@ -636,7 +636,7 @@ void tft_update(void)
 						for (py = 0; py < CHAR_HEIGHT; py++) {
 							for (px = 0; px < char_n*CHAR_WIDTH; px++) {
 								x2 = x+px/CHAR_WIDTH;
-								clr = ascii_8x16[((text[x2][y2] - 32) * CHAR_HEIGHT) + py] & (0x80 >> (px % CHAR_WIDTH)) ? text_color[x2][y2] : bg_color[x2][y2];
+								clr = ascii_8x16[((text[x2][y2] - STARTING_ASCII) * CHAR_HEIGHT) + py] & (0x80 >> (px % CHAR_WIDTH)) ? text_color[x2][y2] : bg_color[x2][y2];
 								tft_write_data(clr >> 8);
 								tft_write_data(clr);
 							}
@@ -663,7 +663,7 @@ void tft_update(void)
 						for (px = 0; px < CHAR_WIDTH; px++) {
 							for (py = 0; py < char_n*CHAR_HEIGHT; py++) {
 								y2 = y-py/CHAR_HEIGHT;
-								clr = ascii_8x16[((text[x2][y2] - 32) * CHAR_HEIGHT) + CHAR_HEIGHT-(py % CHAR_HEIGHT)-1] & (0x80 >> px) ? text_color[x2][y2] : bg_color[x2][y2];
+								clr = ascii_8x16[((text[x2][y2] - STARTING_ASCII) * CHAR_HEIGHT) + CHAR_HEIGHT-(py % CHAR_HEIGHT)-1] & (0x80 >> px) ? text_color[x2][y2] : bg_color[x2][y2];
 								tft_write_data(clr >> 8);
 								tft_write_data(clr);
 							}
@@ -690,7 +690,7 @@ void tft_update(void)
 						for (py = 0; py < CHAR_HEIGHT; py++) {
 							for (px = 0; px < char_n*CHAR_WIDTH; px++) {
 								x2 = x-px/CHAR_WIDTH;
-								clr = ascii_8x16[((text[x2][y2] - 32) * CHAR_HEIGHT) + (CHAR_HEIGHT-py-1)] & (0x80 >> (CHAR_WIDTH-(px % CHAR_WIDTH)-1)) ? text_color[x2][y2] : bg_color[x2][y2];
+								clr = ascii_8x16[((text[x2][y2] - STARTING_ASCII) * CHAR_HEIGHT) + (CHAR_HEIGHT-py-1)] & (0x80 >> (CHAR_WIDTH-(px % CHAR_WIDTH)-1)) ? text_color[x2][y2] : bg_color[x2][y2];
 								tft_write_data(clr >> 8);
 								tft_write_data(clr);
 							}
@@ -717,7 +717,7 @@ void tft_update(void)
 						for (px = 0; px < CHAR_WIDTH; px++) {
 							for (py = 0; py < char_n*CHAR_HEIGHT; py++) {
 								y2 = y+py/CHAR_HEIGHT;
-								clr = ascii_8x16[((text[x2][y2] - 32) * CHAR_HEIGHT) + (py % CHAR_HEIGHT)] & (0x80 >> (CHAR_WIDTH-px-1)) ? text_color[x2][y2] : bg_color[x2][y2];
+								clr = ascii_8x16[((text[x2][y2] - STARTING_ASCII) * CHAR_HEIGHT) + (py % CHAR_HEIGHT)] & (0x80 >> (CHAR_WIDTH-px-1)) ? text_color[x2][y2] : bg_color[x2][y2];
 								tft_write_data(clr >> 8);
 								tft_write_data(clr);
 							}

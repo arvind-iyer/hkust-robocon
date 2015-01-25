@@ -3,6 +3,7 @@
 
 #include "stm32f10x.h"
 #include "stm32f10x_gpio.h"
+#include "lcd_font.h"
 
 #include <stdio.h>
 #include <stdarg.h>
@@ -21,28 +22,28 @@
 #define GPIO_CS			GPIOD
 
 // Color
-#define	BGR888_MODE		1    
+#define	BGR888_MODE		1
 
 #if (!BGR888_MODE)
 #define	RGB888TO565(RGB888)  (((RGB888 >> 8) & 0xF800) |((RGB888 >> 5) & 0x07E0) | ((RGB888 >> 3) & 0x001F))
 #else 
-#define	RGB888TO565(BGR888)  (((BGR888 >> 19) & 0x001F) |((BGR888 >> 5) & 0x07E0) | ((BGR888 << 8) & 0xF800))
+#define	RGB888TO565(BGR888)  (((BGR888 >> 19) & 0x001F) |((BGR888 >> 5) & 0x07E0) | (((u32)BGR888 << 8) & 0xF800))
 #endif
 
-#define WHITE					((u16) RGB888TO565(0xFFFFFF))
-#define BLACK					((u16) RGB888TO565(0x000000))
-#define DARK_GREY			((u16) RGB888TO565(0x555555))
-#define GREY					((u16) RGB888TO565(0xAAAAAA))
-#define RED						((u16) RGB888TO565(0xFF0000))
-#define ORANGE				((u16) RGB888TO565(0xFF9900))
-#define YELLOW				((u16) RGB888TO565(0xFFFF00))
-#define GREEN					((u16) RGB888TO565(0x00FF00))
-#define	DARK_GREEN		((u16) RGB888TO565(0x00CC00))
-#define BLUE					((u16) RGB888TO565(0x0000FF))
-#define	BLUE2					((u16) RGB888TO565(0x202060))
-#define	SKY_BLUE			((u16) RGB888TO565(0x11CFFF))
-#define CYAN					((u16) RGB888TO565(0x8888FF))
-#define PURPLE				((u16) RGB888TO565(0x00AAAA))
+#define WHITE					(RGB888TO565(0xFFFFFF))
+#define BLACK					(RGB888TO565(0x000000))
+#define DARK_GREY			(RGB888TO565(0x555555))
+#define GREY					(RGB888TO565(0xAAAAAA))
+#define RED						(RGB888TO565(0xFF0000))
+#define ORANGE				(RGB888TO565(0xFF9900))
+#define YELLOW				(RGB888TO565(0xFFFF00))
+#define GREEN					(RGB888TO565(0x00FF00))
+#define	DARK_GREEN		(RGB888TO565(0x00CC00))
+#define BLUE					(RGB888TO565(0x0000FF))
+#define	BLUE2					(RGB888TO565(0x202060))
+#define	SKY_BLUE			(RGB888TO565(0x11CFFF))
+#define CYAN					(RGB888TO565(0x8888FF))
+#define PURPLE				(RGB888TO565(0x00AAAA))
 
 
 

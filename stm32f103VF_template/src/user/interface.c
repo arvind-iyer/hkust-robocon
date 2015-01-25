@@ -7,6 +7,7 @@ static u8 menu_count = 0;
 
 static MENU_ITEM menu_list[MENU_LIST_MAX];
 
+
 void system_start(const char* title, u16 duration)
 {
 	led_control((LED) (LED_D1 | LED_D2 | LED_D3), LED_ON);
@@ -170,9 +171,9 @@ void menu(u8 default_id)
 		if (ticks_img != get_ticks()) {
 			ticks_img = get_ticks();
 			
-			if (ticks_img % 200 == 0) {
+			if (ticks_img % 200 == 1) {
 				battery_adc_update();
-				if (get_seconds() % 2 == 0) {
+				if (get_seconds() % 10 == 4 && ticks_img == 1) {
 					battery_regular_check();
 				}
 			}
@@ -182,18 +183,18 @@ void menu(u8 default_id)
 				// Check button input
 				button_update();
 				/** Menu item shift **/
-				if (button_pressed(BUTTON_JS2_DOWN) == 1 || button_hold(BUTTON_JS2_DOWN, 15, 3)) {
+				if (button_pressed(BUTTON_JS2_DOWN) == 1 || button_hold(BUTTON_JS2_DOWN, 10, 2)) {
 					// Go down the list
 					if (menu_selected < menu_count - 1) {
 						++menu_selected; 
 					} else {
-						FAIL_MUSIC;
+						menu_selected = 0;
 					}
-				} else if (button_pressed(BUTTON_JS2_UP) == 1 || button_hold(BUTTON_JS2_UP, 15, 3)) {
+				} else if (button_pressed(BUTTON_JS2_UP) == 1 || button_hold(BUTTON_JS2_UP, 10, 2)) {
 					if (menu_selected > 0) {
 						--menu_selected;
 					} else {
-						FAIL_MUSIC;
+						menu_selected = menu_count - 1;
 					}
 				}
 				
@@ -278,3 +279,30 @@ void menu_add(const char* title, void (*fx))
 	
 }
 
+
+void tft_ui_update(const TFT_UI* ui, bool toggle) 
+{
+	for (u8 i = 0; i < ui->item_count; ++i) {
+		TFT_UI_ITEM* item = &(ui->item_list[i]); 
+		switch (item->type) {
+			case tft_ui_checkbox:  
+				// Print checkbox
+				char checkbox = CHECKBOX_ASCII; 
+				if (item->ui_item.checkbox.checked) {
+					checkbox = toggle ? HIGHLIGHTED_CHECKBOX_ASCII : CHECKBOX_ASCII;
+				} else {
+					checkbox = toggle ? HIGHLIGHTED_CHECKED_CHECKBOX_ASCII : CHECKED_CHECKBOX_ASCII;
+				}
+				tft_prints(item->x, item->y, "%c", checkbox);
+			
+			break;
+			
+			case tft_ui_list:
+				// Print the two arrows
+			tft_prints(item->x, item->y, "<");
+			tft_prints(item->x + item->ui_item.list.width, item->y, ">");
+			
+			break;
+		}
+	}
+}

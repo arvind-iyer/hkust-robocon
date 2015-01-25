@@ -8,7 +8,7 @@ static u16 buzzer_time_ms = 0;		// Period left
 static u8 buzzer_count = 0;
 
 // Note frequency related
-static u8 buzzer_volume = 30;		// 0 - 100 (101 for full buzz)
+static u8 buzzer_volume = 1;		// 0 - 100 (101 for full buzz)
 static u16 buzzer_note_period = 1;
 
 // Song related

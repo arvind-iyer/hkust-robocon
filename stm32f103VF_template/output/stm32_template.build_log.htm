@@ -22,24 +22,28 @@ Dialog DLL:      TCM.DLL V1.14.4.0
  
 <h2>Project:</h2>
 C:\Users\Kenneth Au\Dropbox\Documents\HKUST\Robocon 2015\Software\STM32_Program\Robocon2015\stm32f103VF_template\Project.uvprojx
-Project File Date:  01/22/2015
+Project File Date:  01/23/2015
 
 <h2>Output:</h2>
 Build target 'stm32_template'
-compiling main.c...
-src\user\main.c(15): warning:  #61-D: integer operation result is out of range
-        tft_init(0, WHITE, BLACK, RED);
-src\user\main.c(15): warning:  #61-D: integer operation result is out of range
-        tft_init(0, WHITE, BLACK, RED);
-src\user\main.c(3): warning:  #177-D: variable "ticks_img" was declared but never referenced
-  static u16 ticks_img  = (u16)-1;
-src\user\main.c(4): warning:  #177-D: variable "seconds_img" was declared but never referenced
+compiling interface.c...
+src\user\interface.c(276): warning:  #513-D: a value of type "void *" cannot be assigned to an entity of type "void (*)(void)"
+                menu_list[menu_count].fx = fx;
+src\user\interface.c(290): warning:  #1182-D: a declaration cannot have a label
+                                char checkbox = CHECKBOX_ASCII; 
+src\user\interface.c(287): warning:  #546-D: transfer of control bypasses initialization of:
+            variable "checkbox" (declared at line 290)
+                switch (item->type) {
+                ^
+src\user\interface.c(308): warning:  #1-D: last line of file ends without a newline
+  }
+src\user\interface.c(4): warning:  #177-D: variable "seconds_img" was declared but never referenced
   static u16 seconds_img = (u16)-1;
-src\user\main.c: 4 warnings, 0 errors
+src\user\interface.c: 5 warnings, 0 errors
 linking...
-Program Size: Code=29552 RO-data=1136 RW-data=2268 ZI-data=36260  
+Program Size: Code=32500 RO-data=1324 RW-data=4836 ZI-data=36260  
 FromELF: creating hex file...
-".\output\stm32_template.axf" - 0 Error(s), 4 Warning(s).
+".\output\stm32_template.axf" - 0 Error(s), 5 Warning(s).
 
 <h2>Collection of Component include folders:</h2>
   C:\Users\Kenneth Au\Dropbox\Documents\HKUST\Robocon 2015\Software\STM32_Program\Robocon2015\stm32f103VF_template\RTE

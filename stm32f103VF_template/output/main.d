@@ -28,8 +28,10 @@
 .\output\main.o: .\src\ustrobo_min_system\inc\led.h
 .\output\main.o: .\src\ustrobo_min_system\inc\gpio.h
 .\output\main.o: .\src\ustrobo_min_system\inc\lcd_red.h
+.\output\main.o: .\src\ustrobo_min_system\inc\lcd_font.h
 .\output\main.o: C:\Keil_v5\ARM\ARMCC\Bin\..\include\stdarg.h
 .\output\main.o: src\user\interface.h
+.\output\main.o: C:\Keil_v5\ARM\ARMCC\Bin\..\include\stdbool.h
 .\output\main.o: .\src\ustrobo_min_system\inc\approx_math.h
 .\output\main.o: .\src\ustrobo_min_system\inc\button.h
 .\output\main.o: src\user\buzzer_song.h
