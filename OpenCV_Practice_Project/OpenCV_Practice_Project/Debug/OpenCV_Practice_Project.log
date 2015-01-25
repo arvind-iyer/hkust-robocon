@@ -1,3 +1,4 @@
 ﻿  ShuttleTrack.cpp
-c:\users\arvind\documents\github\robocon2015\opencv_practice_project\opencv_practice_project\shuttletrack.cpp(75): warning C4244: 'initializing' : conversion from 'double' to 'int', possible loss of data
+c:\users\arvind\documents\github\robocon2015\opencv_practice_project\opencv_practice_project\shuttletrack.cpp(86): warning C4244: 'initializing' : conversion from 'double' to 'int', possible loss of data
+c:\users\arvind\documents\github\robocon2015\opencv_practice_project\opencv_practice_project\shuttletrack.cpp(189): warning C4244: '=' : conversion from 'int64' to 'double', possible loss of data
   OpenCV_Practice_Project.vcxproj -> C:\Users\Arvind\Documents\GitHub\Robocon2015\OpenCV_Practice_Project\Debug\OpenCV_Practice_Project.exe

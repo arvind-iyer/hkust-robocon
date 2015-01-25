@@ -18,8 +18,9 @@ using namespace std;
 
 
 static Mat imgOriginal;
+static Mat lines;
 
-BackgroundSubtractorMOG2 bg(100, 24, false);//reduced to 50 cause my computer is slowwwwww
+BackgroundSubtractorMOG2 bg(50, 10, false);//reduced to 50 cause my computer is slowwwwww
 
 static int iLowB = 0;
 static int iHighB = 255;
@@ -36,6 +37,7 @@ static int ycent = 0;
 static double dWidth;
 static double dHeight;
 
+static bool calibrated = false;
 
 //"delta" represents the sensitivity allowed.
 #define delta 40
@@ -44,6 +46,8 @@ void CallBack2(int event, int x, int y, int flags, void* userdata)
 {
 	if (event == EVENT_LBUTTONDOWN)
 	{
+
+		calibrated = true;
 		int b = imgOriginal.data[imgOriginal.channels()*(imgOriginal.cols*y + x) + 0];
 		int g = imgOriginal.data[imgOriginal.channels()*(imgOriginal.cols*y + x) + 1];
 		int r = imgOriginal.data[imgOriginal.channels()*(imgOriginal.cols*y + x) + 2];
@@ -63,6 +67,13 @@ void CallBack2(int event, int x, int y, int flags, void* userdata)
 	}
 }
 
+void clearScreen(int event, int x, int y, int flags, void* userdata)
+{
+	if (event == EVENT_RBUTTONDOWN)
+	{
+		lines = Mat::zeros(imgOriginal.size(), CV_8UC3);
+	}
+}
 void calcCentre(Mat src)
 {
 	long sumx = 0, sumy = 0;
@@ -71,7 +82,7 @@ void calcCentre(Mat src)
 	{
 		if (src.data[i] + src.data[i + 1] + src.data[i + 2] > 764)
 		{
-			int y = (int)floor(i / dWidth );
+			int y = (int)floor(i / dWidth);
 			int x = i - (y * dWidth);
 
 			sumx += x;
@@ -97,26 +108,29 @@ int main(int argc, char** argv)
 		return -1;
 	}
 
-	 dWidth = cap.get(CV_CAP_PROP_FRAME_WIDTH); //get the width of frames of the video
-	 dHeight = cap.get(CV_CAP_PROP_FRAME_HEIGHT); //get the height of frames of the video
+	dWidth = cap.get(CV_CAP_PROP_FRAME_WIDTH); //get the width of frames of the video
+	dHeight = cap.get(CV_CAP_PROP_FRAME_HEIGHT); //get the height of frames of the video
 
 	Mat imgThresholded;
 	Mat imgPrev;
 	Mat imgFG;
 	Mat mogMasked;
-	Mat lines;
+
 	//Capture a temporary image from the camera
 	cap.read(imgPrev);
 
 	int iLastX = -1;
 	int iLastY = -1;
 
+	double time = 0.0, dist = 0.0;
+
 	//Capture a temporary image from the camera
-	Mat imgTmp;
-	cap.read(imgTmp);
+
+	cap.read(imgOriginal);
+
 
 	//Create a black image with the size as the camera output
-	Mat imgLines = Mat::zeros(imgTmp.size(), CV_8UC3);
+	Mat imgLines = Mat::zeros(imgOriginal.size(), CV_8UC3);
 	lines = imgLines.clone();
 
 	while (true)
@@ -140,7 +154,7 @@ int main(int argc, char** argv)
 		//imshow("Thresholded Image", imgThresholded); //only selected colour shown as B/W
 		imshow("Original", imgOriginal); //show the original image
 		//imshow("Masked", out); //only selected colour with retained RGB values
-		
+
 
 		//Apply imgFg as mask on out to mogMasked
 		out.copyTo(mogMasked, imgFG);
@@ -154,15 +168,34 @@ int main(int argc, char** argv)
 		bg.operator()(mogMasked.clone(), mogMasked);
 
 		imshow("MOG'd", mogMasked); //only the selected colour and only if it is moving, i.e. not background
-		
-		
-		calcCentre(mogMasked);
-		line(lines, Point(xcent, ycent), Point(xcent, ycent), Scalar(0, 255, 255), 2);
-		imgOriginal = imgOriginal + lines;
-		
-		imshow("Trace",  lines);
+
+
+		if (calibrated)
+		{
+			iLastX = xcent;
+			iLastY = ycent;
+			calcCentre(mogMasked);
+			line(lines, Point(xcent - 2, ycent), Point(xcent + 2, ycent), Scalar(0, 255, 255), 2);
+			line(lines, Point(xcent, ycent - 2), Point(xcent, ycent + 2), Scalar(0, 255, 255), 2);
+
+			imgLines = imgOriginal + lines;
+
+			time = getTickCount() - time;
+			time /= getTickFrequency();
+
+			cout << "Speed : " << dist / time << " px/s" << endl;
+
+			//Calculate speed 
+			time = getTickCount();
+			//calc dist
+			dist = abs(sqrt(pow((iLastX - xcent), 2) + pow((iLastY - ycent), 2)));
+
+			imshow("Trace", imgLines);
+		}
+
 		//set the callback function for any mouse event
 		setMouseCallback("Original", CallBack2, NULL);
+		setMouseCallback("Trace", clearScreen, NULL);
 
 		if (waitKey(1) == 27) //wait for 'esc' key press for 30ms. If 'esc' key is pressed, break loop
 		{
