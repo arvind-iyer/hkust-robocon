@@ -37,11 +37,11 @@ int main(void)
 	menu_add("Buzzer test", buzzer_test);
 	menu_add("Button test", button_test);
 	menu_add("ASCII test", ascii_test);
-	
+	menu_add("GPIO pin test", gpio_pin_test);
+
 	menu(0);
 	robocon_main();
 	
-		
 }
 
 

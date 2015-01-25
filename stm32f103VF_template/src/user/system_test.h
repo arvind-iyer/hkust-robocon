@@ -39,5 +39,6 @@ void button_test(void);
 void buzzer_test(void);
 void xbc_test_program(void);
 void can_test(void);
+void gpio_pin_test(void);
 
 #endif /* __SYSTEM_TEST_H */

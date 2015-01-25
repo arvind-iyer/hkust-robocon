@@ -458,6 +458,11 @@
               <FileType>1</FileType>
               <FilePath>.\src\user\wheel_base_pid.c</FilePath>
             </File>
+            <File>
+              <FileName>system_test.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\src\user\system_test.c</FilePath>
+            </File>
           </Files>
         </Group>
         <Group>
@@ -729,11 +734,6 @@
                   </Cads>
                 </FileArmAds>
               </FileOption>
-            </File>
-            <File>
-              <FileName>system_test.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>.\src\user\system_test.c</FilePath>
             </File>
           </Files>
         </Group>

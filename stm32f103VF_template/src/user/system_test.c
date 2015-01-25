@@ -580,10 +580,10 @@ void xbc_test_program(void)
 					return; 
 				}
 				// Skip or backward
-				if (button_pressed(BUTTON_2) == 1 && pressed_cnt > 0) {
+				if (button_pressed(BUTTON_1) == 1 && pressed_cnt > 0) {
 					--pressed_cnt;
 				}
-				if (button_pressed(BUTTON_1) == 1 && pressed_cnt < 19) {
+				if (button_pressed(BUTTON_2) == 1 && pressed_cnt < 19) {
 					++pressed_cnt;
 				}
 			}
@@ -758,3 +758,89 @@ void xbc_test_program(void)
 	}
 }
 
+/**
+	* @brief 	  Pin test for GPIOE only (will have other later)
+	* @param 	  None
+	* @retval	  None
+	* @warning  Reinit is required after this test (except those without GPIO)!!
+	*/
+void gpio_pin_test(void)
+{
+	RCC_APB2PeriphClockCmd(RCC_APB2Periph_GPIOE, ENABLE);
+	/* Pin E test */
+	GPIO_InitTypeDef GPIO_InitStructure;
+	GPIO_InitStructure.GPIO_Speed = GPIO_Speed_2MHz;
+	GPIO_InitStructure.GPIO_Mode = GPIO_Mode_IPD;
+	GPIO_InitStructure.GPIO_Pin = GPIO_Pin_All;
+	GPIO_Init(GPIOE, &GPIO_InitStructure);
+	
+	u16 curr_test_pin = GPIO_Pin_0;
+	vu16 initial_input = 0;		// None of GPIOE is used before test
+	u16 last_input = GPIO_Pin_0;		
+	u8 pin_no = 0;
+	bool test_done = false;
+	
+	while (!return_listener()) {
+		if (ticks_img != get_ticks()) {
+			ticks_img = get_ticks();
+			if (ticks_img % 50 == 3) {
+				button_update();
+				if (button_pressed(BUTTON_1) == 1 && pin_no > 0) {
+					if (test_done) {
+						//return to previous stage.
+						test_done = false;		
+					} else {
+						--pin_no;
+						curr_test_pin >>= 1;
+					}
+				}
+				if ((button_pressed(BUTTON_JS2_CENTER) == 1 && test_done) && last_input == initial_input) {
+					return;
+				}
+				
+				if (button_pressed(BUTTON_2) == 1 && pin_no < 15) {
+					++pin_no;
+					curr_test_pin <<= 1;
+				}
+				
+				if (!test_done) {
+					if ((GPIO_ReadInputData(GPIOE) - initial_input) == curr_test_pin && last_input == initial_input) {
+						SUCCESSFUL_MUSIC;
+						if (curr_test_pin != GPIO_Pin_15) {
+							curr_test_pin <<= 1;
+							++pin_no;
+						} else {
+							test_done = true;
+						}
+					} else if (GPIO_ReadInputData(GPIOE) != initial_input && last_input == initial_input) {
+						FAIL_MUSIC;
+					}
+				}
+				last_input = GPIO_ReadInputData(GPIOE);
+			}
+			
+			if (ticks_img % 50 == 6) {
+				tft_clear();
+				draw_top_bar();
+				if (!test_done) {
+					tft_prints(0, 1, "Pin Test");
+					tft_prints(0, 2, "Plug to Any Vcc");
+					tft_prints(0, 3, "Now plug: E%d", pin_no);
+					tft_prints(0, 4, "Caution:");		
+					tft_prints(0, 5, "Never plug to");
+					tft_prints(0, 6, "other vcc");
+					tft_prints(0, 7, "or ground!");
+					tft_prints(0, 8, "Suggest use usb");
+					tft_prints(0, 9, "power to test!");
+				} else {
+					tft_prints(0, 1, "Pin Test");
+					tft_prints(0, 2, "Done!");
+					tft_prints(0, 3, "Unplug test wire");
+					tft_prints(0, 4, "Press centre");
+					tft_prints(0, 5, "to quit");
+				}
+				tft_update();
+			}
+		}
+	}
+}
