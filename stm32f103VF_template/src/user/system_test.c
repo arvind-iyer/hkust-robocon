@@ -524,7 +524,7 @@ void can_test(void)
 				tft_prints(0, 1, "CAN TEST");
 				tft_prints(0, 2, "CAN id:");
 				if (ticks_img < 500 || line != 2) {
-					tft_prints(11, 2, "00 %02x", sent_id);
+					tft_prints(11, 2, "00 %02X", sent_id);
 				}
 				tft_prints(0, 3, "CAN length:");
 				if (ticks_img < 500 || line != 3) {
@@ -533,7 +533,7 @@ void can_test(void)
 				tft_prints(0, 4, "Sent no.: %d", sent);
 				// Only motor related encoder can be receieve, to be improved.
 				if (can_get_rx_count() > 0) {
-					tft_prints(0, 5, "CAN Rx id: 00 %02x", can_get_recent_rx().id);
+					tft_prints(0, 5, "CAN Rx id: 00 %02X", can_get_recent_rx().id);
 					u8 x = 0, y = 6;
 					tft_prints(x++, y, "{");	// Caution: MUST BE x++, ++x is wrong!
 					for (u8 i = 0; i < can_get_recent_rx().length; ++i) {
@@ -542,7 +542,7 @@ void can_test(void)
 							x = 1;
 							++y;
 						}
-						tft_prints(x, y, "%02x ", can_get_recent_rx().data[i]);
+						tft_prints(x, y, "%02X ", can_get_recent_rx().data[i]);
 						x += 3;
 					}
 					tft_prints(x - 1, y, "}");		// No extra space need, minus 1
