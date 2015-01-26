@@ -43,16 +43,7 @@ static void wheel_base_bluetooth_decode(u8 id, u8 length, u8* data)
 			}
 		break;
 			
-			
-		case BLUETOOTH_WHEEL_BASE_AUTO_POS_ID:
-			if (length == 6) {
-				s16 x, y, w;
-				x = ((data[0] >> 8) & 0xFF) | (data[1] & 0xFF);
-				y = ((data[2] >> 8) & 0xFF) | (data[3] & 0xFF);
-				w = ((data[4] >> 8) & 0xFF) | (data[5] & 0xFF);
-				
-				
-			}
+
 	}
 }
 

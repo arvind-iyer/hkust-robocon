@@ -60,13 +60,13 @@ void button_update(void)
 
 static BUTTON rotate_js_button(BUTTON b) {
 	u8 o = tft_get_orientation();
-	if (b >= 0 && b <= 3) {
-		b = (b + 4 - o + 1) % 4;
+	if (b <= 3) {
+		b = (BUTTON) ((b + 4 - o + 1) % 4);
 	}
 	
 	if (b >= 5 && b <= 8) {
 		b -= 5;
-		b = (b + 4 - o + 1) % 4;
+		b = (BUTTON) ((b + 4 - o + 1) % 4);
 		b += 5;
 	}
 	

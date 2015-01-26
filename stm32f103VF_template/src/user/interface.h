@@ -51,13 +51,11 @@ typedef struct {
 } TFT_UI;
 
 
-
-
 void system_start(const char* title, u16 duration);
 void battery_regular_check(void);
 void draw_top_bar(void);
-void menu(u8 default_id);
-void menu_add(const char* title, void (*fx));
+void menu(u8 default_id, bool pre_enter);
+void menu_add(const char* title, void (*fx)(void));
 
 typedef enum {
 	tft_ui_event_left,
@@ -69,4 +67,6 @@ typedef enum {
 void tft_ui_listener(TFT_UI* ui, const TFT_UI_EVENT change) ;
 void tft_ui_update(const TFT_UI* ui, bool toggle);
 u32 tft_ui_get_val(const TFT_UI_ITEM* item);
+
+
 #endif /* __INTERFACE_H */

@@ -10,7 +10,6 @@ void led_init(void)
 
 void led_control(LED led, LED_STATE state)
 {
-	u16 led_gpio_pin = 0;
 	
 	if (led & LED_D1) {gpio_write(LED_D1_GPIO, (BitAction)state);}
 	if (led & LED_D2) {gpio_write(LED_D2_GPIO, (BitAction)state);}

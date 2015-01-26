@@ -1,7 +1,7 @@
 #include "interface.h"
 
 static u16 ticks_img 	= (u16)-1;
-static u16 seconds_img = (u16)-1;
+
 static u8 menu_selected = 0;	// SELECTED ITEM
 static u8 menu_count = 0;
 
@@ -158,6 +158,11 @@ static void draw_battery_icon(u16 batt)
 	}
 }
 
+/**
+	* @brief Draw the top bar (NO tft_clear and tft_update involved)
+	* @param None
+	* @retval None
+	*/
 void draw_top_bar(void)
 {
 	u16 prev_bg_color = tft_get_bg_color();
@@ -180,7 +185,13 @@ void draw_top_bar(void)
 	tft_set_text_color(prev_text_color); 	
 }
 
-void menu(u8 default_id)
+/**
+	* @brief Display the menu (to be called directly, while-loop in side)
+	* @param default_id: Default selected / entered menu ID
+  * @param pre_enter: True for enterring the selected menu item
+  * @retval None
+	*/
+void menu(u8 default_id, bool pre_enter)
 {
 	menu_selected = default_id;
 	while (1) {
@@ -198,6 +209,28 @@ void menu(u8 default_id)
 			if (ticks_img % 50 == 2) {
 				// Check button input
 				button_update();
+				
+				/** Enter menu **/
+				if (button_pressed(BUTTON_JS2_CENTER) == 1 || pre_enter) {
+					if (menu_list[menu_selected].fx == 0) {
+						// NULL FUNCTION
+						buzzer_play_song(FAIL_SOUND, 120, 100);
+					} else {
+						u16 prev_bg_color = tft_get_bg_color();
+						u16 prev_text_color = tft_get_text_color();
+						tft_clear();
+						CLICK_MUSIC;
+						menu_list[menu_selected].fx();
+						CLICK_MUSIC;
+						tft_clear();
+						tft_set_bg_color(prev_bg_color);
+						tft_set_text_color(prev_text_color);
+						pre_enter = false; 
+					}
+				}
+			}
+
+			
 				/** Menu item shift **/
 				if (button_pressed(BUTTON_JS2_DOWN) == 1 || button_hold(BUTTON_JS2_DOWN, 10, 2)) {
 					// Go down the list
@@ -224,24 +257,6 @@ void menu(u8 default_id)
 					SUCCESSFUL_MUSIC;
 				}
 				
-				/** Enter menu **/
-				if (button_pressed(BUTTON_JS2_CENTER) == 1) {
-					if (menu_list[menu_selected].fx == 0) {
-						// NULL FUNCTION
-						buzzer_play_song(FAIL_SOUND, 120, 100);
-					} else {
-						u16 prev_bg_color = tft_get_bg_color();
-						u16 prev_text_color = tft_get_text_color();
-						tft_clear();
-						CLICK_MUSIC;
-						menu_list[menu_selected].fx();
-						CLICK_MUSIC;
-						tft_clear();
-						tft_set_bg_color(prev_bg_color);
-						tft_set_text_color(prev_text_color);
-					}
-				}
-			}
 			
 			if (ticks_img % 50 == 7) {
 				u16 prev_bg_color = tft_get_bg_color();
@@ -285,7 +300,7 @@ void menu(u8 default_id)
 	}
 }
 
-void menu_add(const char* title, void (*fx))
+void menu_add(const char* title, void (*fx)(void))
 {
 	if (menu_count < MENU_LIST_MAX) {
 		strcpy(menu_list[menu_count].title, title);
@@ -384,11 +399,14 @@ u32 tft_ui_get_val(const TFT_UI_ITEM* const item)
 {
 	switch (item->type) {
 		case tft_ui_checkbox:
-			return item->ui_item.checkbox.checked;
-		break;
+		
+    return item->ui_item.checkbox.checked;
 		
 		case tft_ui_list:
-			return item->ui_item.list.selected_int;
-		break;
+		
+    return item->ui_item.list.selected_int;
 	}
+  
+  return 0; 
 }
+

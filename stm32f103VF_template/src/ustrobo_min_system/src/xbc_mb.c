@@ -455,7 +455,7 @@ void xbc_test_program(void)
 {
 	u16 ticks_img = 0;
 	u8	pressed_cnt = 0;
-	u8  pre_pressed_cnt = 0;
+	//u8  pre_pressed_cnt = 0;
 	u16 press_times = 0;
 	u8 xbc_test_ko = 0;
 	u32 pre_xbc_press = 0;
@@ -469,7 +469,7 @@ void xbc_test_program(void)
 	{
 		if (ticks_img != get_ticks()) {
 			if (ticks_img % 20 == 0) {
-				pre_pressed_cnt = pressed_cnt;
+				//pre_pressed_cnt = pressed_cnt;
 				pre_xbc_press = xbc_press;
 				xbc_update();
 				switch (pressed_cnt)

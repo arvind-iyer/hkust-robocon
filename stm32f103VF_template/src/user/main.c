@@ -1,7 +1,6 @@
 #include "main.h"
 
-static u16 ticks_img 	= (u16)-1;
-static u16 seconds_img = (u16)-1;
+//static u16 ticks_img 	= (u16)-1;
 
 int main(void)
 {
@@ -37,7 +36,7 @@ int main(void)
 	menu_add("Button test", button_test);
 	menu_add("ASCII test", ascii_test);
 	menu_add("GPIO Pin test", gpio_pin_test);
-	menu(0);
+	menu(0, false);
 	robocon_main();
 	
 		

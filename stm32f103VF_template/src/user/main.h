@@ -3,6 +3,7 @@
 
 #include <stdio.h>
 #include <stdlib.h>
+#include <stdbool.h> 
 #include "stm32f10x.h"
 #include "stm32f10x_crc.h"
 
@@ -29,9 +30,5 @@
 #include "bluetooth.h"
 #include "robocon.h"
 #include "wheel_base.h"
-
-typedef struct {
-	u8 p, i, d;
-} william;
 
 #endif /* __MAIN_H */

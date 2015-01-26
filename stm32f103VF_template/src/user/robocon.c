@@ -1,7 +1,6 @@
 #include "robocon.h"
 
 static u16 ticks_img 	= (u16)-1;
-static u16 seconds_img = (u16)-1;
 
 void robocon_main(void)
 {

@@ -1,7 +1,6 @@
 #include "system_test.h"
 
 static u16 ticks_img 	= (u16)-1;
-static u16 seconds_img = (u16)-1;
 
 static u8 return_listener(void)
 {
@@ -59,7 +58,6 @@ void bluetooth_test(void)
 				tft_clear();
 				draw_top_bar();
 				
-				char c = 0;
 				
 				tft_prints(0, 1, "Received: %d", bluetooth_get_data_count());
 				tft_prints(0, 2, "Recent data: ");
@@ -307,7 +305,7 @@ void button_test(void)
 				draw_top_bar();
 				tft_prints(0, 1, "BUTTON TEST");
 				for (u8 i = 0, x = 1, y = 2; i < BUTTON_COUNT; ++i) {
-					tft_prints(x, y, "%d:%d", i, button_pressed(i));
+					tft_prints(x, y, "%d:%d", i, button_pressed((BUTTON) i));
 					if (y < tft_height - 1) {
 						++y;
 					} else {
