@@ -735,6 +735,11 @@
                 </FileArmAds>
               </FileOption>
             </File>
+            <File>
+              <FileName>pin_test.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\src\ustrobo_min_system\src\pin_test.c</FilePath>
+            </File>
           </Files>
         </Group>
         <Group>

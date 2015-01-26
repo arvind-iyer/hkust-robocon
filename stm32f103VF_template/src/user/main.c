@@ -1,4 +1,5 @@
 #include "main.h"
+#include "pin_test.h"
 
 static u16 ticks_img 	= (u16)-1;
 static u16 seconds_img = (u16)-1;
@@ -7,12 +8,18 @@ int main(void)
 {
 	/* Initialization */
 	/* Note: Init order is important! */
-	
+#ifdef PIN_TEST
+  GPIO_init();
+#endif
 	ticks_init();
 	buzzer_init();
-	button_init();
+//	button_init();
 	led_init();
 	tft_init(2, WHITE, BLACK, RED);
+#ifdef PIN_TEST
+  _delay_ms(1000);
+  pin_test();
+#endif
 	gyro_init();
 	battery_adc_init();
 	can_init();
