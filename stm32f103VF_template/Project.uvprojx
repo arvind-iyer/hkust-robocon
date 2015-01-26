@@ -439,14 +439,19 @@
               <FilePath>.\src\user\interface.c</FilePath>
             </File>
             <File>
+              <FileName>robocon.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\src\user\robocon.c</FilePath>
+            </File>
+            <File>
               <FileName>main.c</FileName>
               <FileType>1</FileType>
               <FilePath>.\src\user\main.c</FilePath>
             </File>
             <File>
-              <FileName>robocon.c</FileName>
+              <FileName>system_test.c</FileName>
               <FileType>1</FileType>
-              <FilePath>.\src\user\robocon.c</FilePath>
+              <FilePath>.\src\user\system_test.c</FilePath>
             </File>
             <File>
               <FileName>wheel_base.c</FileName>
@@ -729,11 +734,6 @@
                   </Cads>
                 </FileArmAds>
               </FileOption>
-            </File>
-            <File>
-              <FileName>system_test.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>.\src\user\system_test.c</FilePath>
             </File>
           </Files>
         </Group>
