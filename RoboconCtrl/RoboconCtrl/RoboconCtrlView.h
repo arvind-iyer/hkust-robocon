@@ -34,6 +34,7 @@ public:
 	virtual BOOL PreCreateWindow(CREATESTRUCT& cs);
 	virtual int OnCreate(LPCREATESTRUCT lpCreateStruct);
 	virtual void OnDestroy();
+	virtual void set_selection_point(CPoint point);
 
 // Private helper functions
 private:
@@ -72,10 +73,13 @@ private:
 	// Mouse position on the virtual grid
 	struct GridCoord grid_pos;
 
+	// Selector position on the virtual grid
+	struct GridCoord selected_grid_pos;
+
 	// Stores path of robot for OpenGL
 	std::deque<GLCoord> robot_path;
 
-	std::vector<GridCoord> robot_path_data;
+	std::vector<std::pair<GridCoord, GridCoord>> robot_path_data;
 
 // Implementation
 public:
@@ -94,6 +98,7 @@ protected:
 	afx_msg void OnContextMenu(CWnd* pWnd, CPoint point);
 	afx_msg void OnSize(UINT nType, int cx, int cy);
 	afx_msg BOOL OnEraseBkgnd(CDC* pDC);
+	afx_msg void OnLButtonUp(UINT nFlags, CPoint point);
 	afx_msg void OnLButtonDblClk(UINT nFlags, CPoint point);
 	afx_msg void OnMouseMove(UINT nFlags, CPoint point);
 	afx_msg LRESULT refresh_coordinates(WPARAM w, LPARAM l);

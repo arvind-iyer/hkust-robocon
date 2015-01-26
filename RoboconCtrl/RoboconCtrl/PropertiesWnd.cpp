@@ -197,10 +197,13 @@ std::vector<std::basic_string<TCHAR>> CPropertiesWnd::GetSettings()
 		m_wndPropList.GetProperty(1)->GetSubItem(3)->SetValue(_T("1"));
 	}
 	if (((CString)m_wndPropList.GetProperty(1)->GetSubItem(4)->GetValue()).IsEmpty()) {
-		m_wndPropList.GetProperty(1)->GetSubItem(3)->SetValue(_T("10"));
+		m_wndPropList.GetProperty(1)->GetSubItem(4)->SetValue(_T("10"));
 	}
 	if (((CString)m_wndPropList.GetProperty(1)->GetSubItem(5)->GetValue()).IsEmpty()) {
-		m_wndPropList.GetProperty(1)->GetSubItem(3)->SetValue(_T("10"));
+		m_wndPropList.GetProperty(1)->GetSubItem(5)->SetValue(_T("10"));
+	}
+	if (((CString)m_wndPropList.GetProperty(1)->GetSubItem(6)->GetValue()).IsEmpty()) {
+		m_wndPropList.GetProperty(1)->GetSubItem(6)->SetValue(_T("0"));
 	}
 	string_vector.push_back(((CString)m_wndPropList.GetProperty(0)->GetSubItem(0)->GetValue()).GetString());
 	string_vector.push_back(((CString)m_wndPropList.GetProperty(0)->GetSubItem(1)->GetValue()).GetString());
@@ -210,6 +213,7 @@ std::vector<std::basic_string<TCHAR>> CPropertiesWnd::GetSettings()
 	string_vector.push_back(((CString)m_wndPropList.GetProperty(1)->GetSubItem(3)->GetValue()).GetString());
 	string_vector.push_back(((CString)m_wndPropList.GetProperty(1)->GetSubItem(4)->GetValue()).GetString());
 	string_vector.push_back(((CString)m_wndPropList.GetProperty(1)->GetSubItem(5)->GetValue()).GetString());
+	string_vector.push_back(((CString)m_wndPropList.GetProperty(1)->GetSubItem(6)->GetValue()).GetString());
 
 	return string_vector;
 }
@@ -272,6 +276,9 @@ void CPropertiesWnd::InitPropList()
 	pGroup2->AddSubItem(pProp);
 
 	pProp = new CMFCPropertyGridProperty(_T("Read Delay"), (_variant_t)to_string(10).c_str(), _T("Sets read delay in milliseconds."));
+	pGroup2->AddSubItem(pProp);
+
+	pProp = new CMFCPropertyGridProperty(_T("Double Click"), (_variant_t)to_string(0).c_str(), _T("Turn double click for position on or off."));
 	pGroup2->AddSubItem(pProp);
 
 	m_wndPropList.AddProperty(pGroup2);

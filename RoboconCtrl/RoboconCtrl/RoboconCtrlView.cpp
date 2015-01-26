@@ -42,6 +42,7 @@ BEGIN_MESSAGE_MAP(CRoboconCtrlView, CView)
 	ON_WM_DESTROY()
 	ON_WM_SIZE()
 	ON_WM_ERASEBKGND()
+	ON_WM_LBUTTONUP()
 	ON_WM_LBUTTONDBLCLK()
 	ON_WM_MOUSEMOVE()
 	ON_REGISTERED_MESSAGE(UWM_RECEIVE_ROBOT_COORD, refresh_coordinates)
@@ -69,6 +70,8 @@ CRoboconCtrlView::CRoboconCtrlView()
 	robot_pos.valid = FALSE;
 
 	grid_pos.valid = FALSE;
+
+	selected_grid_pos.valid = FALSE;
 }
 
 CRoboconCtrlView::~CRoboconCtrlView()
@@ -93,7 +96,13 @@ CRoboconCtrlView::~CRoboconCtrlView()
 				std::ofstream output_data;
 				output_data.open(file_path.str());
 				for (size_t i = 0; i < robot_path_data.size(); ++i) {
-					output_data << robot_path_data[i].elapsed_time.count() << ", " << robot_path_data[i].x << ", " << robot_path_data[i].y << std::endl;
+					if (robot_path_data[i].second.valid) {
+						output_data << robot_path_data[i].first.elapsed_time.count() << ", " << robot_path_data[i].first.x << ", " << robot_path_data[i].first.y << ", " << robot_path_data[i].first.angle;
+						output_data << robot_path_data[i].second.x << robot_path_data[i].second.y << robot_path_data[i].second.angle << std::endl;
+					}
+					else {
+						output_data << robot_path_data[i].first.elapsed_time.count() << ", " << robot_path_data[i].first.x << ", " << robot_path_data[i].first.y << ", " << robot_path_data[i].first.angle << std::endl;
+					}
 				}
 				output_data.close();
 			}
@@ -547,9 +556,7 @@ void CRoboconCtrlView::OnContextMenu(CWnd* /* pWnd */, CPoint point)
 	GetClientRect(&rect);
 }
 
-void CRoboconCtrlView::OnLButtonDblClk(UINT nFlags, CPoint point)
-{
-	CView::OnLButtonDblClk(nFlags, point);
+void CRoboconCtrlView::set_selection_point(CPoint point) {
 	GLCoord g = GetGLCoord(point);
 
 	current_pos.x = g.x;
@@ -567,7 +574,26 @@ void CRoboconCtrlView::OnLButtonDblClk(UINT nFlags, CPoint point)
 
 		AfxGetMainWnd()->PostMessage(UWM_SEND_STRING, 2, (LPARAM)new std::vector<short>(data));
 	}
+
+	selected_grid_pos = grid_pos;
+
 	Invalidate();
+}
+
+void CRoboconCtrlView::OnLButtonUp(UINT nFlags, CPoint point)
+{
+	CView::OnLButtonUp(nFlags, point);
+	if (stoi(((CMainFrame*)AfxGetMainWnd())->GetSettings()[8]) == 0) {
+		set_selection_point(point);
+	}
+}
+
+void CRoboconCtrlView::OnLButtonDblClk(UINT nFlags, CPoint point)
+{
+	CView::OnLButtonDblClk(nFlags, point);
+	if (stoi(((CMainFrame*)AfxGetMainWnd())->GetSettings()[8]) == 1) {
+		set_selection_point(point);
+	}
 }
 
 CRoboconCtrlView::GLCoord CRoboconCtrlView::ConvertGridCoordToGLCoord(GridCoord g)
@@ -589,6 +615,7 @@ LRESULT CRoboconCtrlView::refresh_coordinates(WPARAM w, LPARAM l) {
 		reset_clock = FALSE;
 	}
 
+	// store grid coordinate data to memory so we can write it to file later
 	GridCoord r_pos;
 	r_pos.x = (*coordinates)[0];
 	r_pos.y = (*coordinates)[1];
@@ -597,7 +624,7 @@ LRESULT CRoboconCtrlView::refresh_coordinates(WPARAM w, LPARAM l) {
 	r_pos.valid = TRUE;
 	robot_pos = ConvertGridCoordToGLCoord(r_pos);
 	robot_path.push_back(robot_pos);
-	robot_path_data.push_back(r_pos);
+	robot_path_data.push_back(std::make_pair(r_pos, selected_grid_pos));
 	Invalidate();
 	return 0;
 }
@@ -626,7 +653,13 @@ LRESULT CRoboconCtrlView::reset_coord(WPARAM w, LPARAM l) {
 				std::ofstream output_data;
 				output_data.open(file_path.str());
 				for (size_t i = 0; i < robot_path_data.size(); ++i) {
-					output_data << robot_path_data[i].elapsed_time.count() << ", " << robot_path_data[i].x << ", " << robot_path_data[i].y << std::endl;
+					if (robot_path_data[i].second.valid) {
+						output_data << robot_path_data[i].first.elapsed_time.count() << ", " << robot_path_data[i].first.x << ", " << robot_path_data[i].first.y << ", " << robot_path_data[i].first.angle << ", " ;
+						output_data << robot_path_data[i].second.x << ", " << robot_path_data[i].second.y << ", " << robot_path_data[i].second.angle << std::endl;
+					}
+					else {
+						output_data << robot_path_data[i].first.elapsed_time.count() << ", " << robot_path_data[i].first.x << ", " << robot_path_data[i].first.y << ", " << robot_path_data[i].first.angle << std::endl;
+					}
 				}
 				output_data.close();
 			}
