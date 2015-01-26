@@ -27,23 +27,23 @@ Project File Date:  01/23/2015
 <h2>Output:</h2>
 Build target 'stm32_template'
 compiling interface.c...
-src\user\interface.c(276): warning:  #513-D: a value of type "void *" cannot be assigned to an entity of type "void (*)(void)"
+src\user\interface.c(292): warning:  #513-D: a value of type "void *" cannot be assigned to an entity of type "void (*)(void)"
                 menu_list[menu_count].fx = fx;
-src\user\interface.c(290): warning:  #1182-D: a declaration cannot have a label
-                                char checkbox = CHECKBOX_ASCII; 
-src\user\interface.c(287): warning:  #546-D: transfer of control bypasses initialization of:
-            variable "checkbox" (declared at line 290)
-                switch (item->type) {
-                ^
-src\user\interface.c(308): warning:  #1-D: last line of file ends without a newline
+src\user\interface.c(388): warning:  #111-D: statement is unreachable
+                break;
+src\user\interface.c(392): warning:  #111-D: statement is unreachable
+                break;
+src\user\interface.c(394): warning:  #1-D: last line of file ends without a newline
+  }
+src\user\interface.c(394): warning:  #940-D: missing return statement at end of non-void function "tft_ui_get_val"
   }
 src\user\interface.c(4): warning:  #177-D: variable "seconds_img" was declared but never referenced
   static u16 seconds_img = (u16)-1;
-src\user\interface.c: 5 warnings, 0 errors
+src\user\interface.c: 6 warnings, 0 errors
 linking...
-Program Size: Code=32500 RO-data=1324 RW-data=4836 ZI-data=36260  
+Program Size: Code=32424 RO-data=1324 RW-data=4836 ZI-data=36284  
 FromELF: creating hex file...
-".\output\stm32_template.axf" - 0 Error(s), 5 Warning(s).
+".\output\stm32_template.axf" - 0 Error(s), 6 Warning(s).
 
 <h2>Collection of Component include folders:</h2>
   C:\Users\Kenneth Au\Dropbox\Documents\HKUST\Robocon 2015\Software\STM32_Program\Robocon2015\stm32f103VF_template\RTE

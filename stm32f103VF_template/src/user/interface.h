@@ -30,7 +30,7 @@ typedef struct {
 typedef struct {
 	const u8 width;
 	const struct {
-		u32 lower, upper;
+		s32 lower, upper;
 	} range; 
 	u32 selected_int;
 } TFT_UI_LIST;
@@ -46,7 +46,7 @@ typedef struct {
 
 typedef struct {
 	const u8 item_count;
-	TFT_UI_ITEM* item_list; 
+	TFT_UI_ITEM** item_list; 
 	u8 selected_item;
 } TFT_UI;
 
@@ -59,6 +59,14 @@ void draw_top_bar(void);
 void menu(u8 default_id);
 void menu_add(const char* title, void (*fx));
 
+typedef enum {
+	tft_ui_event_left,
+	tft_ui_event_right,
+	tft_ui_event_up,
+	tft_ui_event_down,
+	tft_ui_event_select
+} TFT_UI_EVENT;
+void tft_ui_listener(TFT_UI* ui, const TFT_UI_EVENT change) ;
 void tft_ui_update(const TFT_UI* ui, bool toggle);
-
+u32 tft_ui_get_val(const TFT_UI_ITEM* item);
 #endif /* __INTERFACE_H */

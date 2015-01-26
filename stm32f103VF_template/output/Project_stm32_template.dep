@@ -48,8 +48,8 @@ I (.\src\stm32f10x_std\inc\stm32f10x_tim.h)(0x54B63B0C)
 I (.\src\ustrobo_min_system\inc\buzzer.h)(0x54BD04C2)
 I (.\src\ustrobo_min_system\inc\uart.h)(0x54BCBEAE)
 I (C:\Keil_v5\ARM\ARMCC\include\stdarg.h)(0x5475F2FA)
-F (.\src\user\buzzer_song.c)(0x54C010C5)(--c99 -c --cpu Cortex-M3 -D__MICROLIB -O3 --apcs=interwork -I.\src -I.\src\stm32f10x_std\inc -I.\src\ustrobo_min_system\inc -I.\src\user-I "C:\Users\Kenneth Au\Dropbox\Documents\HKUST\Robocon 2015\Software\STM32_Program\Robocon2015\stm32f103VF_template\RTE"-I C:\Keil_v5\ARM\PACK\Keil\STM32F1xx_DFP\1.0.5\Device\Include-I C:\Keil_v5\ARM\CMSIS\Include-D__UVISION_VERSION="513" -DSTM32F10X_XL -DUSE_STDPERIPH_DRIVER -DSTM32F10X_XL -DUSE_STM3210B_EVAL-o .\output\buzzer_song.o --omf_browse .\output\buzzer_song.crf --depend .\output\buzzer_song.d)
-I (src\user\buzzer_song.h)(0x54C01C8D)
+F (.\src\user\buzzer_song.c)(0x54C5D86D)(--c99 -c --cpu Cortex-M3 -D__MICROLIB -O3 --apcs=interwork -I.\src -I.\src\stm32f10x_std\inc -I.\src\ustrobo_min_system\inc -I.\src\user-I "C:\Users\Kenneth Au\Dropbox\Documents\HKUST\Robocon 2015\Software\STM32_Program\Robocon2015\stm32f103VF_template\RTE"-I C:\Keil_v5\ARM\PACK\Keil\STM32F1xx_DFP\1.0.5\Device\Include-I C:\Keil_v5\ARM\CMSIS\Include-D__UVISION_VERSION="513" -DSTM32F10X_XL -DUSE_STDPERIPH_DRIVER -DSTM32F10X_XL -DUSE_STM3210B_EVAL-o .\output\buzzer_song.o --omf_browse .\output\buzzer_song.crf --depend .\output\buzzer_song.d)
+I (src\user\buzzer_song.h)(0x54C5D7F8)
 I (.\src\ustrobo_min_system\inc\buzzer.h)(0x54BD04C2)
 I (.\src\stm32f10x_std\inc\stm32f10x_gpio.h)(0x54B63B0C)
 I (.\src\stm32f10x_std\inc\stm32f10x.h)(0x54B63B0C)
@@ -107,8 +107,8 @@ I (.\src\stm32f10x_std\inc\stm32f10x_rcc.h)(0x54B63B0C)
 I (.\src\stm32f10x_std\inc\stm32f10x_spi.h)(0x54B63B0C)
 I (.\src\stm32f10x_std\inc\stm32f10x_usart.h)(0x54B63B0C)
 I (.\src\stm32f10x_std\inc\misc.h)(0x54B63B0C)
-F (.\src\user\interface.c)(0x54C51C54)(--c99 -c --cpu Cortex-M3 -D__MICROLIB -O3 --apcs=interwork -I.\src -I.\src\stm32f10x_std\inc -I.\src\ustrobo_min_system\inc -I.\src\user-I "C:\Users\Kenneth Au\Dropbox\Documents\HKUST\Robocon 2015\Software\STM32_Program\Robocon2015\stm32f103VF_template\RTE"-I C:\Keil_v5\ARM\PACK\Keil\STM32F1xx_DFP\1.0.5\Device\Include-I C:\Keil_v5\ARM\CMSIS\Include-D__UVISION_VERSION="513" -DSTM32F10X_XL -DUSE_STDPERIPH_DRIVER -DSTM32F10X_XL -DUSE_STM3210B_EVAL-o .\output\interface.o --omf_browse .\output\interface.crf --depend .\output\interface.d)
-I (src\user\interface.h)(0x54C51B3F)
+F (.\src\user\interface.c)(0x54C5DF1F)(--c99 -c --cpu Cortex-M3 -D__MICROLIB -O3 --apcs=interwork -I.\src -I.\src\stm32f10x_std\inc -I.\src\ustrobo_min_system\inc -I.\src\user-I "C:\Users\Kenneth Au\Dropbox\Documents\HKUST\Robocon 2015\Software\STM32_Program\Robocon2015\stm32f103VF_template\RTE"-I C:\Keil_v5\ARM\PACK\Keil\STM32F1xx_DFP\1.0.5\Device\Include-I C:\Keil_v5\ARM\CMSIS\Include-D__UVISION_VERSION="513" -DSTM32F10X_XL -DUSE_STDPERIPH_DRIVER -DSTM32F10X_XL -DUSE_STM3210B_EVAL-o .\output\interface.o --omf_browse .\output\interface.crf --depend .\output\interface.d)
+I (src\user\interface.h)(0x54C5D6EB)
 I (C:\Keil_v5\ARM\ARMCC\include\stdbool.h)(0x5475F300)
 I (.\src\stm32f10x_std\inc\stm32f10x.h)(0x54B63B0C)
 I (.\src\stm32f10x_std\inc\core_cm3.h)(0x54B63B0C)
@@ -125,19 +125,19 @@ I (.\src\stm32f10x_std\inc\stm32f10x_spi.h)(0x54B63B0C)
 I (.\src\stm32f10x_std\inc\stm32f10x_usart.h)(0x54B63B0C)
 I (.\src\stm32f10x_std\inc\misc.h)(0x54B63B0C)
 I (.\src\ustrobo_min_system\inc\approx_math.h)(0x54B63B0C)
-I (.\src\ustrobo_min_system\inc\battery.h)(0x54BFEED3)
+I (.\src\ustrobo_min_system\inc\battery.h)(0x54C5DC8F)
 I (.\src\stm32f10x_std\inc\stm32f10x_adc.h)(0x54B63B0C)
 I (C:\Keil_v5\ARM\ARMCC\include\string.h)(0x5475F300)
 I (.\src\ustrobo_min_system\inc\button.h)(0x54BFFFC7)
 I (.\src\ustrobo_min_system\inc\gpio.h)(0x54BF6B2C)
 I (.\src\stm32f10x_std\inc\stm32f10x_tim.h)(0x54B63B0C)
 I (.\src\ustrobo_min_system\inc\lcd_red.h)(0x54C51AA7)
-I (.\src\ustrobo_min_system\inc\lcd_font.h)(0x54C51880)
+I (.\src\ustrobo_min_system\inc\lcd_font.h)(0x54C5DA4B)
 I (C:\Keil_v5\ARM\ARMCC\include\stdio.h)(0x5475F300)
 I (C:\Keil_v5\ARM\ARMCC\include\stdarg.h)(0x5475F2FA)
 I (.\src\ustrobo_min_system\inc\delay.h)(0x54B63B0C)
 I (.\src\ustrobo_min_system\inc\buzzer.h)(0x54BD04C2)
-I (src\user\buzzer_song.h)(0x54C01C8D)
+I (src\user\buzzer_song.h)(0x54C5D7F8)
 I (.\src\ustrobo_min_system\inc\ticks.h)(0x54B7DB4A)
 I (.\src\ustrobo_min_system\inc\led.h)(0x54BE67CF)
 F (.\src\user\main.c)(0x54C49637)(--c99 -c --cpu Cortex-M3 -D__MICROLIB -O3 --apcs=interwork -I.\src -I.\src\stm32f10x_std\inc -I.\src\ustrobo_min_system\inc -I.\src\user-I "C:\Users\Kenneth Au\Dropbox\Documents\HKUST\Robocon 2015\Software\STM32_Program\Robocon2015\stm32f103VF_template\RTE"-I C:\Keil_v5\ARM\PACK\Keil\STM32F1xx_DFP\1.0.5\Device\Include-I C:\Keil_v5\ARM\CMSIS\Include-D__UVISION_VERSION="513" -DSTM32F10X_XL -DUSE_STDPERIPH_DRIVER -DSTM32F10X_XL -DUSE_STM3210B_EVAL-o .\output\main.o --omf_browse .\output\main.crf --depend .\output\main.d)
@@ -162,20 +162,20 @@ I (.\src\stm32f10x_std\inc\stm32f10x_crc.h)(0x54B63B0C)
 I (.\src\ustrobo_min_system\inc\ticks.h)(0x54B7DB4A)
 I (.\src\stm32f10x_std\inc\stm32f10x_tim.h)(0x54B63B0C)
 I (.\src\ustrobo_min_system\inc\buzzer.h)(0x54BD04C2)
-I (.\src\ustrobo_min_system\inc\battery.h)(0x54BFEED3)
+I (.\src\ustrobo_min_system\inc\battery.h)(0x54C5DC8F)
 I (.\src\stm32f10x_std\inc\stm32f10x_adc.h)(0x54B63B0C)
 I (C:\Keil_v5\ARM\ARMCC\include\string.h)(0x5475F300)
 I (.\src\ustrobo_min_system\inc\delay.h)(0x54B63B0C)
 I (.\src\ustrobo_min_system\inc\led.h)(0x54BE67CF)
 I (.\src\ustrobo_min_system\inc\gpio.h)(0x54BF6B2C)
 I (.\src\ustrobo_min_system\inc\lcd_red.h)(0x54C51AA7)
-I (.\src\ustrobo_min_system\inc\lcd_font.h)(0x54C51880)
+I (.\src\ustrobo_min_system\inc\lcd_font.h)(0x54C5DA4B)
 I (C:\Keil_v5\ARM\ARMCC\include\stdarg.h)(0x5475F2FA)
-I (src\user\interface.h)(0x54C51B3F)
+I (src\user\interface.h)(0x54C5D6EB)
 I (C:\Keil_v5\ARM\ARMCC\include\stdbool.h)(0x5475F300)
 I (.\src\ustrobo_min_system\inc\approx_math.h)(0x54B63B0C)
 I (.\src\ustrobo_min_system\inc\button.h)(0x54BFFFC7)
-I (src\user\buzzer_song.h)(0x54C01C8D)
+I (src\user\buzzer_song.h)(0x54C5D7F8)
 I (.\src\ustrobo_min_system\inc\xbc_mb.h)(0x54B63B0C)
 I (.\src\ustrobo_min_system\inc\encoder.h)(0x54B63B0C)
 I (src\user\system_test.h)(0x54C34B6D)
@@ -211,20 +211,20 @@ I (.\src\stm32f10x_std\inc\stm32f10x_crc.h)(0x54B63B0C)
 I (.\src\ustrobo_min_system\inc\ticks.h)(0x54B7DB4A)
 I (.\src\stm32f10x_std\inc\stm32f10x_tim.h)(0x54B63B0C)
 I (.\src\ustrobo_min_system\inc\buzzer.h)(0x54BD04C2)
-I (.\src\ustrobo_min_system\inc\battery.h)(0x54BFEED3)
+I (.\src\ustrobo_min_system\inc\battery.h)(0x54C5DC8F)
 I (.\src\stm32f10x_std\inc\stm32f10x_adc.h)(0x54B63B0C)
 I (C:\Keil_v5\ARM\ARMCC\include\string.h)(0x5475F300)
 I (.\src\ustrobo_min_system\inc\delay.h)(0x54B63B0C)
 I (.\src\ustrobo_min_system\inc\led.h)(0x54BE67CF)
 I (.\src\ustrobo_min_system\inc\gpio.h)(0x54BF6B2C)
 I (.\src\ustrobo_min_system\inc\lcd_red.h)(0x54C51AA7)
-I (.\src\ustrobo_min_system\inc\lcd_font.h)(0x54C51880)
+I (.\src\ustrobo_min_system\inc\lcd_font.h)(0x54C5DA4B)
 I (C:\Keil_v5\ARM\ARMCC\include\stdarg.h)(0x5475F2FA)
-I (src\user\interface.h)(0x54C51B3F)
+I (src\user\interface.h)(0x54C5D6EB)
 I (C:\Keil_v5\ARM\ARMCC\include\stdbool.h)(0x5475F300)
 I (.\src\ustrobo_min_system\inc\approx_math.h)(0x54B63B0C)
 I (.\src\ustrobo_min_system\inc\button.h)(0x54BFFFC7)
-I (src\user\buzzer_song.h)(0x54C01C8D)
+I (src\user\buzzer_song.h)(0x54C5D7F8)
 I (.\src\ustrobo_min_system\inc\xbc_mb.h)(0x54B63B0C)
 I (.\src\ustrobo_min_system\inc\encoder.h)(0x54B63B0C)
 I (src\user\can_protocol.h)(0x54C51933)
@@ -323,7 +323,7 @@ I (.\src\stm32f10x_std\inc\stm32f10x_spi.h)(0x54B63B0C)
 I (.\src\stm32f10x_std\inc\stm32f10x_usart.h)(0x54B63B0C)
 I (.\src\stm32f10x_std\inc\misc.h)(0x54B63B0C)
 F (.\src\ustrobo_min_system\src\battery.c)(0x54C01DC9)(--c99 -c --cpu Cortex-M3 -D__MICROLIB -O3 --apcs=interwork -I.\src -I.\src\stm32f10x_std\inc -I.\src\ustrobo_min_system\inc -I.\src\user-I "C:\Users\Kenneth Au\Dropbox\Documents\HKUST\Robocon 2015\Software\STM32_Program\Robocon2015\stm32f103VF_template\RTE"-I C:\Keil_v5\ARM\PACK\Keil\STM32F1xx_DFP\1.0.5\Device\Include-I C:\Keil_v5\ARM\CMSIS\Include-D__UVISION_VERSION="513" -DSTM32F10X_XL -DUSE_STDPERIPH_DRIVER -DSTM32F10X_XL -DUSE_STM3210B_EVAL-o .\output\battery.o --omf_browse .\output\battery.crf --depend .\output\battery.d)
-I (.\src\ustrobo_min_system\inc\battery.h)(0x54BFEED3)
+I (.\src\ustrobo_min_system\inc\battery.h)(0x54C5DC8F)
 I (.\src\stm32f10x_std\inc\stm32f10x.h)(0x54B63B0C)
 I (.\src\stm32f10x_std\inc\core_cm3.h)(0x54B63B0C)
 I (C:\Keil_v5\ARM\ARMCC\include\stdint.h)(0x5475F300)
@@ -359,7 +359,7 @@ I (.\src\stm32f10x_std\inc\misc.h)(0x54B63B0C)
 I (.\src\ustrobo_min_system\inc\gpio.h)(0x54BF6B2C)
 I (.\src\stm32f10x_std\inc\stm32f10x_tim.h)(0x54B63B0C)
 I (.\src\ustrobo_min_system\inc\lcd_red.h)(0x54C51AA7)
-I (.\src\ustrobo_min_system\inc\lcd_font.h)(0x54C51880)
+I (.\src\ustrobo_min_system\inc\lcd_font.h)(0x54C5DA4B)
 I (C:\Keil_v5\ARM\ARMCC\include\stdio.h)(0x5475F300)
 I (C:\Keil_v5\ARM\ARMCC\include\stdarg.h)(0x5475F2FA)
 I (.\src\ustrobo_min_system\inc\delay.h)(0x54B63B0C)
@@ -413,7 +413,7 @@ I (.\src\stm32f10x_std\inc\stm32f10x_rcc.h)(0x54B63B0C)
 I (.\src\stm32f10x_std\inc\stm32f10x_spi.h)(0x54B63B0C)
 I (.\src\stm32f10x_std\inc\stm32f10x_usart.h)(0x54B63B0C)
 I (.\src\stm32f10x_std\inc\misc.h)(0x54B63B0C)
-I (.\src\ustrobo_min_system\inc\lcd_font.h)(0x54C51880)
+I (.\src\ustrobo_min_system\inc\lcd_font.h)(0x54C5DA4B)
 I (C:\Keil_v5\ARM\ARMCC\include\stdio.h)(0x5475F300)
 I (C:\Keil_v5\ARM\ARMCC\include\stdarg.h)(0x5475F2FA)
 I (.\src\ustrobo_min_system\inc\delay.h)(0x54B63B0C)
@@ -531,7 +531,7 @@ I (.\src\stm32f10x_std\inc\misc.h)(0x54B63B0C)
 I (.\src\stm32f10x_std\inc\stm32f10x_tim.h)(0x54B63B0C)
 I (.\src\ustrobo_min_system\inc\delay.h)(0x54B63B0C)
 I (.\src\ustrobo_min_system\inc\lcd_red.h)(0x54C51AA7)
-I (.\src\ustrobo_min_system\inc\lcd_font.h)(0x54C51880)
+I (.\src\ustrobo_min_system\inc\lcd_font.h)(0x54C5DA4B)
 I (C:\Keil_v5\ARM\ARMCC\include\stdio.h)(0x5475F300)
 I (C:\Keil_v5\ARM\ARMCC\include\stdarg.h)(0x5475F2FA)
 I (.\src\ustrobo_min_system\inc\ticks.h)(0x54B7DB4A)
@@ -589,7 +589,7 @@ I (.\src\stm32f10x_std\inc\stm32f10x_usart.h)(0x54B63B0C)
 I (.\src\stm32f10x_std\inc\misc.h)(0x54B63B0C)
 I (.\src\stm32f10x_std\inc\stm32f10x_tim.h)(0x54B63B0C)
 F (.\src\ustrobo_min_system\src\usart.c)(0x54BBD651)()
-F (.\src\user\system_test.c)(0x54C51922)(--c99 -c --cpu Cortex-M3 -D__MICROLIB -O3 --apcs=interwork -I.\src -I.\src\stm32f10x_std\inc -I.\src\ustrobo_min_system\inc -I.\src\user-I "C:\Users\Kenneth Au\Dropbox\Documents\HKUST\Robocon 2015\Software\STM32_Program\Robocon2015\stm32f103VF_template\RTE"-I C:\Keil_v5\ARM\PACK\Keil\STM32F1xx_DFP\1.0.5\Device\Include-I C:\Keil_v5\ARM\CMSIS\Include-D__UVISION_VERSION="513" -DSTM32F10X_XL -DUSE_STDPERIPH_DRIVER -DSTM32F10X_XL -DUSE_STM3210B_EVAL-o .\output\system_test_1.o --omf_browse .\output\system_test_1.crf --depend .\output\system_test_1.d)
+F (.\src\user\system_test.c)(0x54C5DAA9)(--c99 -c --cpu Cortex-M3 -D__MICROLIB -O3 --apcs=interwork -I.\src -I.\src\stm32f10x_std\inc -I.\src\ustrobo_min_system\inc -I.\src\user-I "C:\Users\Kenneth Au\Dropbox\Documents\HKUST\Robocon 2015\Software\STM32_Program\Robocon2015\stm32f103VF_template\RTE"-I C:\Keil_v5\ARM\PACK\Keil\STM32F1xx_DFP\1.0.5\Device\Include-I C:\Keil_v5\ARM\CMSIS\Include-D__UVISION_VERSION="513" -DSTM32F10X_XL -DUSE_STDPERIPH_DRIVER -DSTM32F10X_XL -DUSE_STM3210B_EVAL-o .\output\system_test_1.o --omf_browse .\output\system_test_1.crf --depend .\output\system_test_1.d)
 I (src\user\system_test.h)(0x54C34B6D)
 I (C:\Keil_v5\ARM\ARMCC\include\stdio.h)(0x5475F300)
 I (C:\Keil_v5\ARM\ARMCC\include\stdbool.h)(0x5475F300)
@@ -611,19 +611,19 @@ I (.\src\stm32f10x_std\inc\stm32f10x_crc.h)(0x54B63B0C)
 I (.\src\ustrobo_min_system\inc\ticks.h)(0x54B7DB4A)
 I (.\src\stm32f10x_std\inc\stm32f10x_tim.h)(0x54B63B0C)
 I (.\src\ustrobo_min_system\inc\buzzer.h)(0x54BD04C2)
-I (.\src\ustrobo_min_system\inc\battery.h)(0x54BFEED3)
+I (.\src\ustrobo_min_system\inc\battery.h)(0x54C5DC8F)
 I (.\src\stm32f10x_std\inc\stm32f10x_adc.h)(0x54B63B0C)
 I (C:\Keil_v5\ARM\ARMCC\include\string.h)(0x5475F300)
 I (.\src\ustrobo_min_system\inc\delay.h)(0x54B63B0C)
 I (.\src\ustrobo_min_system\inc\led.h)(0x54BE67CF)
 I (.\src\ustrobo_min_system\inc\gpio.h)(0x54BF6B2C)
 I (.\src\ustrobo_min_system\inc\lcd_red.h)(0x54C51AA7)
-I (.\src\ustrobo_min_system\inc\lcd_font.h)(0x54C51880)
+I (.\src\ustrobo_min_system\inc\lcd_font.h)(0x54C5DA4B)
 I (C:\Keil_v5\ARM\ARMCC\include\stdarg.h)(0x5475F2FA)
-I (src\user\interface.h)(0x54C51B3F)
+I (src\user\interface.h)(0x54C5D6EB)
 I (.\src\ustrobo_min_system\inc\approx_math.h)(0x54B63B0C)
 I (.\src\ustrobo_min_system\inc\button.h)(0x54BFFFC7)
-I (src\user\buzzer_song.h)(0x54C01C8D)
+I (src\user\buzzer_song.h)(0x54C5D7F8)
 I (.\src\ustrobo_min_system\inc\xbc_mb.h)(0x54B63B0C)
 I (.\src\ustrobo_min_system\inc\encoder.h)(0x54B63B0C)
 I (src\user\can_protocol.h)(0x54C51933)

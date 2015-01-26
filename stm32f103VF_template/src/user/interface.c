@@ -7,7 +7,12 @@ static u8 menu_count = 0;
 
 static MENU_ITEM menu_list[MENU_LIST_MAX];
 
-
+/**
+	* @brief System start interface display (to be called directly, delay exists)
+	* @param title: Title
+	* @param duration: the delay time (in ms) of this function
+	* @retval None
+	*/
 void system_start(const char* title, u16 duration)
 {
 	led_control((LED) (LED_D1 | LED_D2 | LED_D3), LED_ON);
@@ -80,6 +85,12 @@ void system_start(const char* title, u16 duration)
 }
 
 
+/**
+	* @brief Regular battery check (to be called every 10 seconds)
+	* @param None
+	* @retval None.
+	* @warning Low battery will NOT go into while loop. 
+	*/
 void battery_regular_check(void)
 {
 	switch(battery_check()) {
@@ -99,7 +110,12 @@ void battery_regular_check(void)
 		
 }
 
-static void draw_battery_icon(u8 batt)
+/**
+	* @brief Draw the battery icon on the top right corner of the TFT LCD monitor
+	* @param batt: The battery level in voltage times 10 (122 for 12.2V)
+	* @retval None
+	*/
+static void draw_battery_icon(u16 batt)
 {
 	u8 pos = (tft_get_orientation() % 2 ? MAX_HEIGHT : MAX_WIDTH);
 	u16 batt_color = 0, batt_boundary = 0;
@@ -279,30 +295,100 @@ void menu_add(const char* title, void (*fx))
 	
 }
 
+void tft_ui_listener(TFT_UI* ui, const TFT_UI_EVENT change) 
+{
+	
+	if (change == tft_ui_event_up || change == tft_ui_event_down) {
+		// Switch selection
+		if (change == tft_ui_event_up) {
+			if (ui->selected_item == 0) {
+				ui->selected_item = ui->item_count - 1;
+			} else {
+				--ui->selected_item;
+			}
+		} else if (change == tft_ui_event_down) {
+			if (ui->selected_item == ui->item_count - 1) {
+				ui->selected_item = 0;
+			} else {
+				++ui->selected_item;
+			}
+		}
+	} else {
+	
+		TFT_UI_ITEM* item = ui->item_list[ui->selected_item];
+		switch (item->type) {
+			case tft_ui_checkbox:
+				if (tft_ui_event_select) {
+					item->ui_item.checkbox.checked ^= 1;
+					CLICK_MUSIC;
+				}
+			break;
+			
+			case tft_ui_list:
+				{
+					if (change == tft_ui_event_left) {
+						if (item->ui_item.list.selected_int == item->ui_item.list.range.lower) {
+							item->ui_item.list.selected_int = item->ui_item.list.range.upper;
+						} else {
+							--item->ui_item.list.selected_int;
+						}
+						CLICK_MUSIC;
+					}
+					else if (change == tft_ui_event_right) {
+						if (item->ui_item.list.selected_int == item->ui_item.list.range.upper) {
+							item->ui_item.list.selected_int = item->ui_item.list.range.lower;
+						} else {
+							++item->ui_item.list.selected_int;
+						}
+						CLICK_MUSIC;
+					}
+				}
+			break;
+		}
+	}
+}
 
-void tft_ui_update(const TFT_UI* ui, bool toggle) 
+void tft_ui_update(const TFT_UI* ui, const bool toggle) 
 {
 	for (u8 i = 0; i < ui->item_count; ++i) {
-		TFT_UI_ITEM* item = &(ui->item_list[i]); 
+		TFT_UI_ITEM* item = ui->item_list[i]; 
+		bool item_toggle = toggle;
+		if (ui->selected_item != i) {
+			item_toggle = false;
+		}
 		switch (item->type) {
 			case tft_ui_checkbox:  
-				// Print checkbox
-				char checkbox = CHECKBOX_ASCII; 
-				if (item->ui_item.checkbox.checked) {
-					checkbox = toggle ? HIGHLIGHTED_CHECKBOX_ASCII : CHECKBOX_ASCII;
-				} else {
-					checkbox = toggle ? HIGHLIGHTED_CHECKED_CHECKBOX_ASCII : CHECKED_CHECKBOX_ASCII;
+				{
+					// Print checkbox
+					char checkbox = CHECKBOX_ASCII; 
+					if (!item->ui_item.checkbox.checked) {
+						checkbox = item_toggle ? HIGHLIGHTED_CHECKBOX_ASCII : CHECKBOX_ASCII;
+					} else {
+						checkbox = item_toggle ? HIGHLIGHTED_CHECKED_CHECKBOX_ASCII : CHECKED_CHECKBOX_ASCII;
+					}
+					tft_prints(item->x, item->y, "%c", checkbox);
 				}
-				tft_prints(item->x, item->y, "%c", checkbox);
-			
 			break;
 			
 			case tft_ui_list:
 				// Print the two arrows
-			tft_prints(item->x, item->y, "<");
-			tft_prints(item->x + item->ui_item.list.width, item->y, ">");
+				tft_prints(item->x, item->y, "%c", item_toggle ? BLACK_BLOCK_ASCII : '<');
+				tft_prints(item->x + item->ui_item.list.width, item->y, "%c", item_toggle ? BLACK_BLOCK_ASCII : '>');
 			
 			break;
 		}
+	}
+}
+
+u32 tft_ui_get_val(const TFT_UI_ITEM* const item)
+{
+	switch (item->type) {
+		case tft_ui_checkbox:
+			return item->ui_item.checkbox.checked;
+		break;
+		
+		case tft_ui_list:
+			return item->ui_item.list.selected_int;
+		break;
 	}
 }

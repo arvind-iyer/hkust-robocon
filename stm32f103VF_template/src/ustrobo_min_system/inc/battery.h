@@ -15,7 +15,7 @@
 #define	BATTERY_LOW_LEVEL						1160	// <= 11.50V will generate warning sound
 #define	BATTERY_SUPER_LOW_LEVEL			1120	// <= 11.10V will stop the program (while loop)
 
-#define	BATTERY_VALUE_COUNT					20		// Take average of 20 values
+#define	BATTERY_VALUE_COUNT					30		// Take average of 30 values
 typedef enum {
 	BATTERY_OKAY,
 	BATTERY_LOW,

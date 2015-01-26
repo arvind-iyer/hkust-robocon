@@ -3,8 +3,6 @@
 static u16 ticks_img 	= (u16)-1;
 static u16 seconds_img = (u16)-1;
 
-static const char SELECTED = (char) 0xdb;
-
 static u8 return_listener(void)
 {
 	return button_pressed(BUTTON_1) > 10 || button_pressed(BUTTON_2) > 10;
@@ -122,21 +120,13 @@ void ascii_test(void)
 }
 
 void motor_test(void)
-{
-	MOTOR_ID motor_id = MOTOR1;
-	const u8 line_available[] = {2, 5, 6, 7};
-	u8 line_id = 0;
-	CLOSE_LOOP_FLAG close_loop_flag = OPEN_LOOP;
-	s32 speed = 0;
-	bool test_flag = false;
-	
-
+{	
 	TFT_UI_ITEM
 		motor_list = {
 			.type = tft_ui_list,
 			.x = 2, .y = 2,
 			.ui_item.list = {
-				.width = 12,
+				.width = 11,
 				.range.lower = 0,
 				.range.upper = CAN_MOTOR_COUNT-1,
 				.selected_int = 0
@@ -147,9 +137,9 @@ void motor_test(void)
 			.type = tft_ui_list,
 			.x = 2, .y = 5,
 			.ui_item.list = {
-				.width = 12,
-				.range.lower = (s32) -9999,
-				.range.upper = (s32) 9999,
+				.width = 11,
+				.range.lower = (s32) 0,
+				.range.upper = (s32) 1,
 				.selected_int = 0
 			}
 		},
@@ -158,7 +148,7 @@ void motor_test(void)
 			.type = tft_ui_list,
 			.x = 7, .y = 6,
 			.ui_item.list = {
-				.width = 6,
+				.width = 7,
 				.range.lower = (s32) -500,
 				.range.upper = (s32) 500,
 				.selected_int = 0
@@ -174,8 +164,8 @@ void motor_test(void)
 		}
 	;  
 	
-	TFT_UI_ITEM motor_test_ui_list[] = {
-		motor_list, motor_loop_type, motor_speed, motor_test_flag
+	TFT_UI_ITEM* motor_test_ui_list[] = {
+		&motor_list, &motor_loop_type, &motor_speed, &motor_test_flag
 	}; 
 	
 	TFT_UI tft_ui = {
@@ -186,9 +176,6 @@ void motor_test(void)
 		if (ticks_img != get_ticks()) {
 			ticks_img = get_ticks();
 			
-			u8 line = line_available[line_id];
-			
-
 			if (ticks_img % 50 == 0) {
 				battery_adc_update();
 			}
@@ -197,74 +184,43 @@ void motor_test(void)
 				button_update();
 				if (return_listener()) {
 					// Stop the motor before exit the test.
-					motor_set_vel(motor_id, 0, OPEN_LOOP);
+					motor_set_vel((MOTOR_ID) tft_ui_get_val(&motor_list), 0, OPEN_LOOP);
 					return; 
 				}
 				// Not allow to move in test mode
-				if (!test_flag) {
+				if (!tft_ui_get_val(&motor_test_flag)) {
 					// Line switcher
-					if (button_pressed(BUTTON_JS2_UP) == 1) {
-						if (line_id == 0) {
-							line_id = sizeof(line_available) / sizeof(u8) - 1;
-						} else {
-							--line_id;
-						}
+					if (button_pressed(BUTTON_JS2_UP) == 1) {				
+						tft_ui_listener(&tft_ui, tft_ui_event_up);
 					}
 					
 					if (button_pressed(BUTTON_JS2_DOWN) == 1) {
-						line_id = (line_id + 1) % (sizeof(line_available) / sizeof(u8));
-					}
-				}
-				// Line 2: Motor selector
-				if (line == 2) {
-					if (button_pressed(BUTTON_JS2_LEFT) == 1) {
-						if (motor_id > 0) {
-							--motor_id;
-							CLICK_MUSIC;
-						}
-					}
-					
-					if (button_pressed(BUTTON_JS2_RIGHT) == 1) {
-						if (motor_id < CAN_MOTOR_COUNT - 1) {
-							++motor_id;
-							CLICK_MUSIC;
-						}
+						tft_ui_listener(&tft_ui, tft_ui_event_down);
 					}
 				}
 				
-				// Line 5: Close loop flag switcher
-				if (line == 5) {
-					if (button_pressed(BUTTON_JS2_LEFT) == 1 || button_pressed(BUTTON_JS2_RIGHT) == 1) {
-						close_loop_flag = (CLOSE_LOOP_FLAG) !close_loop_flag;
-						CLICK_MUSIC;
-					}
+				if (button_pressed(BUTTON_JS2_LEFT) == 1 || button_hold(BUTTON_JS2_LEFT, 10, 2)) {
+					tft_ui_listener(&tft_ui, tft_ui_event_left);
 				}
 				
-				// Line 6: Speed
-				if (line == 6) {
-					if (button_pressed(BUTTON_JS2_LEFT) == 1 || button_hold(BUTTON_JS2_LEFT, 10, 1)) {
-						--speed;
-					}
-					if (button_pressed(BUTTON_JS2_RIGHT) == 1 || button_hold(BUTTON_JS2_RIGHT, 10, 1)) {
-						++speed;
-					}
+				if (button_pressed(BUTTON_JS2_RIGHT) == 1 || button_hold(BUTTON_JS2_RIGHT, 10, 2)) {
+					tft_ui_listener(&tft_ui, tft_ui_event_right);
 				}
 				
-				if (line == 7) {
-					if (button_pressed(BUTTON_JS2_CENTER) == 1) {
-						test_flag = !test_flag;
-						CLICK_MUSIC;
-					}
+				if (button_pressed(BUTTON_JS2_CENTER) == 1) {
+					tft_ui_listener(&tft_ui, tft_ui_event_select);
 				}
+
 			}
 			
 			if (ticks_img % 50 == 5) {
-				if (test_flag) {
+				if (tft_ui_get_val(&motor_test_flag)) {
 					// Start setting velocity
-					motor_set_vel(motor_id, speed, close_loop_flag);
+					motor_set_vel((MOTOR_ID) tft_ui_get_val(&motor_list), (s32) tft_ui_get_val(&motor_speed), \
+						(CLOSE_LOOP_FLAG) tft_ui_get_val(&motor_loop_type));
 				} else {
 					// Stop
-					motor_set_vel(motor_id, 0, OPEN_LOOP);
+					motor_set_vel((MOTOR_ID) tft_ui_get_val(&motor_list), 0, OPEN_LOOP);
 				}
 			}
 			
@@ -273,20 +229,17 @@ void motor_test(void)
 				draw_top_bar();
 				
 				tft_prints(0, 1, "MOTOR TEST");
-				tft_prints(0, 2, "  %c  MOTOR%-2d %c", (ticks_img < 500 && line == 2) ? SELECTED : '<', \
-					(motor_id+1), (ticks_img < 500 && line == 2) ? SELECTED : '>');
-				tft_prints(0, 3, "ID: 0x%03X", CAN_MOTOR_BASE + motor_id); 
-				tft_prints(0, 4, "Encoder: %d", get_encoder_value(motor_id));
+				tft_prints(5, 2, "MOTOR%-2d", tft_ui_get_val(&motor_list));
+				tft_prints(0, 3, "ID: 0x%03X", CAN_MOTOR_BASE + tft_ui_get_val(&motor_list)); 
+				tft_prints(0, 4, "Encoder: %d", get_encoder_value((MOTOR_ID) tft_ui_get_val(&motor_list)));
 				
-				tft_prints(0, 5, "  %c   %-5s  %c", (ticks_img < 500 && line == 5) ? SELECTED : '<', \
-					close_loop_flag == OPEN_LOOP ? "OPEN" : "CLOSE", (ticks_img < 500 && line == 5) ? SELECTED : '>');
+				tft_prints(6, 5, "%s", tft_ui_get_val(&motor_loop_type) == CLOSE_LOOP ? "CLOSE" : "OPEN");
 				
-				tft_prints(0, 6, "Speed: ");
-				if (ticks_img < 500 || line != 6) {	// Flashing the number
-					tft_prints(7, 6, "%d", speed);
-				} 
-				tft_prints(0, 7, " (%c) Start test", (ticks_img < 500 && line == 7) ? SELECTED : (test_flag ? 'X' : ' '));
+				tft_prints(0, 6, "Speed:   %d", tft_ui_get_val(&motor_speed));
+				tft_prints(0, 7, "   Start test");
+
 				
+				tft_ui_update(&tft_ui, ticks_img % 500 < 250);
 				tft_update();
 			}
 		}
@@ -324,7 +277,7 @@ void position_test(void)
 				tft_prints(0, 4, " A: %d", get_pos()->angle);
 				tft_prints(0, 5, " Avail: %d", gyro_available);
 				
-				tft_prints(0, 7, " (%c) Calibrate", ticks_img < 500 ? SELECTED : ' ');
+				tft_prints(0, 7, " (%c) Calibrate", ticks_img < 500 ? BLACK_BLOCK_ASCII : ' ');
 				
 				tft_update();
 			}
