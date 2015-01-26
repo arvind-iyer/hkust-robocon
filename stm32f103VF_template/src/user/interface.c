@@ -205,10 +205,25 @@ void menu(u8 default_id, bool pre_enter)
 				}
 			}
 
-			
 			if (ticks_img % 50 == 2) {
 				// Check button input
 				button_update();
+							
+				/** Menu item shift **/
+				if (button_pressed(BUTTON_JS2_DOWN) == 1 || button_hold(BUTTON_JS2_DOWN, 10, 1)) {
+					// Go down the list
+					if (menu_selected < menu_count - 1) {
+						++menu_selected; 
+					} else {
+						menu_selected = 0;
+					}
+				} else if (button_pressed(BUTTON_JS2_UP) == 1 || button_hold(BUTTON_JS2_UP, 10, 1)) {
+					if (menu_selected > 0) {
+						--menu_selected;
+					} else {
+						menu_selected = menu_count - 1;
+					}
+				}
 				
 				/** Enter menu **/
 				if (button_pressed(BUTTON_JS2_CENTER) == 1 || pre_enter) {
@@ -227,26 +242,7 @@ void menu(u8 default_id, bool pre_enter)
 						tft_set_text_color(prev_text_color);
 						pre_enter = false; 
 					}
-				}
-			}
-
-			
-				/** Menu item shift **/
-				if (button_pressed(BUTTON_JS2_DOWN) == 1 || button_hold(BUTTON_JS2_DOWN, 10, 2)) {
-					// Go down the list
-					if (menu_selected < menu_count - 1) {
-						++menu_selected; 
-					} else {
-						menu_selected = 0;
-					}
-				} else if (button_pressed(BUTTON_JS2_UP) == 1 || button_hold(BUTTON_JS2_UP, 10, 2)) {
-					if (menu_selected > 0) {
-						--menu_selected;
-					} else {
-						menu_selected = menu_count - 1;
-					}
-				}
-				
+				}        
 				/** Change screen orientation **/
 				if (button_pressed(BUTTON_1) == 10) {
 					tft_set_orientation((tft_get_orientation() + 1) % 4);
@@ -256,8 +252,8 @@ void menu(u8 default_id, bool pre_enter)
 					tft_set_orientation((tft_get_orientation() + 3) % 4);
 					SUCCESSFUL_MUSIC;
 				}
-				
-			
+			}	
+      
 			if (ticks_img % 50 == 7) {
 				u16 prev_bg_color = tft_get_bg_color();
 				u16 prev_text_color = tft_get_text_color();
