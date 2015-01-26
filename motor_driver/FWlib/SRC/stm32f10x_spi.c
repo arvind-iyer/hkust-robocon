@@ -1,12 +1,12 @@
 /**
   ******************************************************************************
-  * @file  stm32f10x_spi.c
+  * @file    stm32f10x_spi.c
   * @author  MCD Application Team
-  * @version  V3.0.0
-  * @date  04/06/2009
-  * @brief  This file provides all the SPI firmware functions.
+  * @version V3.5.0
+  * @date    11-March-2011
+  * @brief   This file provides all the SPI firmware functions.
   ******************************************************************************
-  * @copy
+  * @attention
   *
   * THE PRESENT FIRMWARE WHICH IS FOR GUIDANCE ONLY AIMS AT PROVIDING CUSTOMERS
   * WITH CODING INFORMATION REGARDING THEIR PRODUCTS IN ORDER FOR THEM TO SAVE
@@ -15,14 +15,15 @@
   * FROM THE CONTENT OF SUCH FIRMWARE AND/OR THE USE MADE BY CUSTOMERS OF THE
   * CODING INFORMATION CONTAINED HEREIN IN CONNECTION WITH THEIR PRODUCTS.
   *
-  * <h2><center>&copy; COPYRIGHT 2009 STMicroelectronics</center></h2>
-  */ 
+  * <h2><center>&copy; COPYRIGHT 2011 STMicroelectronics</center></h2>
+  ******************************************************************************
+  */
 
 /* Includes ------------------------------------------------------------------*/
 #include "stm32f10x_spi.h"
 #include "stm32f10x_rcc.h"
 
-/** @addtogroup StdPeriph_Driver
+/** @addtogroup STM32F10x_StdPeriph_Driver
   * @{
   */
 
@@ -71,6 +72,12 @@
 #define SPI_Mode_Select      ((uint16_t)0xF7FF)
 #define I2S_Mode_Select      ((uint16_t)0x0800) 
 
+/* I2S clock source selection masks */
+#define I2S2_CLOCK_SRC       ((uint32_t)(0x00020000))
+#define I2S3_CLOCK_SRC       ((uint32_t)(0x00040000))
+#define I2S_MUL_MASK         ((uint32_t)(0x0000F000))
+#define I2S_DIV_MASK         ((uint32_t)(0x000000F0))
+
 /**
   * @}
   */
@@ -105,48 +112,48 @@
 
 /**
   * @brief  Deinitializes the SPIx peripheral registers to their default
-  *   reset values (Affects also the I2Ss).
-  * @param SPIx: where x can be 1, 2 or 3 to select the SPI peripheral.
-  * @retval : None
+  *         reset values (Affects also the I2Ss).
+  * @param  SPIx: where x can be 1, 2 or 3 to select the SPI peripheral.
+  * @retval None
   */
 void SPI_I2S_DeInit(SPI_TypeDef* SPIx)
 {
   /* Check the parameters */
   assert_param(IS_SPI_ALL_PERIPH(SPIx));
-  
-  switch (*(uint32_t*)&SPIx)
+
+  if (SPIx == SPI1)
   {
-    case SPI1_BASE:
-      /* Enable SPI1 reset state */
-      RCC_APB2PeriphResetCmd(RCC_APB2Periph_SPI1, ENABLE);
-      /* Release SPI1 from reset state */
-      RCC_APB2PeriphResetCmd(RCC_APB2Periph_SPI1, DISABLE);
-      break;
-    case SPI2_BASE:
-      /* Enable SPI2 reset state */
-      RCC_APB1PeriphResetCmd(RCC_APB1Periph_SPI2, ENABLE);
-      /* Release SPI2 from reset state */
-      RCC_APB1PeriphResetCmd(RCC_APB1Periph_SPI2, DISABLE);
-      break;
-    case SPI3_BASE:
+    /* Enable SPI1 reset state */
+    RCC_APB2PeriphResetCmd(RCC_APB2Periph_SPI1, ENABLE);
+    /* Release SPI1 from reset state */
+    RCC_APB2PeriphResetCmd(RCC_APB2Periph_SPI1, DISABLE);
+  }
+  else if (SPIx == SPI2)
+  {
+    /* Enable SPI2 reset state */
+    RCC_APB1PeriphResetCmd(RCC_APB1Periph_SPI2, ENABLE);
+    /* Release SPI2 from reset state */
+    RCC_APB1PeriphResetCmd(RCC_APB1Periph_SPI2, DISABLE);
+  }
+  else
+  {
+    if (SPIx == SPI3)
+    {
       /* Enable SPI3 reset state */
       RCC_APB1PeriphResetCmd(RCC_APB1Periph_SPI3, ENABLE);
       /* Release SPI3 from reset state */
       RCC_APB1PeriphResetCmd(RCC_APB1Periph_SPI3, DISABLE);
-      break;
-    default:
-      break;
+    }
   }
 }
 
 /**
   * @brief  Initializes the SPIx peripheral according to the specified 
-  *   parameters in the SPI_InitStruct.
-  * @param SPIx: where x can be 1, 2 or 3 to select the SPI peripheral.
-  * @param SPI_InitStruct: pointer to a SPI_InitTypeDef structure that
-  *   contains the configuration information for the specified
-  *   SPI peripheral.
-  * @retval : None
+  *         parameters in the SPI_InitStruct.
+  * @param  SPIx: where x can be 1, 2 or 3 to select the SPI peripheral.
+  * @param  SPI_InitStruct: pointer to a SPI_InitTypeDef structure that
+  *         contains the configuration information for the specified SPI peripheral.
+  * @retval None
   */
 void SPI_Init(SPI_TypeDef* SPIx, SPI_InitTypeDef* SPI_InitStruct)
 {
@@ -165,6 +172,7 @@ void SPI_Init(SPI_TypeDef* SPIx, SPI_InitTypeDef* SPI_InitStruct)
   assert_param(IS_SPI_BAUDRATE_PRESCALER(SPI_InitStruct->SPI_BaudRatePrescaler));
   assert_param(IS_SPI_FIRST_BIT(SPI_InitStruct->SPI_FirstBit));
   assert_param(IS_SPI_CRC_POLYNOMIAL(SPI_InitStruct->SPI_CRCPolynomial));
+
 /*---------------------------- SPIx CR1 Configuration ------------------------*/
   /* Get the SPIx CR1 value */
   tmpreg = SPIx->CR1;
@@ -187,6 +195,7 @@ void SPI_Init(SPI_TypeDef* SPIx, SPI_InitTypeDef* SPI_InitStruct)
   
   /* Activate the SPI mode (Reset I2SMOD bit in I2SCFGR register) */
   SPIx->I2SCFGR &= SPI_Mode_Select;		
+
 /*---------------------------- SPIx CRCPOLY Configuration --------------------*/
   /* Write to SPIx CRCPOLY */
   SPIx->CRCPR = SPI_InitStruct->SPI_CRCPolynomial;
@@ -194,20 +203,26 @@ void SPI_Init(SPI_TypeDef* SPIx, SPI_InitTypeDef* SPI_InitStruct)
 
 /**
   * @brief  Initializes the SPIx peripheral according to the specified 
-  *   parameters in the I2S_InitStruct.
-  * @param SPIx: where x can be  2 or 3 to select the SPI peripheral
-  *   (configured in I2S mode).
-  * @param I2S_InitStruct: pointer to an I2S_InitTypeDef structure that
-  *   contains the configuration information for the specified
-  *   SPI peripheral configured in I2S mode.
-  * @retval : None
+  *         parameters in the I2S_InitStruct.
+  * @param  SPIx: where x can be  2 or 3 to select the SPI peripheral
+  *         (configured in I2S mode).
+  * @param  I2S_InitStruct: pointer to an I2S_InitTypeDef structure that
+  *         contains the configuration information for the specified SPI peripheral
+  *         configured in I2S mode.
+  * @note
+  *  The function calculates the optimal prescaler needed to obtain the most 
+  *  accurate audio frequency (depending on the I2S clock source, the PLL values 
+  *  and the product configuration). But in case the prescaler value is greater 
+  *  than 511, the default value (0x02) will be configured instead.  *   
+  * @retval None
   */
 void I2S_Init(SPI_TypeDef* SPIx, I2S_InitTypeDef* I2S_InitStruct)
 {
   uint16_t tmpreg = 0, i2sdiv = 2, i2sodd = 0, packetlength = 1;
   uint32_t tmp = 0;
   RCC_ClocksTypeDef RCC_Clocks;
-   
+  uint32_t sourceclock = 0;
+  
   /* Check the I2S parameters */
   assert_param(IS_SPI_23_PERIPH(SPIx));
   assert_param(IS_I2S_MODE(I2S_InitStruct->I2S_Mode));
@@ -216,6 +231,7 @@ void I2S_Init(SPI_TypeDef* SPIx, I2S_InitTypeDef* I2S_InitStruct)
   assert_param(IS_I2S_MCLK_OUTPUT(I2S_InitStruct->I2S_MCLKOutput));
   assert_param(IS_I2S_AUDIO_FREQ(I2S_InitStruct->I2S_AudioFreq));
   assert_param(IS_I2S_CPOL(I2S_InitStruct->I2S_CPOL));  
+
 /*----------------------- SPIx I2SCFGR & I2SPR Configuration -----------------*/
   /* Clear I2SMOD, I2SE, I2SCFG, PCMSYNC, I2SSTD, CKPOL, DATLEN and CHLEN bits */
   SPIx->I2SCFGR &= I2SCFGR_CLEAR_Mask; 
@@ -244,23 +260,77 @@ void I2S_Init(SPI_TypeDef* SPIx, I2S_InitTypeDef* I2S_InitStruct)
       /* Packet length is 32 bits */
       packetlength = 2;
     }
-    /* Get System Clock frequency */
-    RCC_GetClocksFreq(&RCC_Clocks);
-    
-    /* Compute the Real divider depending on the MCLK output state with a flaoting point */
+
+    /* Get the I2S clock source mask depending on the peripheral number */
+    if(((uint32_t)SPIx) == SPI2_BASE)
+    {
+      /* The mask is relative to I2S2 */
+      tmp = I2S2_CLOCK_SRC;
+    }
+    else 
+    {
+      /* The mask is relative to I2S3 */      
+      tmp = I2S3_CLOCK_SRC;
+    }
+
+    /* Check the I2S clock source configuration depending on the Device:
+       Only Connectivity line devices have the PLL3 VCO clock */
+#ifdef STM32F10X_CL
+    if((RCC->CFGR2 & tmp) != 0)
+    {
+      /* Get the configuration bits of RCC PLL3 multiplier */
+      tmp = (uint32_t)((RCC->CFGR2 & I2S_MUL_MASK) >> 12);
+
+      /* Get the value of the PLL3 multiplier */      
+      if((tmp > 5) && (tmp < 15))
+      {
+        /* Multiplier is between 8 and 14 (value 15 is forbidden) */
+        tmp += 2;
+      }
+      else
+      {
+        if (tmp == 15)
+        {
+          /* Multiplier is 20 */
+          tmp = 20;
+        }
+      }      
+      /* Get the PREDIV2 value */
+      sourceclock = (uint32_t)(((RCC->CFGR2 & I2S_DIV_MASK) >> 4) + 1);
+      
+      /* Calculate the Source Clock frequency based on PLL3 and PREDIV2 values */
+      sourceclock = (uint32_t) ((HSE_Value / sourceclock) * tmp * 2); 
+    }
+    else
+    {
+      /* I2S Clock source is System clock: Get System Clock frequency */
+      RCC_GetClocksFreq(&RCC_Clocks);      
+      
+      /* Get the source clock value: based on System Clock value */
+      sourceclock = RCC_Clocks.SYSCLK_Frequency;
+    }        
+#else /* STM32F10X_HD */
+    /* I2S Clock source is System clock: Get System Clock frequency */
+    RCC_GetClocksFreq(&RCC_Clocks);      
+      
+    /* Get the source clock value: based on System Clock value */
+    sourceclock = RCC_Clocks.SYSCLK_Frequency;    
+#endif /* STM32F10X_CL */    
+
+    /* Compute the Real divider depending on the MCLK output state with a floating point */
     if(I2S_InitStruct->I2S_MCLKOutput == I2S_MCLKOutput_Enable)
     {
       /* MCLK output is enabled */
-      tmp = (uint16_t)(((10 * RCC_Clocks.SYSCLK_Frequency) / (256 * I2S_InitStruct->I2S_AudioFreq)) + 5);
+      tmp = (uint16_t)(((((sourceclock / 256) * 10) / I2S_InitStruct->I2S_AudioFreq)) + 5);
     }
     else
     {
       /* MCLK output is disabled */
-      tmp = (uint16_t)(((10 * RCC_Clocks.SYSCLK_Frequency) / (32 * packetlength * I2S_InitStruct->I2S_AudioFreq)) + 5);
+      tmp = (uint16_t)(((((sourceclock / (32 * packetlength)) *10 ) / I2S_InitStruct->I2S_AudioFreq)) + 5);
     }
     
-    /* Remove the flaoting point */
-    tmp = tmp/10;  
+    /* Remove the floating point */
+    tmp = tmp / 10;  
       
     /* Check the parity of the divider */
     i2sodd = (uint16_t)(tmp & (uint16_t)0x0001);
@@ -272,30 +342,30 @@ void I2S_Init(SPI_TypeDef* SPIx, I2S_InitTypeDef* I2S_InitStruct)
     i2sodd = (uint16_t) (i2sodd << 8);
   }
   
-  /* Test if the divider is 1 or 0 */
+  /* Test if the divider is 1 or 0 or greater than 0xFF */
   if ((i2sdiv < 2) || (i2sdiv > 0xFF))
   {
     /* Set the default values */
     i2sdiv = 2;
     i2sodd = 0;
   }
+
   /* Write to SPIx I2SPR register the computed value */
-  SPIx->I2SPR = (uint16_t)(i2sdiv | i2sodd | I2S_InitStruct->I2S_MCLKOutput);  
+  SPIx->I2SPR = (uint16_t)(i2sdiv | (uint16_t)(i2sodd | (uint16_t)I2S_InitStruct->I2S_MCLKOutput));  
  
   /* Configure the I2S with the SPI_InitStruct values */
-  tmpreg |= (uint16_t)(I2S_Mode_Select | I2S_InitStruct->I2S_Mode | \
-                  I2S_InitStruct->I2S_Standard | I2S_InitStruct->I2S_DataFormat | \
-                  I2S_InitStruct->I2S_CPOL);
+  tmpreg |= (uint16_t)(I2S_Mode_Select | (uint16_t)(I2S_InitStruct->I2S_Mode | \
+                  (uint16_t)(I2S_InitStruct->I2S_Standard | (uint16_t)(I2S_InitStruct->I2S_DataFormat | \
+                  (uint16_t)I2S_InitStruct->I2S_CPOL))));
  
-  /* Write to SPIx I2SCFGR */
-  SPIx->I2SCFGR = tmpreg;
+  /* Write to SPIx I2SCFGR */  
+  SPIx->I2SCFGR = tmpreg;   
 }
 
 /**
   * @brief  Fills each SPI_InitStruct member with its default value.
-  * @param SPI_InitStruct : pointer to a SPI_InitTypeDef structure
-  *   which will be initialized.
-  * @retval : None
+  * @param  SPI_InitStruct : pointer to a SPI_InitTypeDef structure which will be initialized.
+  * @retval None
   */
 void SPI_StructInit(SPI_InitTypeDef* SPI_InitStruct)
 {
@@ -322,9 +392,8 @@ void SPI_StructInit(SPI_InitTypeDef* SPI_InitStruct)
 
 /**
   * @brief  Fills each I2S_InitStruct member with its default value.
-  * @param I2S_InitStruct : pointer to a I2S_InitTypeDef structure
-  *   which will be initialized.
-  * @retval : None
+  * @param  I2S_InitStruct : pointer to a I2S_InitTypeDef structure which will be initialized.
+  * @retval None
   */
 void I2S_StructInit(I2S_InitTypeDef* I2S_InitStruct)
 {
@@ -350,10 +419,10 @@ void I2S_StructInit(I2S_InitTypeDef* I2S_InitStruct)
 
 /**
   * @brief  Enables or disables the specified SPI peripheral.
-  * @param SPIx: where x can be 1, 2 or 3 to select the SPI peripheral.
-  * @param NewState: new state of the SPIx peripheral. 
+  * @param  SPIx: where x can be 1, 2 or 3 to select the SPI peripheral.
+  * @param  NewState: new state of the SPIx peripheral. 
   *   This parameter can be: ENABLE or DISABLE.
-  * @retval : None
+  * @retval None
   */
 void SPI_Cmd(SPI_TypeDef* SPIx, FunctionalState NewState)
 {
@@ -374,10 +443,10 @@ void SPI_Cmd(SPI_TypeDef* SPIx, FunctionalState NewState)
 
 /**
   * @brief  Enables or disables the specified SPI peripheral (in I2S mode).
-  * @param SPIx: where x can be 2 or 3 to select the SPI peripheral.
-  * @param NewState: new state of the SPIx peripheral. 
+  * @param  SPIx: where x can be 2 or 3 to select the SPI peripheral.
+  * @param  NewState: new state of the SPIx peripheral. 
   *   This parameter can be: ENABLE or DISABLE.
-  * @retval : None
+  * @retval None
   */
 void I2S_Cmd(SPI_TypeDef* SPIx, FunctionalState NewState)
 {
@@ -398,18 +467,17 @@ void I2S_Cmd(SPI_TypeDef* SPIx, FunctionalState NewState)
 
 /**
   * @brief  Enables or disables the specified SPI/I2S interrupts.
-  * @param SPIx: where x can be :
-  *   1, 2 or 3 in SPI mode 
-  *   2 or 3 in I2S mode
-  * @param SPI_I2S_IT: specifies the SPI/I2S interrupt source to be 
-  *   enabled or disabled. 
+  * @param  SPIx: where x can be
+  *   - 1, 2 or 3 in SPI mode 
+  *   - 2 or 3 in I2S mode
+  * @param  SPI_I2S_IT: specifies the SPI/I2S interrupt source to be enabled or disabled. 
   *   This parameter can be one of the following values:
-  * @arg SPI_I2S_IT_TXE: Tx buffer empty interrupt mask
-  * @arg SPI_I2S_IT_RXNE: Rx buffer not empty interrupt mask
-  * @arg SPI_I2S_IT_ERR: Error interrupt mask
-  * @param NewState: new state of the specified SPI/I2S interrupt.
+  *     @arg SPI_I2S_IT_TXE: Tx buffer empty interrupt mask
+  *     @arg SPI_I2S_IT_RXNE: Rx buffer not empty interrupt mask
+  *     @arg SPI_I2S_IT_ERR: Error interrupt mask
+  * @param  NewState: new state of the specified SPI/I2S interrupt.
   *   This parameter can be: ENABLE or DISABLE.
-  * @retval : None
+  * @retval None
   */
 void SPI_I2S_ITConfig(SPI_TypeDef* SPIx, uint8_t SPI_I2S_IT, FunctionalState NewState)
 {
@@ -418,10 +486,13 @@ void SPI_I2S_ITConfig(SPI_TypeDef* SPIx, uint8_t SPI_I2S_IT, FunctionalState New
   assert_param(IS_SPI_ALL_PERIPH(SPIx));
   assert_param(IS_FUNCTIONAL_STATE(NewState));
   assert_param(IS_SPI_I2S_CONFIG_IT(SPI_I2S_IT));
+
   /* Get the SPI/I2S IT index */
   itpos = SPI_I2S_IT >> 4;
+
   /* Set the IT mask */
-  itmask = (uint16_t)((uint16_t)1 << itpos);
+  itmask = (uint16_t)1 << (uint16_t)itpos;
+
   if (NewState != DISABLE)
   {
     /* Enable the selected SPI/I2S interrupt */
@@ -436,18 +507,16 @@ void SPI_I2S_ITConfig(SPI_TypeDef* SPIx, uint8_t SPI_I2S_IT, FunctionalState New
 
 /**
   * @brief  Enables or disables the SPIx/I2Sx DMA interface.
-  * @param SPIx: where x can be :
-  *   1, 2 or 3 in SPI mode 
-  *   2 or 3 in I2S mode
-  * @param SPI_I2S_DMAReq: specifies the SPI/I2S DMA transfer request 
-  *   to be enabled or disabled. 
+  * @param  SPIx: where x can be
+  *   - 1, 2 or 3 in SPI mode 
+  *   - 2 or 3 in I2S mode
+  * @param  SPI_I2S_DMAReq: specifies the SPI/I2S DMA transfer request to be enabled or disabled. 
   *   This parameter can be any combination of the following values:
-  * @arg SPI_I2S_DMAReq_Tx: Tx buffer DMA transfer request
-  * @arg SPI_I2S_DMAReq_Rx: Rx buffer DMA transfer request
-  * @param NewState: new state of the selected SPI/I2S DMA transfer 
-  *   request.
+  *     @arg SPI_I2S_DMAReq_Tx: Tx buffer DMA transfer request
+  *     @arg SPI_I2S_DMAReq_Rx: Rx buffer DMA transfer request
+  * @param  NewState: new state of the selected SPI/I2S DMA transfer request.
   *   This parameter can be: ENABLE or DISABLE.
-  * @retval : None
+  * @retval None
   */
 void SPI_I2S_DMACmd(SPI_TypeDef* SPIx, uint16_t SPI_I2S_DMAReq, FunctionalState NewState)
 {
@@ -469,11 +538,11 @@ void SPI_I2S_DMACmd(SPI_TypeDef* SPIx, uint16_t SPI_I2S_DMAReq, FunctionalState 
 
 /**
   * @brief  Transmits a Data through the SPIx/I2Sx peripheral.
-  * @param SPIx: where x can be :
-  *   1, 2 or 3 in SPI mode 
-  *   2 or 3 in I2S mode
-  * @param Data : Data to be transmitted..
-  * @retval : None
+  * @param  SPIx: where x can be
+  *   - 1, 2 or 3 in SPI mode 
+  *   - 2 or 3 in I2S mode
+  * @param  Data : Data to be transmitted.
+  * @retval None
   */
 void SPI_I2S_SendData(SPI_TypeDef* SPIx, uint16_t Data)
 {
@@ -486,10 +555,10 @@ void SPI_I2S_SendData(SPI_TypeDef* SPIx, uint16_t Data)
 
 /**
   * @brief  Returns the most recent received data by the SPIx/I2Sx peripheral. 
-  * @param SPIx: where x can be :
-  *   1, 2 or 3 in SPI mode 
-  *   2 or 3 in I2S mode
-  * @retval : The value of the received data.
+  * @param  SPIx: where x can be
+  *   - 1, 2 or 3 in SPI mode 
+  *   - 2 or 3 in I2S mode
+  * @retval The value of the received data.
   */
 uint16_t SPI_I2S_ReceiveData(SPI_TypeDef* SPIx)
 {
@@ -501,14 +570,13 @@ uint16_t SPI_I2S_ReceiveData(SPI_TypeDef* SPIx)
 }
 
 /**
-  * @brief  Configures internally by software the NSS pin for the selected 
-  *   SPI.
-  * @param SPIx: where x can be 1, 2 or 3 to select the SPI peripheral.
-  * @param SPI_NSSInternalSoft: specifies the SPI NSS internal state.
+  * @brief  Configures internally by software the NSS pin for the selected SPI.
+  * @param  SPIx: where x can be 1, 2 or 3 to select the SPI peripheral.
+  * @param  SPI_NSSInternalSoft: specifies the SPI NSS internal state.
   *   This parameter can be one of the following values:
-  * @arg SPI_NSSInternalSoft_Set: Set NSS pin internally
-  * @arg SPI_NSSInternalSoft_Reset: Reset NSS pin internally
-  * @retval : None
+  *     @arg SPI_NSSInternalSoft_Set: Set NSS pin internally
+  *     @arg SPI_NSSInternalSoft_Reset: Reset NSS pin internally
+  * @retval None
   */
 void SPI_NSSInternalSoftwareConfig(SPI_TypeDef* SPIx, uint16_t SPI_NSSInternalSoft)
 {
@@ -529,10 +597,10 @@ void SPI_NSSInternalSoftwareConfig(SPI_TypeDef* SPIx, uint16_t SPI_NSSInternalSo
 
 /**
   * @brief  Enables or disables the SS output for the selected SPI.
-  * @param SPIx: where x can be 1, 2 or 3 to select the SPI peripheral.
-  * @param NewState: new state of the SPIx SS output. 
+  * @param  SPIx: where x can be 1, 2 or 3 to select the SPI peripheral.
+  * @param  NewState: new state of the SPIx SS output. 
   *   This parameter can be: ENABLE or DISABLE.
-  * @retval : None
+  * @retval None
   */
 void SPI_SSOutputCmd(SPI_TypeDef* SPIx, FunctionalState NewState)
 {
@@ -553,12 +621,12 @@ void SPI_SSOutputCmd(SPI_TypeDef* SPIx, FunctionalState NewState)
 
 /**
   * @brief  Configures the data size for the selected SPI.
-  * @param SPIx: where x can be 1, 2 or 3 to select the SPI peripheral.
-  * @param SPI_DataSize: specifies the SPI data size.
+  * @param  SPIx: where x can be 1, 2 or 3 to select the SPI peripheral.
+  * @param  SPI_DataSize: specifies the SPI data size.
   *   This parameter can be one of the following values:
-  * @arg SPI_DataSize_16b: Set data frame format to 16bit
-  * @arg SPI_DataSize_8b: Set data frame format to 8bit
-  * @retval : None
+  *     @arg SPI_DataSize_16b: Set data frame format to 16bit
+  *     @arg SPI_DataSize_8b: Set data frame format to 8bit
+  * @retval None
   */
 void SPI_DataSizeConfig(SPI_TypeDef* SPIx, uint16_t SPI_DataSize)
 {
@@ -573,8 +641,8 @@ void SPI_DataSizeConfig(SPI_TypeDef* SPIx, uint16_t SPI_DataSize)
 
 /**
   * @brief  Transmit the SPIx CRC value.
-  * @param SPIx: where x can be 1, 2 or 3 to select the SPI peripheral.
-  * @retval : None
+  * @param  SPIx: where x can be 1, 2 or 3 to select the SPI peripheral.
+  * @retval None
   */
 void SPI_TransmitCRC(SPI_TypeDef* SPIx)
 {
@@ -586,12 +654,11 @@ void SPI_TransmitCRC(SPI_TypeDef* SPIx)
 }
 
 /**
-  * @brief  Enables or disables the CRC value calculation of the
-  *   transfered bytes.
-  * @param SPIx: where x can be 1, 2 or 3 to select the SPI peripheral.
-  * @param NewState: new state of the SPIx CRC value calculation.
+  * @brief  Enables or disables the CRC value calculation of the transferred bytes.
+  * @param  SPIx: where x can be 1, 2 or 3 to select the SPI peripheral.
+  * @param  NewState: new state of the SPIx CRC value calculation.
   *   This parameter can be: ENABLE or DISABLE.
-  * @retval : None
+  * @retval None
   */
 void SPI_CalculateCRC(SPI_TypeDef* SPIx, FunctionalState NewState)
 {
@@ -611,14 +678,13 @@ void SPI_CalculateCRC(SPI_TypeDef* SPIx, FunctionalState NewState)
 }
 
 /**
-  * @brief  Returns the transmit or the receive CRC register value for
-  *   the specified SPI.
-  * @param SPIx: where x can be 1, 2 or 3 to select the SPI peripheral.
-  * @param SPI_CRC: specifies the CRC register to be read.
+  * @brief  Returns the transmit or the receive CRC register value for the specified SPI.
+  * @param  SPIx: where x can be 1, 2 or 3 to select the SPI peripheral.
+  * @param  SPI_CRC: specifies the CRC register to be read.
   *   This parameter can be one of the following values:
-  * @arg SPI_CRC_Tx: Selects Tx CRC register
-  * @arg SPI_CRC_Rx: Selects Rx CRC register
-  * @retval : The selected CRC register value..
+  *     @arg SPI_CRC_Tx: Selects Tx CRC register
+  *     @arg SPI_CRC_Rx: Selects Rx CRC register
+  * @retval The selected CRC register value..
   */
 uint16_t SPI_GetCRC(SPI_TypeDef* SPIx, uint8_t SPI_CRC)
 {
@@ -642,8 +708,8 @@ uint16_t SPI_GetCRC(SPI_TypeDef* SPIx, uint8_t SPI_CRC)
 
 /**
   * @brief  Returns the CRC Polynomial register value for the specified SPI.
-  * @param SPIx: where x can be 1, 2 or 3 to select the SPI peripheral.
-  * @retval : The CRC Polynomial register value.
+  * @param  SPIx: where x can be 1, 2 or 3 to select the SPI peripheral.
+  * @retval The CRC Polynomial register value.
   */
 uint16_t SPI_GetCRCPolynomial(SPI_TypeDef* SPIx)
 {
@@ -655,15 +721,13 @@ uint16_t SPI_GetCRCPolynomial(SPI_TypeDef* SPIx)
 }
 
 /**
-  * @brief  Selects the data transfer direction in bi-directional mode
-  *   for the specified SPI.
-  * @param SPIx: where x can be 1, 2 or 3 to select the SPI peripheral.
-  * @param SPI_Direction: specifies the data transfer direction in
-  *   bi-directional mode. 
+  * @brief  Selects the data transfer direction in bi-directional mode for the specified SPI.
+  * @param  SPIx: where x can be 1, 2 or 3 to select the SPI peripheral.
+  * @param  SPI_Direction: specifies the data transfer direction in bi-directional mode. 
   *   This parameter can be one of the following values:
-  * @arg SPI_Direction_Tx: Selects Tx transmission direction
-  * @arg SPI_Direction_Rx: Selects Rx receive direction
-  * @retval : None
+  *     @arg SPI_Direction_Tx: Selects Tx transmission direction
+  *     @arg SPI_Direction_Rx: Selects Rx receive direction
+  * @retval None
   */
 void SPI_BiDirectionalLineConfig(SPI_TypeDef* SPIx, uint16_t SPI_Direction)
 {
@@ -684,20 +748,20 @@ void SPI_BiDirectionalLineConfig(SPI_TypeDef* SPIx, uint16_t SPI_Direction)
 
 /**
   * @brief  Checks whether the specified SPI/I2S flag is set or not.
-  * @param SPIx: where x can be :
-  *   1, 2 or 3 in SPI mode 
-  *   2 or 3 in I2S mode
-  * @param SPI_I2S_FLAG: specifies the SPI/I2S flag to check. 
+  * @param  SPIx: where x can be
+  *   - 1, 2 or 3 in SPI mode 
+  *   - 2 or 3 in I2S mode
+  * @param  SPI_I2S_FLAG: specifies the SPI/I2S flag to check. 
   *   This parameter can be one of the following values:
-  * @arg SPI_I2S_FLAG_TXE: Transmit buffer empty flag.
-  * @arg SPI_I2S_FLAG_RXNE: Receive buffer not empty flag.
-  * @arg SPI_I2S_FLAG_BSY: Busy flag.
-  * @arg SPI_I2S_FLAG_OVR: Overrun flag.
-  * @arg SPI_FLAG_MODF: Mode Fault flag.
-  * @arg SPI_FLAG_CRCERR: CRC Error flag.
-  * @arg I2S_FLAG_UDR: Underrun Error flag.
-  * @arg I2S_FLAG_CHSIDE: Channel Side flag.
-  * @retval : The new state of SPI_I2S_FLAG (SET or RESET).
+  *     @arg SPI_I2S_FLAG_TXE: Transmit buffer empty flag.
+  *     @arg SPI_I2S_FLAG_RXNE: Receive buffer not empty flag.
+  *     @arg SPI_I2S_FLAG_BSY: Busy flag.
+  *     @arg SPI_I2S_FLAG_OVR: Overrun flag.
+  *     @arg SPI_FLAG_MODF: Mode Fault flag.
+  *     @arg SPI_FLAG_CRCERR: CRC Error flag.
+  *     @arg I2S_FLAG_UDR: Underrun Error flag.
+  *     @arg I2S_FLAG_CHSIDE: Channel Side flag.
+  * @retval The new state of SPI_I2S_FLAG (SET or RESET).
   */
 FlagStatus SPI_I2S_GetFlagStatus(SPI_TypeDef* SPIx, uint16_t SPI_I2S_FLAG)
 {
@@ -722,9 +786,9 @@ FlagStatus SPI_I2S_GetFlagStatus(SPI_TypeDef* SPIx, uint16_t SPI_I2S_FLAG)
 
 /**
   * @brief  Clears the SPIx CRC Error (CRCERR) flag.
-  * @param SPIx: where x can be :
-  *   1, 2 or 3 in SPI mode 
-  * @param SPI_I2S_FLAG: specifies the SPI flag to clear. 
+  * @param  SPIx: where x can be
+  *   - 1, 2 or 3 in SPI mode 
+  * @param  SPI_I2S_FLAG: specifies the SPI flag to clear. 
   *   This function clears only CRCERR flag.
   * @note
   *   - OVR (OverRun error) flag is cleared by software sequence: a read 
@@ -735,7 +799,7 @@ FlagStatus SPI_I2S_GetFlagStatus(SPI_TypeDef* SPIx, uint16_t SPI_I2S_FLAG)
   *   - MODF (Mode Fault) flag is cleared by software sequence: a read/write 
   *     operation to SPI_SR register (SPI_I2S_GetFlagStatus()) followed by a 
   *     write operation to SPI_CR1 register (SPI_Cmd() to enable the SPI).
-  * @retval : None
+  * @retval None
   */
 void SPI_I2S_ClearFlag(SPI_TypeDef* SPIx, uint16_t SPI_I2S_FLAG)
 {
@@ -749,34 +813,40 @@ void SPI_I2S_ClearFlag(SPI_TypeDef* SPIx, uint16_t SPI_I2S_FLAG)
 
 /**
   * @brief  Checks whether the specified SPI/I2S interrupt has occurred or not.
-  * @param SPIx: where x can be :
-  *   1, 2 or 3 in SPI mode 
-  *   2 or 3 in I2S mode
-  * @param SPI_I2S_IT: specifies the SPI/I2S interrupt source to check. 
+  * @param  SPIx: where x can be
+  *   - 1, 2 or 3 in SPI mode 
+  *   - 2 or 3 in I2S mode
+  * @param  SPI_I2S_IT: specifies the SPI/I2S interrupt source to check. 
   *   This parameter can be one of the following values:
-  * @arg SPI_I2S_IT_TXE: Transmit buffer empty interrupt.
-  * @arg SPI_I2S_IT_RXNE: Receive buffer not empty interrupt.
-  * @arg SPI_I2S_IT_OVR: Overrun interrupt.
-  * @arg SPI_IT_MODF: Mode Fault interrupt.
-  * @arg SPI_IT_CRCERR: CRC Error interrupt.
-  * @arg I2S_IT_UDR: Underrun Error interrupt.
-  * @retval : The new state of SPI_I2S_IT (SET or RESET).
+  *     @arg SPI_I2S_IT_TXE: Transmit buffer empty interrupt.
+  *     @arg SPI_I2S_IT_RXNE: Receive buffer not empty interrupt.
+  *     @arg SPI_I2S_IT_OVR: Overrun interrupt.
+  *     @arg SPI_IT_MODF: Mode Fault interrupt.
+  *     @arg SPI_IT_CRCERR: CRC Error interrupt.
+  *     @arg I2S_IT_UDR: Underrun Error interrupt.
+  * @retval The new state of SPI_I2S_IT (SET or RESET).
   */
 ITStatus SPI_I2S_GetITStatus(SPI_TypeDef* SPIx, uint8_t SPI_I2S_IT)
 {
   ITStatus bitstatus = RESET;
   uint16_t itpos = 0, itmask = 0, enablestatus = 0;
+
   /* Check the parameters */
   assert_param(IS_SPI_ALL_PERIPH(SPIx));
   assert_param(IS_SPI_I2S_GET_IT(SPI_I2S_IT));
+
   /* Get the SPI/I2S IT index */
-  itpos = (uint16_t)((uint16_t)0x01 << (SPI_I2S_IT & (uint8_t)0x0F));
+  itpos = 0x01 << (SPI_I2S_IT & 0x0F);
+
   /* Get the SPI/I2S IT mask */
   itmask = SPI_I2S_IT >> 4;
+
   /* Set the IT mask */
-  itmask = (uint16_t)((uint16_t)0x01 << itmask);
+  itmask = 0x01 << itmask;
+
   /* Get the SPI_I2S_IT enable bit status */
   enablestatus = (SPIx->CR2 & itmask) ;
+
   /* Check the status of the specified SPI/I2S interrupt */
   if (((SPIx->SR & itpos) != (uint16_t)RESET) && enablestatus)
   {
@@ -794,10 +864,10 @@ ITStatus SPI_I2S_GetITStatus(SPI_TypeDef* SPIx, uint8_t SPI_I2S_IT)
 
 /**
   * @brief  Clears the SPIx CRC Error (CRCERR) interrupt pending bit.
-  * @param SPIx: where x can be :
-  *   1, 2 or 3 in SPI mode 
-  * @param SPI_I2S_IT: specifies the SPI interrupt pending bit to clear.
-  *   This function clears only CRCERR intetrrupt pending bit.   
+  * @param  SPIx: where x can be
+  *   - 1, 2 or 3 in SPI mode 
+  * @param  SPI_I2S_IT: specifies the SPI interrupt pending bit to clear.
+  *   This function clears only CRCERR interrupt pending bit.   
   * @note
   *   - OVR (OverRun Error) interrupt pending bit is cleared by software 
   *     sequence: a read operation to SPI_DR register (SPI_I2S_ReceiveData()) 
@@ -808,7 +878,7 @@ ITStatus SPI_I2S_GetITStatus(SPI_TypeDef* SPIx, uint8_t SPI_I2S_IT)
   *     a read/write operation to SPI_SR register (SPI_I2S_GetITStatus()) 
   *     followed by a write operation to SPI_CR1 register (SPI_Cmd() to enable 
   *     the SPI).
-  * @retval : None
+  * @retval None
   */
 void SPI_I2S_ClearITPendingBit(SPI_TypeDef* SPIx, uint8_t SPI_I2S_IT)
 {
@@ -816,8 +886,10 @@ void SPI_I2S_ClearITPendingBit(SPI_TypeDef* SPIx, uint8_t SPI_I2S_IT)
   /* Check the parameters */
   assert_param(IS_SPI_ALL_PERIPH(SPIx));
   assert_param(IS_SPI_I2S_CLEAR_IT(SPI_I2S_IT));
+
   /* Get the SPI IT index */
-  itpos = (uint16_t)((uint16_t)0x01 << (SPI_I2S_IT & (uint8_t)0x0F));
+  itpos = 0x01 << (SPI_I2S_IT & 0x0F);
+
   /* Clear the selected SPI CRC Error (CRCERR) interrupt pending bit */
   SPIx->SR = (uint16_t)~itpos;
 }
@@ -833,4 +905,4 @@ void SPI_I2S_ClearITPendingBit(SPI_TypeDef* SPIx, uint8_t SPI_I2S_IT)
   * @}
   */ 
 
-/******************* (C) COPYRIGHT 2009 STMicroelectronics *****END OF FILE****/
+/******************* (C) COPYRIGHT 2011 STMicroelectronics *****END OF FILE****/

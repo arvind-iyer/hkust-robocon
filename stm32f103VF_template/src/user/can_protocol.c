@@ -23,6 +23,7 @@
 CAN_MESSAGE CAN_Tx_Queue_Array[CAN_TX_QUEUE_MAX_SIZE];
 CAN_QUEUE CAN_Tx_Queue = {0, 0, CAN_TX_QUEUE_MAX_SIZE, CAN_Tx_Queue_Array};
 u8 CAN_FilterCount = 0;
+static CAN_MESSAGE can_recent_rx; 
 static u32 can_rx_count = 0;		// Number of rx received
 // Array storing all the handler function for CAN Rx (element id equals to filter id)
 void (*CAN_Rx_Handlers[CAN_RX_FILTER_LIMIT])(CanRxMsg msg) ;
@@ -319,6 +320,15 @@ u32 can_get_rx_count(void)
 	return can_rx_count;
 }
 
+/**
+  * @brief Get the recent handled CAN Rx data
+  * @param None
+  * @retval Recent rx message
+  */
+CAN_MESSAGE can_get_recent_rx(void)
+{
+  return can_recent_rx;
+}
 /** 
 	* @brief Interrupt for CAN Rx
 	* @warning Use USB_LP_CAN_RX0_IRQHandler for HD, USB_LP_CAN1_RX0_IRQHandler for XLD / MD
@@ -335,7 +345,12 @@ CAN_Rx_IRQHandler
 			if (filter_id < CAN_FilterCount && filter_id < CAN_RX_FILTER_LIMIT && CAN_Rx_Handlers[filter_id] != 0) {
 				CAN_Rx_Handlers[filter_id](RxMessage);
 			}
-			++can_rx_count;
+      can_recent_rx.id = RxMessage.StdId;
+      can_recent_rx.length = RxMessage.DLC;
+      for (u8 i = 0; i < can_recent_rx.length; ++i) {
+        can_recent_rx.data[i] = RxMessage.Data[i];
+      }			
+      ++can_rx_count;
 		}		
 	}
 

@@ -1,12 +1,12 @@
 /**
   ******************************************************************************
-  * @file  stm32f10x_sdio.c
+  * @file    stm32f10x_sdio.c
   * @author  MCD Application Team
-  * @version  V3.0.0
-  * @date  04/06/2009
-  * @brief  This file provides all the SDIO firmware functions.
+  * @version V3.5.0
+  * @date    11-March-2011
+  * @brief   This file provides all the SDIO firmware functions.
   ******************************************************************************
-  * @copy
+  * @attention
   *
   * THE PRESENT FIRMWARE WHICH IS FOR GUIDANCE ONLY AIMS AT PROVIDING CUSTOMERS
   * WITH CODING INFORMATION REGARDING THEIR PRODUCTS IN ORDER FOR THEM TO SAVE
@@ -15,14 +15,15 @@
   * FROM THE CONTENT OF SUCH FIRMWARE AND/OR THE USE MADE BY CUSTOMERS OF THE
   * CODING INFORMATION CONTAINED HEREIN IN CONNECTION WITH THEIR PRODUCTS.
   *
-  * <h2><center>&copy; COPYRIGHT 2009 STMicroelectronics</center></h2>
-  */ 
+  * <h2><center>&copy; COPYRIGHT 2011 STMicroelectronics</center></h2>
+  ******************************************************************************
+  */
 
 /* Includes ------------------------------------------------------------------*/
 #include "stm32f10x_sdio.h"
 #include "stm32f10x_rcc.h"
 
-/** @addtogroup StdPeriph_Driver
+/** @addtogroup STM32F10x_StdPeriph_Driver
   * @{
   */
 
@@ -153,10 +154,9 @@
   */
 
 /**
-  * @brief  Deinitializes the SDIO peripheral registers to their default
-  *   reset values.
+  * @brief  Deinitializes the SDIO peripheral registers to their default reset values.
   * @param  None
-  * @retval : None
+  * @retval None
   */
 void SDIO_DeInit(void)
 {
@@ -173,11 +173,10 @@ void SDIO_DeInit(void)
 
 /**
   * @brief  Initializes the SDIO peripheral according to the specified 
-  *   parameters in the SDIO_InitStruct.
-  * @param SDIO_InitStruct : pointer to a SDIO_InitTypeDef structure 
-  *   that contains the configuration information for the SDIO 
-  *   peripheral.
-  * @retval : None
+  *         parameters in the SDIO_InitStruct.
+  * @param  SDIO_InitStruct : pointer to a SDIO_InitTypeDef structure 
+  *         that contains the configuration information for the SDIO peripheral.
+  * @retval None
   */
 void SDIO_Init(SDIO_InitTypeDef* SDIO_InitStruct)
 {
@@ -213,9 +212,9 @@ void SDIO_Init(SDIO_InitTypeDef* SDIO_InitStruct)
 
 /**
   * @brief  Fills each SDIO_InitStruct member with its default value.
-  * @param SDIO_InitStruct: pointer to an SDIO_InitTypeDef structure which 
+  * @param  SDIO_InitStruct: pointer to an SDIO_InitTypeDef structure which 
   *   will be initialized.
-  * @retval : None
+  * @retval None
   */
 void SDIO_StructInit(SDIO_InitTypeDef* SDIO_InitStruct)
 {
@@ -230,9 +229,8 @@ void SDIO_StructInit(SDIO_InitTypeDef* SDIO_InitStruct)
 
 /**
   * @brief  Enables or disables the SDIO Clock.
-  * @param NewState: new state of the SDIO Clock.
-  *   This parameter can be: ENABLE or DISABLE.
-  * @retval : None
+  * @param  NewState: new state of the SDIO Clock. This parameter can be: ENABLE or DISABLE.
+  * @retval None
   */
 void SDIO_ClockCmd(FunctionalState NewState)
 {
@@ -244,11 +242,11 @@ void SDIO_ClockCmd(FunctionalState NewState)
 
 /**
   * @brief  Sets the power status of the controller.
-  * @param SDIO_PowerState: new state of the Power state. 
+  * @param  SDIO_PowerState: new state of the Power state. 
   *   This parameter can be one of the following values:
-  * @arg SDIO_PowerState_OFF
-  * @arg SDIO_PowerState_ON
-  * @retval : None
+  *     @arg SDIO_PowerState_OFF
+  *     @arg SDIO_PowerState_ON
+  * @retval None
   */
 void SDIO_SetPowerState(uint32_t SDIO_PowerState)
 {
@@ -262,7 +260,7 @@ void SDIO_SetPowerState(uint32_t SDIO_PowerState)
 /**
   * @brief  Gets the power status of the controller.
   * @param  None
-  * @retval : Power status of the controller. The returned value can
+  * @retval Power status of the controller. The returned value can
   *   be one of the following:
   * - 0x00: Power OFF
   * - 0x02: Power UP
@@ -275,38 +273,36 @@ uint32_t SDIO_GetPowerState(void)
 
 /**
   * @brief  Enables or disables the SDIO interrupts.
-  * @param SDIO_IT: specifies the SDIO interrupt sources to be 
-  *   enabled or disabled.
+  * @param  SDIO_IT: specifies the SDIO interrupt sources to be enabled or disabled.
   *   This parameter can be one or a combination of the following values:
-  * @arg SDIO_IT_CCRCFAIL: Command response received (CRC check failed) interrupt
-  * @arg SDIO_IT_DCRCFAIL: Data block sent/received (CRC check failed) interrupt
-  * @arg SDIO_IT_CTIMEOUT: Command response timeout interrupt
-  * @arg SDIO_IT_DTIMEOUT: Data timeout interrupt
-  * @arg SDIO_IT_TXUNDERR: Transmit FIFO underrun error interrupt
-  * @arg SDIO_IT_RXOVERR:  Received FIFO overrun error interrupt
-  * @arg SDIO_IT_CMDREND:  Command response received (CRC check passed) interrupt
-  * @arg SDIO_IT_CMDSENT:  Command sent (no response required) interrupt
-  * @arg SDIO_IT_DATAEND:  Data end (data counter, SDIDCOUNT, is zero) interrupt
-  * @arg SDIO_IT_STBITERR: Start bit not detected on all data signals in wide 
-  *                        bus mode interrupt
-  * @arg SDIO_IT_DBCKEND:  Data block sent/received (CRC check passed) interrupt
-  * @arg SDIO_IT_CMDACT:   Command transfer in progress interrupt
-  * @arg SDIO_IT_TXACT:    Data transmit in progress interrupt
-  * @arg SDIO_IT_RXACT:    Data receive in progress interrupt
-  * @arg SDIO_IT_TXFIFOHE: Transmit FIFO Half Empty interrupt
-  * @arg SDIO_IT_RXFIFOHF: Receive FIFO Half Full interrupt
-  * @arg SDIO_IT_TXFIFOF:  Transmit FIFO full interrupt
-  * @arg SDIO_IT_RXFIFOF:  Receive FIFO full interrupt
-  * @arg SDIO_IT_TXFIFOE:  Transmit FIFO empty interrupt
-  * @arg SDIO_IT_RXFIFOE:  Receive FIFO empty interrupt
-  * @arg SDIO_IT_TXDAVL:   Data available in transmit FIFO interrupt
-  * @arg SDIO_IT_RXDAVL:   Data available in receive FIFO interrupt
-  * @arg SDIO_IT_SDIOIT:   SD I/O interrupt received interrupt
-  * @arg SDIO_IT_CEATAEND: CE-ATA command completion signal received for CMD61 
-  *                        interrupt
-  * @param NewState: new state of the specified SDIO interrupts.
+  *     @arg SDIO_IT_CCRCFAIL: Command response received (CRC check failed) interrupt
+  *     @arg SDIO_IT_DCRCFAIL: Data block sent/received (CRC check failed) interrupt
+  *     @arg SDIO_IT_CTIMEOUT: Command response timeout interrupt
+  *     @arg SDIO_IT_DTIMEOUT: Data timeout interrupt
+  *     @arg SDIO_IT_TXUNDERR: Transmit FIFO underrun error interrupt
+  *     @arg SDIO_IT_RXOVERR:  Received FIFO overrun error interrupt
+  *     @arg SDIO_IT_CMDREND:  Command response received (CRC check passed) interrupt
+  *     @arg SDIO_IT_CMDSENT:  Command sent (no response required) interrupt
+  *     @arg SDIO_IT_DATAEND:  Data end (data counter, SDIDCOUNT, is zero) interrupt
+  *     @arg SDIO_IT_STBITERR: Start bit not detected on all data signals in wide 
+  *                            bus mode interrupt
+  *     @arg SDIO_IT_DBCKEND:  Data block sent/received (CRC check passed) interrupt
+  *     @arg SDIO_IT_CMDACT:   Command transfer in progress interrupt
+  *     @arg SDIO_IT_TXACT:    Data transmit in progress interrupt
+  *     @arg SDIO_IT_RXACT:    Data receive in progress interrupt
+  *     @arg SDIO_IT_TXFIFOHE: Transmit FIFO Half Empty interrupt
+  *     @arg SDIO_IT_RXFIFOHF: Receive FIFO Half Full interrupt
+  *     @arg SDIO_IT_TXFIFOF:  Transmit FIFO full interrupt
+  *     @arg SDIO_IT_RXFIFOF:  Receive FIFO full interrupt
+  *     @arg SDIO_IT_TXFIFOE:  Transmit FIFO empty interrupt
+  *     @arg SDIO_IT_RXFIFOE:  Receive FIFO empty interrupt
+  *     @arg SDIO_IT_TXDAVL:   Data available in transmit FIFO interrupt
+  *     @arg SDIO_IT_RXDAVL:   Data available in receive FIFO interrupt
+  *     @arg SDIO_IT_SDIOIT:   SD I/O interrupt received interrupt
+  *     @arg SDIO_IT_CEATAEND: CE-ATA command completion signal received for CMD61 interrupt
+  * @param  NewState: new state of the specified SDIO interrupts.
   *   This parameter can be: ENABLE or DISABLE.
-  * @retval : None 
+  * @retval None 
   */
 void SDIO_ITConfig(uint32_t SDIO_IT, FunctionalState NewState)
 {
@@ -328,9 +324,9 @@ void SDIO_ITConfig(uint32_t SDIO_IT, FunctionalState NewState)
 
 /**
   * @brief  Enables or disables the SDIO DMA request.
-  * @param NewState: new state of the selected SDIO DMA request.
+  * @param  NewState: new state of the selected SDIO DMA request.
   *   This parameter can be: ENABLE or DISABLE.
-  * @retval : None
+  * @retval None
   */
 void SDIO_DMACmd(FunctionalState NewState)
 {
@@ -342,11 +338,10 @@ void SDIO_DMACmd(FunctionalState NewState)
 
 /**
   * @brief  Initializes the SDIO Command according to the specified 
-  *   parameters in the SDIO_CmdInitStruct and send the command.
-  * @param SDIO_CmdInitStruct : pointer to a SDIO_CmdInitTypeDef 
-  *   structure that contains the configuration information 
-  *   for the SDIO command.
-  * @retval : None
+  *         parameters in the SDIO_CmdInitStruct and send the command.
+  * @param  SDIO_CmdInitStruct : pointer to a SDIO_CmdInitTypeDef 
+  *         structure that contains the configuration information for the SDIO command.
+  * @retval None
   */
 void SDIO_SendCommand(SDIO_CmdInitTypeDef *SDIO_CmdInitStruct)
 {
@@ -380,9 +375,9 @@ void SDIO_SendCommand(SDIO_CmdInitTypeDef *SDIO_CmdInitStruct)
 
 /**
   * @brief  Fills each SDIO_CmdInitStruct member with its default value.
-  * @param SDIO_CmdInitStruct: pointer to an SDIO_CmdInitTypeDef 
-  *   structure which will be initialized.
-  * @retval : None
+  * @param  SDIO_CmdInitStruct: pointer to an SDIO_CmdInitTypeDef 
+  *         structure which will be initialized.
+  * @retval None
   */
 void SDIO_CmdStructInit(SDIO_CmdInitTypeDef* SDIO_CmdInitStruct)
 {
@@ -395,10 +390,9 @@ void SDIO_CmdStructInit(SDIO_CmdInitTypeDef* SDIO_CmdInitStruct)
 }
 
 /**
-  * @brief  Returns command index of last command for which response 
-  *   received.
+  * @brief  Returns command index of last command for which response received.
   * @param  None
-  * @retval : Returns the command index of the last command response received.
+  * @retval Returns the command index of the last command response received.
   */
 uint8_t SDIO_GetCommandResponse(void)
 {
@@ -407,29 +401,32 @@ uint8_t SDIO_GetCommandResponse(void)
 
 /**
   * @brief  Returns response received from the card for the last command.
-  * @param SDIO_RESP: Specifies the SDIO response register. 
+  * @param  SDIO_RESP: Specifies the SDIO response register. 
   *   This parameter can be one of the following values:
-  * @arg SDIO_RESP1: Response Register 1
-  * @arg SDIO_RESP2: Response Register 2
-  * @arg SDIO_RESP3: Response Register 3
-  * @arg SDIO_RESP4: Response Register 4
-  * @retval : The Corresponding response register value.
+  *     @arg SDIO_RESP1: Response Register 1
+  *     @arg SDIO_RESP2: Response Register 2
+  *     @arg SDIO_RESP3: Response Register 3
+  *     @arg SDIO_RESP4: Response Register 4
+  * @retval The Corresponding response register value.
   */
 uint32_t SDIO_GetResponse(uint32_t SDIO_RESP)
 {
+  __IO uint32_t tmp = 0;
+
   /* Check the parameters */
   assert_param(IS_SDIO_RESP(SDIO_RESP));
+
+  tmp = SDIO_RESP_ADDR + SDIO_RESP;
   
-  return (*(__IO uint32_t *)(SDIO_RESP_ADDR + SDIO_RESP)); 
+  return (*(__IO uint32_t *) tmp); 
 }
 
 /**
   * @brief  Initializes the SDIO data path according to the specified 
   *   parameters in the SDIO_DataInitStruct.
-  * @param SDIO_DataInitStruct : pointer to a SDIO_DataInitTypeDef 
-  *   structure that contains the configuration information 
-  *   for the SDIO command.
-  * @retval : None
+  * @param  SDIO_DataInitStruct : pointer to a SDIO_DataInitTypeDef structure that
+  *   contains the configuration information for the SDIO command.
+  * @retval None
   */
 void SDIO_DataConfig(SDIO_DataInitTypeDef* SDIO_DataInitStruct)
 {
@@ -468,9 +465,9 @@ void SDIO_DataConfig(SDIO_DataInitTypeDef* SDIO_DataInitStruct)
 
 /**
   * @brief  Fills each SDIO_DataInitStruct member with its default value.
-  * @param SDIO_DataInitStruct: pointer to an SDIO_DataInitTypeDef 
-  *   structure which will be initialized.
-  * @retval : None
+  * @param  SDIO_DataInitStruct: pointer to an SDIO_DataInitTypeDef structure which
+  *         will be initialized.
+  * @retval None
   */
 void SDIO_DataStructInit(SDIO_DataInitTypeDef* SDIO_DataInitStruct)
 {
@@ -486,7 +483,7 @@ void SDIO_DataStructInit(SDIO_DataInitTypeDef* SDIO_DataInitStruct)
 /**
   * @brief  Returns number of remaining data bytes to be transferred.
   * @param  None
-  * @retval : Number of remaining data bytes to be transferred
+  * @retval Number of remaining data bytes to be transferred
   */
 uint32_t SDIO_GetDataCounter(void)
 { 
@@ -496,7 +493,7 @@ uint32_t SDIO_GetDataCounter(void)
 /**
   * @brief  Read one data word from Rx FIFO.
   * @param  None
-  * @retval : Data received
+  * @retval Data received
   */
 uint32_t SDIO_ReadData(void)
 { 
@@ -505,8 +502,8 @@ uint32_t SDIO_ReadData(void)
 
 /**
   * @brief  Write one data word to Tx FIFO.
-  * @param Data: 32-bit data word to write.
-  * @retval : None
+  * @param  Data: 32-bit data word to write.
+  * @retval None
   */
 void SDIO_WriteData(uint32_t Data)
 { 
@@ -514,10 +511,9 @@ void SDIO_WriteData(uint32_t Data)
 }
 
 /**
-  * @brief  Returns the number of words left to be written to or read
-  *   from FIFO.	
+  * @brief  Returns the number of words left to be written to or read from FIFO.	
   * @param  None
-  * @retval : Remaining number of words.
+  * @retval Remaining number of words.
   */
 uint32_t SDIO_GetFIFOCount(void)
 { 
@@ -526,9 +522,9 @@ uint32_t SDIO_GetFIFOCount(void)
 
 /**
   * @brief  Starts the SD I/O Read Wait operation.	
-  * @param NewState: new state of the Start SDIO Read Wait operation. 
+  * @param  NewState: new state of the Start SDIO Read Wait operation. 
   *   This parameter can be: ENABLE or DISABLE.
-  * @retval : None
+  * @retval None
   */
 void SDIO_StartSDIOReadWait(FunctionalState NewState)
 { 
@@ -540,9 +536,9 @@ void SDIO_StartSDIOReadWait(FunctionalState NewState)
 
 /**
   * @brief  Stops the SD I/O Read Wait operation.	
-  * @param NewState: new state of the Stop SDIO Read Wait operation. 
+  * @param  NewState: new state of the Stop SDIO Read Wait operation. 
   *   This parameter can be: ENABLE or DISABLE.
-  * @retval : None
+  * @retval None
   */
 void SDIO_StopSDIOReadWait(FunctionalState NewState)
 { 
@@ -554,11 +550,11 @@ void SDIO_StopSDIOReadWait(FunctionalState NewState)
 
 /**
   * @brief  Sets one of the two options of inserting read wait interval.
-  * @param SDIO_ReadWaitMode: SD I/O Read Wait operation mode.
-  *   This parametre can be:
-  * @arg SDIO_ReadWaitMode_CLK: Read Wait control by stopping SDIOCLK
-  * @arg SDIO_ReadWaitMode_DATA2: Read Wait control using SDIO_DATA2
-  * @retval : None
+  * @param  SDIO_ReadWaitMode: SD I/O Read Wait operation mode.
+  *   This parameter can be:
+  *     @arg SDIO_ReadWaitMode_CLK: Read Wait control by stopping SDIOCLK
+  *     @arg SDIO_ReadWaitMode_DATA2: Read Wait control using SDIO_DATA2
+  * @retval None
   */
 void SDIO_SetSDIOReadWaitMode(uint32_t SDIO_ReadWaitMode)
 {
@@ -570,9 +566,9 @@ void SDIO_SetSDIOReadWaitMode(uint32_t SDIO_ReadWaitMode)
 
 /**
   * @brief  Enables or disables the SD I/O Mode Operation.
-  * @param NewState: new state of SDIO specific operation. 
+  * @param  NewState: new state of SDIO specific operation. 
   *   This parameter can be: ENABLE or DISABLE.
-  * @retval : None
+  * @retval None
   */
 void SDIO_SetSDIOOperation(FunctionalState NewState)
 { 
@@ -584,9 +580,9 @@ void SDIO_SetSDIOOperation(FunctionalState NewState)
 
 /**
   * @brief  Enables or disables the SD I/O Mode suspend command sending.
-  * @param NewState: new state of the SD I/O Mode suspend command.
+  * @param  NewState: new state of the SD I/O Mode suspend command.
   *   This parameter can be: ENABLE or DISABLE.
-  * @retval : None
+  * @retval None
   */
 void SDIO_SendSDIOSuspendCmd(FunctionalState NewState)
 { 
@@ -598,9 +594,9 @@ void SDIO_SendSDIOSuspendCmd(FunctionalState NewState)
 
 /**
   * @brief  Enables or disables the command completion signal.
-  * @param NewState: new state of command completion signal. 
+  * @param  NewState: new state of command completion signal. 
   *   This parameter can be: ENABLE or DISABLE.
-  * @retval : None
+  * @retval None
   */
 void SDIO_CommandCompletionCmd(FunctionalState NewState)
 { 
@@ -612,9 +608,8 @@ void SDIO_CommandCompletionCmd(FunctionalState NewState)
 
 /**
   * @brief  Enables or disables the CE-ATA interrupt.
-  * @param NewState: new state of CE-ATA interrupt. 
-  *   This parameter can be: ENABLE or DISABLE.
-  * @retval : None
+  * @param  NewState: new state of CE-ATA interrupt. This parameter can be: ENABLE or DISABLE.
+  * @retval None
   */
 void SDIO_CEATAITCmd(FunctionalState NewState)
 { 
@@ -626,9 +621,8 @@ void SDIO_CEATAITCmd(FunctionalState NewState)
 
 /**
   * @brief  Sends CE-ATA command (CMD61).
-  * @param NewState: new state of CE-ATA command. 
-  *   This parameter can be: ENABLE or DISABLE.
-  * @retval : None
+  * @param  NewState: new state of CE-ATA command. This parameter can be: ENABLE or DISABLE.
+  * @retval None
   */
 void SDIO_SendCEATACmd(FunctionalState NewState)
 { 
@@ -640,34 +634,34 @@ void SDIO_SendCEATACmd(FunctionalState NewState)
 
 /**
   * @brief  Checks whether the specified SDIO flag is set or not.
-  * @param SDIO_FLAG: specifies the flag to check. 
+  * @param  SDIO_FLAG: specifies the flag to check. 
   *   This parameter can be one of the following values:
-  * @arg SDIO_FLAG_CCRCFAIL: Command response received (CRC check failed)
-  * @arg SDIO_FLAG_DCRCFAIL: Data block sent/received (CRC check failed)
-  * @arg SDIO_FLAG_CTIMEOUT: Command response timeout
-  * @arg SDIO_FLAG_DTIMEOUT: Data timeout
-  * @arg SDIO_FLAG_TXUNDERR: Transmit FIFO underrun error
-  * @arg SDIO_FLAG_RXOVERR:  Received FIFO overrun error
-  * @arg SDIO_FLAG_CMDREND:  Command response received (CRC check passed)
-  * @arg SDIO_FLAG_CMDSENT:  Command sent (no response required)
-  * @arg SDIO_FLAG_DATAEND:  Data end (data counter, SDIDCOUNT, is zero)
-  * @arg SDIO_FLAG_STBITERR: Start bit not detected on all data signals in wide 
-  *                          bus mode.
-  * @arg SDIO_FLAG_DBCKEND:  Data block sent/received (CRC check passed)
-  * @arg SDIO_FLAG_CMDACT:   Command transfer in progress
-  * @arg SDIO_FLAG_TXACT:    Data transmit in progress
-  * @arg SDIO_FLAG_RXACT:    Data receive in progress
-  * @arg SDIO_FLAG_TXFIFOHE: Transmit FIFO Half Empty
-  * @arg SDIO_FLAG_RXFIFOHF: Receive FIFO Half Full
-  * @arg SDIO_FLAG_TXFIFOF:  Transmit FIFO full
-  * @arg SDIO_FLAG_RXFIFOF:  Receive FIFO full
-  * @arg SDIO_FLAG_TXFIFOE:  Transmit FIFO empty
-  * @arg SDIO_FLAG_RXFIFOE:  Receive FIFO empty
-  * @arg SDIO_FLAG_TXDAVL:   Data available in transmit FIFO
-  * @arg SDIO_FLAG_RXDAVL:   Data available in receive FIFO
-  * @arg SDIO_FLAG_SDIOIT:   SD I/O interrupt received
-  * @arg SDIO_FLAG_CEATAEND: CE-ATA command completion signal received for CMD61
-  * @retval : The new state of SDIO_FLAG (SET or RESET).
+  *     @arg SDIO_FLAG_CCRCFAIL: Command response received (CRC check failed)
+  *     @arg SDIO_FLAG_DCRCFAIL: Data block sent/received (CRC check failed)
+  *     @arg SDIO_FLAG_CTIMEOUT: Command response timeout
+  *     @arg SDIO_FLAG_DTIMEOUT: Data timeout
+  *     @arg SDIO_FLAG_TXUNDERR: Transmit FIFO underrun error
+  *     @arg SDIO_FLAG_RXOVERR:  Received FIFO overrun error
+  *     @arg SDIO_FLAG_CMDREND:  Command response received (CRC check passed)
+  *     @arg SDIO_FLAG_CMDSENT:  Command sent (no response required)
+  *     @arg SDIO_FLAG_DATAEND:  Data end (data counter, SDIDCOUNT, is zero)
+  *     @arg SDIO_FLAG_STBITERR: Start bit not detected on all data signals in wide 
+  *                              bus mode.
+  *     @arg SDIO_FLAG_DBCKEND:  Data block sent/received (CRC check passed)
+  *     @arg SDIO_FLAG_CMDACT:   Command transfer in progress
+  *     @arg SDIO_FLAG_TXACT:    Data transmit in progress
+  *     @arg SDIO_FLAG_RXACT:    Data receive in progress
+  *     @arg SDIO_FLAG_TXFIFOHE: Transmit FIFO Half Empty
+  *     @arg SDIO_FLAG_RXFIFOHF: Receive FIFO Half Full
+  *     @arg SDIO_FLAG_TXFIFOF:  Transmit FIFO full
+  *     @arg SDIO_FLAG_RXFIFOF:  Receive FIFO full
+  *     @arg SDIO_FLAG_TXFIFOE:  Transmit FIFO empty
+  *     @arg SDIO_FLAG_RXFIFOE:  Receive FIFO empty
+  *     @arg SDIO_FLAG_TXDAVL:   Data available in transmit FIFO
+  *     @arg SDIO_FLAG_RXDAVL:   Data available in receive FIFO
+  *     @arg SDIO_FLAG_SDIOIT:   SD I/O interrupt received
+  *     @arg SDIO_FLAG_CEATAEND: CE-ATA command completion signal received for CMD61
+  * @retval The new state of SDIO_FLAG (SET or RESET).
   */
 FlagStatus SDIO_GetFlagStatus(uint32_t SDIO_FLAG)
 { 
@@ -689,23 +683,23 @@ FlagStatus SDIO_GetFlagStatus(uint32_t SDIO_FLAG)
 
 /**
   * @brief  Clears the SDIO's pending flags.
-  * @param SDIO_FLAG: specifies the flag to clear.  
+  * @param  SDIO_FLAG: specifies the flag to clear.  
   *   This parameter can be one or a combination of the following values:
-  * @arg SDIO_FLAG_CCRCFAIL: Command response received (CRC check failed)
-  * @arg SDIO_FLAG_DCRCFAIL: Data block sent/received (CRC check failed)
-  * @arg SDIO_FLAG_CTIMEOUT: Command response timeout
-  * @arg SDIO_FLAG_DTIMEOUT: Data timeout
-  * @arg SDIO_FLAG_TXUNDERR: Transmit FIFO underrun error
-  * @arg SDIO_FLAG_RXOVERR:  Received FIFO overrun error
-  * @arg SDIO_FLAG_CMDREND:  Command response received (CRC check passed)
-  * @arg SDIO_FLAG_CMDSENT:  Command sent (no response required)
-  * @arg SDIO_FLAG_DATAEND:  Data end (data counter, SDIDCOUNT, is zero)
-  * @arg SDIO_FLAG_STBITERR: Start bit not detected on all data signals in wide 
-  *                          bus mode
-  * @arg SDIO_FLAG_DBCKEND:  Data block sent/received (CRC check passed)
-  * @arg SDIO_FLAG_SDIOIT:   SD I/O interrupt received
-  * @arg SDIO_FLAG_CEATAEND: CE-ATA command completion signal received for CMD61
-  * @retval : None
+  *     @arg SDIO_FLAG_CCRCFAIL: Command response received (CRC check failed)
+  *     @arg SDIO_FLAG_DCRCFAIL: Data block sent/received (CRC check failed)
+  *     @arg SDIO_FLAG_CTIMEOUT: Command response timeout
+  *     @arg SDIO_FLAG_DTIMEOUT: Data timeout
+  *     @arg SDIO_FLAG_TXUNDERR: Transmit FIFO underrun error
+  *     @arg SDIO_FLAG_RXOVERR:  Received FIFO overrun error
+  *     @arg SDIO_FLAG_CMDREND:  Command response received (CRC check passed)
+  *     @arg SDIO_FLAG_CMDSENT:  Command sent (no response required)
+  *     @arg SDIO_FLAG_DATAEND:  Data end (data counter, SDIDCOUNT, is zero)
+  *     @arg SDIO_FLAG_STBITERR: Start bit not detected on all data signals in wide 
+  *                              bus mode
+  *     @arg SDIO_FLAG_DBCKEND:  Data block sent/received (CRC check passed)
+  *     @arg SDIO_FLAG_SDIOIT:   SD I/O interrupt received
+  *     @arg SDIO_FLAG_CEATAEND: CE-ATA command completion signal received for CMD61
+  * @retval None
   */
 void SDIO_ClearFlag(uint32_t SDIO_FLAG)
 { 
@@ -717,35 +711,34 @@ void SDIO_ClearFlag(uint32_t SDIO_FLAG)
 
 /**
   * @brief  Checks whether the specified SDIO interrupt has occurred or not.
-  * @param SDIO_IT: specifies the SDIO interrupt source to check. 
+  * @param  SDIO_IT: specifies the SDIO interrupt source to check. 
   *   This parameter can be one of the following values:
-  * @arg SDIO_IT_CCRCFAIL: Command response received (CRC check failed) interrupt
-  * @arg SDIO_IT_DCRCFAIL: Data block sent/received (CRC check failed) interrupt
-  * @arg SDIO_IT_CTIMEOUT: Command response timeout interrupt
-  * @arg SDIO_IT_DTIMEOUT: Data timeout interrupt
-  * @arg SDIO_IT_TXUNDERR: Transmit FIFO underrun error interrupt
-  * @arg SDIO_IT_RXOVERR:  Received FIFO overrun error interrupt
-  * @arg SDIO_IT_CMDREND:  Command response received (CRC check passed) interrupt
-  * @arg SDIO_IT_CMDSENT:  Command sent (no response required) interrupt
-  * @arg SDIO_IT_DATAEND:  Data end (data counter, SDIDCOUNT, is zero) interrupt
-  * @arg SDIO_IT_STBITERR: Start bit not detected on all data signals in wide 
-  *                        bus mode interrupt
-  * @arg SDIO_IT_DBCKEND:  Data block sent/received (CRC check passed) interrupt
-  * @arg SDIO_IT_CMDACT:   Command transfer in progress interrupt
-  * @arg SDIO_IT_TXACT:    Data transmit in progress interrupt
-  * @arg SDIO_IT_RXACT:    Data receive in progress interrupt
-  * @arg SDIO_IT_TXFIFOHE: Transmit FIFO Half Empty interrupt
-  * @arg SDIO_IT_RXFIFOHF: Receive FIFO Half Full interrupt
-  * @arg SDIO_IT_TXFIFOF:  Transmit FIFO full interrupt
-  * @arg SDIO_IT_RXFIFOF:  Receive FIFO full interrupt
-  * @arg SDIO_IT_TXFIFOE:  Transmit FIFO empty interrupt
-  * @arg SDIO_IT_RXFIFOE:  Receive FIFO empty interrupt
-  * @arg SDIO_IT_TXDAVL:   Data available in transmit FIFO interrupt
-  * @arg SDIO_IT_RXDAVL:   Data available in receive FIFO interrupt
-  * @arg SDIO_IT_SDIOIT:   SD I/O interrupt received interrupt
-  * @arg SDIO_IT_CEATAEND: CE-ATA command completion signal received for CMD61 
-  *                        interrupt
-  * @retval : The new state of SDIO_IT (SET or RESET).
+  *     @arg SDIO_IT_CCRCFAIL: Command response received (CRC check failed) interrupt
+  *     @arg SDIO_IT_DCRCFAIL: Data block sent/received (CRC check failed) interrupt
+  *     @arg SDIO_IT_CTIMEOUT: Command response timeout interrupt
+  *     @arg SDIO_IT_DTIMEOUT: Data timeout interrupt
+  *     @arg SDIO_IT_TXUNDERR: Transmit FIFO underrun error interrupt
+  *     @arg SDIO_IT_RXOVERR:  Received FIFO overrun error interrupt
+  *     @arg SDIO_IT_CMDREND:  Command response received (CRC check passed) interrupt
+  *     @arg SDIO_IT_CMDSENT:  Command sent (no response required) interrupt
+  *     @arg SDIO_IT_DATAEND:  Data end (data counter, SDIDCOUNT, is zero) interrupt
+  *     @arg SDIO_IT_STBITERR: Start bit not detected on all data signals in wide 
+  *                            bus mode interrupt
+  *     @arg SDIO_IT_DBCKEND:  Data block sent/received (CRC check passed) interrupt
+  *     @arg SDIO_IT_CMDACT:   Command transfer in progress interrupt
+  *     @arg SDIO_IT_TXACT:    Data transmit in progress interrupt
+  *     @arg SDIO_IT_RXACT:    Data receive in progress interrupt
+  *     @arg SDIO_IT_TXFIFOHE: Transmit FIFO Half Empty interrupt
+  *     @arg SDIO_IT_RXFIFOHF: Receive FIFO Half Full interrupt
+  *     @arg SDIO_IT_TXFIFOF:  Transmit FIFO full interrupt
+  *     @arg SDIO_IT_RXFIFOF:  Receive FIFO full interrupt
+  *     @arg SDIO_IT_TXFIFOE:  Transmit FIFO empty interrupt
+  *     @arg SDIO_IT_RXFIFOE:  Receive FIFO empty interrupt
+  *     @arg SDIO_IT_TXDAVL:   Data available in transmit FIFO interrupt
+  *     @arg SDIO_IT_RXDAVL:   Data available in receive FIFO interrupt
+  *     @arg SDIO_IT_SDIOIT:   SD I/O interrupt received interrupt
+  *     @arg SDIO_IT_CEATAEND: CE-ATA command completion signal received for CMD61 interrupt
+  * @retval The new state of SDIO_IT (SET or RESET).
   */
 ITStatus SDIO_GetITStatus(uint32_t SDIO_IT)
 { 
@@ -765,23 +758,23 @@ ITStatus SDIO_GetITStatus(uint32_t SDIO_IT)
 }
 
 /**
-  * @brief  Clears the SDIO’s interrupt pending bits.
-  * @param SDIO_IT: specifies the interrupt pending bit to clear. 
+  * @brief  Clears the SDIO's interrupt pending bits.
+  * @param  SDIO_IT: specifies the interrupt pending bit to clear. 
   *   This parameter can be one or a combination of the following values:
-  * @arg SDIO_IT_CCRCFAIL: Command response received (CRC check failed) interrupt
-  * @arg SDIO_IT_DCRCFAIL: Data block sent/received (CRC check failed) interrupt
-  * @arg SDIO_IT_CTIMEOUT: Command response timeout interrupt
-  * @arg SDIO_IT_DTIMEOUT: Data timeout interrupt
-  * @arg SDIO_IT_TXUNDERR: Transmit FIFO underrun error interrupt
-  * @arg SDIO_IT_RXOVERR:  Received FIFO overrun error interrupt
-  * @arg SDIO_IT_CMDREND:  Command response received (CRC check passed) interrupt
-  * @arg SDIO_IT_CMDSENT:  Command sent (no response required) interrupt
-  * @arg SDIO_IT_DATAEND:  Data end (data counter, SDIDCOUNT, is zero) interrupt
-  * @arg SDIO_IT_STBITERR: Start bit not detected on all data signals in wide 
-  *                        bus mode interrupt
-  * @arg SDIO_IT_SDIOIT:   SD I/O interrupt received interrupt
-  * @arg SDIO_IT_CEATAEND: CE-ATA command completion signal received for CMD61
-  * @retval : None
+  *     @arg SDIO_IT_CCRCFAIL: Command response received (CRC check failed) interrupt
+  *     @arg SDIO_IT_DCRCFAIL: Data block sent/received (CRC check failed) interrupt
+  *     @arg SDIO_IT_CTIMEOUT: Command response timeout interrupt
+  *     @arg SDIO_IT_DTIMEOUT: Data timeout interrupt
+  *     @arg SDIO_IT_TXUNDERR: Transmit FIFO underrun error interrupt
+  *     @arg SDIO_IT_RXOVERR:  Received FIFO overrun error interrupt
+  *     @arg SDIO_IT_CMDREND:  Command response received (CRC check passed) interrupt
+  *     @arg SDIO_IT_CMDSENT:  Command sent (no response required) interrupt
+  *     @arg SDIO_IT_DATAEND:  Data end (data counter, SDIDCOUNT, is zero) interrupt
+  *     @arg SDIO_IT_STBITERR: Start bit not detected on all data signals in wide 
+  *                            bus mode interrupt
+  *     @arg SDIO_IT_SDIOIT:   SD I/O interrupt received interrupt
+  *     @arg SDIO_IT_CEATAEND: CE-ATA command completion signal received for CMD61
+  * @retval None
   */
 void SDIO_ClearITPendingBit(uint32_t SDIO_IT)
 { 
@@ -803,4 +796,4 @@ void SDIO_ClearITPendingBit(uint32_t SDIO_IT)
   * @}
   */
 
-/******************* (C) COPYRIGHT 2009 STMicroelectronics *****END OF FILE****/
+/******************* (C) COPYRIGHT 2011 STMicroelectronics *****END OF FILE****/

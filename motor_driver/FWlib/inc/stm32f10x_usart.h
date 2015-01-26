@@ -1,13 +1,13 @@
 /**
   ******************************************************************************
-  * @file  stm32f10x_usart.h
+  * @file    stm32f10x_usart.h
   * @author  MCD Application Team
-  * @version  V3.0.0
-  * @date  04/06/2009
-  * @brief  This file contains all the functions prototypes for the USART 
-  *         firmware library.
+  * @version V3.5.0
+  * @date    11-March-2011
+  * @brief   This file contains all the functions prototypes for the USART 
+  *          firmware library.
   ******************************************************************************
-  * @copy
+  * @attention
   *
   * THE PRESENT FIRMWARE WHICH IS FOR GUIDANCE ONLY AIMS AT PROVIDING CUSTOMERS
   * WITH CODING INFORMATION REGARDING THEIR PRODUCTS IN ORDER FOR THEM TO SAVE
@@ -16,17 +16,22 @@
   * FROM THE CONTENT OF SUCH FIRMWARE AND/OR THE USE MADE BY CUSTOMERS OF THE
   * CODING INFORMATION CONTAINED HEREIN IN CONNECTION WITH THEIR PRODUCTS.
   *
-  * <h2><center>&copy; COPYRIGHT 2009 STMicroelectronics</center></h2>
-  */ 
+  * <h2><center>&copy; COPYRIGHT 2011 STMicroelectronics</center></h2>
+  ******************************************************************************
+  */
 
 /* Define to prevent recursive inclusion -------------------------------------*/
 #ifndef __STM32F10x_USART_H
 #define __STM32F10x_USART_H
 
+#ifdef __cplusplus
+ extern "C" {
+#endif
+
 /* Includes ------------------------------------------------------------------*/
 #include "stm32f10x.h"
 
-/** @addtogroup StdPeriph_Driver
+/** @addtogroup STM32F10x_StdPeriph_Driver
   * @{
   */
 
@@ -44,12 +49,30 @@
   
 typedef struct
 {
-  uint32_t USART_BaudRate;
-  uint16_t USART_WordLength;
-  uint16_t USART_StopBits;
-  uint16_t USART_Parity;
-  uint16_t USART_Mode;
-  uint16_t USART_HardwareFlowControl;  
+  uint32_t USART_BaudRate;            /*!< This member configures the USART communication baud rate.
+                                           The baud rate is computed using the following formula:
+                                            - IntegerDivider = ((PCLKx) / (16 * (USART_InitStruct->USART_BaudRate)))
+                                            - FractionalDivider = ((IntegerDivider - ((u32) IntegerDivider)) * 16) + 0.5 */
+
+  uint16_t USART_WordLength;          /*!< Specifies the number of data bits transmitted or received in a frame.
+                                           This parameter can be a value of @ref USART_Word_Length */
+
+  uint16_t USART_StopBits;            /*!< Specifies the number of stop bits transmitted.
+                                           This parameter can be a value of @ref USART_Stop_Bits */
+
+  uint16_t USART_Parity;              /*!< Specifies the parity mode.
+                                           This parameter can be a value of @ref USART_Parity
+                                           @note When parity is enabled, the computed parity is inserted
+                                                 at the MSB position of the transmitted data (9th bit when
+                                                 the word length is set to 9 data bits; 8th bit when the
+                                                 word length is set to 8 data bits). */
+ 
+  uint16_t USART_Mode;                /*!< Specifies wether the Receive or Transmit mode is enabled or disabled.
+                                           This parameter can be a value of @ref USART_Mode */
+
+  uint16_t USART_HardwareFlowControl; /*!< Specifies wether the hardware flow control mode is enabled
+                                           or disabled.
+                                           This parameter can be a value of @ref USART_Hardware_Flow_Control */
 } USART_InitTypeDef;
 
 /** 
@@ -58,10 +81,19 @@ typedef struct
   
 typedef struct
 {
-  uint16_t USART_Clock;
-  uint16_t USART_CPOL;
-  uint16_t USART_CPHA;
-  uint16_t USART_LastBit;
+
+  uint16_t USART_Clock;   /*!< Specifies whether the USART clock is enabled or disabled.
+                               This parameter can be a value of @ref USART_Clock */
+
+  uint16_t USART_CPOL;    /*!< Specifies the steady state value of the serial clock.
+                               This parameter can be a value of @ref USART_Clock_Polarity */
+
+  uint16_t USART_CPHA;    /*!< Specifies the clock transition on which the bit capture is made.
+                               This parameter can be a value of @ref USART_Clock_Phase */
+
+  uint16_t USART_LastBit; /*!< Specifies whether the clock pulse corresponding to the last transmitted
+                               data bit (MSB) has to be output on the SCLK pin in synchronous mode.
+                               This parameter can be a value of @ref USART_Last_Bit */
 } USART_ClockInitTypeDef;
 
 /**
@@ -72,18 +104,20 @@ typedef struct
   * @{
   */ 
   
-#define IS_USART_ALL_PERIPH(PERIPH) (((*(uint32_t*)&(PERIPH)) == USART1_BASE) || \
-                                     ((*(uint32_t*)&(PERIPH)) == USART2_BASE) || \
-                                     ((*(uint32_t*)&(PERIPH)) == USART3_BASE) || \
-                                     ((*(uint32_t*)&(PERIPH)) == UART4_BASE) || \
-                                     ((*(uint32_t*)&(PERIPH)) == UART5_BASE))
-#define IS_USART_123_PERIPH(PERIPH) (((*(uint32_t*)&(PERIPH)) == USART1_BASE) || \
-                                     ((*(uint32_t*)&(PERIPH)) == USART2_BASE) || \
-                                     ((*(uint32_t*)&(PERIPH)) == USART3_BASE))
-#define IS_USART_1234_PERIPH(PERIPH) (((*(uint32_t*)&(PERIPH)) == USART1_BASE) || \
-                                      ((*(uint32_t*)&(PERIPH)) == USART2_BASE) || \
-                                      ((*(uint32_t*)&(PERIPH)) == USART3_BASE) || \
-                                      ((*(uint32_t*)&(PERIPH)) == UART4_BASE))
+#define IS_USART_ALL_PERIPH(PERIPH) (((PERIPH) == USART1) || \
+                                     ((PERIPH) == USART2) || \
+                                     ((PERIPH) == USART3) || \
+                                     ((PERIPH) == UART4) || \
+                                     ((PERIPH) == UART5))
+
+#define IS_USART_123_PERIPH(PERIPH) (((PERIPH) == USART1) || \
+                                     ((PERIPH) == USART2) || \
+                                     ((PERIPH) == USART3))
+
+#define IS_USART_1234_PERIPH(PERIPH) (((PERIPH) == USART1) || \
+                                      ((PERIPH) == USART2) || \
+                                      ((PERIPH) == USART3) || \
+                                      ((PERIPH) == UART4))
 /** @defgroup USART_Word_Length 
   * @{
   */ 
@@ -150,9 +184,6 @@ typedef struct
                                ((CONTROL) == USART_HardwareFlowControl_RTS) || \
                                ((CONTROL) == USART_HardwareFlowControl_CTS) || \
                                ((CONTROL) == USART_HardwareFlowControl_RTS_CTS))
-#define IS_USART_PERIPH_HFC(PERIPH, HFC) ((((*(uint32_t*)&(PERIPH)) != UART4_BASE) && \
-                                          ((*(uint32_t*)&(PERIPH)) != UART5_BASE)) \
-                                          || ((HFC) == USART_HardwareFlowControl_None))
 /**
   * @}
   */ 
@@ -230,9 +261,6 @@ typedef struct
                             ((IT) == USART_IT_NE) || ((IT) == USART_IT_FE))
 #define IS_USART_CLEAR_IT(IT) (((IT) == USART_IT_TC) || ((IT) == USART_IT_RXNE) || \
                                ((IT) == USART_IT_LBD) || ((IT) == USART_IT_CTS))
-#define IS_USART_PERIPH_IT(PERIPH, USART_IT) ((((*(uint32_t*)&(PERIPH)) != UART4_BASE) && \
-                                              ((*(uint32_t*)&(PERIPH)) != UART5_BASE)) \
-                                              || ((USART_IT) != USART_IT_CTS))
 /**
   * @}
   */
@@ -355,12 +383,18 @@ void USART_SetPrescaler(USART_TypeDef* USARTx, uint8_t USART_Prescaler);
 void USART_SmartCardCmd(USART_TypeDef* USARTx, FunctionalState NewState);
 void USART_SmartCardNACKCmd(USART_TypeDef* USARTx, FunctionalState NewState);
 void USART_HalfDuplexCmd(USART_TypeDef* USARTx, FunctionalState NewState);
+void USART_OverSampling8Cmd(USART_TypeDef* USARTx, FunctionalState NewState);
+void USART_OneBitMethodCmd(USART_TypeDef* USARTx, FunctionalState NewState);
 void USART_IrDAConfig(USART_TypeDef* USARTx, uint16_t USART_IrDAMode);
 void USART_IrDACmd(USART_TypeDef* USARTx, FunctionalState NewState);
 FlagStatus USART_GetFlagStatus(USART_TypeDef* USARTx, uint16_t USART_FLAG);
 void USART_ClearFlag(USART_TypeDef* USARTx, uint16_t USART_FLAG);
 ITStatus USART_GetITStatus(USART_TypeDef* USARTx, uint16_t USART_IT);
 void USART_ClearITPendingBit(USART_TypeDef* USARTx, uint16_t USART_IT);
+
+#ifdef __cplusplus
+}
+#endif
 
 #endif /* __STM32F10x_USART_H */
 /**
@@ -375,4 +409,4 @@ void USART_ClearITPendingBit(USART_TypeDef* USARTx, uint16_t USART_IT);
   * @}
   */ 
 
-/******************* (C) COPYRIGHT 2009 STMicroelectronics *****END OF FILE****/
+/******************* (C) COPYRIGHT 2011 STMicroelectronics *****END OF FILE****/

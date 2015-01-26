@@ -229,7 +229,7 @@ void motor_test(void)
 				draw_top_bar();
 				
 				tft_prints(0, 1, "MOTOR TEST");
-				tft_prints(5, 2, "MOTOR%-2d", tft_ui_get_val(&motor_list));
+				tft_prints(5, 2, "MOTOR%-2d", tft_ui_get_val(&motor_list) + 1);
 				tft_prints(0, 3, "ID: 0x%03X", CAN_MOTOR_BASE + tft_ui_get_val(&motor_list)); 
 				tft_prints(0, 4, "Encoder: %d", get_encoder_value((MOTOR_ID) tft_ui_get_val(&motor_list)));
 				
@@ -323,12 +323,12 @@ void button_test(void)
 
 void buzzer_test(void)
 {
-	const u8 line_available[] = {2, 3, 4, 5, 7};
+	const u8 line_available[] = {2, 3, 4, 5};
 	u8 line_id = 0;
-	static u16 duration = 10;
-	static u8 volume = 30;
-	static MUSIC_NOTE note[] = {{NOTE_G, 7}, {NOTE_END}};
-	const char* note_char[] = {"C", "Cs", "D", "Eb", "E", "F", "Fs", "G", "Gs", "A", "Bb", "B"};
+	u16 duration = 10;
+	u8 volume = 30;
+	MUSIC_NOTE note[] = {{NOTE_G, 7}, {NOTE_END}};
+	const char* note_char[] = {"C", "C#", "D", "Eb", "E", "F", "F#", "G", "G#", "A", "Bb", "B"};
 	while (true) {
 		if (ticks_img != get_ticks()) {			
 			ticks_img = get_ticks();			
@@ -417,16 +417,14 @@ void buzzer_test(void)
 								duration += 10;
 							}
 						}		
-						break;
-					// Click to play
-					case 7:
-						if (button_pressed(BUTTON_JS2_CENTER) == 1) {
-							buzzer_stop_song();										// stop last note
-							buzzer_set_volume(volume);						// set with given volume
-							buzzer_play_song(note, duration, 0);	// Play the note.						
-						}
-						break;
-				}
+          break;
+        }
+        // Click to play
+        if (button_pressed(BUTTON_JS2_CENTER) == 1) {
+          buzzer_stop_song();										// stop last note
+          buzzer_set_volume(volume);						// set with given volume
+          buzzer_play_song(note, duration, 0);	// Play the note.						
+        }
 			}
 			
 			if (ticks_img % 50 == 6) {
@@ -449,10 +447,8 @@ void buzzer_test(void)
 				if (ticks_img < 500 || line != 5) {
 					tft_prints(11, 5, "%d", duration);
 				}
-				if (line != 7) {
-					tft_prints(0, 7, "Play test");
-				} else if (ticks_img < 500) {
-					tft_prints(0, 7, "Click to play");
+				if (ticks_img < 500) {
+					tft_prints(1, 7, "Click to play");
 				}
 				tft_update();
 			}
@@ -462,101 +458,108 @@ void buzzer_test(void)
 
 void can_test(void)
 {
-	const u8 line_available[] = {2, 3, 9};
-	u8 line_id = 0;	
-	u8 sent_id = 0;
-	u8 tx_length = 1;	
-	u16 sent = 0;
-	while (true) {
-		if (ticks_img != get_ticks()) {
-			ticks_img = get_ticks();
-			
-			u8 line = line_available[line_id];
-			
-			if (ticks_img % 50 == 0) {
-				battery_adc_update();
-			}
-			
-			if (ticks_img % 50 == 3) {
-				button_update();
-				if (return_listener()) {
-					return;
-				}
-				
-				// Line switcher
-				if (button_pressed(BUTTON_JS2_UP) == 1) {
-					if (line_id == 0) {
-						line_id = sizeof(line_available) / sizeof(u8) - 1;
-					} else {
-						--line_id;
-					}
-				}
-				if (button_pressed(BUTTON_JS2_DOWN) == 1) {
-					line_id = (line_id + 1) % (sizeof(line_available) / sizeof(u8));
-				}
-				// Line
-				switch (line) {
-					case 2:
-						if (button_pressed(BUTTON_JS2_LEFT) == 1 || button_hold(BUTTON_JS2_LEFT, 10, 1)) {
-							--sent_id;			
-						}							
-						if (button_pressed(BUTTON_JS2_RIGHT) == 1 || button_hold(BUTTON_JS2_RIGHT, 10, 1)) {
-							++sent_id;
-						}
-					break;
-						
-					case 3:
-						if (button_pressed(BUTTON_JS2_LEFT) == 1 || button_hold(BUTTON_JS2_LEFT, 10, 1)) {
-							if (tx_length > 1) {
-								--tx_length;			
-							}
-						}							
-						if (button_pressed(BUTTON_JS2_RIGHT) == 1 || button_hold(BUTTON_JS2_RIGHT, 10, 1)) {
-							if (tx_length < 7) {
-								++tx_length;
-							}
-						}
-						
-					break;
-					case 9:
-						if (button_pressed(BUTTON_JS2_CENTER) == 1) {
-							CAN_MESSAGE msg;
-							msg.id = sent_id;
-							msg.length = tx_length;
-							for (u8 i = 0; i < msg.length; ++i) {
-								msg.data[i] = 0x00;
-							}
-							can_tx_enqueue(msg);
-							++sent;
-							CLICK_MUSIC;
-						}
-						break;
-				}
-			}
-			
-			if (ticks_img % 50 == 6) {
-				tft_clear();
-				draw_top_bar();
-				tft_prints(0, 1, "CAN TEST");
-				tft_prints(0, 2, "CAN id:");
-				if (ticks_img < 500 || line != 2) {
-					tft_prints(11, 2, "00 %02x", sent_id);
-				}
-				tft_prints(0, 3, "CAN length:");
-				if (ticks_img < 500 || line != 3) {
-					tft_prints(11, 3, "%d", tx_length);
-				}
-				tft_prints(0, 7, "Sent: %d", sent);
-				if (line != 9){
-					tft_prints(5, 9, "SEND");
-				} else if (ticks_img < 500) {
-					tft_prints(1, 9, "Click to send");
-				} 
-				tft_update();
-
-			}
-		}
-	}
+  const u8 line_available[] = {2, 3};
+  u8 line_id = 0;
+  u8 sent_id = 0;
+  u8 tx_length = 1;
+  u16 sent = 0;
+  while (true) {
+    if (ticks_img != get_ticks()) {
+      ticks_img = get_ticks();
+      u8 line = line_available[line_id];
+      if (ticks_img % 50 == 0) {
+        battery_adc_update();
+      }
+      if (ticks_img % 50 == 3) {
+        button_update();
+        if (return_listener()) {
+          return;
+        }
+        // Line switcher
+        if (button_pressed(BUTTON_JS2_UP) == 1) {
+          if (line_id == 0) {
+            line_id = sizeof(line_available) / sizeof(u8) - 1;
+          } else {
+            --line_id;
+          }
+        }
+        if (button_pressed(BUTTON_JS2_DOWN) == 1) {
+          line_id = (line_id + 1) % (sizeof(line_available) / sizeof(u8));
+        }
+        // Line
+        switch (line) {
+          case 2:
+            if (button_pressed(BUTTON_JS2_LEFT) == 1 || button_hold(BUTTON_JS2_LEFT, 10, 1)) {
+              --sent_id;
+            }
+            if (button_pressed(BUTTON_JS2_RIGHT) == 1 || button_hold(BUTTON_JS2_RIGHT, 10, 1)) {
+              ++sent_id;
+            }
+          break;
+          case 3:
+            if (button_pressed(BUTTON_JS2_LEFT) == 1 || button_hold(BUTTON_JS2_LEFT, 10, 1)) {
+              if (tx_length > 1) {
+                --tx_length;
+              }
+            }
+            if (button_pressed(BUTTON_JS2_RIGHT) == 1 || button_hold(BUTTON_JS2_RIGHT, 10, 1)) {
+              if (tx_length < 7) {
+                ++tx_length;
+              }
+            }
+          break;
+        }
+        if (button_pressed(BUTTON_JS2_CENTER) == 1) {
+          CAN_MESSAGE txmsg;
+          txmsg.id = sent_id;
+          txmsg.length = tx_length;
+          for (u8 i = 0; i < txmsg.length; ++i) {
+            txmsg.data[i] = 0x00;
+          }
+          can_tx_enqueue(txmsg);
+          ++sent;
+          CLICK_MUSIC;
+        }
+      }
+      if (ticks_img % 50 == 6) {
+        tft_clear();
+        draw_top_bar();
+        tft_prints(0, 1, "CAN TEST");
+        tft_prints(0, 2, "CAN id:");
+        if (ticks_img < 500 || line != 2) {
+          tft_prints(11, 2, "00 %02X", sent_id);
+        }
+        tft_prints(0, 3, "CAN length:");
+        if (ticks_img < 500 || line != 3) {
+          tft_prints(11, 3, "%d", tx_length);
+        }
+        tft_prints(0, 4, "Sent no.: %d", sent);
+        // Only motor related encoder can be receieve, to be improved.
+        if (can_get_rx_count() > 0) {
+          tft_prints(0, 5, "CAN Rx id: 00 %02X", can_get_recent_rx().id);
+          u8 x = 0, y = 6;
+          tft_prints(x++, y, "{"); // Caution: MUST BE x++, ++x is wrong!
+          for (u8 i = 0; i < can_get_recent_rx().length; ++i) {
+            // 2 space for 2 digitt, one space for '}', so minus 3
+            if (x > CHAR_MAX_X_VERTICAL - 3) {
+              x = 1;
+              ++y;
+            }
+            tft_prints(x, y, "%02X ", can_get_recent_rx().data[i]);
+            x += 3;
+          }
+          tft_prints(x - 1, y, "}"); // No extra space need, minus 1
+        } else {
+          tft_prints(0, 5, "No CAN received");
+        }
+        tft_prints(0, 8, "Received no.: %d", can_get_rx_count());
+        if (ticks_img < 500) {
+          tft_prints(1, 9, "Click to send");
+        }
+        tft_update();
+      }
+    }
+  }
 }
 
 void xbc_test(void)
@@ -578,10 +581,10 @@ void xbc_test(void)
 					return; 
 				}
 				// Skip or backward
-				if (button_pressed(BUTTON_2) == 1 && pressed_cnt > 0) {
+				if (button_pressed(BUTTON_1) == 1 && pressed_cnt > 0) {
 					--pressed_cnt;
 				}
-				if (button_pressed(BUTTON_1) == 1 && pressed_cnt < 19) {
+				if (button_pressed(BUTTON_2) == 1 && pressed_cnt < 19) {
 					++pressed_cnt;
 				}
 			}
@@ -736,7 +739,7 @@ void xbc_test(void)
 
 				if (pressed_cnt != pre_pressed_cnt) {
 					//buzzer on when press right button
-					buzzer_control(2,5);
+					SUCCESSFUL_MUSIC;
 				}
 
 				if (xbc_press != pre_xbc_press && xbc_press != 0) {
@@ -750,6 +753,98 @@ void xbc_test(void)
 				tft_prints(0,7,"RX:%5ld",xbc_joy[XBC_RX]);
 				tft_prints(0,8,"RY:%5ld",xbc_joy[XBC_RY]);
 				tft_prints(0,9,"press cnt:%3d",press_times); //normally press once count up 1
+				tft_update();
+			}
+		}
+	}
+}
+
+
+/**
+	* @brief 	  Pin test for GPIOE only (will have other later)
+	* @param 	  None
+	* @retval	  None
+	* @warning  Reinit is required after this test (except those without GPIO)!!
+	*/
+void gpio_pin_test(void)
+{
+	RCC_APB2PeriphClockCmd(RCC_APB2Periph_GPIOE, ENABLE);
+	/* Pin E test */
+	GPIO_InitTypeDef GPIO_InitStructure;
+	GPIO_InitStructure.GPIO_Speed = GPIO_Speed_2MHz;
+	GPIO_InitStructure.GPIO_Mode = GPIO_Mode_IPD;
+	GPIO_InitStructure.GPIO_Pin = GPIO_Pin_All;
+	GPIO_Init(GPIOE, &GPIO_InitStructure);
+	
+  GPIO_InitStructure.GPIO_Mode = GPIO_Mode_IPU;
+	GPIO_InitStructure.GPIO_Pin = GPIO_Pin_9;
+	GPIO_Init(GPIOB, &GPIO_InitStructure);
+  
+	u16 curr_test_pin = GPIO_Pin_0;
+	vu16 initial_input = 0;		// None of GPIOE is used before test
+	u16 last_input = GPIO_Pin_0;		
+	u8 pin_no = 0;
+	bool test_done = false;
+	
+	while (!return_listener()) {
+		if (ticks_img != get_ticks()) {
+			ticks_img = get_ticks();
+			if (ticks_img % 50 == 3) {
+				button_update();
+				if (button_pressed(BUTTON_1) == 1 && pin_no > 0) {
+					if (test_done) {
+						//return to previous stage.
+						test_done = false;		
+					} else {
+						--pin_no;
+						curr_test_pin >>= 1;
+					}
+				}
+				if ((button_pressed(BUTTON_JS2_CENTER) == 1 && test_done) && last_input == initial_input) {
+					return;
+				}
+				
+				if (button_pressed(BUTTON_2) == 1 && pin_no < 15) {
+					++pin_no;
+					curr_test_pin <<= 1;
+				}
+				
+				if (!test_done) {
+					if ((GPIO_ReadInputData(GPIOE) - initial_input) == curr_test_pin && last_input == initial_input) {
+						SUCCESSFUL_MUSIC;
+						if (curr_test_pin != GPIO_Pin_15) {
+							curr_test_pin <<= 1;
+							++pin_no;
+						} else {
+							test_done = true;
+						}
+					} else if (GPIO_ReadInputData(GPIOE) != initial_input && last_input == initial_input) {
+						FAIL_MUSIC;
+					}
+				}
+				last_input = GPIO_ReadInputData(GPIOE);
+			}
+			
+			if (ticks_img % 50 == 6) {
+				tft_clear();
+				draw_top_bar();
+				if (!test_done) {
+					tft_prints(0, 1, "Pin Test");
+					tft_prints(0, 2, "Plug to B9");
+					tft_prints(0, 3, "Now plug: E%d", pin_no);
+					tft_prints(0, 4, "Caution:");		
+					tft_prints(0, 5, "Never plug to");
+					tft_prints(0, 6, "other vcc");
+					tft_prints(0, 7, "or ground!");
+					tft_prints(0, 8, "Suggest use usb");
+					tft_prints(0, 9, "power to test!");
+				} else {
+					tft_prints(0, 1, "Pin Test");
+					tft_prints(0, 2, "Done!");
+					tft_prints(0, 3, "Unplug test wire");
+					tft_prints(0, 4, "Press centre");
+					tft_prints(0, 5, "to quit");
+				}
 				tft_update();
 			}
 		}

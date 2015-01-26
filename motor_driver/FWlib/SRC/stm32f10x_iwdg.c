@@ -1,12 +1,12 @@
 /**
   ******************************************************************************
-  * @file  stm32f10x_iwdg.c
+  * @file    stm32f10x_iwdg.c
   * @author  MCD Application Team
-  * @version  V3.0.0
-  * @date  04/06/2009
-  * @brief  This file provides all the IWDG firmware functions.
+  * @version V3.5.0
+  * @date    11-March-2011
+  * @brief   This file provides all the IWDG firmware functions.
   ******************************************************************************
-  * @copy
+  * @attention
   *
   * THE PRESENT FIRMWARE WHICH IS FOR GUIDANCE ONLY AIMS AT PROVIDING CUSTOMERS
   * WITH CODING INFORMATION REGARDING THEIR PRODUCTS IN ORDER FOR THEM TO SAVE
@@ -15,13 +15,14 @@
   * FROM THE CONTENT OF SUCH FIRMWARE AND/OR THE USE MADE BY CUSTOMERS OF THE
   * CODING INFORMATION CONTAINED HEREIN IN CONNECTION WITH THEIR PRODUCTS.
   *
-  * <h2><center>&copy; COPYRIGHT 2009 STMicroelectronics</center></h2>
-  */ 
+  * <h2><center>&copy; COPYRIGHT 2011 STMicroelectronics</center></h2>
+  ******************************************************************************
+  */
 
 /* Includes ------------------------------------------------------------------*/
 #include "stm32f10x_iwdg.h"
 
-/** @addtogroup StdPeriph_Driver
+/** @addtogroup STM32F10x_StdPeriph_Driver
   * @{
   */
 
@@ -81,16 +82,12 @@
   */
 
 /**
-  * @brief  Enables or disables write access to IWDG_PR and IWDG_RLR
-  *   registers.
-  * @param IWDG_WriteAccess: new state of write access to IWDG_PR and
-  *   IWDG_RLR registers.
+  * @brief  Enables or disables write access to IWDG_PR and IWDG_RLR registers.
+  * @param  IWDG_WriteAccess: new state of write access to IWDG_PR and IWDG_RLR registers.
   *   This parameter can be one of the following values:
-  * @arg IWDG_WriteAccess_Enable: Enable write access to 
-  *   IWDG_PR and IWDG_RLR registers
-  * @arg IWDG_WriteAccess_Disable: Disable write access to
-  *   IWDG_PR and IWDG_RLR registers
-  * @retval : None
+  *     @arg IWDG_WriteAccess_Enable: Enable write access to IWDG_PR and IWDG_RLR registers
+  *     @arg IWDG_WriteAccess_Disable: Disable write access to IWDG_PR and IWDG_RLR registers
+  * @retval None
   */
 void IWDG_WriteAccessCmd(uint16_t IWDG_WriteAccess)
 {
@@ -101,16 +98,16 @@ void IWDG_WriteAccessCmd(uint16_t IWDG_WriteAccess)
 
 /**
   * @brief  Sets IWDG Prescaler value.
-  * @param IWDG_Prescaler: specifies the IWDG Prescaler value.
+  * @param  IWDG_Prescaler: specifies the IWDG Prescaler value.
   *   This parameter can be one of the following values:
-  * @arg IWDG_Prescaler_4: IWDG prescaler set to 4
-  * @arg IWDG_Prescaler_8: IWDG prescaler set to 8
-  * @arg IWDG_Prescaler_16: IWDG prescaler set to 16
-  * @arg IWDG_Prescaler_32: IWDG prescaler set to 32
-  * @arg IWDG_Prescaler_64: IWDG prescaler set to 64
-  * @arg IWDG_Prescaler_128: IWDG prescaler set to 128
-  * @arg IWDG_Prescaler_256: IWDG prescaler set to 256
-  * @retval : None
+  *     @arg IWDG_Prescaler_4: IWDG prescaler set to 4
+  *     @arg IWDG_Prescaler_8: IWDG prescaler set to 8
+  *     @arg IWDG_Prescaler_16: IWDG prescaler set to 16
+  *     @arg IWDG_Prescaler_32: IWDG prescaler set to 32
+  *     @arg IWDG_Prescaler_64: IWDG prescaler set to 64
+  *     @arg IWDG_Prescaler_128: IWDG prescaler set to 128
+  *     @arg IWDG_Prescaler_256: IWDG prescaler set to 256
+  * @retval None
   */
 void IWDG_SetPrescaler(uint8_t IWDG_Prescaler)
 {
@@ -121,9 +118,9 @@ void IWDG_SetPrescaler(uint8_t IWDG_Prescaler)
 
 /**
   * @brief  Sets IWDG Reload value.
-  * @param Reload: specifies the IWDG Reload value.
+  * @param  Reload: specifies the IWDG Reload value.
   *   This parameter must be a number between 0 and 0x0FFF.
-  * @retval : None
+  * @retval None
   */
 void IWDG_SetReload(uint16_t Reload)
 {
@@ -136,7 +133,7 @@ void IWDG_SetReload(uint16_t Reload)
   * @brief  Reloads IWDG counter with value defined in the reload register
   *   (write access to IWDG_PR and IWDG_RLR registers disabled).
   * @param  None
-  * @retval : None
+  * @retval None
   */
 void IWDG_ReloadCounter(void)
 {
@@ -144,10 +141,9 @@ void IWDG_ReloadCounter(void)
 }
 
 /**
-  * @brief  Enables IWDG (write access to IWDG_PR and IWDG_RLR registers
-  *   disabled).
+  * @brief  Enables IWDG (write access to IWDG_PR and IWDG_RLR registers disabled).
   * @param  None
-  * @retval : None
+  * @retval None
   */
 void IWDG_Enable(void)
 {
@@ -156,11 +152,11 @@ void IWDG_Enable(void)
 
 /**
   * @brief  Checks whether the specified IWDG flag is set or not.
-  * @param IWDG_FLAG: specifies the flag to check.
+  * @param  IWDG_FLAG: specifies the flag to check.
   *   This parameter can be one of the following values:
-  * @arg IWDG_FLAG_PVU: Prescaler Value Update on going
-  * @arg IWDG_FLAG_RVU: Reload Value Update on going
-  * @retval : The new state of IWDG_FLAG (SET or RESET).
+  *     @arg IWDG_FLAG_PVU: Prescaler Value Update on going
+  *     @arg IWDG_FLAG_RVU: Reload Value Update on going
+  * @retval The new state of IWDG_FLAG (SET or RESET).
   */
 FlagStatus IWDG_GetFlagStatus(uint16_t IWDG_FLAG)
 {
@@ -191,4 +187,4 @@ FlagStatus IWDG_GetFlagStatus(uint16_t IWDG_FLAG)
   * @}
   */
 
-/******************* (C) COPYRIGHT 2009 STMicroelectronics *****END OF FILE****/
+/******************* (C) COPYRIGHT 2011 STMicroelectronics *****END OF FILE****/

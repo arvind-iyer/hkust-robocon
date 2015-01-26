@@ -1,13 +1,13 @@
 /**
   ******************************************************************************
-  * @file  misc.h
+  * @file    misc.h
   * @author  MCD Application Team
-  * @version  V3.0.0
-  * @date  04/06/2009
-  * @brief  This file contains all the functions prototypes for the 
-  *         miscellaneous firmware library functions.
+  * @version V3.5.0
+  * @date    11-March-2011
+  * @brief   This file contains all the functions prototypes for the miscellaneous
+  *          firmware library functions (add-on to CMSIS functions).
   ******************************************************************************
-  * @copy
+  * @attention
   *
   * THE PRESENT FIRMWARE WHICH IS FOR GUIDANCE ONLY AIMS AT PROVIDING CUSTOMERS
   * WITH CODING INFORMATION REGARDING THEIR PRODUCTS IN ORDER FOR THEM TO SAVE
@@ -16,17 +16,22 @@
   * FROM THE CONTENT OF SUCH FIRMWARE AND/OR THE USE MADE BY CUSTOMERS OF THE
   * CODING INFORMATION CONTAINED HEREIN IN CONNECTION WITH THEIR PRODUCTS.
   *
-  * <h2><center>&copy; COPYRIGHT 2009 STMicroelectronics</center></h2>
-  */ 
+  * <h2><center>&copy; COPYRIGHT 2011 STMicroelectronics</center></h2>
+  ******************************************************************************
+  */
 
 /* Define to prevent recursive inclusion -------------------------------------*/
 #ifndef __MISC_H
 #define __MISC_H
 
+#ifdef __cplusplus
+ extern "C" {
+#endif
+
 /* Includes ------------------------------------------------------------------*/
 #include "stm32f10x.h"
 
-/** @addtogroup StdPeriph_Driver
+/** @addtogroup STM32F10x_StdPeriph_Driver
   * @{
   */
 
@@ -44,11 +49,56 @@
 
 typedef struct
 {
-  uint8_t NVIC_IRQChannel;
-  uint8_t NVIC_IRQChannelPreemptionPriority;
-  uint8_t NVIC_IRQChannelSubPriority;
-  FunctionalState NVIC_IRQChannelCmd;
+  uint8_t NVIC_IRQChannel;                    /*!< Specifies the IRQ channel to be enabled or disabled.
+                                                   This parameter can be a value of @ref IRQn_Type 
+                                                   (For the complete STM32 Devices IRQ Channels list, please
+                                                    refer to stm32f10x.h file) */
+
+  uint8_t NVIC_IRQChannelPreemptionPriority;  /*!< Specifies the pre-emption priority for the IRQ channel
+                                                   specified in NVIC_IRQChannel. This parameter can be a value
+                                                   between 0 and 15 as described in the table @ref NVIC_Priority_Table */
+
+  uint8_t NVIC_IRQChannelSubPriority;         /*!< Specifies the subpriority level for the IRQ channel specified
+                                                   in NVIC_IRQChannel. This parameter can be a value
+                                                   between 0 and 15 as described in the table @ref NVIC_Priority_Table */
+
+  FunctionalState NVIC_IRQChannelCmd;         /*!< Specifies whether the IRQ channel defined in NVIC_IRQChannel
+                                                   will be enabled or disabled. 
+                                                   This parameter can be set either to ENABLE or DISABLE */   
 } NVIC_InitTypeDef;
+ 
+/**
+  * @}
+  */
+
+/** @defgroup NVIC_Priority_Table 
+  * @{
+  */
+
+/**
+@code  
+ The table below gives the allowed values of the pre-emption priority and subpriority according
+ to the Priority Grouping configuration performed by NVIC_PriorityGroupConfig function
+  ============================================================================================================================
+    NVIC_PriorityGroup   | NVIC_IRQChannelPreemptionPriority | NVIC_IRQChannelSubPriority  | Description
+  ============================================================================================================================
+   NVIC_PriorityGroup_0  |                0                  |            0-15             |   0 bits for pre-emption priority
+                         |                                   |                             |   4 bits for subpriority
+  ----------------------------------------------------------------------------------------------------------------------------
+   NVIC_PriorityGroup_1  |                0-1                |            0-7              |   1 bits for pre-emption priority
+                         |                                   |                             |   3 bits for subpriority
+  ----------------------------------------------------------------------------------------------------------------------------    
+   NVIC_PriorityGroup_2  |                0-3                |            0-3              |   2 bits for pre-emption priority
+                         |                                   |                             |   2 bits for subpriority
+  ----------------------------------------------------------------------------------------------------------------------------    
+   NVIC_PriorityGroup_3  |                0-7                |            0-1              |   3 bits for pre-emption priority
+                         |                                   |                             |   1 bits for subpriority
+  ----------------------------------------------------------------------------------------------------------------------------    
+   NVIC_PriorityGroup_4  |                0-15               |            0                |   4 bits for pre-emption priority
+                         |                                   |                             |   0 bits for subpriority                       
+  ============================================================================================================================
+@endcode
+*/
 
 /**
   * @}
@@ -88,16 +138,16 @@ typedef struct
   * @{
   */
 
-#define NVIC_PriorityGroup_0         ((uint32_t)0x700) /* 0 bits for pre-emption priority
-                                                          4 bits for subpriority */
-#define NVIC_PriorityGroup_1         ((uint32_t)0x600) /* 1 bits for pre-emption priority
-                                                          3 bits for subpriority */
-#define NVIC_PriorityGroup_2         ((uint32_t)0x500) /* 2 bits for pre-emption priority
-                                                          2 bits for subpriority */
-#define NVIC_PriorityGroup_3         ((uint32_t)0x400) /* 3 bits for pre-emption priority
-                                                          1 bits for subpriority */
-#define NVIC_PriorityGroup_4         ((uint32_t)0x300) /* 4 bits for pre-emption priority
-                                                          0 bits for subpriority */
+#define NVIC_PriorityGroup_0         ((uint32_t)0x700) /*!< 0 bits for pre-emption priority
+                                                            4 bits for subpriority */
+#define NVIC_PriorityGroup_1         ((uint32_t)0x600) /*!< 1 bits for pre-emption priority
+                                                            3 bits for subpriority */
+#define NVIC_PriorityGroup_2         ((uint32_t)0x500) /*!< 2 bits for pre-emption priority
+                                                            2 bits for subpriority */
+#define NVIC_PriorityGroup_3         ((uint32_t)0x400) /*!< 3 bits for pre-emption priority
+                                                            1 bits for subpriority */
+#define NVIC_PriorityGroup_4         ((uint32_t)0x300) /*!< 4 bits for pre-emption priority
+                                                            0 bits for subpriority */
 
 #define IS_NVIC_PRIORITY_GROUP(GROUP) (((GROUP) == NVIC_PriorityGroup_0) || \
                                        ((GROUP) == NVIC_PriorityGroup_1) || \
@@ -109,7 +159,7 @@ typedef struct
 
 #define IS_NVIC_SUB_PRIORITY(PRIORITY)  ((PRIORITY) < 0x10)
 
-#define IS_NVIC_OFFSET(OFFSET)  ((OFFSET) < 0x0007FFFF)
+#define IS_NVIC_OFFSET(OFFSET)  ((OFFSET) < 0x000FFFFF)
 
 /**
   * @}
@@ -149,6 +199,10 @@ void NVIC_SetVectorTable(uint32_t NVIC_VectTab, uint32_t Offset);
 void NVIC_SystemLPConfig(uint8_t LowPowerMode, FunctionalState NewState);
 void SysTick_CLKSourceConfig(uint32_t SysTick_CLKSource);
 
+#ifdef __cplusplus
+}
+#endif
+
 #endif /* __MISC_H */
 
 /**
@@ -163,4 +217,4 @@ void SysTick_CLKSourceConfig(uint32_t SysTick_CLKSource);
   * @}
   */
 
-/******************* (C) COPYRIGHT 2009 STMicroelectronics *****END OF FILE****/
+/******************* (C) COPYRIGHT 2011 STMicroelectronics *****END OF FILE****/

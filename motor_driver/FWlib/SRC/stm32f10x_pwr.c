@@ -1,12 +1,12 @@
 /**
   ******************************************************************************
-  * @file  stm32f10x_pwr.c
+  * @file    stm32f10x_pwr.c
   * @author  MCD Application Team
-  * @version  V3.0.0
-  * @date  04/06/2009
-  * @brief  This file provides all the PWR firmware functions.
+  * @version V3.5.0
+  * @date    11-March-2011
+  * @brief   This file provides all the PWR firmware functions.
   ******************************************************************************
-  * @copy
+  * @attention
   *
   * THE PRESENT FIRMWARE WHICH IS FOR GUIDANCE ONLY AIMS AT PROVIDING CUSTOMERS
   * WITH CODING INFORMATION REGARDING THEIR PRODUCTS IN ORDER FOR THEM TO SAVE
@@ -15,14 +15,15 @@
   * FROM THE CONTENT OF SUCH FIRMWARE AND/OR THE USE MADE BY CUSTOMERS OF THE
   * CODING INFORMATION CONTAINED HEREIN IN CONNECTION WITH THEIR PRODUCTS.
   *
-  * <h2><center>&copy; COPYRIGHT 2009 STMicroelectronics</center></h2>
-  */ 
+  * <h2><center>&copy; COPYRIGHT 2011 STMicroelectronics</center></h2>
+  ******************************************************************************
+  */
 
 /* Includes ------------------------------------------------------------------*/
 #include "stm32f10x_pwr.h"
 #include "stm32f10x_rcc.h"
 
-/** @addtogroup StdPeriph_Driver
+/** @addtogroup STM32F10x_StdPeriph_Driver
   * @{
   */
 
@@ -67,18 +68,10 @@
 /* ------------------ PWR registers bit mask ------------------------ */
 
 /* CR register bit mask */
-#define CR_PDDS_Set              ((uint32_t)0x00000002)
-#define CR_DS_Mask               ((uint32_t)0xFFFFFFFC)
-#define CR_CWUF_Set              ((uint32_t)0x00000004)
-#define CR_PLS_Mask              ((uint32_t)0xFFFFFF1F)
+#define CR_DS_MASK               ((uint32_t)0xFFFFFFFC)
+#define CR_PLS_MASK              ((uint32_t)0xFFFFFF1F)
 
-/* --------- Cortex System Control register bit mask ---------------- */
 
-/* Cortex System Control register address */
-#define SCB_SysCtrl              ((uint32_t)0xE000ED10)
-
-/* SLEEPDEEP bit mask */
-#define SysCtrl_SLEEPDEEP_Set    ((uint32_t)0x00000004)
 /**
   * @}
   */
@@ -112,10 +105,9 @@
   */
 
 /**
-  * @brief  Deinitializes the PWR peripheral registers to their default
-  *   reset values.
+  * @brief  Deinitializes the PWR peripheral registers to their default reset values.
   * @param  None
-  * @retval : None
+  * @retval None
   */
 void PWR_DeInit(void)
 {
@@ -125,9 +117,9 @@ void PWR_DeInit(void)
 
 /**
   * @brief  Enables or disables access to the RTC and backup registers.
-  * @param NewState: new state of the access to the RTC and backup
-  *   registers. This parameter can be: ENABLE or DISABLE.
-  * @retval : None
+  * @param  NewState: new state of the access to the RTC and backup registers.
+  *   This parameter can be: ENABLE or DISABLE.
+  * @retval None
   */
 void PWR_BackupAccessCmd(FunctionalState NewState)
 {
@@ -138,9 +130,9 @@ void PWR_BackupAccessCmd(FunctionalState NewState)
 
 /**
   * @brief  Enables or disables the Power Voltage Detector(PVD).
-  * @param NewState: new state of the PVD.
+  * @param  NewState: new state of the PVD.
   *   This parameter can be: ENABLE or DISABLE.
-  * @retval : None
+  * @retval None
   */
 void PWR_PVDCmd(FunctionalState NewState)
 {
@@ -150,19 +142,18 @@ void PWR_PVDCmd(FunctionalState NewState)
 }
 
 /**
-  * @brief  Configures the voltage threshold detected by the Power Voltage
-  *   Detector(PVD).
-  * @param PWR_PVDLevel: specifies the PVD detection level
+  * @brief  Configures the voltage threshold detected by the Power Voltage Detector(PVD).
+  * @param  PWR_PVDLevel: specifies the PVD detection level
   *   This parameter can be one of the following values:
-  * @arg PWR_PVDLevel_2V2: PVD detection level set to 2.2V
-  * @arg PWR_PVDLevel_2V3: PVD detection level set to 2.3V
-  * @arg PWR_PVDLevel_2V4: PVD detection level set to 2.4V
-  * @arg PWR_PVDLevel_2V5: PVD detection level set to 2.5V
-  * @arg PWR_PVDLevel_2V6: PVD detection level set to 2.6V
-  * @arg PWR_PVDLevel_2V7: PVD detection level set to 2.7V
-  * @arg PWR_PVDLevel_2V8: PVD detection level set to 2.8V
-  * @arg PWR_PVDLevel_2V9: PVD detection level set to 2.9V
-  * @retval : None
+  *     @arg PWR_PVDLevel_2V2: PVD detection level set to 2.2V
+  *     @arg PWR_PVDLevel_2V3: PVD detection level set to 2.3V
+  *     @arg PWR_PVDLevel_2V4: PVD detection level set to 2.4V
+  *     @arg PWR_PVDLevel_2V5: PVD detection level set to 2.5V
+  *     @arg PWR_PVDLevel_2V6: PVD detection level set to 2.6V
+  *     @arg PWR_PVDLevel_2V7: PVD detection level set to 2.7V
+  *     @arg PWR_PVDLevel_2V8: PVD detection level set to 2.8V
+  *     @arg PWR_PVDLevel_2V9: PVD detection level set to 2.9V
+  * @retval None
   */
 void PWR_PVDLevelConfig(uint32_t PWR_PVDLevel)
 {
@@ -171,7 +162,7 @@ void PWR_PVDLevelConfig(uint32_t PWR_PVDLevel)
   assert_param(IS_PWR_PVD_LEVEL(PWR_PVDLevel));
   tmpreg = PWR->CR;
   /* Clear PLS[7:5] bits */
-  tmpreg &= CR_PLS_Mask;
+  tmpreg &= CR_PLS_MASK;
   /* Set PLS[7:5] bits according to PWR_PVDLevel value */
   tmpreg |= PWR_PVDLevel;
   /* Store the new value */
@@ -180,9 +171,9 @@ void PWR_PVDLevelConfig(uint32_t PWR_PVDLevel)
 
 /**
   * @brief  Enables or disables the WakeUp Pin functionality.
-  * @param NewState: new state of the WakeUp Pin functionality.
+  * @param  NewState: new state of the WakeUp Pin functionality.
   *   This parameter can be: ENABLE or DISABLE.
-  * @retval : None
+  * @retval None
   */
 void PWR_WakeUpPinCmd(FunctionalState NewState)
 {
@@ -193,17 +184,15 @@ void PWR_WakeUpPinCmd(FunctionalState NewState)
 
 /**
   * @brief  Enters STOP mode.
-  * @param PWR_Regulator: specifies the regulator state in STOP mode.
+  * @param  PWR_Regulator: specifies the regulator state in STOP mode.
   *   This parameter can be one of the following values:
-  * @arg PWR_Regulator_ON: STOP mode with regulator ON
-  * @arg PWR_Regulator_LowPower: STOP mode with
-  *   regulator in low power mode
-  * @param PWR_STOPEntry: specifies if STOP mode in entered with WFI or 
-  *   WFE instruction.
+  *     @arg PWR_Regulator_ON: STOP mode with regulator ON
+  *     @arg PWR_Regulator_LowPower: STOP mode with regulator in low power mode
+  * @param  PWR_STOPEntry: specifies if STOP mode in entered with WFI or WFE instruction.
   *   This parameter can be one of the following values:
-  * @arg PWR_STOPEntry_WFI: enter STOP mode with WFI instruction
-  * @arg PWR_STOPEntry_WFE: enter STOP mode with WFE instruction
-  * @retval : None
+  *     @arg PWR_STOPEntry_WFI: enter STOP mode with WFI instruction
+  *     @arg PWR_STOPEntry_WFE: enter STOP mode with WFE instruction
+  * @retval None
   */
 void PWR_EnterSTOPMode(uint32_t PWR_Regulator, uint8_t PWR_STOPEntry)
 {
@@ -215,13 +204,13 @@ void PWR_EnterSTOPMode(uint32_t PWR_Regulator, uint8_t PWR_STOPEntry)
   /* Select the regulator state in STOP mode ---------------------------------*/
   tmpreg = PWR->CR;
   /* Clear PDDS and LPDS bits */
-  tmpreg &= CR_DS_Mask;
+  tmpreg &= CR_DS_MASK;
   /* Set LPDS bit according to PWR_Regulator value */
   tmpreg |= PWR_Regulator;
   /* Store the new value */
   PWR->CR = tmpreg;
   /* Set SLEEPDEEP bit of Cortex System Control Register */
-  *(__IO uint32_t *) SCB_SysCtrl |= SysCtrl_SLEEPDEEP_Set;
+  SCB->SCR |= SCB_SCR_SLEEPDEEP;
   
   /* Select STOP mode entry --------------------------------------------------*/
   if(PWR_STOPEntry == PWR_STOPEntry_WFI)
@@ -234,21 +223,24 @@ void PWR_EnterSTOPMode(uint32_t PWR_Regulator, uint8_t PWR_STOPEntry)
     /* Request Wait For Event */
     __WFE();
   }
+  
+  /* Reset SLEEPDEEP bit of Cortex System Control Register */
+  SCB->SCR &= (uint32_t)~((uint32_t)SCB_SCR_SLEEPDEEP);  
 }
 
 /**
   * @brief  Enters STANDBY mode.
   * @param  None
-  * @retval : None
+  * @retval None
   */
 void PWR_EnterSTANDBYMode(void)
 {
   /* Clear Wake-up flag */
-  PWR->CR |= CR_CWUF_Set;
+  PWR->CR |= PWR_CR_CWUF;
   /* Select STANDBY mode */
-  PWR->CR |= CR_PDDS_Set;
+  PWR->CR |= PWR_CR_PDDS;
   /* Set SLEEPDEEP bit of Cortex System Control Register */
-  *(__IO uint32_t *) SCB_SysCtrl |= SysCtrl_SLEEPDEEP_Set;
+  SCB->SCR |= SCB_SCR_SLEEPDEEP;
 /* This option is used to ensure that store operations are completed */
 #if defined ( __CC_ARM   )
   __force_stores();
@@ -259,12 +251,12 @@ void PWR_EnterSTANDBYMode(void)
 
 /**
   * @brief  Checks whether the specified PWR flag is set or not.
-  * @param PWR_FLAG: specifies the flag to check.
+  * @param  PWR_FLAG: specifies the flag to check.
   *   This parameter can be one of the following values:
-  * @arg PWR_FLAG_WU: Wake Up flag
-  * @arg PWR_FLAG_SB: StandBy flag
-  * @arg PWR_FLAG_PVDO: PVD Output
-  * @retval : The new state of PWR_FLAG (SET or RESET).
+  *     @arg PWR_FLAG_WU: Wake Up flag
+  *     @arg PWR_FLAG_SB: StandBy flag
+  *     @arg PWR_FLAG_PVDO: PVD Output
+  * @retval The new state of PWR_FLAG (SET or RESET).
   */
 FlagStatus PWR_GetFlagStatus(uint32_t PWR_FLAG)
 {
@@ -286,11 +278,11 @@ FlagStatus PWR_GetFlagStatus(uint32_t PWR_FLAG)
 
 /**
   * @brief  Clears the PWR's pending flags.
-  * @param PWR_FLAG: specifies the flag to clear.
+  * @param  PWR_FLAG: specifies the flag to clear.
   *   This parameter can be one of the following values:
-  * @arg PWR_FLAG_WU: Wake Up flag
-  * @arg PWR_FLAG_SB: StandBy flag
-  * @retval : None
+  *     @arg PWR_FLAG_WU: Wake Up flag
+  *     @arg PWR_FLAG_SB: StandBy flag
+  * @retval None
   */
 void PWR_ClearFlag(uint32_t PWR_FLAG)
 {
@@ -312,4 +304,4 @@ void PWR_ClearFlag(uint32_t PWR_FLAG)
   * @}
   */
 
-/******************* (C) COPYRIGHT 2009 STMicroelectronics *****END OF FILE****/
+/******************* (C) COPYRIGHT 2011 STMicroelectronics *****END OF FILE****/

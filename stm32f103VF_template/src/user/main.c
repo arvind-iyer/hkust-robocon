@@ -17,6 +17,7 @@ int main(void)
 	battery_adc_init();
 	can_init();
 	can_rx_init();
+  can_motor_init();
 	bluetooth_init();
 	wheel_base_init();
 	wheel_base_pid_init();
@@ -35,7 +36,7 @@ int main(void)
 	menu_add("Buzzer test", buzzer_test);
 	menu_add("Button test", button_test);
 	menu_add("ASCII test", ascii_test);
-	
+	menu_add("GPIO Pin test", gpio_pin_test);
 	menu(0);
 	robocon_main();
 	

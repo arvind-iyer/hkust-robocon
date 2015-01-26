@@ -1,12 +1,13 @@
 /**
   ******************************************************************************
-  * @file  misc.c
+  * @file    misc.c
   * @author  MCD Application Team
-  * @version  V3.0.0
-  * @date  04/06/2009
-  * @brief  This file provides all the miscellaneous firmware functions.
+  * @version V3.5.0
+  * @date    11-March-2011
+  * @brief   This file provides all the miscellaneous firmware functions (add-on
+  *          to CMSIS functions).
   ******************************************************************************
-  * @copy
+  * @attention
   *
   * THE PRESENT FIRMWARE WHICH IS FOR GUIDANCE ONLY AIMS AT PROVIDING CUSTOMERS
   * WITH CODING INFORMATION REGARDING THEIR PRODUCTS IN ORDER FOR THEM TO SAVE
@@ -15,13 +16,14 @@
   * FROM THE CONTENT OF SUCH FIRMWARE AND/OR THE USE MADE BY CUSTOMERS OF THE
   * CODING INFORMATION CONTAINED HEREIN IN CONNECTION WITH THEIR PRODUCTS.
   *
-  * <h2><center>&copy; COPYRIGHT 2009 STMicroelectronics</center></h2>
-  */ 
+  * <h2><center>&copy; COPYRIGHT 2011 STMicroelectronics</center></h2>
+  ******************************************************************************
+  */
 
 /* Includes ------------------------------------------------------------------*/
 #include "misc.h"
 
-/** @addtogroup StdPeriph_Driver
+/** @addtogroup STM32F10x_StdPeriph_Driver
   * @{
   */
 
@@ -76,21 +78,20 @@
   */
 
 /**
-  * @brief  Configures the priority grouping: pre-emption priority and 
-  *         subpriority.
-  * @param NVIC_PriorityGroup: specifies the priority grouping bits length. 
+  * @brief  Configures the priority grouping: pre-emption priority and subpriority.
+  * @param  NVIC_PriorityGroup: specifies the priority grouping bits length. 
   *   This parameter can be one of the following values:
-  * @arg NVIC_PriorityGroup_0: 0 bits for pre-emption priority
-  *                            4 bits for subpriority
-  * @arg NVIC_PriorityGroup_1: 1 bits for pre-emption priority
-  *                            3 bits for subpriority
-  * @arg NVIC_PriorityGroup_2: 2 bits for pre-emption priority
-  *                            2 bits for subpriority
-  * @arg NVIC_PriorityGroup_3: 3 bits for pre-emption priority
-  *                            1 bits for subpriority
-  * @arg NVIC_PriorityGroup_4: 4 bits for pre-emption priority
-  *                            0 bits for subpriority
-  * @retval : None
+  *     @arg NVIC_PriorityGroup_0: 0 bits for pre-emption priority
+  *                                4 bits for subpriority
+  *     @arg NVIC_PriorityGroup_1: 1 bits for pre-emption priority
+  *                                3 bits for subpriority
+  *     @arg NVIC_PriorityGroup_2: 2 bits for pre-emption priority
+  *                                2 bits for subpriority
+  *     @arg NVIC_PriorityGroup_3: 3 bits for pre-emption priority
+  *                                1 bits for subpriority
+  *     @arg NVIC_PriorityGroup_4: 4 bits for pre-emption priority
+  *                                0 bits for subpriority
+  * @retval None
   */
 void NVIC_PriorityGroupConfig(uint32_t NVIC_PriorityGroup)
 {
@@ -103,11 +104,10 @@ void NVIC_PriorityGroupConfig(uint32_t NVIC_PriorityGroup)
 
 /**
   * @brief  Initializes the NVIC peripheral according to the specified
-  *   parameters in the NVIC_InitStruct.
-  * @param NVIC_InitStruct: pointer to a NVIC_InitTypeDef structure
-  *   that contains the configuration information for the
-  *   specified NVIC peripheral.
-  * @retval : None
+  *         parameters in the NVIC_InitStruct.
+  * @param  NVIC_InitStruct: pointer to a NVIC_InitTypeDef structure that contains
+  *         the configuration information for the specified NVIC peripheral.
+  * @retval None
   */
 void NVIC_Init(NVIC_InitTypeDef* NVIC_InitStruct)
 {
@@ -145,14 +145,13 @@ void NVIC_Init(NVIC_InitTypeDef* NVIC_InitStruct)
 
 /**
   * @brief  Sets the vector table location and Offset.
-  * @param NVIC_VectTab: specifies if the vector table is in RAM or
-  *   FLASH memory.
+  * @param  NVIC_VectTab: specifies if the vector table is in RAM or FLASH memory.
   *   This parameter can be one of the following values:
-  * @arg NVIC_VectTab_RAM
-  * @arg NVIC_VectTab_FLASH
-  * @param Offset: Vector Table base offset field. 
-  *   This value must be a multiple of 0x100.
-  * @retval : None
+  *     @arg NVIC_VectTab_RAM
+  *     @arg NVIC_VectTab_FLASH
+  * @param  Offset: Vector Table base offset field. This value must be a multiple 
+  *         of 0x200.
+  * @retval None
   */
 void NVIC_SetVectorTable(uint32_t NVIC_VectTab, uint32_t Offset)
 { 
@@ -165,15 +164,13 @@ void NVIC_SetVectorTable(uint32_t NVIC_VectTab, uint32_t Offset)
 
 /**
   * @brief  Selects the condition for the system to enter low power mode.
-  * @param LowPowerMode: Specifies the new mode for the system to enter
-  *   low power mode.
+  * @param  LowPowerMode: Specifies the new mode for the system to enter low power mode.
   *   This parameter can be one of the following values:
-  * @arg NVIC_LP_SEVONPEND
-  * @arg NVIC_LP_SLEEPDEEP
-  * @arg NVIC_LP_SLEEPONEXIT
-  * @param NewState: new state of LP condition.
-  *   This parameter can be: ENABLE or DISABLE.
-  * @retval : None
+  *     @arg NVIC_LP_SEVONPEND
+  *     @arg NVIC_LP_SLEEPDEEP
+  *     @arg NVIC_LP_SLEEPONEXIT
+  * @param  NewState: new state of LP condition. This parameter can be: ENABLE or DISABLE.
+  * @retval None
   */
 void NVIC_SystemLPConfig(uint8_t LowPowerMode, FunctionalState NewState)
 {
@@ -193,13 +190,11 @@ void NVIC_SystemLPConfig(uint8_t LowPowerMode, FunctionalState NewState)
 
 /**
   * @brief  Configures the SysTick clock source.
-  * @param SysTick_CLKSource: specifies the SysTick clock source.
+  * @param  SysTick_CLKSource: specifies the SysTick clock source.
   *   This parameter can be one of the following values:
-  * @arg SysTick_CLKSource_HCLK_Div8: AHB clock divided by 8
-  *   selected as SysTick clock source.
-  * @arg SysTick_CLKSource_HCLK: AHB clock selected as
-  *   SysTick clock source.
-  * @retval : None
+  *     @arg SysTick_CLKSource_HCLK_Div8: AHB clock divided by 8 selected as SysTick clock source.
+  *     @arg SysTick_CLKSource_HCLK: AHB clock selected as SysTick clock source.
+  * @retval None
   */
 void SysTick_CLKSourceConfig(uint32_t SysTick_CLKSource)
 {
@@ -227,4 +222,4 @@ void SysTick_CLKSourceConfig(uint32_t SysTick_CLKSource)
   * @}
   */
 
-/******************* (C) COPYRIGHT 2009 STMicroelectronics *****END OF FILE****/
+/******************* (C) COPYRIGHT 2011 STMicroelectronics *****END OF FILE****/

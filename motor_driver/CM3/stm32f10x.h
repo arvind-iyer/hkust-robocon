@@ -49,7 +49,7 @@
     
 #ifndef __STM32F10x_H
 #define __STM32F10x_H
-#define __STM32F10x_MAP_H
+
 #ifdef __cplusplus
  extern "C" {
 #endif 
@@ -516,10 +516,6 @@ typedef __I uint32_t vuc32;  /*!< Read Only */
 typedef __I uint16_t vuc16;  /*!< Read Only */
 typedef __I uint8_t vuc8;   /*!< Read Only */
 
-//#ifndef __cplusplus
-typedef enum {FALSE = 0, TRUE = !FALSE} bool;
-//#endif
-//typedef enum {FALSE = 0, TRUE = !FALSE} BOOL;
 typedef enum {RESET = 0, SET = !RESET} FlagStatus, ITStatus;
 
 typedef enum {DISABLE = 0, ENABLE = !DISABLE} FunctionalState;

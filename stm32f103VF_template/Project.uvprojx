@@ -175,7 +175,7 @@
           </Flash1>
           <bUseTDR>0</bUseTDR>
           <Flash2>Segger\JL2CM3.dll</Flash2>
-          <Flash3>"flash.bat" (.\output\@h.hex 30 256000 STM32F1_XL-density_768K)</Flash3>
+          <Flash3>"flash.bat" (.\output\@h.hex 3 256000 STM32F1_XL-density_768K)</Flash3>
           <Flash4></Flash4>
           <pFcarmOut></pFcarmOut>
           <pFcarmGrp></pFcarmGrp>
@@ -439,19 +439,14 @@
               <FilePath>.\src\user\interface.c</FilePath>
             </File>
             <File>
-              <FileName>robocon.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>.\src\user\robocon.c</FilePath>
-            </File>
-            <File>
               <FileName>main.c</FileName>
               <FileType>1</FileType>
               <FilePath>.\src\user\main.c</FilePath>
             </File>
             <File>
-              <FileName>system_test.c</FileName>
+              <FileName>robocon.c</FileName>
               <FileType>1</FileType>
-              <FilePath>.\src\user\system_test.c</FilePath>
+              <FilePath>.\src\user\robocon.c</FilePath>
             </File>
             <File>
               <FileName>wheel_base.c</FileName>
@@ -462,6 +457,11 @@
               <FileName>wheel_base_pid.c</FileName>
               <FileType>1</FileType>
               <FilePath>.\src\user\wheel_base_pid.c</FilePath>
+            </File>
+            <File>
+              <FileName>system_test.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\src\user\system_test.c</FilePath>
             </File>
           </Files>
         </Group>

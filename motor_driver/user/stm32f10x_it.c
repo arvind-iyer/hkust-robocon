@@ -1,185 +1,161 @@
-#include <stdio.h>
-//#include "main.h"
+/**
+  ******************************************************************************
+  * @file    Project/STM32F10x_StdPeriph_Template/stm32f10x_it.c 
+  * @author  MCD Application Team
+  * @version V3.5.0
+  * @date    08-April-2011
+  * @brief   Main Interrupt Service Routines.
+  *          This file provides template for all exceptions handler and 
+  *          peripherals interrupt service routine.
+  ******************************************************************************
+  * @attention
+  *
+  * THE PRESENT FIRMWARE WHICH IS FOR GUIDANCE ONLY AIMS AT PROVIDING CUSTOMERS
+  * WITH CODING INFORMATION REGARDING THEIR PRODUCTS IN ORDER FOR THEM TO SAVE
+  * TIME. AS A RESULT, STMICROELECTRONICS SHALL NOT BE HELD LIABLE FOR ANY
+  * DIRECT, INDIRECT OR CONSEQUENTIAL DAMAGES WITH RESPECT TO ANY CLAIMS ARISING
+  * FROM THE CONTENT OF SUCH FIRMWARE AND/OR THE USE MADE BY CUSTOMERS OF THE
+  * CODING INFORMATION CONTAINED HEREIN IN CONNECTION WITH THEIR PRODUCTS.
+  *
+  * <h2><center>&copy; COPYRIGHT 2011 STMicroelectronics</center></h2>
+  ******************************************************************************
+  */
+
+/* Includes ------------------------------------------------------------------*/
 #include "stm32f10x_it.h"
-//#include "debugger.h"
-#include "pid_vel.h"
-#include "pid_pos.h"
-#include "motion.h"
-#include "Robocon_CAN.h"
+#include "velocity.h"
+/** @addtogroup STM32F10x_StdPeriph_Template
+  * @{
+  */
 
-#define VEL_MOVE 1
-#define VEL_STOP 2
-#define VEL_ZERO 3
-#define POS_MOVE 4
-#define POS_LOCK 5
-#define CALIBRATION 6
+/* Private typedef -----------------------------------------------------------*/
+/* Private define ------------------------------------------------------------*/
+/* Private macro -------------------------------------------------------------*/
+/* Private variables ---------------------------------------------------------*/
+/* Private function prototypes -----------------------------------------------*/
+/* Private functions ---------------------------------------------------------*/
 
-#define stop_byte1	0xfe
-#define stop_byte2	0xff
-#define buf_size	200
+/******************************************************************************/
+/*            Cortex-M3 Processor Exceptions Handlers                         */
+/******************************************************************************/
 
-#define rx_buf_size 50
+/**
+  * @brief  This function handles NMI exception.
+  * @param  None
+  * @retval None
+  */
+void NMI_Handler(void)
+{
+}
 
-u16 cmd = 0;
-u8 cmd_flag = 0, state = 0, last_data = 0, data_cnt = 0;
+/**
+  * @brief  This function handles Hard Fault exception.
+  * @param  None
+  * @retval None
+  */
+void HardFault_Handler(void)
+{
+  /* Go to infinite loop when Hard Fault exception occurs */
+  while (1)
+  {
+  }
+}
 
-u8 rx_buffer[buf_size];
-u8 tx_buffer[buf_size];
-u8 tx_buffer_token=0;
-u8 rx_data=0;
-u8 tx_data=0;
-u8 tx_data_index=0;
-u8 tx_data_size=0;
+/**
+  * @brief  This function handles Memory Manage exception.
+  * @param  None
+  * @retval None
+  */
+void MemManage_Handler(void)
+{
+  /* Go to infinite loop when Memory Manage exception occurs */
+  while (1)
+  {
+  }
+}
 
+/**
+  * @brief  This function handles Bus Fault exception.
+  * @param  None
+  * @retval None
+  */
+void BusFault_Handler(void)
+{
+  /* Go to infinite loop when Bus Fault exception occurs */
+  while (1)
+  {
+  }
+}
 
+/**
+  * @brief  This function handles Usage Fault exception.
+  * @param  None
+  * @retval None
+  */
+void UsageFault_Handler(void)
+{
+  /* Go to infinite loop when Usage Fault exception occurs */
+  while (1)
+  {
+  }
+}
 
-u32 ticks = 0; //adjusts the rate of sending debugging msg
-u8 start = 0; //enable or disable pid
-u8 mode = 0;
-float check = 0;
-u32 clock=0;
+/**
+  * @brief  This function handles SVCall exception.
+  * @param  None
+  * @retval None
+  */
+void SVC_Handler(void)
+{
+}
 
-extern u8 enable_bar;
-extern u8 enable_bar_memory;
+/**
+  * @brief  This function handles Debug Monitor exception.
+  * @param  None
+  * @retval None
+  */
+void DebugMon_Handler(void)
+{
+}
 
-extern float r_count;
+/**
+  * @brief  This function handles PendSVC exception.
+  * @param  None
+  * @retval None
+  */
+void PendSV_Handler(void)
+{
+}
 
-extern float pwm_init;
-
-extern u8 cali_done;
-
-
-float speed;
-
-u32 i;
+/**
+  * @brief  This function handles SysTick Handler.
+  * @param  None
+  * @retval None
+  */
 void SysTick_Handler(void)
 {
-	read_encoder();
-	get_current();	
-	vel_n_pos(); 
-	increase_encoder();
-/*
-	if(ticks<5000)
-		ticks++;
-	else 
-	{
-		ticks = 0;
-		clock++;
-	
-	}
-
-	if(start == 1)
-	{  
-		if (enable_bar_memory!=enable_bar)
-			clear_record();
-						
-	    vel_n_pos();
-
-	   
-		enable_bar_memory=enable_bar;
-
-	 	if(mode == VEL_MOVE)
-		{
-			enable_bar=1;	 
-			check = 1;
-		}
-		else if(mode == VEL_STOP)
-		{
-			enable_bar=2;
-			check = 2;
-		}
-		else if(mode == VEL_ZERO)
-		{
-		 	enable_bar=0;
-			check = 3;
-		}
-
-		else if(mode == POS_MOVE)
-		{
-			enable_bar=3;
-			check = 4;		
-		}
-		
-		else if (mode == CALIBRATION)
-		{
-			enable_bar=6;
-			check=5;
-		}
-		
-	}
-	
-	else 
-	{ 
-		read_encoder();	
-		get_current(); 
-		clear_record();
-		
-		if (pwm_init>=0)   
-			motion_set_motor(pwm_init,1);
-		else
-			motion_set_motor(-pwm_init,0);
-
-	}
-	
-*/		 
-} 
-							   
-void USART3_IRQHandler(void)
-{
-	if(USART_GetFlagStatus(USART3,USART_IT_RXNE)==SET)
-	{	           	           
-		rx_data = USART_ReceiveData(USART3) & 0xff;
-			
-		if (state == 0)		//cmd_state
-		{
-			cmd = rx_data;
-			state = 1;
-			last_data = 0;
-			data_cnt = 0;
-		}
-/*		else if (state == 1)
-		{
-		    port_index=rx_data;
-			state = 2;
-			last_data = 0;
-			data_cnt = 0;
-		}	  */
-		else if (state == 1)	//data_state
-		{
-			if (data_cnt < rx_buf_size) rx_buffer[data_cnt ++] = rx_data;
-			if (last_data == stop_byte1 && rx_data == stop_byte2)
-			{
-				cmd_flag = 1;
-				data_cnt -= 2;
-				state = 0;
-			}
-			last_data = rx_data;
-		}
-	}
-
-	
-	if(USART_GetFlagStatus(USART3,USART_FLAG_TC)==SET)
-	{	
-	    if (tx_data_size != 0)
-		{						  
-	        if(tx_data_index<tx_buffer_token-1)
-			{						 
-		    	tx_data=tx_buffer[tx_data_index];
-				tx_data_index++;
-				if (tx_data_index>buf_size-1) tx_data_index-=buf_size;
-	        	USART_SendData(USART3, tx_data);
-    	  
-			}
-			else
-			{
-				USART_ITConfig(USART3, USART_IT_TC, DISABLE);
-				tx_data=tx_buffer[tx_data_index];
-				tx_data_index++;
-				if (tx_data_index>buf_size-1) tx_data_index-=buf_size;
-	        	USART_SendData(USART3, tx_data);
-				tx_data_size=0;
-
-			}	
-		}
-	} 
+	motor_control(2000, 65, 3000);
 }
+
+/******************************************************************************/
+/*                 STM32F10x Peripherals Interrupt Handlers                   */
+/*  Add here the Interrupt Handler for the used peripheral(s) (PPP), for the  */
+/*  available peripheral interrupt handler's name please refer to the startup */
+/*  file (startup_stm32f10x_xx.s).                                            */
+/******************************************************************************/
+
+/**
+  * @brief  This function handles PPP interrupt request.
+  * @param  None
+  * @retval None
+  */
+/*void PPP_IRQHandler(void)
+{
+}*/
+
+/**
+  * @}
+  */ 
+
+
+/******************* (C) COPYRIGHT 2011 STMicroelectronics *****END OF FILE****/

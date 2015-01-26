@@ -1,13 +1,13 @@
 /**
   ******************************************************************************
-  * @file  stm32f10x_adc.h
+  * @file    stm32f10x_adc.h
   * @author  MCD Application Team
-  * @version  V3.0.0
-  * @date  04/06/2009
-  * @brief  This file contains all the functions prototypes for the ADC firmware 
-  *         library.
+  * @version V3.5.0
+  * @date    11-March-2011
+  * @brief   This file contains all the functions prototypes for the ADC firmware 
+  *          library.
   ******************************************************************************
-  * @copy
+  * @attention
   *
   * THE PRESENT FIRMWARE WHICH IS FOR GUIDANCE ONLY AIMS AT PROVIDING CUSTOMERS
   * WITH CODING INFORMATION REGARDING THEIR PRODUCTS IN ORDER FOR THEM TO SAVE
@@ -16,17 +16,22 @@
   * FROM THE CONTENT OF SUCH FIRMWARE AND/OR THE USE MADE BY CUSTOMERS OF THE
   * CODING INFORMATION CONTAINED HEREIN IN CONNECTION WITH THEIR PRODUCTS.
   *
-  * <h2><center>&copy; COPYRIGHT 2009 STMicroelectronics</center></h2>
-  */ 
+  * <h2><center>&copy; COPYRIGHT 2011 STMicroelectronics</center></h2>
+  ******************************************************************************
+  */
 
 /* Define to prevent recursive inclusion -------------------------------------*/
 #ifndef __STM32F10x_ADC_H
 #define __STM32F10x_ADC_H
 
+#ifdef __cplusplus
+ extern "C" {
+#endif
+
 /* Includes ------------------------------------------------------------------*/
 #include "stm32f10x.h"
-#include "stm32f10x_conf.h"
-/** @addtogroup StdPeriph_Driver
+
+/** @addtogroup STM32F10x_StdPeriph_Driver
   * @{
   */
 
@@ -44,12 +49,28 @@
 
 typedef struct
 {
-  uint32_t ADC_Mode;
-  FunctionalState ADC_ScanConvMode; 
-  FunctionalState ADC_ContinuousConvMode;
-  uint32_t ADC_ExternalTrigConv;
-  uint32_t ADC_DataAlign;
-  uint8_t ADC_NbrOfChannel;
+  uint32_t ADC_Mode;                      /*!< Configures the ADC to operate in independent or
+                                               dual mode. 
+                                               This parameter can be a value of @ref ADC_mode */
+
+  FunctionalState ADC_ScanConvMode;       /*!< Specifies whether the conversion is performed in
+                                               Scan (multichannels) or Single (one channel) mode.
+                                               This parameter can be set to ENABLE or DISABLE */
+
+  FunctionalState ADC_ContinuousConvMode; /*!< Specifies whether the conversion is performed in
+                                               Continuous or Single mode.
+                                               This parameter can be set to ENABLE or DISABLE. */
+
+  uint32_t ADC_ExternalTrigConv;          /*!< Defines the external trigger used to start the analog
+                                               to digital conversion of regular channels. This parameter
+                                               can be a value of @ref ADC_external_trigger_sources_for_regular_channels_conversion */
+
+  uint32_t ADC_DataAlign;                 /*!< Specifies whether the ADC data alignment is left or right.
+                                               This parameter can be a value of @ref ADC_data_align */
+
+  uint8_t ADC_NbrOfChannel;               /*!< Specifies the number of ADC channels that will be converted
+                                               using the sequencer for regular channel group.
+                                               This parameter must range from 1 to 16. */
 }ADC_InitTypeDef;
 /**
   * @}
@@ -59,14 +80,14 @@ typedef struct
   * @{
   */
 
-#define IS_ADC_ALL_PERIPH(PERIPH) (((*(uint32_t*)&(PERIPH)) == ADC1_BASE) || \
-                                   ((*(uint32_t*)&(PERIPH)) == ADC2_BASE) || \
-                                   ((*(uint32_t*)&(PERIPH)) == ADC3_BASE))
+#define IS_ADC_ALL_PERIPH(PERIPH) (((PERIPH) == ADC1) || \
+                                   ((PERIPH) == ADC2) || \
+                                   ((PERIPH) == ADC3))
 
-#define IS_ADC_DMA_PERIPH(PERIPH) (((*(uint32_t*)&(PERIPH)) == ADC1_BASE) || \
-                                   ((*(uint32_t*)&(PERIPH)) == ADC3_BASE))
+#define IS_ADC_DMA_PERIPH(PERIPH) (((PERIPH) == ADC1) || \
+                                   ((PERIPH) == ADC3))
 
-/** @defgroup ADC_dual_mode 
+/** @defgroup ADC_mode 
   * @{
   */
 
@@ -95,38 +116,26 @@ typedef struct
   * @}
   */
 
-/** @defgroup ADC_extrenal_trigger_sources_for_regular_channels_conversion 
+/** @defgroup ADC_external_trigger_sources_for_regular_channels_conversion 
   * @{
   */
 
-/** 
-  * @brief  for ADC1 and ADC2  
-  */
+#define ADC_ExternalTrigConv_T1_CC1                ((uint32_t)0x00000000) /*!< For ADC1 and ADC2 */
+#define ADC_ExternalTrigConv_T1_CC2                ((uint32_t)0x00020000) /*!< For ADC1 and ADC2 */
+#define ADC_ExternalTrigConv_T2_CC2                ((uint32_t)0x00060000) /*!< For ADC1 and ADC2 */
+#define ADC_ExternalTrigConv_T3_TRGO               ((uint32_t)0x00080000) /*!< For ADC1 and ADC2 */
+#define ADC_ExternalTrigConv_T4_CC4                ((uint32_t)0x000A0000) /*!< For ADC1 and ADC2 */
+#define ADC_ExternalTrigConv_Ext_IT11_TIM8_TRGO    ((uint32_t)0x000C0000) /*!< For ADC1 and ADC2 */
 
-#define ADC_ExternalTrigConv_T1_CC1                ((uint32_t)0x00000000)
-#define ADC_ExternalTrigConv_T1_CC2                ((uint32_t)0x00020000)
-#define ADC_ExternalTrigConv_T2_CC2                ((uint32_t)0x00060000)
-#define ADC_ExternalTrigConv_T3_TRGO               ((uint32_t)0x00080000)
-#define ADC_ExternalTrigConv_T4_CC4                ((uint32_t)0x000A0000)
-#define ADC_ExternalTrigConv_Ext_IT11_TIM8_TRGO    ((uint32_t)0x000C0000)
+#define ADC_ExternalTrigConv_T1_CC3                ((uint32_t)0x00040000) /*!< For ADC1, ADC2 and ADC3 */
+#define ADC_ExternalTrigConv_None                  ((uint32_t)0x000E0000) /*!< For ADC1, ADC2 and ADC3 */
 
-/** 
-  * @brief  for ADC1, ADC2 and ADC3  
-  */
-
-#define ADC_ExternalTrigConv_T1_CC3                ((uint32_t)0x00040000)
-#define ADC_ExternalTrigConv_None                  ((uint32_t)0x000E0000)
-
-/** 
-  * @brief  for ADC3  
-  */
-
-#define ADC_ExternalTrigConv_T3_CC1                ((uint32_t)0x00000000)
-#define ADC_ExternalTrigConv_T2_CC3                ((uint32_t)0x00020000)
-#define ADC_ExternalTrigConv_T8_CC1                ((uint32_t)0x00060000)
-#define ADC_ExternalTrigConv_T8_TRGO               ((uint32_t)0x00080000)
-#define ADC_ExternalTrigConv_T5_CC1                ((uint32_t)0x000A0000)
-#define ADC_ExternalTrigConv_T5_CC3                ((uint32_t)0x000C0000)
+#define ADC_ExternalTrigConv_T3_CC1                ((uint32_t)0x00000000) /*!< For ADC3 only */
+#define ADC_ExternalTrigConv_T2_CC3                ((uint32_t)0x00020000) /*!< For ADC3 only */
+#define ADC_ExternalTrigConv_T8_CC1                ((uint32_t)0x00060000) /*!< For ADC3 only */
+#define ADC_ExternalTrigConv_T8_TRGO               ((uint32_t)0x00080000) /*!< For ADC3 only */
+#define ADC_ExternalTrigConv_T5_CC1                ((uint32_t)0x000A0000) /*!< For ADC3 only */
+#define ADC_ExternalTrigConv_T5_CC3                ((uint32_t)0x000C0000) /*!< For ADC3 only */
 
 #define IS_ADC_EXT_TRIG(REGTRIG) (((REGTRIG) == ADC_ExternalTrigConv_T1_CC1) || \
                                   ((REGTRIG) == ADC_ExternalTrigConv_T1_CC2) || \
@@ -181,6 +190,9 @@ typedef struct
 #define ADC_Channel_16                              ((uint8_t)0x10)
 #define ADC_Channel_17                              ((uint8_t)0x11)
 
+#define ADC_Channel_TempSensor                      ((uint8_t)ADC_Channel_16)
+#define ADC_Channel_Vrefint                         ((uint8_t)ADC_Channel_17)
+
 #define IS_ADC_CHANNEL(CHANNEL) (((CHANNEL) == ADC_Channel_0) || ((CHANNEL) == ADC_Channel_1) || \
                                  ((CHANNEL) == ADC_Channel_2) || ((CHANNEL) == ADC_Channel_3) || \
                                  ((CHANNEL) == ADC_Channel_4) || ((CHANNEL) == ADC_Channel_5) || \
@@ -194,7 +206,7 @@ typedef struct
   * @}
   */
 
-/** @defgroup ADC_sampling_times 
+/** @defgroup ADC_sampling_time 
   * @{
   */
 
@@ -218,37 +230,25 @@ typedef struct
   * @}
   */
 
-/** @defgroup ADC_extrenal_trigger_sources_for_injected_channels_conversion 
+/** @defgroup ADC_external_trigger_sources_for_injected_channels_conversion 
   * @{
   */
 
-/** 
-  * @brief  For ADC1 and ADC2  
-  */
+#define ADC_ExternalTrigInjecConv_T2_TRGO           ((uint32_t)0x00002000) /*!< For ADC1 and ADC2 */
+#define ADC_ExternalTrigInjecConv_T2_CC1            ((uint32_t)0x00003000) /*!< For ADC1 and ADC2 */
+#define ADC_ExternalTrigInjecConv_T3_CC4            ((uint32_t)0x00004000) /*!< For ADC1 and ADC2 */
+#define ADC_ExternalTrigInjecConv_T4_TRGO           ((uint32_t)0x00005000) /*!< For ADC1 and ADC2 */
+#define ADC_ExternalTrigInjecConv_Ext_IT15_TIM8_CC4 ((uint32_t)0x00006000) /*!< For ADC1 and ADC2 */
 
-#define ADC_ExternalTrigInjecConv_T2_TRGO           ((uint32_t)0x00002000)
-#define ADC_ExternalTrigInjecConv_T2_CC1            ((uint32_t)0x00003000)
-#define ADC_ExternalTrigInjecConv_T3_CC4            ((uint32_t)0x00004000)
-#define ADC_ExternalTrigInjecConv_T4_TRGO           ((uint32_t)0x00005000)
-#define ADC_ExternalTrigInjecConv_Ext_IT15_TIM8_CC4 ((uint32_t)0x00006000)
+#define ADC_ExternalTrigInjecConv_T1_TRGO           ((uint32_t)0x00000000) /*!< For ADC1, ADC2 and ADC3 */
+#define ADC_ExternalTrigInjecConv_T1_CC4            ((uint32_t)0x00001000) /*!< For ADC1, ADC2 and ADC3 */
+#define ADC_ExternalTrigInjecConv_None              ((uint32_t)0x00007000) /*!< For ADC1, ADC2 and ADC3 */
 
-/** 
-  * @brief  For ADC1, ADC2 and ADC3  
-  */
-
-#define ADC_ExternalTrigInjecConv_T1_TRGO           ((uint32_t)0x00000000)
-#define ADC_ExternalTrigInjecConv_T1_CC4            ((uint32_t)0x00001000)
-#define ADC_ExternalTrigInjecConv_None              ((uint32_t)0x00007000)
-
-/** 
-  * @brief  For ADC3  
-  */
-
-#define ADC_ExternalTrigInjecConv_T4_CC3            ((uint32_t)0x00002000)
-#define ADC_ExternalTrigInjecConv_T8_CC2            ((uint32_t)0x00003000)
-#define ADC_ExternalTrigInjecConv_T8_CC4            ((uint32_t)0x00004000)
-#define ADC_ExternalTrigInjecConv_T5_TRGO           ((uint32_t)0x00005000)
-#define ADC_ExternalTrigInjecConv_T5_CC4            ((uint32_t)0x00006000)
+#define ADC_ExternalTrigInjecConv_T4_CC3            ((uint32_t)0x00002000) /*!< For ADC3 only */
+#define ADC_ExternalTrigInjecConv_T8_CC2            ((uint32_t)0x00003000) /*!< For ADC3 only */
+#define ADC_ExternalTrigInjecConv_T8_CC4            ((uint32_t)0x00004000) /*!< For ADC3 only */
+#define ADC_ExternalTrigInjecConv_T5_TRGO           ((uint32_t)0x00005000) /*!< For ADC3 only */
+#define ADC_ExternalTrigInjecConv_T5_CC4            ((uint32_t)0x00006000) /*!< For ADC3 only */
 
 #define IS_ADC_EXT_INJEC_TRIG(INJTRIG) (((INJTRIG) == ADC_ExternalTrigInjecConv_T1_TRGO) || \
                                         ((INJTRIG) == ADC_ExternalTrigInjecConv_T1_CC4) || \
@@ -462,6 +462,10 @@ void ADC_ClearFlag(ADC_TypeDef* ADCx, uint8_t ADC_FLAG);
 ITStatus ADC_GetITStatus(ADC_TypeDef* ADCx, uint16_t ADC_IT);
 void ADC_ClearITPendingBit(ADC_TypeDef* ADCx, uint16_t ADC_IT);
 
+#ifdef __cplusplus
+}
+#endif
+
 #endif /*__STM32F10x_ADC_H */
 
 /**
@@ -476,4 +480,4 @@ void ADC_ClearITPendingBit(ADC_TypeDef* ADCx, uint16_t ADC_IT);
   * @}
   */
 
-/******************* (C) COPYRIGHT 2009 STMicroelectronics *****END OF FILE****/
+/******************* (C) COPYRIGHT 2011 STMicroelectronics *****END OF FILE****/

@@ -70,6 +70,7 @@ void can_tx_queue_clear(void);
 void can_rx_init(void);
 void can_rx_add_filter(u16 id, u16 mask, void (*handler)(CanRxMsg msg));
 u32 can_get_rx_count(void);
+CAN_MESSAGE can_get_recent_rx(void);
 
 /*** Protocol Encoding / Decoding ***/
 u8 one_to_n_bytes(s32 num, u8 n);			// Encode
