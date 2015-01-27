@@ -1,7 +1,7 @@
 #ifndef __GYRO_H
 #define __GYRO_H
 
-#include "uart.h"
+#include "usart.h"
 #include "ticks.h"
 #include "delay.h"
 //#include "debug.h"

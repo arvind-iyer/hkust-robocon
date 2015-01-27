@@ -22,7 +22,7 @@
 /*** Optional ***/
 #include "can_protocol.h"
 #include "can_motor.h"
-#include "uart.h"
+#include "usart.h"
 #include "approx_math.h"
 #include "servo.h"
 #include "gyro.h"
@@ -40,5 +40,6 @@ void buzzer_test(void);
 void can_test(void);
 void xbc_test(void);
 void gpio_pin_test(void);
+void uart_test(void);
 
 #endif /* __SYSTEM_TEST_H */

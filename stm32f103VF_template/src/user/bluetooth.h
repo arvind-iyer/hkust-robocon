@@ -1,7 +1,7 @@
 #ifndef	__BLUETOOTH_H
 #define	__BLUETOOTH_H
 
-#include "uart.h"
+#include "usart.h"
 #include "ticks.h"
 #include "crc.h"
 #include "led.h"

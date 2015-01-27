@@ -1,14 +1,16 @@
 #include "usart.h"
 #include <stdio.h>
 #include <stdarg.h>
+#include "buzzer.h"
 
+// Backward compatible extern variable
+USART_TypeDef* COM_USART[COMn] = {USART1, USART2, USART3, UART4, UART5}; 
 u8 USART_QUEUE[COMn][USART_DEQUE_SIZE] = {{0}};
 
-void usart_init(COM_TypeDef COMx, u32 baudrate)
+void uart_init(COM_TypeDef COMx, u32 baudrate)
 {
 	GPIO_InitTypeDef GPIO_InitStructure;
 	USART_InitTypeDef USART_InitStructure;
-	NVIC_InitTypeDef NVIC_InitStructure;
 	USART_TYPE* usart = &USART_DEF[COMx];
 	
 	// Enable USART RCC Clock
@@ -48,15 +50,9 @@ void usart_init(COM_TypeDef COMx, u32 baudrate)
 	USART_Init(usart->USART, &USART_InitStructure);
 	USART_Cmd(usart->USART, ENABLE);
 	
-	/* NVIC configuration */
-	NVIC_InitStructure.NVIC_IRQChannel = usart->IRQn;
-	NVIC_InitStructure.NVIC_IRQChannelPreemptionPriority = 1;
-	NVIC_InitStructure.NVIC_IRQChannelSubPriority = 1;
-	NVIC_InitStructure.NVIC_IRQChannelCmd = ENABLE;
-	NVIC_Init(&NVIC_InitStructure);
-	
-	/* Enables the USART transmission complete interrupt */
-	USART_ITConfig(usart->USART,USART_IT_TC,ENABLE);	
+
+	/* Enables the USART receive interrupt */
+	USART_ITConfig(usart->USART,USART_IT_RXNE,ENABLE);	
 	
 	/* Initialize the deque structure */
 	(usart->deque).head = 0;
@@ -66,102 +62,188 @@ void usart_init(COM_TypeDef COMx, u32 baudrate)
 	
 }
 
-void usart_rx_init(COM_TypeDef COMx, void (*handler)(u8 rx_data))
+/**
+  * @brief  uart interrupt enable (backward compatible with old use of uart
+  * @param  COM: where x can be 1 to 5
+  * @retval None.
+  */
+void uart_interrupt(COM_TypeDef COMx)
+{
+  NVIC_InitTypeDef NVIC_InitStructure;
+ 	USART_TYPE* usart = &USART_DEF[COMx];
+ 
+	/* NVIC configuration */
+	NVIC_InitStructure.NVIC_IRQChannel = usart->IRQn;
+	NVIC_InitStructure.NVIC_IRQChannelPreemptionPriority = 1;
+	NVIC_InitStructure.NVIC_IRQChannelSubPriority = 1;
+	NVIC_InitStructure.NVIC_IRQChannelCmd = ENABLE;
+	NVIC_Init(&NVIC_InitStructure);
+  
+}
+
+void uart_rx_init(COM_TypeDef COMx, void (*handler)(u8 rx_data))
 {
 	/* Enables the USART receive interrupt */
-	USART_ITConfig(USART_DEF[COMx].USART,USART_IT_RXNE,ENABLE);	
-	USART_DEF[COMx].rx_handler = handler;
+	USART_TYPE* usart = &USART_DEF[COMx];
+	USART_ITConfig(usart->USART,USART_IT_RXNE,ENABLE);	
+	usart->rx_handler = handler;
 }
 
-/*** TX ***/
-u8 usart_tx_dequeue(COM_TypeDef COMx)
+/**
+	* @brief Check if the USART_TX queue is empty
+	* @param None
+	* @retval True if the queue is empty
+	*/
+u8 uart_tx_queue_empty(COM_TypeDef COMx)
 {
-	if (USART_GetFlagStatus(USART_DEF[COMx].USART, USART_FLAG_TC) == SET) {
-		/* If USART TX is available (transmission complete flag is set) */
-		USART_DEQUE* deque = &USART_DEF[COMx].deque;
-		if (deque->head != deque->tail) { // Non-empty deque
-			USART_SendData(USART_DEF[COMx].USART, deque->queue[deque->head]);
-			deque->head = (deque->head + 1) / deque->length; 
-			return 1;
-		} else {
-			return 2;
+	USART_TYPE* usart = &USART_DEF[COMx];
+	return (usart->deque).head == (usart->deque).tail;
+}
+
+
+/**
+	* @brief	Get the current USART_TX queue size
+	* @param 	None
+	* @retval	The current queue size (0 to USART_TX_QUEUE_MAX_SIZE-1)
+	*/
+u16 uart_tx_queue_size(COM_TypeDef COMx)
+{
+	USART_TYPE* usart = &USART_DEF[COMx];
+	s16 size = (usart->deque).tail - (usart->deque).head;
+	if (size < 0) {size += (usart->deque).length;}
+	return (u16) size;
+}
+
+
+/** 
+	* @brief Add a new tx message to the usart Tx queue
+	* @param msg: The usart message that will be added
+	* @retval 0: Fail to enqueue due to the exceeding size, 1: Successfully enqueued
+	*/
+u8 uart_tx_enqueue(COM_TypeDef COMx, uc8 data){
+	USART_TYPE* usart = &USART_DEF[COMx];
+	USART_DEQUE* deque_cur= &(usart->deque);
+
+	u8 queue_full=0;
+	if(USART_GetFlagStatus(usart->USART, USART_FLAG_TC) != RESET){
+		USART_ClearFlag(usart->USART, USART_FLAG_TC);
+		USART_SendData(usart->USART ,data);
+	}
+	else{
+		if ((deque_cur->tail+1)%deque_cur->length ==deque_cur->head ){
+			queue_full=1;
 		}
-	} else { 
-		/* Wait until the USART_FLAG_TC interrupt is called (NO WHILE-LOOP) */
+		else{
+			deque_cur->queue[deque_cur->tail]=data;
+			deque_cur->tail = (deque_cur->tail + 1) % deque_cur->length;
+			queue_full=0;
+		}
+	}
+	uart_tx_dequeue(COMx);
+	return !queue_full;
+}
+
+/**
+	* @brief	Process and transfer ONE usart message in the queue and dequeue
+	* @param 	None
+	*	@retval True if the queue is not empty after dequeue
+	*/
+
+u16 uart_tx_dequeue(COM_TypeDef COMx)
+{
+	USART_TYPE* usart = &USART_DEF[COMx];
+		USART_DEQUE* deque = &(usart->deque);
+		/* If USART TX is available  */
+	if(USART_GetFlagStatus(USART_DEF[COMx].USART, USART_FLAG_TXE)==SET){
+		USART_ClearFlag(usart->USART, USART_FLAG_TXE);
+		if(!uart_tx_queue_empty(COMx)){  // Non-empty deque
+			USART_SendData(usart->USART, deque->queue[deque->head]);
+			deque->head = (deque->head + 1) % uart_tx_queue_size(COMx);
+			return 1;
+		}else{
 		return 0;
-	}
-}
-
-u8 usart_tx_enqueue(COM_TypeDef COMx, u8 byte)
-{
-	if (USART_GetITStatus(USART_DEF[COMx].USART, USART_FLAG_TC) != RESET) {
-		USART_SendData(USART_DEF[COMx].USART, byte);
-	} else {
-		USART_DEQUE* deque = &USART_DEF[COMx].deque;
-
-		if ((deque->tail + 1) % deque->length == deque->head) {
-			// FULL QUEUE
-			return 0;
-		} else {
-			// Available
-			deque->queue[deque->tail] = byte;
-			deque->tail = (deque->tail + 1) % deque->length;
-			usart_tx_dequeue(COMx);
-			return 1;
 		}
-		
-	}
-	
+	}else{
 	return 0;
+	}
 }
 
-u8 usart_tx_byte(COM_TypeDef COMx, u8 byte)
+void uart_tx_byte(COM_TypeDef COMx, uc8 data)
 {
-	return usart_tx_enqueue(COMx, byte);
+	uart_tx_enqueue(COMx, data);
 }
 
-void usart_tx(COM_TypeDef COM, uc8 * tx_buf, ...)
+
+void uart_tx(COM_TypeDef COMx, uc8 * tx_buf, ...)
 {
 	va_list arglist;
 	u8 buf[40], *fp;
-	
 	va_start(arglist, tx_buf);
 	vsprintf((char*)buf, (const char*)tx_buf, arglist);
 	va_end(arglist);
 	
 	fp = buf;
 	while (*fp)
-		usart_tx_byte(COM,*fp++);
+		uart_tx_byte(COMx,*fp++);
 }
 
-void USARTx_IRQHandler(COM_TypeDef COMx) 
+
+u16 uart_tx_queue_head(COM_TypeDef COMx){
+	USART_DEQUE* deque = &USART_DEF[COMx].deque;
+	return deque->head;
+}
+u16 uart_tx_queue_tail(COM_TypeDef COMx){
+	USART_DEQUE* deque = &USART_DEF[COMx].deque;
+	return deque->tail;
+}
+
+
+u16 uart_tx_queue_cur_length(COM_TypeDef COMx){
+	USART_DEQUE* deque = &USART_DEF[COMx].deque;
+	return deque->tail - deque->head ;
+}
+
+
+void USART_Tx_IRQHandler(COM_TypeDef COMx) 
 {
-	USART_TypeDef* const usart = USART_DEF[COMx].USART;
-	
-	// Tranmission complete interrupt
-	if (USART_GetITStatus(usart, USART_IT_TC) != RESET) {
-		USART_ClearFlag(usart, USART_IT_TC);
-		USART_ClearITPendingBit(usart, USART_IT_TC);
-		usart_tx_dequeue(COMx);
+	USART_TYPE* usartx = &USART_DEF[COMx];
+	USART_TypeDef* const usart = usartx->USART;
+	if (USART_GetITStatus(usart, USART_IT_TXE) != RESET)
+	{
+		USART_ClearITPendingBit(usart, USART_IT_TXE);
+		uart_tx_dequeue(COMx);
 	}
-	
-	// Receive interrupt
+}
+
+void USART_Rx_IRQHandler(COM_TypeDef COMx) {
+	USART_TYPE* usartx = &USART_DEF[COMx];
+	USART_TypeDef* const usart = usartx->USART;
 	if (USART_GetITStatus(usart, USART_IT_RXNE) != RESET) {
-		if (USART_DEF[COMx].rx_handler != 0) {
-			USART_DEF[COMx].rx_handler(USART_ReceiveData(usart));
-			USART_ClearFlag(usart, USART_IT_RXNE);
+		USART_ClearITPendingBit(usart, USART_IT_RXNE);
+		if (usartx->rx_handler != 0) {
+			usartx->rx_handler(USART_ReceiveData(usart));
 		}
 	}
-
 }
 
-void USART1_IRQHandler(void)
-{
-	USARTx_IRQHandler(COM1);
+void USART1_IRQHandler(void) {
+	USART_Rx_IRQHandler(COM1);
 }
 
-//void USART2_IRQHandler(void)
-//{
-//	USARTx_IRQHandler(COM2);
+//void USART2_IRQHandler(void) {
+//	USART_Rx_IRQHandler(COM2);
 //}
+
+//void USART3_IRQHandler(void) {
+//	USART_Rx_IRQHandler(COM3);
+//}
+
+/*** Caution: 4 and 5 MUST be UART rather than USART ***/
+void UART4_IRQHandler(void) {
+	USART_Rx_IRQHandler(COM4);
+}
+
+void UART5_IRQHandler(void) {
+	USART_Rx_IRQHandler(COM5);
+}
 

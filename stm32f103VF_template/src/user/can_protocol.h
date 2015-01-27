@@ -7,7 +7,7 @@
 #include "stm32f10x_can.h"
 #include "misc.h"
 #include "ticks.h"
-#include "uart.h"
+#include "usart.h"
 
 /*** CAN Config ***/
 #define	CANn							CAN1

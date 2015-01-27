@@ -3,6 +3,10 @@
 
 #include "stm32f10x.h"
 #include "stm32f10x_usart.h"
+#include "stm32f10x_gpio.h"
+
+#include <stdio.h>
+#include <stdarg.h>
 
 #define	COMn	5
 
@@ -42,7 +46,8 @@ typedef struct {
 	void (*rx_handler)(u8 rx_data);
 } USART_TYPE;
 
-
+// Backward compatible extern variable
+extern USART_TypeDef* COM_USART[COMn];
 
 static USART_TYPE USART_DEF[COMn] = {
 	{USART1, RCC_APB2Periph_USART1, 
@@ -71,12 +76,13 @@ static USART_TYPE USART_DEF[COMn] = {
 	UART5_IRQn}
 };
 
-void usart_init(COM_TypeDef COMx, u32 baudrate);
-void usart_rx_init(COM_TypeDef COMx, void (*handler)(u8 rx_data));
-u8 usart_tx_dequeue(COM_TypeDef COMx);
-u8 usart_tx_enqueue(COM_TypeDef COMx, u8 byte);
-u8 usart_tx_byte(COM_TypeDef COMx, u8 byte);
-void usart_tx(COM_TypeDef COM, uc8 * tx_buf, ...);
+void uart_init(COM_TypeDef COMx, u32 baudrate);
+void uart_interrupt(COM_TypeDef COMx);
+void uart_rx_init(COM_TypeDef COMx, void (*handler)(u8 rx_data));
+u16 uart_tx_dequeue(COM_TypeDef COMx);
+u8 uart_tx_enqueue(COM_TypeDef COMx, u8 byte);
+void uart_tx_byte(COM_TypeDef COMx, uc8 data);
+void uart_tx(COM_TypeDef COM, uc8 * tx_buf, ...);
 
 
 #endif /* __USART_H */
