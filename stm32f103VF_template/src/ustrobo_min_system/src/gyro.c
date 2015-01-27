@@ -23,7 +23,7 @@ volatile u8 gyro_available = 0;
 void gyro_init(void)
 {
 	uart_init(GYRO_UART, 115200);
-	uart_interrupt(GYRO_UART);
+	uart_rx_init(GYRO_UART,gyro_rx_handler);
 }
 
 s16    SHIFT_X = 0; // -200;	//53//	193//  -163	//	98		//79
@@ -147,13 +147,11 @@ u8 gyro_pos_set(s16 x, s16 y, s16 a)
   */
 
 
-void USART3_IRQHandler(void)
+void gyro_rx_handler(u8 rx_data)
 {
-	u8 rx_data, i;
+	u8 i;
 	u16 x, y, a;
-	if (USART_GetITStatus(USART3, USART_IT_RXNE) != RESET)
-	{
-		rx_data = (u8)USART_ReceiveData(USART3);
+
 		switch (rx_state) {
 			case 0:	// wakeup
 				if (rx_data == GYRO_WAKEUP) {
@@ -224,11 +222,6 @@ void USART3_IRQHandler(void)
 				rx_state = 0;
 				break;
 		}
-		
-	}
-	
-	//USART_ClearFlag(USART3,USART_FLAG_RXNE);
-	//USART_ClearITPendingBit(USART3,USART_IT_RXNE);
 }
 
 

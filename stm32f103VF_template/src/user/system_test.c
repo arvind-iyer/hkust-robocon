@@ -960,7 +960,7 @@ void uart_test(void)
 				if (ticks_img < 500 || line != 4) {
 					tft_prints(6, 4, "USART%d", COMx[rx_id] + 1);
 				}
-				tft_prints(0, 5, "Rx_data:%d", received_data[COMx[rx_id]]);
+				tft_prints(0, 5, "Rx_data: %c ", received_data[COMx[rx_id]]);
 				if (ticks_img < 500) {
 					tft_prints(0, 7, "Click to send");
 				}

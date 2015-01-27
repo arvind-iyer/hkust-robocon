@@ -11,6 +11,7 @@ void uart_init(COM_TypeDef COMx, u32 baudrate)
 {
 	GPIO_InitTypeDef GPIO_InitStructure;
 	USART_InitTypeDef USART_InitStructure;
+	NVIC_InitTypeDef NVIC_InitStructure;
 	USART_TYPE* usart = &USART_DEF[COMx];
 	
 	// Enable USART RCC Clock
@@ -50,6 +51,13 @@ void uart_init(COM_TypeDef COMx, u32 baudrate)
 	USART_Init(usart->USART, &USART_InitStructure);
 	USART_Cmd(usart->USART, ENABLE);
 	
+	
+	/* NVIC configuration */
+	NVIC_InitStructure.NVIC_IRQChannel = usart->IRQn;
+	NVIC_InitStructure.NVIC_IRQChannelPreemptionPriority = 1;
+	NVIC_InitStructure.NVIC_IRQChannelSubPriority = 1;
+	NVIC_InitStructure.NVIC_IRQChannelCmd = ENABLE;
+	NVIC_Init(&NVIC_InitStructure);
 
 	/* Enables the USART receive interrupt */
 	USART_ITConfig(usart->USART,USART_IT_RXNE,ENABLE);	
@@ -62,24 +70,7 @@ void uart_init(COM_TypeDef COMx, u32 baudrate)
 	
 }
 
-/**
-  * @brief  uart interrupt enable (backward compatible with old use of uart
-  * @param  COM: where x can be 1 to 5
-  * @retval None.
-  */
-void uart_interrupt(COM_TypeDef COMx)
-{
-  NVIC_InitTypeDef NVIC_InitStructure;
- 	USART_TYPE* usart = &USART_DEF[COMx];
- 
-	/* NVIC configuration */
-	NVIC_InitStructure.NVIC_IRQChannel = usart->IRQn;
-	NVIC_InitStructure.NVIC_IRQChannelPreemptionPriority = 1;
-	NVIC_InitStructure.NVIC_IRQChannelSubPriority = 1;
-	NVIC_InitStructure.NVIC_IRQChannelCmd = ENABLE;
-	NVIC_Init(&NVIC_InitStructure);
-  
-}
+
 
 void uart_rx_init(COM_TypeDef COMx, void (*handler)(u8 rx_data))
 {
@@ -230,13 +221,13 @@ void USART1_IRQHandler(void) {
 	USART_Rx_IRQHandler(COM1);
 }
 
-//void USART2_IRQHandler(void) {
-//	USART_Rx_IRQHandler(COM2);
-//}
+void USART2_IRQHandler(void) {
+	USART_Rx_IRQHandler(COM2);
+}
 
-//void USART3_IRQHandler(void) {
-//	USART_Rx_IRQHandler(COM3);
-//}
+void USART3_IRQHandler(void) {
+	USART_Rx_IRQHandler(COM3);
+}
 
 /*** Caution: 4 and 5 MUST be UART rather than USART ***/
 void UART4_IRQHandler(void) {

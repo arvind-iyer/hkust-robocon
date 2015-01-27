@@ -43,6 +43,7 @@ s16 get_Y(void);	//get y-coordinate
 s16 get_angle(void);	////get angle
 
 void gyro_init(void);
+void gyro_rx_handler(u8 rx_data);
 void gyro_pos_update(void);		//update gyro values only when auto-update function is disabled in gyro
 u8 gyro_cal(void);	//callibrate gyro
 u8 gyro_pos_set(s16 x, s16 y, s16 a);	//set position of gyro
