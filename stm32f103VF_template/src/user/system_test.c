@@ -10,7 +10,7 @@ static u8 return_listener(void)
 
 void battery_test(void)
 {
-	while (1) {
+	while (true) {
 		if (ticks_img != get_ticks()) {
 			ticks_img = get_ticks();
 			
@@ -40,7 +40,7 @@ void battery_test(void)
 
 void bluetooth_test(void)
 {
-	while (1) {
+	while (true) {
 		if (ticks_img != get_ticks()) {
 			ticks_img = get_ticks();
 			
@@ -58,8 +58,6 @@ void bluetooth_test(void)
 			if (ticks_img % 50 == 6) {
 				tft_clear();
 				draw_top_bar();
-				
-				
 				tft_prints(0, 1, "Received: %d", bluetooth_get_data_count());
 				tft_prints(0, 2, "Recent data: ");
 				tft_prints(0, 3, "ID: 0x%X", bluetooth_recent_rx_id());
@@ -76,7 +74,7 @@ void bluetooth_test(void)
 
 void ascii_test(void)
 {
-	while (1) {
+	while (true) {
 		if (ticks_img != get_ticks()) {
 			ticks_img = get_ticks();
 			
@@ -111,7 +109,6 @@ void ascii_test(void)
 				}	
 				
 				tft_prints(0, 1, "ASCII (%d-%d)", char_start, (u8) (char_i - 1));
-				
 				tft_update();
 			}
 		}
@@ -125,7 +122,7 @@ void motor_test(void)
 			.type = tft_ui_list,
 			.x = 2, .y = 2,
 			.ui_item.list = {
-				.width = 11,
+				.width = 10,
 				.range.lower = 0,
 				.range.upper = CAN_MOTOR_COUNT-1,
 				.selected_int = 0
@@ -136,9 +133,9 @@ void motor_test(void)
 			.type = tft_ui_list,
 			.x = 2, .y = 5,
 			.ui_item.list = {
-				.width = 11,
-				.range.lower = (s32) 0,
-				.range.upper = (s32) 1,
+				.width = 10,
+				.range.lower = (s32) OPEN_LOOP,
+				.range.upper = (s32) CLOSE_LOOP,
 				.selected_int = 0
 			}
 		},
@@ -147,9 +144,9 @@ void motor_test(void)
 			.type = tft_ui_list,
 			.x = 7, .y = 6,
 			.ui_item.list = {
-				.width = 7,
-				.range.lower = (s32) -500,
-				.range.upper = (s32) 500,
+				.width = 3,
+				.range.lower = (s32) -150,
+				.range.upper = (s32) 150,
 				.selected_int = 0
 			}
 		},
@@ -160,8 +157,7 @@ void motor_test(void)
 			.ui_item.checkbox = {
 				.checked = false
 			}
-		}
-	;  
+		};  
 	
 	TFT_UI_ITEM* motor_test_ui_list[] = {
 		&motor_list, &motor_loop_type, &motor_speed, &motor_test_flag
@@ -171,7 +167,7 @@ void motor_test(void)
 		4, motor_test_ui_list, 0
 	};
 	
-	while (1) {
+	while (true) {
 		if (ticks_img != get_ticks()) {
 			ticks_img = get_ticks();
 			
@@ -230,13 +226,10 @@ void motor_test(void)
 				tft_prints(0, 1, "MOTOR TEST");
 				tft_prints(5, 2, "MOTOR%-2d", tft_ui_get_val(&motor_list) + 1);
 				tft_prints(0, 3, "ID: 0x%03X", CAN_MOTOR_BASE + tft_ui_get_val(&motor_list)); 
-				tft_prints(0, 4, "Encoder: %d", get_encoder_value((MOTOR_ID) tft_ui_get_val(&motor_list)));
-				
+				tft_prints(0, 4, "Encoder: %d", get_encoder_value((MOTOR_ID) tft_ui_get_val(&motor_list)));				
 				tft_prints(6, 5, "%s", tft_ui_get_val(&motor_loop_type) == CLOSE_LOOP ? "CLOSE" : "OPEN");
-				
 				tft_prints(0, 6, "Speed:   %d", tft_ui_get_val(&motor_speed));
 				tft_prints(0, 7, "   Start test");
-
 				
 				tft_ui_update(&tft_ui, ticks_img % 500 < 250);
 				tft_update();
@@ -247,7 +240,7 @@ void motor_test(void)
 
 void position_test(void)
 {
-	while (1) {
+	while (true) {
 		if (ticks_img != get_ticks()) {
 			ticks_img = get_ticks();
 			
@@ -275,7 +268,6 @@ void position_test(void)
 				tft_prints(0, 3, " Y: %d", get_pos()->y);
 				tft_prints(0, 4, " A: %d", get_pos()->angle);
 				tft_prints(0, 5, " Avail: %d", gyro_available);
-				
 				tft_prints(0, 7, " (%c) Calibrate", ticks_img < 500 ? BLACK_BLOCK_ASCII : ' ');
 				
 				tft_update();
@@ -305,12 +297,12 @@ void button_test(void)
 				tft_clear();
 				draw_top_bar();
 				tft_prints(0, 1, "BUTTON TEST");
-				for (u8 i = 0, x = 1, y = 2; i < BUTTON_COUNT; ++i) {
-					tft_prints(x, y, "%d:%d", i, button_pressed((BUTTON) i));
+				for (u8 i = 0, x = 0, y = 2; i < BUTTON_COUNT; ++i) {
+					tft_prints(x, y, "%d:%d(%d)", i, button_pressed((BUTTON) i), button_released((BUTTON) i));
 					if (y < tft_height - 1) {
 						++y;
 					} else {
-						x += 6;
+						x += 7;
 						y = 2;
 					}
 				}
@@ -320,20 +312,75 @@ void button_test(void)
 	}	
 }
 
+static void buzzer_onclick_listener(TFT_UI_ITEM** buzzer_item)
+{
+  MUSIC_NOTE curr_note[] = {{(MUSIC_NOTE_LETTER) tft_ui_get_val(buzzer_item[0]), tft_ui_get_val(buzzer_item[1])}, {NOTE_END, 0}};
+  buzzer_stop_song();									                            	// stop last note
+  buzzer_set_volume(tft_ui_get_val(buzzer_item[2]));					    	// set with given volume
+  buzzer_play_song(curr_note, tft_ui_get_val(buzzer_item[3]), 0);	  // Play the note.	
+}
+
 void buzzer_test(void)
 {
-	const u8 line_available[] = {2, 3, 4, 5};
-	u8 line_id = 0;
-	u16 duration = 10;
-	u8 volume = 30;
-	MUSIC_NOTE note[] = {{NOTE_G, 7}, {NOTE_END}};
-	const char* note_char[] = {"C", "C#", "D", "Eb", "E", "F", "F#", "G", "G#", "A", "Bb", "B"};
+  TFT_UI_ITEM
+    note_pitch = {
+      .type = tft_ui_list,
+      .x = 9, .y = 2,
+      .ui_item.list = {
+        .width = 5,
+        .range.lower = (s32) NOTE_REST,
+        .range.upper = (s32) NOTE_B,
+        .selected_int = (s32) NOTE_C
+      }
+    },
+    
+    note_octave = {
+      .type = tft_ui_list,
+      .x = 9, .y = 3, 
+      .ui_item.list = {
+        .width = 5,
+        .range.lower = 1,
+        .range.upper = 10,
+        .selected_int = 6
+      }
+    },
+    
+    note_volume = {
+      .type = tft_ui_list,
+      .x = 9, .y = 4,
+      .ui_item.list = {
+        .width = 5,
+        .range.lower = 1,
+        .range.upper = 100,
+        .selected_int = 30
+      }
+    },
+    
+    note_duration = {
+      .type = tft_ui_list,
+      .x = 9, .y = 5,
+      .ui_item.list = {
+        .width = 5,
+        .range.lower = 10,
+        .range.upper = 65535,
+        .selected_int = 100
+      }
+    };
+    
+  TFT_UI_ITEM* buzzer_test_ui_list[] = {
+    &note_pitch, &note_octave, &note_volume, &note_duration
+  };
+  
+  TFT_UI tft_ui = {
+		4, buzzer_test_ui_list, 0, buzzer_onclick_listener
+	};
+  char rest = (char) 22;
+	const char* note_char[] = {&rest, "C", "C#", "D", "Eb", "E", "F", "F#", "G", "G#", "A", "Bb", "B"};
+  
 	while (true) {
 		if (ticks_img != get_ticks()) {			
 			ticks_img = get_ticks();			
-			
-			u8 line = line_available[line_id];
-			
+						
 			if (ticks_img % 50 == 0) {
 				battery_adc_update();
 			}
@@ -347,125 +394,113 @@ void buzzer_test(void)
 				}
 				
 				// Line switcher
-				if (button_pressed(BUTTON_JS2_UP) == 1) {
-					if (line_id == 0) {
-						line_id = sizeof(line_available) / sizeof(u8) - 1;
-					} else {
-						--line_id;
-					}
+				if (button_pressed(BUTTON_JS2_UP) == 1 || button_hold(BUTTON_JS2_UP, 10, 2)) {
+					tft_ui_listener(&tft_ui, tft_ui_event_up);
 				}
-				if (button_pressed(BUTTON_JS2_DOWN) == 1) {
-					line_id = (line_id + 1) % (sizeof(line_available) / sizeof(u8));
+				
+				if (button_pressed(BUTTON_JS2_DOWN) == 1 || button_hold(BUTTON_JS2_DOWN, 10, 2)) {
+					tft_ui_listener(&tft_ui, tft_ui_event_down);
 				}
-				// Line
-				switch (line) {
-					// Pitch setting
-					case 2:
-						if (button_pressed(BUTTON_JS2_LEFT) == 1 || button_hold(BUTTON_JS2_LEFT, 10, 1)) {
-							if (note[0].note > NOTE_C) {
-								--note[0].note;
-							} else if (note[0].octave > 1) {
-								--note[0].octave;
-								note[0].note = NOTE_B;
-							}			
-						}							
-						if (button_pressed(BUTTON_JS2_RIGHT) == 1 || button_hold(BUTTON_JS2_RIGHT, 10, 1)) {
-							if (note[0].note < NOTE_B) {
-								++note[0].note;
-							} else if (note[0].octave < 10) {
-								note[0].note = NOTE_C;
-								++note[0].octave;
-							}
-						}
-					break;
-					// Octave setting
-					case 3:
-						if (button_pressed(BUTTON_JS2_LEFT) == 1) {
-							if (note[0].octave > 1) {
-								--note[0].octave;
-							}			
-						}							
-						if (button_pressed(BUTTON_JS2_RIGHT) == 1) {
-							if (note[0].octave < 10) {
-								++note[0].octave;
-							}
-						}
-						break;
-					// Volume setting
-					case 4:
-						if (button_pressed(BUTTON_JS2_LEFT) == 1 || button_hold(BUTTON_JS2_LEFT, 10, 1)) {
-							if (volume > 0) {
-								--volume;
-							}
-						}						
-						if (button_pressed(BUTTON_JS2_RIGHT) == 1 || button_hold(BUTTON_JS2_RIGHT, 10, 1)) {
-							if (volume < 100) {
-								++volume;
-							}
-						}
-						break;
-					// Duration setting
-					case 5:
-						if (button_pressed(BUTTON_JS2_LEFT) == 1 || button_hold(BUTTON_JS2_LEFT, 10, 1)) {
-							if (duration > 10) {
-								duration -= 10;
-							}
-						}						
-						if (button_pressed(BUTTON_JS2_RIGHT) == 1 || button_hold(BUTTON_JS2_RIGHT, 10, 1)) {
-							if (duration < 65535) {
-								duration += 10;
-							}
-						}		
-          break;
+
+				if (button_pressed(BUTTON_JS2_LEFT) == 1 || button_hold(BUTTON_JS2_LEFT, 10, 2)) {
+					tft_ui_listener(&tft_ui, tft_ui_event_left);
+          if (tft_ui_get_val(&note_pitch) == NOTE_REST) {
+            note_pitch.ui_item.list.selected_int = NOTE_B;
+            if (tft_ui_get_val(&note_octave) > note_octave.ui_item.list.range.lower) {
+              --note_octave.ui_item.list.selected_int;
+            } else {
+              note_octave.ui_item.list.selected_int = note_octave.ui_item.list.range.upper;
+            }
+          }
+				}
+				
+				if (button_pressed(BUTTON_JS2_RIGHT) == 1 || button_hold(BUTTON_JS2_RIGHT, 10, 2)) {
+					tft_ui_listener(&tft_ui, tft_ui_event_right);
+          if (tft_ui_get_val(&note_pitch) == NOTE_REST) {
+            note_pitch.ui_item.list.selected_int = NOTE_C;
+            if (tft_ui_get_val(&note_octave) < note_octave.ui_item.list.range.upper) {
+              ++note_octave.ui_item.list.selected_int;
+            } else {
+              note_octave.ui_item.list.selected_int = note_octave.ui_item.list.range.lower;
+            }
+          }
         }
-        // Click to play
-        if (button_pressed(BUTTON_JS2_CENTER) == 1) {
-          buzzer_stop_song();										// stop last note
-          buzzer_set_volume(volume);						// set with given volume
-          buzzer_play_song(note, duration, 0);	// Play the note.						
-        }
+				
+				if (button_pressed(BUTTON_JS2_CENTER) == 1) {
+					tft_ui_listener(&tft_ui, tft_ui_event_select);
+				}
 			}
 			
 			if (ticks_img % 50 == 6) {
 				tft_clear();
 				draw_top_bar();
 				tft_prints(0, 1, "BUZZER TEST");
-				tft_prints(0, 2, " Notes: ");
-				if (ticks_img < 500 || line != 2) {
-					tft_prints(11, 2, "%s", note_char[note[0].note - 1]);
-				}
-				tft_prints(0, 3, " Octave");
-				if (ticks_img < 500 || line != 3) {
-					tft_prints(11, 3, "%d", note[0].octave);
-				}
-				tft_prints(0, 4, " Volume: ");
-				if (ticks_img < 500 || line != 4) {
-					tft_prints(11, 4, "%d", volume);
-				}
-				tft_prints(0, 5, " Duration:");
-				if (ticks_img < 500 || line != 5) {
-					tft_prints(11, 5, "%d", duration);
-				}
+				tft_prints(0, 2, "Notes: ");
+        tft_prints(11, 2, "%s", note_char[tft_ui_get_val(&note_pitch)]);
+				tft_prints(0, 3, "Octave");
+				tft_prints(11, 3, "%d", tft_ui_get_val(&note_octave));
+				tft_prints(0, 4, "Volume: ");
+        tft_prints(11, 4, "%d", tft_ui_get_val(&note_volume));
+				tft_prints(0, 5, "Duration:");
+        tft_prints(11, 5, "%d", tft_ui_get_val(&note_duration));
 				if (ticks_img < 500) {
 					tft_prints(1, 7, "Click to play");
 				}
+        tft_ui_update(&tft_ui, ticks_img % 500 < 250);
 				tft_update();
 			}
 		}
 	}
 }
 
+static void can_on_click_listener(TFT_UI_ITEM** can_item)
+{
+  CAN_MESSAGE txmsg;
+  txmsg.id = tft_ui_get_val(can_item[0]);
+  txmsg.length = tft_ui_get_val(can_item[1]);
+  for (u8 i = 0; i < txmsg.length; ++i) {
+    txmsg.data[i] = 0x00;
+  }
+  CLICK_MUSIC;
+  can_tx_enqueue(txmsg);
+}
+
 void can_test(void)
 {
-  const u8 line_available[] = {2, 3};
-  u8 line_id = 0;
-  u8 sent_id = 0;
-  u8 tx_length = 1;
-  u16 sent = 0;
+  TFT_UI_ITEM
+    can_id = {
+      .type = tft_ui_list,
+      .x = 7, .y = 2,
+      .ui_item.list = {
+        .width = 7,
+				.range.lower = 0x00,
+				.range.upper = 0xFF,
+				.selected_int = 0
+			}
+		},  
+    
+    can_length = {
+      .type = tft_ui_list,
+      .x = 11, .y = 3,
+      .ui_item.list = {
+        .width = 3,
+				.range.lower = 1,
+				.range.upper = 8,
+				.selected_int = 1
+			}
+		};
+  
+  TFT_UI_ITEM* can_test_ui_list[] = {
+		&can_id, &can_length
+	};
+    
+  TFT_UI tft_ui = {
+		.item_count = 2, .item_list = can_test_ui_list, .selected_item = 0, .click_event = can_on_click_listener
+	};
+  
   while (true) {
     if (ticks_img != get_ticks()) {
       ticks_img = get_ticks();
-      u8 line = line_available[line_id];
       if (ticks_img % 50 == 0) {
         battery_adc_update();
       }
@@ -475,64 +510,34 @@ void can_test(void)
           return;
         }
         // Line switcher
-        if (button_pressed(BUTTON_JS2_UP) == 1) {
-          if (line_id == 0) {
-            line_id = sizeof(line_available) / sizeof(u8) - 1;
-          } else {
-            --line_id;
-          }
+        if (button_pressed(BUTTON_JS2_UP) == 1) {				
+          tft_ui_listener(&tft_ui, tft_ui_event_up);
         }
+        
         if (button_pressed(BUTTON_JS2_DOWN) == 1) {
-          line_id = (line_id + 1) % (sizeof(line_available) / sizeof(u8));
+          tft_ui_listener(&tft_ui, tft_ui_event_down);
         }
         // Line
-        switch (line) {
-          case 2:
-            if (button_pressed(BUTTON_JS2_LEFT) == 1 || button_hold(BUTTON_JS2_LEFT, 10, 1)) {
-              --sent_id;
-            }
-            if (button_pressed(BUTTON_JS2_RIGHT) == 1 || button_hold(BUTTON_JS2_RIGHT, 10, 1)) {
-              ++sent_id;
-            }
-          break;
-          case 3:
-            if (button_pressed(BUTTON_JS2_LEFT) == 1 || button_hold(BUTTON_JS2_LEFT, 10, 1)) {
-              if (tx_length > 1) {
-                --tx_length;
-              }
-            }
-            if (button_pressed(BUTTON_JS2_RIGHT) == 1 || button_hold(BUTTON_JS2_RIGHT, 10, 1)) {
-              if (tx_length < 7) {
-                ++tx_length;
-              }
-            }
-          break;
-        }
-        if (button_pressed(BUTTON_JS2_CENTER) == 1) {
-          CAN_MESSAGE txmsg;
-          txmsg.id = sent_id;
-          txmsg.length = tx_length;
-          for (u8 i = 0; i < txmsg.length; ++i) {
-            txmsg.data[i] = 0x00;
-          }
-          can_tx_enqueue(txmsg);
-          ++sent;
-          CLICK_MUSIC;
-        }
+        if (button_pressed(BUTTON_JS2_LEFT) == 1 || button_hold(BUTTON_JS2_LEFT, 10, 2)) {
+					tft_ui_listener(&tft_ui, tft_ui_event_left);
+				}
+				
+				if (button_pressed(BUTTON_JS2_RIGHT) == 1 || button_hold(BUTTON_JS2_RIGHT, 10, 2)) {
+					tft_ui_listener(&tft_ui, tft_ui_event_right);
+				}
+				
+				if (button_pressed(BUTTON_JS2_CENTER) == 1) {
+					tft_ui_listener(&tft_ui, tft_ui_event_select);
+				}
       }
       if (ticks_img % 50 == 6) {
         tft_clear();
         draw_top_bar();
         tft_prints(0, 1, "CAN TEST");
         tft_prints(0, 2, "CAN id:");
-        if (ticks_img < 500 || line != 2) {
-          tft_prints(11, 2, "00 %02X", sent_id);
-        }
+        tft_prints(9, 2, "00 %02X", tft_ui_get_val(&can_id));
         tft_prints(0, 3, "CAN length:");
-        if (ticks_img < 500 || line != 3) {
-          tft_prints(11, 3, "%d", tx_length);
-        }
-        tft_prints(0, 4, "Sent no.: %d", sent);
+        tft_prints(13, 3, "%1d", tft_ui_get_val(&can_length));
         // Only motor related encoder can be receieve, to be improved.
         if (can_get_rx_count() > 0) {
           tft_prints(0, 5, "CAN Rx id: 00 %02X", can_get_recent_rx().id);
@@ -555,6 +560,7 @@ void can_test(void)
         if (ticks_img < 500) {
           tft_prints(1, 9, "Click to send");
         }
+        tft_ui_update(&tft_ui, ticks_img % 500 < 250);
         tft_update();
       }
     }
@@ -564,11 +570,11 @@ void can_test(void)
 void xbc_test(void)
 {
 	u8	pressed_cnt = 0;
-	u8  pre_pressed_cnt = 0;
 	u16 press_times = 0;
-	u8 xbc_test_ko = 0;
 	u32 pre_xbc_press = 0;
-	while(!xbc_test_ko) {
+  u32 curr_button = XBC_START;
+  char* curr_stage_msg = "";
+	while (true) {
 		if (ticks_img != get_ticks()) {
 			ticks_img = get_ticks();
 			if (ticks_img % 50 == 0) {
@@ -589,163 +595,126 @@ void xbc_test(void)
 			}
 			
 			if (ticks_img % 50 == 6){
-				pre_pressed_cnt = pressed_cnt;
 				pre_xbc_press = xbc_press;
 				xbc_update();
 				tft_clear();
 				switch (pressed_cnt) {
 					case 0:	
-						tft_prints(0,2,"PRESS [START]");
-						if (xbc_press & XBC_START) {
-							pressed_cnt++;
-						}
+						curr_stage_msg = "PRESS [START]";
+						curr_button = XBC_START;
 					break;
 
 					case 1:
-						tft_prints(0,2,"PRESS [UP]");
-						if (xbc_press & XBC_UP) {
-							pressed_cnt++;
-						}
+						curr_stage_msg = "PRESS [UP]";
+						curr_button =  XBC_UP;
 					break;
 
 					case 2:
-						tft_prints(0,2,"PRESS [DOWN]   ");
-						if (xbc_press & XBC_DOWN) {
-							pressed_cnt++;
-						}
+						curr_stage_msg = "PRESS [DOWN]   ";
+						curr_button =  XBC_DOWN;
 					break;
 
 					case 3:
-						tft_prints(0,2,"PRESS [LEFT]   ");
-						if (xbc_press & XBC_LEFT) {
-							pressed_cnt++;
-						}
+						curr_stage_msg = "PRESS [LEFT]   ";
+						curr_button =  XBC_LEFT;
 					break;
 
 					case 4:
-						tft_prints(0,2,"PRESS [RIGHT]   ");
-						if (xbc_press & XBC_RIGHT) {
-							pressed_cnt++;
-						}
+						curr_stage_msg = "PRESS [RIGHT]   ";
+						curr_button =  XBC_RIGHT;
 					break;
 
 					case 5:
-						tft_prints(0,2,"PRESS [BACK]   ");
-						if (xbc_press & XBC_BACK) {
-							pressed_cnt++;
-						}
+						curr_stage_msg = "PRESS [BACK]   ";
+						curr_button =  XBC_BACK;
 					break;
 
 					case 6:
-						tft_prints(0,2,"PRESS [A]     ");
-						if (xbc_press & XBC_A) {
-							pressed_cnt++;
-						}
+						curr_stage_msg = "PRESS [A]     ";
+						curr_button =  XBC_A;
 					break;
 
 					case 7:
-						tft_prints(0,2,"PRESS [B]    ");
-						if (xbc_press & XBC_B) {
-							pressed_cnt++;
-						}
+						curr_stage_msg = "PRESS [B]    ";
+						curr_button =  XBC_B;
 					break;
 
 					case 8:
-						tft_prints(0,2,"PRESS [X]    ");
-						if (xbc_press & XBC_X) {
-							pressed_cnt++;
-						}
+						curr_stage_msg = "PRESS [X]    ";
+						curr_button =  XBC_X;
 					break;
 
 					case 9:
-						tft_prints(0,2,"PRESS [Y]     ");
-						if (xbc_press & XBC_Y) {
-							pressed_cnt++;
-						}
+						curr_stage_msg = "PRESS [Y]     ";
+						curr_button =  XBC_Y;
 					break;
 
 					case 10:
-						tft_prints(0,2,"PRESS [LB ]   ");
-						if (xbc_press & XBC_LB) {
-							pressed_cnt++;
-						}
+						curr_stage_msg = "PRESS [LB ]   ";
+						curr_button =  XBC_LB;
 					break;
 
 					case 11:
-						tft_prints(0,2,"PRESS [RB ]   ");
-						if (xbc_press & XBC_RB) {
-							pressed_cnt++;
-						}
+						curr_stage_msg = "PRESS [RB ]   ";
+						curr_button =  XBC_RB;
 					break;
 
 					case 12:
-						tft_prints(0,2,"PRESS [XBOX  ]   ");
-						if (xbc_press & XBC_XBOX) {
-							pressed_cnt++;
-						}
+						curr_stage_msg = "PRESS [XBOX  ]   ";
+						curr_button =  XBC_XBOX;
 					break;
 
 					case 13:
-						tft_prints(0,2,"[L BUTTON 1]");
-						if (xbc_press & L_BUT1) {
-							pressed_cnt++;
-						}
+						curr_stage_msg = "[L BUTTON 1]";
+						curr_button =  L_BUT1;
 					break;
 
 					case 14:
-						tft_prints(0,2,"[L BUTTON 2]");
-						if (xbc_press & L_BUT2) {
-							pressed_cnt++;
-						}
+						curr_stage_msg = "[L BUTTON 2]";
+						curr_button =  L_BUT2;
 					break;
 
 					case 15:
-						tft_prints(0,2,"[L BUTTON 3]");
-						if (xbc_press & L_BUT3) {
-							pressed_cnt++;
-						}
+						curr_stage_msg = "[L BUTTON 3]";
+						curr_button =  L_BUT3;
 					break;
 
-
 					case 16:
-						tft_prints(0,2,"[R BUTTON 1]");
-						if (xbc_press & R_BUT1) {
-							pressed_cnt++;
-						}
+						curr_stage_msg = "[R BUTTON 1]";
+						curr_button =  R_BUT1;
 					break;
 
 					case 17:
-						tft_prints(0,2,"[R BUTTON 2]");
-						if (xbc_press & R_BUT2) {
-							pressed_cnt++;
-						}
+						curr_stage_msg = "[R BUTTON 2]";
+						curr_button =  R_BUT2;
 					break;
 
 					case 18:
-						tft_prints(0,2,"[R BUTTON 3]");
-						if (xbc_press & R_BUT3) {
-							pressed_cnt++;
-						}
+						curr_stage_msg = "[R BUTTON 3]";
+						curr_button =  R_BUT3;
 					break;
 
 					case 19:
-						tft_prints(0,2,"press [BACK] exit");
+						curr_stage_msg = "press [BACK] exit";
 						tft_prints(0,3,"KEY TEST OK");
 						if (xbc_press & XBC_BACK) {
-							xbc_test_ko = 1;
+							return;
 						}
+          break;
 				}
 
-				if (pressed_cnt != pre_pressed_cnt) {
-					//buzzer on when press right button
-					SUCCESSFUL_MUSIC;
-				}
-
+        if (xbc_press & curr_button) {
+          ++pressed_cnt;
+          SUCCESSFUL_MUSIC;
+        }
+        
 				if (xbc_press != pre_xbc_press && xbc_press != 0) {
-					press_times++;
+					++press_times;
 				}
+        
 				draw_top_bar();
 				tft_prints(0,1,"XBOX TEST");
+        tft_prints(0,2,curr_stage_msg);
 				tft_prints(0,4,"LT:%3ld RT:%3ld",xbc_joy[XBC_LT],xbc_joy[XBC_RT]);
 				tft_prints(0,5,"LX:%5ld",xbc_joy[XBC_LX]);
 				tft_prints(0,6,"LY:%5ld",xbc_joy[XBC_LY]);
@@ -850,19 +819,19 @@ void gpio_pin_test(void)
 	}
 }
 /** usart test ***/
-void uart1_rx_handler(u8 rx_data){	
+static void uart1_rx_test_handler(u8 rx_data){	
 	received_data[0]= rx_data;
 }
-void uart2_rx_handler(u8 rx_data){	
+static void uart2_rx_test_handler(u8 rx_data){	
 	received_data[1]= rx_data;
 }
-void uart3_rx_handler(u8 rx_data){	
+static void uart3_rx_test_handler(u8 rx_data){	
 	received_data[2]= rx_data;
 }
-void uart4_rx_handler(u8 rx_data){	
+static void uart4_rx_test_handler(u8 rx_data){	
 	received_data[3]= rx_data;
 }
-void uart5_rx_handler(u8 rx_data){	
+static void uart5_rx_test_handler(u8 rx_data){	
 	received_data[4]= rx_data;
 }
 void uart_test(void)
@@ -871,9 +840,13 @@ void uart_test(void)
 	uart_init(COM1,115200);
 	uart_init(COM4,115200);
 	uart_init(COM5,115200);
-	uart_rx_init(COM1, uart1_rx_handler);
-	uart_rx_init(COM4, uart4_rx_handler);
-	uart_rx_init(COM5, uart5_rx_handler);
+	uart_rx_init(COM1, uart1_rx_test_handler);
+	uart_rx_init(COM4, uart4_rx_test_handler);
+	uart_rx_init(COM5, uart5_rx_test_handler);
+  
+
+  
+  
 	u8 line_id = 0;
 	const u8 line_available[] = {2, 3, 4};
   const u8 tx_id = 0, rx_id = 1;
@@ -950,7 +923,7 @@ void uart_test(void)
 				tft_prints(0, 1, "UART TEST");
 				tft_prints(0, 2, "Tx: ");
 				if (ticks_img < 500 || line != 2) {
-					tft_prints(6, 2, "USART%d", COMx[tx_id] + 1);
+					tft_prints(8, 2, "UART%d", COMx[tx_id] + 1);
 				}
 				tft_prints(0, 3, "Tx data");
 				if (ticks_img < 500 || line != 3) {

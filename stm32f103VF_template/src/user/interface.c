@@ -352,7 +352,9 @@ void tft_ui_listener(TFT_UI* ui, const TFT_UI_EVENT change)
 							++item->ui_item.list.selected_int;
 						}
 						CLICK_MUSIC;
-					}
+					} else if (tft_ui_event_select && ui->click_event != NULL) {
+            ui->click_event(ui->item_list);
+          }
 				}
 			break;
 		}
@@ -384,7 +386,7 @@ void tft_ui_update(const TFT_UI* ui, const bool toggle)
 			case tft_ui_list:
 				// Print the two arrows
 				tft_prints(item->x, item->y, "%c", item_toggle ? BLACK_BLOCK_ASCII : '<');
-				tft_prints(item->x + item->ui_item.list.width, item->y, "%c", item_toggle ? BLACK_BLOCK_ASCII : '>');
+				tft_prints(item->x + 1 + item->ui_item.list.width, item->y, "%c", item_toggle ? BLACK_BLOCK_ASCII : '>');
 			
 			break;
 		}

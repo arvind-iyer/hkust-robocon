@@ -48,6 +48,7 @@ typedef struct {
 	const u8 item_count;
 	TFT_UI_ITEM** item_list; 
 	u8 selected_item;
+  void (*click_event) (TFT_UI_ITEM**); 
 } TFT_UI;
 
 
