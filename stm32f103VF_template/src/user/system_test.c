@@ -819,21 +819,33 @@ void gpio_pin_test(void)
 	}
 }
 /** usart test ***/
-static void uart1_rx_test_handler(u8 rx_data){	
+static void uart1_rx_test_handler(u8 rx_data)
+{	
 	received_data[0]= rx_data;
 }
-static void uart2_rx_test_handler(u8 rx_data){	
+static void uart2_rx_test_handler(u8 rx_data)
+{	
 	received_data[1]= rx_data;
 }
-static void uart3_rx_test_handler(u8 rx_data){	
+static void uart3_rx_test_handler(u8 rx_data)
+{	
 	received_data[2]= rx_data;
 }
-static void uart4_rx_test_handler(u8 rx_data){	
+static void uart4_rx_test_handler(u8 rx_data)
+{	
 	received_data[3]= rx_data;
 }
-static void uart5_rx_test_handler(u8 rx_data){	
+static void uart5_rx_test_handler(u8 rx_data)
+{	
 	received_data[4]= rx_data;
 }
+
+static void uart_on_click_listener(TFT_UI_ITEM** uart_item)
+{
+  uart_tx_byte((COM_TypeDef) tft_ui_get_val(uart_item[0]),tft_ui_get_val(uart_item[1]));
+  CLICK_MUSIC;
+}
+
 void uart_test(void)
 {
 	//init tx and rx
@@ -844,101 +856,100 @@ void uart_test(void)
 	uart_rx_init(COM4, uart4_rx_test_handler);
 	uart_rx_init(COM5, uart5_rx_test_handler);
   
-
+  TFT_UI_ITEM
+    uart_tx_port = {
+      .type = tft_ui_list,
+      .x = 6, .y = 2,
+      .ui_item.list = {
+        .width = 7,
+        .range.lower = (s32) COM1,
+        .range.upper = (s32) COM5,
+        .selected_int = COM1
+      }
+    },
+    
+    uart_tx_data = {
+      .type = tft_ui_list,
+      .x = 8, .y = 3,
+      .ui_item.list = {
+        .width = 5,
+        .range.lower = 0,
+        .range.upper = 255,
+        .selected_int = 65
+      }
+    },
+    
+    uart_rx_port = {
+      .type = tft_ui_list,
+      .x = 6, .y = 4,
+      .ui_item.list = {
+        .width = 7,
+        .range.lower = (s32) COM1,
+        .range.upper = (s32) COM5,
+        .selected_int = COM1
+      }
+    };
+    
+  TFT_UI_ITEM* uart_test_ui_list[] = {
+		&uart_tx_port, &uart_tx_data, &uart_rx_port
+	};
+    
+  TFT_UI tft_ui = {
+		.item_count = 3, .item_list = uart_test_ui_list, .selected_item = 0, .click_event = uart_on_click_listener
+	};    
   
-  
-	u8 line_id = 0;
-	const u8 line_available[] = {2, 3, 4};
-  const u8 tx_id = 0, rx_id = 1;
-  u8 COM_id[2] = {0, 1};                                    // Tx and Rx, Rx is default as 1 after tx
-  const COM_TypeDef usart_available[] = {COM1, COM4, COM5}; // Make sure at least two available
-	u8 sent_data = 65;
-  
-	while (!return_listener()) {
-		if (ticks_img != get_ticks()) {
-			ticks_img = get_ticks();
-			u8 line = line_available[line_id];
-      COM_TypeDef COMx[2] = {usart_available[COM_id[tx_id]], usart_available[COM_id[rx_id]]};
-			if (ticks_img % 50 == 0) {
-				battery_adc_update();
-			}
-			
-			if (ticks_img % 50 == 3) {
-				button_update();
-				if (return_listener()) {
-					return; 
+  while (true) {
+    if (ticks_img != get_ticks()) {
+      ticks_img = get_ticks();
+      if (ticks_img % 50 == 0) {
+        battery_adc_update();
+      }
+      
+      if (ticks_img % 50 == 3) {
+        button_update();
+        if (return_listener()) {
+          return;
+        }
+        
+        if (button_pressed(BUTTON_JS2_UP) == 1) {				
+          tft_ui_listener(&tft_ui, tft_ui_event_up);
+        }
+        
+        if (button_pressed(BUTTON_JS2_DOWN) == 1) {
+          tft_ui_listener(&tft_ui, tft_ui_event_down);
+        }
+        
+        if (button_pressed(BUTTON_JS2_LEFT) == 1 || button_hold(BUTTON_JS2_LEFT, 10, 2)) {
+					tft_ui_listener(&tft_ui, tft_ui_event_left);
 				}
-				// Line switcher
-				if (button_pressed(BUTTON_JS2_UP) == 1) {
-					if (line_id == 0) {
-						line_id = sizeof(line_available) / sizeof(u8) - 1;
-					} else {
-						--line_id;
-					}
+				
+				if (button_pressed(BUTTON_JS2_RIGHT) == 1 || button_hold(BUTTON_JS2_RIGHT, 10, 2)) {
+					tft_ui_listener(&tft_ui, tft_ui_event_right);
 				}
-				if (button_pressed(BUTTON_JS2_DOWN) == 1) {
-					line_id = (line_id + 1) % (sizeof(line_available) / sizeof(u8));
-				}
-				// Line
-				switch(line){
-					case 2:
-						if (button_pressed(BUTTON_JS2_LEFT) == 1) {
-              if (COM_id[tx_id] == 0) {
-                COM_id[tx_id] = sizeof(usart_available) / sizeof(u8) - 1;
-              } else {
-                --COM_id[tx_id];
-              }
-            }
-            if (button_pressed(BUTTON_JS2_RIGHT) == 1) {
-              COM_id[tx_id] = (COM_id[tx_id] + 1) % (sizeof(usart_available) / sizeof(u8));
-						}
-					break;
-					case 3:
-						if (button_pressed(BUTTON_JS2_LEFT) == 1 || button_hold(BUTTON_JS2_LEFT, 10, 1)) {
-							--sent_data;
-						} else if (button_pressed(BUTTON_JS2_RIGHT) == 1 || button_hold(BUTTON_JS2_RIGHT, 10, 1) ) {
-							++sent_data;
-						}					
-						break;
-					case 4:
-						if (button_pressed(BUTTON_JS2_LEFT) == 1) {
-              if (COM_id[rx_id] == 0) {
-                COM_id[rx_id] = sizeof(usart_available) / sizeof(u8) - 1;
-              } else {
-                --COM_id[rx_id];
-              }
-						} else if (button_pressed(BUTTON_JS2_RIGHT) == 1) {
-              COM_id[rx_id] = (COM_id[rx_id] + 1) % (sizeof(usart_available) / sizeof(u8));
-						}
-					break;
-				}
-				if (button_pressed(BUTTON_JS2_CENTER) == 3) {
-					uart_tx_byte(COMx[tx_id],sent_data);
-					CLICK_MUSIC;					
-				}
-			}				
-			if(ticks_img % 50 == 9){	
-				tft_clear();
+				
+				if (button_pressed(BUTTON_JS2_CENTER) == 1) {
+					tft_ui_listener(&tft_ui, tft_ui_event_select);
+				}        
+      }
+      
+      if (ticks_img % 50 == 6) {
+        tft_clear();
 				draw_top_bar();
 				tft_prints(0, 1, "UART TEST");
 				tft_prints(0, 2, "Tx: ");
-				if (ticks_img < 500 || line != 2) {
-					tft_prints(8, 2, "UART%d", COMx[tx_id] + 1);
-				}
-				tft_prints(0, 3, "Tx data");
-				if (ticks_img < 500 || line != 3) {
-					tft_prints(11, 3, "%c", sent_data);
-				}
+        tft_prints(8, 2, "UART%d", tft_ui_get_val(&uart_tx_port) + 1);
+				tft_prints(0, 3, "Tx data:");
+        tft_prints(11, 3, "%c", tft_ui_get_val(&uart_tx_data));
 				tft_prints(0, 4, "Rx: ");
-				if (ticks_img < 500 || line != 4) {
-					tft_prints(6, 4, "USART%d", COMx[rx_id] + 1);
-				}
-				tft_prints(0, 5, "Rx_data: %c ", received_data[COMx[rx_id]]);
+        tft_prints(8, 4, "UART%d", tft_ui_get_val(&uart_rx_port) + 1);
+				tft_prints(0, 5, "Rx data:");
+        tft_prints(11, 5, "%c ", received_data[tft_ui_get_val(&uart_rx_port)]);
 				if (ticks_img < 500) {
 					tft_prints(0, 7, "Click to send");
 				}
+        tft_ui_update(&tft_ui, ticks_img % 500 < 25);
 				tft_update();
-			}	
-		}
-	}
+      }
+    }
+  }
 }
