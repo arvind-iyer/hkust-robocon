@@ -41,7 +41,11 @@
 # Keil Project Ignorable User files
 *.William
 *.Kenneth Au
+*.Hp User
+
 # Keil Project Incomplete Compilation
 *._ia
 *.__i
-*.Hp User
+
+#Jlink log
+JLinkLog.txt
