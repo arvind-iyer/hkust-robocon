@@ -78,6 +78,7 @@ protected:
 	afx_msg BOOL PreTranslateMessage(MSG* msg);
 	afx_msg LRESULT print_read_from_serial(WPARAM w, LPARAM l);
 	afx_msg LRESULT print_write_to_serial(WPARAM w, LPARAM l);
+	afx_msg BOOL OnCopyData(CWnd* pWnd, COPYDATASTRUCT* pCopyDataStruct);
 
 // Thread functions
 protected:

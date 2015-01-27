@@ -64,17 +64,19 @@ private:
 	GLCoord ConvertGridCoordToGLCoord(GridCoord g);
 
 	void DrawIndicator(GLCoord coordinates, GLColor point_ind_color, GLColor back_ind_color, GLColor point_color, int mode = 0);
+	void DrawShuttleIndicator(GLCoord coordinates);
 
 	// Positions for OpenGL
-	struct GLCoord current_pos;
-	struct GLCoord cursor_pos;
-	struct GLCoord robot_pos;
+	GLCoord current_pos;
+	GLCoord cursor_pos;
+	GLCoord robot_pos;
+	GLCoord shuttlecock_pos;
 
 	// Mouse position on the virtual grid
-	struct GridCoord grid_pos;
+	GridCoord grid_pos;
 
 	// Selector position on the virtual grid
-	struct GridCoord selected_grid_pos;
+	GridCoord selected_grid_pos;
 
 	// Stores path of robot for OpenGL
 	std::deque<GLCoord> robot_path;
@@ -102,6 +104,7 @@ protected:
 	afx_msg void OnLButtonDblClk(UINT nFlags, CPoint point);
 	afx_msg void OnMouseMove(UINT nFlags, CPoint point);
 	afx_msg LRESULT refresh_coordinates(WPARAM w, LPARAM l);
+	afx_msg LRESULT refresh_shuttle_coordinates(WPARAM w, LPARAM l);
 	afx_msg BOOL PreTranslateMessage(MSG* pMsg);
 	afx_msg LRESULT reset_coord(WPARAM w, LPARAM l);
 

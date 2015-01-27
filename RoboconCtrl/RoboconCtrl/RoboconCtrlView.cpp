@@ -47,6 +47,7 @@ BEGIN_MESSAGE_MAP(CRoboconCtrlView, CView)
 	ON_WM_MOUSEMOVE()
 	ON_REGISTERED_MESSAGE(UWM_RECEIVE_ROBOT_COORD, refresh_coordinates)
 	ON_REGISTERED_MESSAGE(UWM_RESET_ROBOT_POS, reset_coord)
+	ON_REGISTERED_MESSAGE(UWM_RECEIVE_SHUTTLE_COORD, refresh_shuttle_coordinates)
 END_MESSAGE_MAP()
 
 // CRoboconCtrlView construction/destruction
@@ -238,6 +239,40 @@ CRoboconCtrlView::GridCoord CRoboconCtrlView::GetRobotCoord(CPoint wndCoord, uns
 	return g;
 }
 
+void DrawCircle(float cx, float cy, float r, int num_segments)
+{
+	float theta = 2.0f * 3.1415926f / float(num_segments);
+	float c = cosf(theta);//precalculate the sine and cosine
+	float s = sinf(theta);
+	float t;
+
+	float x = r;//we start at angle = 0 
+	float y = 0;
+
+	glBegin(GL_POLYGON);
+	glColor3f(1.0f, 0.0f, 0.0f);
+	for (int ii = 0; ii < num_segments; ii++)
+	{
+		glVertex2f(x + cx, y + cy);//output vertex 
+
+		//apply the rotation matrix
+		t = x;
+		x = c * x - s * y;
+		y = s * t + c * y;
+	}
+	glEnd();
+}
+
+void CRoboconCtrlView::DrawShuttleIndicator(GLCoord g)
+{
+	DrawCircle(g.x, g.y, 300.0, 50);
+	glPointSize(5.0f);
+	glBegin(GL_POINTS);
+		glColor3f(0.0f, 0.0f, 1.0f);
+		glVertex2f(g.x, g.y);
+	glEnd();
+}
+
 void CRoboconCtrlView::DrawIndicator(GLCoord coordinates, GLColor point_ind_color, GLColor back_ind_color, GLColor point_color, int mode)
 {
 	// calculate position
@@ -408,7 +443,7 @@ void CRoboconCtrlView::GLDrawScene()
 		}
 		else {
 			DrawIndicator(current_pos, point_ind, back_ind, point_color);
-		}
+		}	
 	}
 	if (robot_pos.valid) {
 		GLColor point_ind = {
@@ -429,6 +464,9 @@ void CRoboconCtrlView::GLDrawScene()
 			1.0f
 		};
 		DrawIndicator(robot_pos, point_ind, back_ind, point_color);
+	}
+	if (shuttlecock_pos.valid) {
+		DrawShuttleIndicator(shuttlecock_pos);
 	}
 	if (cursor_pos.valid) {
 		GLColor point_ind = {};
@@ -619,12 +657,27 @@ LRESULT CRoboconCtrlView::refresh_coordinates(WPARAM w, LPARAM l) {
 	GridCoord r_pos;
 	r_pos.x = (*coordinates)[0];
 	r_pos.y = (*coordinates)[1];
-	r_pos.angle = (*coordinates)[2];
+	r_pos.angle = static_cast<unsigned int>((*coordinates)[2]);
 	r_pos.elapsed_time = std::chrono::high_resolution_clock::now() - start_time;
 	r_pos.valid = TRUE;
 	robot_pos = ConvertGridCoordToGLCoord(r_pos);
 	robot_path.push_back(robot_pos);
 	robot_path_data.push_back(std::make_pair(r_pos, selected_grid_pos));
+	Invalidate();
+	return 0;
+}
+
+afx_msg LRESULT CRoboconCtrlView::refresh_shuttle_coordinates(WPARAM w, LPARAM l){
+	std::shared_ptr< std::vector<int> > coordinates(reinterpret_cast< std::vector<int>* >(l));
+
+	// store grid coordinate data to memory so we can write it to file later
+	GridCoord r_pos;
+	r_pos.x = (*coordinates)[0];
+	r_pos.y = (*coordinates)[1];
+	r_pos.angle = static_cast<unsigned int>((*coordinates)[2]);
+	r_pos.elapsed_time = std::chrono::high_resolution_clock::now() - start_time;
+	r_pos.valid = TRUE;
+	shuttlecock_pos = ConvertGridCoordToGLCoord(r_pos);
 	Invalidate();
 	return 0;
 }
@@ -676,7 +729,6 @@ LRESULT CRoboconCtrlView::reset_coord(WPARAM w, LPARAM l) {
 	Invalidate();
 	return 0;
 }
-
 
 // CRoboconCtrlView diagnostics
 

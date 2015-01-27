@@ -39,6 +39,9 @@ const UINT uiLastUserToolBarId = uiFirstUserToolBarId + iMaxUserToolbars - 1;
 
 BEGIN_MESSAGE_MAP(CMainFrame, CFrameWndEx)
 	ON_WM_CREATE()
+	ON_WM_COPYDATA()
+	ON_WM_KEYDOWN()
+	ON_WM_SETTINGCHANGE()
 	ON_COMMAND(ID_VIEW_CUSTOMIZE, &CMainFrame::OnViewCustomize)
 	ON_UPDATE_COMMAND_UI(ID_FILE_SAVE, &CMainFrame::OnUpdateFileSave)
 	ON_UPDATE_COMMAND_UI(ID_FILE_NEW, &CMainFrame::OnUpdateFileNew)
@@ -52,8 +55,6 @@ BEGIN_MESSAGE_MAP(CMainFrame, CFrameWndEx)
 	ON_REGISTERED_MESSAGE(UWM_SEND_STRING, &CMainFrame::WriteString)
 	ON_REGISTERED_MESSAGE(UWM_PRINT_OUTPUT_FROM_READ, &CMainFrame::print_read_from_serial)
 	ON_REGISTERED_MESSAGE(UWM_PRINT_OUTPUT_FROM_WRITE, &CMainFrame::print_write_to_serial)
-	ON_WM_KEYDOWN()
-	ON_WM_SETTINGCHANGE()
 END_MESSAGE_MAP()
 
 static UINT indicators[] =
@@ -451,7 +452,6 @@ BOOL CMainFrame::PreTranslateMessage(MSG* msg)
 	writemode = stoi(settings[3]);
 	write_sleep_duration = stoi(settings[6]);
 	read_sleep_duration = stoi(settings[7]);
-
 	return CFrameWndEx::PreTranslateMessage(msg);
 }
 
@@ -608,6 +608,28 @@ LRESULT CMainFrame::WriteString(WPARAM w, LPARAM l)
 		break;
 	}
 	return 0;
+}
+
+struct coord_data {
+	int x_coord;
+	int y_coord;
+	unsigned int angle;
+};
+
+BOOL CMainFrame::OnCopyData(CWnd* pWnd, COPYDATASTRUCT* pCopyDataStruct)
+{
+	if (pCopyDataStruct->dwData == 0x06050116) {
+		coord_data d = *(static_cast<coord_data*>(pCopyDataStruct->lpData));
+		std::basic_ostringstream<TCHAR> data_string;
+		data_string << _T("RECEIVED DATA: (") << d.x_coord << _T(", ") << d.y_coord << _T(", ") << d.angle << _T(")");
+		print_to_output(data_string.str());
+		std::vector<int>* coordinates = new std::vector<int>();
+		coordinates->push_back(d.x_coord);
+		coordinates->push_back(d.y_coord);
+		coordinates->push_back(static_cast<int>(d.angle));
+		GetActiveView()->PostMessage(UWM_RECEIVE_SHUTTLE_COORD, 0, reinterpret_cast<LPARAM>(coordinates));
+	}
+	return CFrameWnd::OnCopyData(pWnd, pCopyDataStruct);
 }
 
 void CMainFrame::OnViewCustomize()
