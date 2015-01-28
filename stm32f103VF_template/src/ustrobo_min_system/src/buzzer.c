@@ -46,16 +46,16 @@ void buzzer_init(void)
 		//GPIO_PinRemapConfig(BUZZER_TIM_REMAP, ENABLE);
 		
 		
-		TIM_TimeBaseStructure.TIM_CounterMode = TIM_CounterMode_Up;   // counter will count up (from 0 to FFFF)
-		TIM_TimeBaseStructure.TIM_ClockDivision = TIM_CKD_DIV2;       //timer clock = dead-time and sampling clock 	
+		TIM_TimeBaseStructure.TIM_CounterMode = TIM_CounterMode_Up;    // counter will count up (from 0 to FFFF)
+		TIM_TimeBaseStructure.TIM_ClockDivision = TIM_CKD_DIV2;         //timer clock = dead-time and sampling clock 	
 		TIM_TimeBaseStructure.TIM_Prescaler = SystemCoreClock / BUZZER_COUNT_PER_SECOND - 1;                         // 1MHz
 		TIM_TimeBaseStructure.TIM_Period = buzzer_note_period;	                    
 
 		
-		TIM_TimeBaseInit(BUZZER_TIM, &TIM_TimeBaseStructure);       // this part feeds the parameter we set above
+		TIM_TimeBaseInit(BUZZER_TIM, &TIM_TimeBaseStructure);           // this part feeds the parameter we set above
 		
-		TIM_OCInitStructure.TIM_OCPolarity = TIM_OCPolarity_High;         //set "high" to be effective output
-		TIM_OCInitStructure.TIM_OCMode = TIM_OCMode_PWM1;	             //produce output when counter < CCR
+		TIM_OCInitStructure.TIM_OCPolarity = TIM_OCPolarity_High;       //set "high" to be effective output
+		TIM_OCInitStructure.TIM_OCMode = TIM_OCMode_PWM1;	              //produce output when counter < CCR
 		
 		TIM_OCInitStructure.TIM_Pulse = buzzer_volume;
 		

@@ -29,6 +29,7 @@
 #include "bluetooth.h"
 #include "robocon.h"
 #include "wheel_base.h"
+#include "ultrasonic.h"
 
 void bluetooth_test(void);
 void ascii_test(void);
@@ -41,5 +42,6 @@ void can_test(void);
 void xbc_test(void);
 void gpio_pin_test(void);
 void uart_test(void);
-
+void ultra_test(void);
+ 
 #endif /* __SYSTEM_TEST_H */

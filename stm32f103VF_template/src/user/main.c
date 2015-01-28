@@ -20,6 +20,7 @@ int main(void)
 	bluetooth_init();
 	wheel_base_init();
 	wheel_base_pid_init();
+  ultrasonic_init();
 	//usart_init(COM1, 115200);
 
 
@@ -37,11 +38,10 @@ int main(void)
 	menu_add("ASCII test", ascii_test);
 	menu_add("GPIO Pin test", gpio_pin_test);
 	menu_add("UART test", uart_test);
+  menu_add("Ultra. test", ultra_test);
 	menu(0, false);
 	robocon_main();
 	
 		
 }
-
-
 

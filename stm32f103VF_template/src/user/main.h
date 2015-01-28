@@ -30,5 +30,6 @@
 #include "bluetooth.h"
 #include "robocon.h"
 #include "wheel_base.h"
+#include "ultrasonic.h"
 
 #endif /* __MAIN_H */

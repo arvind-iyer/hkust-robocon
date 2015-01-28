@@ -70,17 +70,19 @@ void ticks_init(void) {
   */
 TICKS_IRQHandler
 {
-	TIM_ClearFlag(TICKS_TIM, TIM_FLAG_Update);
-	TIM_ClearITPendingBit(TICKS_TIM, TIM_IT_Update);
+  if (TIM_GetITStatus(TICKS_TIM, TIM_IT_Update) != RESET) {
+    TIM_ClearFlag(TICKS_TIM, TIM_FLAG_Update);
+    //TIM_ClearITPendingBit(TICKS_TIM, TIM_IT_Update);
 
-	if (ticks >= 999) {
-		ticks = 0;
-		seconds++;
-	} else {
-		ticks++;
-	}
+    if (ticks >= 999) {
+      ticks = 0;
+      seconds++;
+    } else {
+      ticks++;
+    }
 
-	buzzer_check();
+    buzzer_check();
+  }
 	
 }
 
