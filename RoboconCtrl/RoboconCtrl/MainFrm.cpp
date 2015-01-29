@@ -439,19 +439,7 @@ UINT __cdecl CMainFrame::write_thread(LPVOID app_ptr){
 				}
 				AfxGetMainWnd()->Invalidate();
 			}
-			// Special character printing
-			/*
-			if (!special_msg_keys.empty()) {
-				std::wstring_convert<std::codecvt_utf8_utf16<wchar_t>> converter;
-				std::string keys_to_send = converter.to_bytes(special_msg_keys);
-				std::for_each(keys_to_send.begin(), keys_to_send.end(), [](char& sendkey) {
-					std::basic_ostringstream<TCHAR> oss;
-					oss << _T("Sent Special Key: ") << (TCHAR)sendkey << std::endl;
-					serial->write(RobotMCtrl().special_keys(sendkey));
-					AfxGetMainWnd()->PostMessageW(UWM_PRINT_OUTPUT_FROM_WRITE, 0, (LPARAM)new std::basic_string<TCHAR>(oss.str()));
-				});
-			}
-			*/
+
 			std::string keys_to_send;
 			for (char i = 0x41,character = 'a'; i <= 0x5A; ++i, ++character) {
 				if (i == 0x41 || i == 0x43 || i == 0x44 || i == 0x45 || i == 0x51 || i == 0x53 || i == 0x57 || i == 0x5A) {
@@ -539,15 +527,31 @@ UINT __cdecl CMainFrame::write_thread(LPVOID app_ptr){
 			}
 			if (GetAsyncKeyState(VK_OEM_3) & 0x8000) { // The quote key
 				if (shift_pressed) {
-					keys_to_send += '"';
+					keys_to_send += '\"';
 				}
 				else {
 					keys_to_send += '\'';
 				}
 			}
+			if (GetAsyncKeyState(VK_SPACE) & 0x8000) { // The quote key
+				keys_to_send += ' ';
+			}
+			if (GetAsyncKeyState(VK_TAB) & 0x8000) { // The quote key
+				keys_to_send += '\t';
+			}
 			std::for_each(keys_to_send.begin(), keys_to_send.end(), [](char& sendkey){
 				std::basic_ostringstream<TCHAR> oss;
-				oss << _T("Sent Special Key: ") << (TCHAR)sendkey << std::endl;
+				oss << _T("Sent Special Key: ");
+				if (sendkey == ' ') {
+					oss << _T("SPACE");
+				}
+				else if (sendkey == '\t') {
+					oss << _T("TAB");
+				}
+				else {
+					oss << (TCHAR)sendkey;
+				}
+				oss << std::endl;
 				serial->write(RobotMCtrl().special_keys(sendkey));
 				AfxGetMainWnd()->PostMessageW(UWM_PRINT_OUTPUT_FROM_WRITE, 0, (LPARAM)new std::basic_string<TCHAR>(oss.str()));
 			});

@@ -13,7 +13,7 @@
 static char THIS_FILE[] = __FILE__;
 #endif
 
-#define MAX_STRINGS 256
+#define MAX_STRINGS 1024
 
 /////////////////////////////////////////////////////////////////////////////
 // COutputBar
