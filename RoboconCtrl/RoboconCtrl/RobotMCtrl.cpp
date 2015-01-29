@@ -244,7 +244,7 @@ std::string RobotMCtrl::special_keys(char key_to_send)
 
 	// construct string to send
 	std::stringstream o;
-	o << soh << id << data_length << data[0] << buffer[0] << buffer[1] << eot;
+	o << soh << id << data_length << data[0] << id << buffer[0] << buffer[1] << eot;
 	return o.str();
 }
 

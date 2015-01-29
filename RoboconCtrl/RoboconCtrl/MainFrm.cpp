@@ -451,8 +451,7 @@ UINT __cdecl CMainFrame::write_thread(LPVOID app_ptr){
 				});
 			}
 			*/
-			char character = 'a';
-			for (int i = 0x41; i <= 0x5A; ++i, ++character) {
+			for (char i = 0x41,character = 'a'; i <= 0x5A; ++i, ++character) {
 				if (i == 0x41 || i == 0x43 || i == 0x44 || i == 0x45 || i == 0x51 || i == 0x53 || i == 0x57 || i == 0x5A) {
 					continue;
 				}
