@@ -389,7 +389,6 @@ void CRoboconCtrlView::GLDrawScene()
 		glVertex2f(-5920.0f, 3050.0f);
 		glVertex2f(-5920.0f, -3050.0f);
 
-	
 		// Center lines
 		glVertex2f(-6700.0f, 0.0f);
 		glVertex2f(-2000.0f, 0.0f);
@@ -410,6 +409,10 @@ void CRoboconCtrlView::GLDrawScene()
 		glLineWidth(1.0f);
 
 	glEnd();
+
+	if (shuttlecock_pos.valid) {
+		DrawShuttleIndicator(shuttlecock_pos);
+	}
 
 	// Draw current position
 	if (current_pos.valid) {
@@ -464,9 +467,6 @@ void CRoboconCtrlView::GLDrawScene()
 			1.0f
 		};
 		DrawIndicator(robot_pos, point_ind, back_ind, point_color);
-	}
-	if (shuttlecock_pos.valid) {
-		DrawShuttleIndicator(shuttlecock_pos);
 	}
 	if (cursor_pos.valid) {
 		GLColor point_ind = {};

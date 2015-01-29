@@ -56,7 +56,7 @@ public:
 	static SerialIO* serial;
 protected:
 // buffer that stores keys pressed
-	std::string send_msg;
+	static std::basic_string<TCHAR> special_msg_keys;
 	BOOL shift;
 public:
 

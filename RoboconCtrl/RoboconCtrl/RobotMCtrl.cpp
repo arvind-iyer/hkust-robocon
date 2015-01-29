@@ -231,6 +231,24 @@ std::string RobotMCtrl::pid_toggle(BOOL pid)
 	}
 }
 
+std::string RobotMCtrl::special_keys(char key_to_send)
+{
+	char soh = 0x12;
+	char id = 0x70;
+	char data_length = 0x01;
+	char data[1] = { key_to_send };
+	char buffer[2] = { 0, 0 };
+	char eot = 0x34;
+
+	crc16(buffer, data, 1);
+
+	// construct string to send
+	std::stringstream o;
+	o << soh << id << data_length << data[0] << buffer[0] << buffer[1] << eot;
+	return o.str();
+}
+
+
 RobotMCtrl::~RobotMCtrl()
 {
 }

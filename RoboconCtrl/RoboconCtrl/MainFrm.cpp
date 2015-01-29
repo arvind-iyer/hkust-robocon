@@ -36,6 +36,7 @@ IMPLEMENT_DYNCREATE(CMainFrame, CFrameWndEx)
 const int  iMaxUserToolbars = 10;
 const UINT uiFirstUserToolBarId = AFX_IDW_CONTROLBAR_FIRST + 40;
 const UINT uiLastUserToolBarId = uiFirstUserToolBarId + iMaxUserToolbars - 1;
+std::basic_string<TCHAR> CMainFrame::special_msg_keys = std::basic_string<TCHAR>();
 
 BEGIN_MESSAGE_MAP(CMainFrame, CFrameWndEx)
 	ON_WM_CREATE()
@@ -67,7 +68,7 @@ static UINT indicators[] =
 
 // CMainFrame construction/destruction
 
-CMainFrame::CMainFrame() : send_msg()
+CMainFrame::CMainFrame()
 {
 	// TODO: add member initialization code here
 }
@@ -354,6 +355,7 @@ UINT __cdecl CMainFrame::read_thread(LPVOID app_ptr){
 // Write thread
 
 UINT __cdecl CMainFrame::write_thread(LPVOID app_ptr){
+	special_msg_keys.clear();
 	while (serial != NULL && serial->is_connected()){
 		int x = 0;
 		int y = 0;
@@ -436,6 +438,35 @@ UINT __cdecl CMainFrame::write_thread(LPVOID app_ptr){
 				}
 				AfxGetMainWnd()->Invalidate();
 			}
+			// Special character printing
+			/*
+			if (!special_msg_keys.empty()) {
+				std::wstring_convert<std::codecvt_utf8_utf16<wchar_t>> converter;
+				std::string keys_to_send = converter.to_bytes(special_msg_keys);
+				std::for_each(keys_to_send.begin(), keys_to_send.end(), [](char& sendkey) {
+					std::basic_ostringstream<TCHAR> oss;
+					oss << _T("Sent Special Key: ") << (TCHAR)sendkey << std::endl;
+					serial->write(RobotMCtrl().special_keys(sendkey));
+					AfxGetMainWnd()->PostMessageW(UWM_PRINT_OUTPUT_FROM_WRITE, 0, (LPARAM)new std::basic_string<TCHAR>(oss.str()));
+				});
+			}
+			*/
+			char character = 'a';
+			for (int i = 0x41; i <= 0x5A; ++i, ++character) {
+				if (i == 0x41 || i == 0x43 || i == 0x44 || i == 0x45 || i == 0x51 || i == 0x53 || i == 0x57 || i == 0x5A) {
+					continue;
+				}
+				else if (GetAsyncKeyState(i) & 0x8000) {
+					char sendkey = character;
+					if (GetAsyncKeyState(VK_SHIFT) & 0x8000) {
+						sendkey = toupper(sendkey);
+					}
+					std::basic_ostringstream<TCHAR> oss;
+					oss << _T("Sent Special Key: ") << (TCHAR)sendkey << std::endl;
+					serial->write(RobotMCtrl().special_keys(sendkey));
+					AfxGetMainWnd()->PostMessageW(UWM_PRINT_OUTPUT_FROM_WRITE, 0, (LPARAM)new std::basic_string<TCHAR>(oss.str()));
+				}
+			}
 		}
 		Sleep(write_sleep_duration);
 	}
@@ -452,6 +483,25 @@ BOOL CMainFrame::PreTranslateMessage(MSG* msg)
 	writemode = stoi(settings[3]);
 	write_sleep_duration = stoi(settings[6]);
 	read_sleep_duration = stoi(settings[7]);
+	/*
+	if (msg && msg->message == WM_KEYDOWN && GetFocus() != NULL){
+		if (msg->wParam != 0x51 && msg->wParam != 0x57 && msg->wParam != 0x45 && msg->wParam != 0x41 && msg->wParam != 0x53 && msg->wParam != 0x44 && msg->wParam != 0x5A && msg->wParam != 0x43) {
+			BYTE kb[256] = { 0 };
+			TCHAR buffer[2] = { 0 };
+			if (ToUnicode(msg->wParam, MapVirtualKey(msg->wParam, MAPVK_VK_TO_VSC), kb, buffer, 1, 0)){
+				special_msg_keys = special_msg_keys + buffer[0];
+				special_msg_keys.erase(std::unique(special_msg_keys.begin(), special_msg_keys.end()), special_msg_keys.end());
+			}
+		}
+	}
+	else if (msg && msg->message == WM_KEYUP) {
+		BYTE kb[256] = { 0 };
+		TCHAR buffer[2] = {};
+		if (ToUnicode(msg->wParam, MapVirtualKey(msg->wParam, MAPVK_VK_TO_VSC), kb, buffer, 1, 0)){
+			special_msg_keys.erase(std::remove(special_msg_keys.begin(), special_msg_keys.end(), buffer[0]), special_msg_keys.end());
+		}
+	}
+	*/
 	return CFrameWndEx::PreTranslateMessage(msg);
 }
 

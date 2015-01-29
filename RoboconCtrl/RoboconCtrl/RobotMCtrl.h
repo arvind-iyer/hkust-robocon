@@ -12,6 +12,7 @@ public:
 	std::string coordinates(short x, short y, unsigned short angle);
 	std::pair<std::vector<int>, BOOL> read(std::string string_received);
 	std::string pid_toggle(BOOL pid);
+	std::string special_keys(char key_to_send);
 	~RobotMCtrl();
 };
 
