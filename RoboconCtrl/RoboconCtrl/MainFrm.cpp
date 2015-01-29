@@ -363,7 +363,7 @@ UINT __cdecl CMainFrame::write_thread(LPVOID app_ptr){
 		int speed = -1;
 		bool pressed = FALSE;
 		bool pid_toggled = FALSE;
-
+		bool shift_pressed = FALSE;
 		if (writemode == 2){
 			if (GetAsyncKeyState(0x51) & 0x8000) { // Q Key
 				w -= 100;
@@ -393,6 +393,7 @@ UINT __cdecl CMainFrame::write_thread(LPVOID app_ptr){
 				x = x / 2;
 				y = y / 2;
 				w = w / 2;
+				shift_pressed = TRUE;
 			}
 			for (int i = 0; i < 10; i++) {
 				if (GetAsyncKeyState(0x30 + i) & 0x8000) {
@@ -451,21 +452,105 @@ UINT __cdecl CMainFrame::write_thread(LPVOID app_ptr){
 				});
 			}
 			*/
+			std::string keys_to_send;
 			for (char i = 0x41,character = 'a'; i <= 0x5A; ++i, ++character) {
 				if (i == 0x41 || i == 0x43 || i == 0x44 || i == 0x45 || i == 0x51 || i == 0x53 || i == 0x57 || i == 0x5A) {
 					continue;
 				}
 				else if (GetAsyncKeyState(i) & 0x8000) {
 					char sendkey = character;
-					if (GetAsyncKeyState(VK_SHIFT) & 0x8000) {
+					if (shift_pressed) {
 						sendkey = toupper(sendkey);
 					}
-					std::basic_ostringstream<TCHAR> oss;
-					oss << _T("Sent Special Key: ") << (TCHAR)sendkey << std::endl;
-					serial->write(RobotMCtrl().special_keys(sendkey));
-					AfxGetMainWnd()->PostMessageW(UWM_PRINT_OUTPUT_FROM_WRITE, 0, (LPARAM)new std::basic_string<TCHAR>(oss.str()));
+					keys_to_send += sendkey;
 				}
 			}
+			if (GetAsyncKeyState(VK_OEM_1) & 0x8000) { // The ; key
+				if (shift_pressed) {
+					keys_to_send += ':';
+				}
+				else {
+					keys_to_send += ';';
+				}
+			}
+			if (GetAsyncKeyState(VK_OEM_PLUS) & 0x8000) { // The + key
+				if (shift_pressed) {
+					keys_to_send += '+';
+				}
+				else {
+					keys_to_send += '=';
+				}
+			}
+			if (GetAsyncKeyState(VK_OEM_COMMA) & 0x8000) { // The comma key
+				if (shift_pressed) {
+					keys_to_send += '<';
+				}
+				else {
+					keys_to_send += ',';
+				}
+			}
+			if (GetAsyncKeyState(VK_OEM_MINUS) & 0x8000) { // The minus key
+				if (shift_pressed) {
+					keys_to_send += '_';
+				}
+				else {
+					keys_to_send += '-';
+				}
+			}
+			if (GetAsyncKeyState(VK_OEM_PERIOD) & 0x8000) { // The period key
+				if (shift_pressed) {
+					keys_to_send += '>';
+				}
+				else {
+					keys_to_send += '.';
+				}
+			}
+			if (GetAsyncKeyState(VK_OEM_2) & 0x8000) { // The / key''''
+				if (shift_pressed) {
+					keys_to_send += '?';
+				}
+				else {
+					keys_to_send += '/';
+				}
+			}
+			if (GetAsyncKeyState(VK_OEM_4) & 0x8000) { // The [ key
+				if (shift_pressed) {
+					keys_to_send += '{';
+				}
+				else {
+					keys_to_send += '[';
+				}
+			}
+			if (GetAsyncKeyState(VK_OEM_7) & 0x8000) { // The | key
+				if (shift_pressed) {
+					keys_to_send += '|';
+				}
+				else {
+					keys_to_send += '\\';
+				}
+			}
+			if (GetAsyncKeyState(VK_OEM_6) & 0x8000) { // The ] key
+				if (shift_pressed) {
+					keys_to_send += '}';
+				}
+				else {
+					keys_to_send += ']';
+				}
+			}
+			if (GetAsyncKeyState(VK_OEM_3) & 0x8000) { // The quote key
+				if (shift_pressed) {
+					keys_to_send += '"';
+				}
+				else {
+					keys_to_send += '\'';
+				}
+			}
+			std::for_each(keys_to_send.begin(), keys_to_send.end(), [](char& sendkey){
+				std::basic_ostringstream<TCHAR> oss;
+				oss << _T("Sent Special Key: ") << (TCHAR)sendkey << std::endl;
+				serial->write(RobotMCtrl().special_keys(sendkey));
+				AfxGetMainWnd()->PostMessageW(UWM_PRINT_OUTPUT_FROM_WRITE, 0, (LPARAM)new std::basic_string<TCHAR>(oss.str()));
+			});
 		}
 		Sleep(write_sleep_duration);
 	}
