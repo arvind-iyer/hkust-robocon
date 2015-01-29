@@ -90,6 +90,9 @@ void drawKeypoints(std::vector<cv::Point2f> &keypoints, cv::Mat &im, cv::Scalar 
 }
 
 int main(int argc, char* argv[]) {
+	int k;
+	unsigned char key;
+
 	// cv::initModule_nonfree();
 
 	std::string cvWindowName = WINDOW_NAME;
@@ -158,10 +161,21 @@ int main(int argc, char* argv[]) {
 		drawKeypoints(cmt.votes, im_draw, blueColor);
 		drawKeypoints(cmt.outliers, im_draw, blueColor);
 
+		cv::imshow("main", im_draw);
+
+		k = cv::waitKey(10);
+		key = (char)(k & 255);
+		if(key=='q') {
+			break;
+		} else if(key=='d') {
+			//import ipdb; ipdb.set_trace()
+		}
+
 		im_prev = im_gray;
 		frame += 1;
 
 		//printf("center: (%.2f, %.2f), scale: %.2f, active: %d", cmt.
+		
 	}
 
 	return 0;

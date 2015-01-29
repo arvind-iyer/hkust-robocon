@@ -3,24 +3,6 @@
 #define _USE_MATH_DEFINES
 #include <cmath>
 
-#if __cplusplus < 201103L //test if c++11
-
-    #include <limits>
-
-    #ifndef NAN
-    //may not be correct on all compilator, DON'T USE the flag FFAST-MATH
-
-        #define NAN std::numeric_limits<float>::quiet_NaN()
-
-        template <T>
-        bool isnan(T d)
-        {
-          return d != d;
-        }
-    #endif
-
-#endif
-
 void inout_rect(const std::vector<cv::KeyPoint>& keypoints, cv::Point2f topleft, cv::Point2f bottomright, std::vector<cv::KeyPoint>& in, std::vector<cv::KeyPoint>& out)
 {
     for(unsigned int i = 0; i < keypoints.size(); i++)
