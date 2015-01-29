@@ -79,7 +79,16 @@ void system_start(const char* title, u16 duration)
 	// Reset bg and text color
 	tft_set_text_color(prev_text_color);
 	
-	_delay_ms(duration);
+
+  
+  for (u16 i = 0; i < duration / 4; ++i) {
+    _delay_ms(4);
+    button_update();
+    if (button_pressed(BUTTON_JS2_CENTER) == 1) {
+      break; 
+    }
+  }
+  
 	led_control((LED) (LED_D1 | LED_D2 | LED_D3), LED_OFF);
 	
 }

@@ -850,9 +850,13 @@ void uart_test(void)
 {
 	//init tx and rx
 	uart_init(COM1,115200);
+  uart_init(COM2,115200);
+  uart_init(COM3,115200);
 	uart_init(COM4,115200);
 	uart_init(COM5,115200);
 	uart_rx_init(COM1, uart1_rx_test_handler);
+  uart_rx_init(COM2, uart2_rx_test_handler);
+  uart_rx_init(COM3, uart3_rx_test_handler);
 	uart_rx_init(COM4, uart4_rx_test_handler);
 	uart_rx_init(COM5, uart5_rx_test_handler);
   

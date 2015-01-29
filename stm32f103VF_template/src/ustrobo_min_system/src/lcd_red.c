@@ -550,7 +550,7 @@ u8 tft_char_is_changed(u8 x, u8 y)
 }
 
 /**
-  * @brief  Print a string at certain position
+  * @brief  Print a string at certain position ("[...]" as special-color character)
   * @param  x: starting x-coordinate
   * @param  y: starting y-coordinate
   * @param  pstr: string to be printed
@@ -569,19 +569,22 @@ void tft_prints(u8 x, u8 y, const char * pstr, ...)
 	
 	fp = buf;
 	while (*fp)	{
-		if (*fp == '[') {
+		if (*fp == '[' && *(fp - 1) != '\\') {
 			is_special = 1;
 			fp++;
-		} else if (*fp == ']') {
+		} else if (*fp == ']' && *(fp - 1) != '\\') {
 			is_special = 0;
 			fp++;
 		} else if (*fp == '\r' || *fp == '\n') {		  				 
 			fp++;
 		} else {
 			if (x > CHAR_MAX_X || y > CHAR_MAX_Y) {
-				*fp++;
+				fp++;
 				continue;
 			}
+      if (*fp == '\\' && (*(fp+1) == '[' || *(fp+1) == ']')) {
+        fp++;
+      }
 			text[x][y] = *fp++;
 			text_color[x][y] = is_special ? curr_text_color_sp : curr_text_color;
 			bg_color[x][y] = curr_bg_color;			

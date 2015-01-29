@@ -161,7 +161,9 @@ u16 uart_tx_dequeue(COM_TypeDef COMx)
 
 void uart_tx_byte(COM_TypeDef COMx, uc8 data)
 {
-	uart_tx_enqueue(COMx, data);
+	//uart_tx_enqueue(COMx, data);
+  while (USART_GetFlagStatus(USART_DEF[COMx].USART, USART_FLAG_TXE) == RESET);
+  USART_SendData(USART_DEF[COMx].USART, data);
 }
 
 

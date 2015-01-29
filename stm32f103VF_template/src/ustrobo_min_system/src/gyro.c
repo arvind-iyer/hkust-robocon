@@ -2,7 +2,7 @@
 #include "approx_math.h"
 
 static POSITION gyro_pos = {0, 0, 0};
-
+static POSITION gyro_pos_raw = {0, 0, 0};
 static u8 rx_state = 0; 
 static u8 rx_command = 0;
 static u8 buf_rec = 0;
@@ -207,9 +207,14 @@ void gyro_rx_handler(u8 rx_data)
 						if (a < 3600) {
 							gyro_available = 1;
 							
-							gyro_pos.x = (s16) x;
-							gyro_pos.y = (s16) y;
-							gyro_pos.angle = (s16) a;
+							gyro_pos_raw.x = (s16) x;
+							gyro_pos_raw.y = (s16) y;
+							gyro_pos_raw.angle = (s16) a;
+              
+              gyro_pos.x = (X_FLIP*gyro_pos_raw.x*10000-SHIFT_X*10000+SHIFT_X*int_cos(gyro_pos_raw.angle)+SHIFT_Y*int_sin(gyro_pos_raw.angle))/10000;
+              gyro_pos.y = (Y_FLIP*gyro_pos_raw.y*10000-SHIFT_Y*10000+SHIFT_Y*int_cos(gyro_pos_raw.angle)-SHIFT_X*int_sin(gyro_pos_raw.angle))/10000;
+              gyro_pos.angle = gyro_pos_raw.angle;
+              
 						} else {
 							gyro_available = 0;
 						}

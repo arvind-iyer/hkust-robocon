@@ -1,17 +1,20 @@
 #include "main.h"
 
-//static u16 ticks_img 	= (u16)-1;
 
+/**
+  * @brief Main function
+  * @param None.
+  * @retval None.
+   */
 int main(void)
 {
 	/* Initialization */
 	/* Note: Init order is important! */
-	
 	ticks_init();
 	buzzer_init();
 	button_init();
 	led_init();
-	tft_init(0, WHITE, BLACK, RED);
+	tft_init(2, WHITE, BLACK, RED);
 	gyro_init();
 	battery_adc_init();
 	can_init();
@@ -19,10 +22,7 @@ int main(void)
   can_motor_init();
 	bluetooth_init();
 	wheel_base_init();
-	wheel_base_pid_init();
   ultrasonic_init();
-	//usart_init(COM1, 115200);
-
 
 	system_start("Robocon 2015  Min System 1.0.0", 1200);
 	

@@ -48,7 +48,6 @@ USART_TypeDef* BLUETOOTH_USART	= 0;
 	*/
 void bluetooth_init(void)
 {
-	USART_TYPE* usart = &USART_DEF[BLUETOOTH_COM];
 	uart_init(BLUETOOTH_COM, BLUETOOTH_COM_BR);
 	uart_rx_init(BLUETOOTH_COM,bluetooth_rx_handler);
 	rx_filter_count = 0;

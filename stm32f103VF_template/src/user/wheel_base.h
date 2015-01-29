@@ -6,13 +6,16 @@
 #include "bluetooth.h"
 #include "ticks.h"
 #include "gyro.h"
-#include "wheel_base_pid.h"
 
 // Protocol
-#define	BLUETOOTH_WHEEL_BASE_MANUAL_ID				0x40
-#define	BLUETOOTH_WHEEL_BASE_SPEED_MODE_ID		0x41
+#define	BLUETOOTH_WHEEL_BASE_VEL_ID	    			0x40    // RX
+#define	BLUETOOTH_WHEEL_BASE_SPEED_MODE_ID		0x41    // RX
+#define	BLUETOOTH_WHEEL_BASE_AUTO_POS_ID			0x50    // RX
+#define	BLUETOOTH_WHEEL_BASE_AUTO_START_ID		0x51    // RX
+#define	BLUETOOTH_WHEEL_BASE_AUTO_STOP_ID			0x52    // RX
+#define BLUETOOTH_WHEEL_BASE_POS_ID						0x60    // TX
+#define BLUETOOTH_WHEEL_BASE_CHAR_ID           0x70    // RX
 
-#define BLUETOOTH_WHEEL_BASE_POS_ID						0x60
 
 #define	BLUETOOTH_WHEEL_BASE_TIMEOUT					100
 
@@ -49,14 +52,29 @@ static const MOTOR_ID
 	MOTOR_TOP_RIGHT 			= MOTOR4;
 
 
+typedef	struct {
+	s32 Kp, Ki, Kd;
+} PID;
+
+
 void wheel_base_init(void);
 void wheel_base_set_speed_mode(u8 s);
 u8 wheel_base_get_speed_mode(void);
 void wheel_base_tx_acc(void);
 void wheel_base_set_vel(s32 x, s32 y, s32 w);
 WHEEL_BASE_VEL wheel_base_get_vel(void);
+char wheel_base_bluetooth_get_last_char(void);
 void wheel_base_update(void);
 void wheel_base_tx_position(void);
+
+
+void wheel_base_set_pid(PID pid);
+POSITION wheel_base_get_target_pos(void);
+void wheel_base_set_target_pos(POSITION pos);
+void wheel_base_pid_on(void);
+void wheel_base_pid_off(void);
+u8 wheel_base_get_pid_flag(void);
+
 
 
 #endif	/* __WHEEL_BASE_H */

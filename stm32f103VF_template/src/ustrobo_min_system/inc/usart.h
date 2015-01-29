@@ -47,7 +47,7 @@ typedef struct {
 } USART_TYPE;
 
 // Backward compatible extern variable
-extern USART_TypeDef* COM_USART[COMn];
+//extern USART_TypeDef* COM_USART[COMn];
 
 static USART_TYPE USART_DEF[COMn] = {
 	{USART1, RCC_APB2Periph_USART1, 
