@@ -4,7 +4,7 @@
   * @author  Kenneth Au
   * @version V1.0.0
   * @date    22-January-2015
-  * @brief   This file provides Bluetooth (acts as an USART port) function, 
+  * @brief   This file provides Bluetooth (acts as an USART port) functions, 
 	*					 including initialization, package transmission with encoding,
 	*					 received data package handler with package decoding.
 	*
@@ -102,8 +102,9 @@ void bluetooth_tx(const char* tx_buf, ...)
 	va_end(arglist);
 	
 	fp = buf;
-	while (*fp)
+	while (*fp) {
 		uart_tx_byte(BLUETOOTH_COM,*fp++);
+  }
 }
 
 /**

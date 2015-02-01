@@ -139,12 +139,11 @@ u8 uart_tx_enqueue(COM_TypeDef COMx, uc8 data){
 	* @param 	None
 	*	@retval True if the queue is not empty after dequeue
 	*/
-
 u16 uart_tx_dequeue(COM_TypeDef COMx)
 {
 	USART_TYPE* usart = &USART_DEF[COMx];
-		USART_DEQUE* deque = &(usart->deque);
-		/* If USART TX is available  */
+	USART_DEQUE* deque = &(usart->deque);
+	/* If USART TX is available  */
 	if(USART_GetFlagStatus(USART_DEF[COMx].USART, USART_FLAG_TXE)==SET){
 		USART_ClearFlag(usart->USART, USART_FLAG_TXE);
 		if(!uart_tx_queue_empty(COMx)){  // Non-empty deque
