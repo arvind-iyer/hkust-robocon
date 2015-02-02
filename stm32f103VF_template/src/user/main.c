@@ -24,7 +24,7 @@ int main(void)
 	wheel_base_init();
   ultrasonic_init();
 
-	system_start("Robocon 2015  Min System 1.0.0", 1200);
+	system_start("Robocon 2015  Min System 1.0", 1200);
 	
 	menu_add("Your program", robocon_main);
 	menu_add("Position test", position_test);
@@ -39,9 +39,8 @@ int main(void)
 	menu_add("GPIO Pin test", gpio_pin_test);
 	menu_add("UART test", uart_test);
   menu_add("Ultra. test", ultra_test);
+  
 	menu(0, false);
-	robocon_main();
 	
-		
 }
 

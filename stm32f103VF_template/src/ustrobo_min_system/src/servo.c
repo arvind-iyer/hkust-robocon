@@ -1,9 +1,9 @@
 #include "servo.h"
 
-static SERVO_PWM_STRUCT servo_pwm = {{TIM_Channel_1, GPIO_Pin_6, ENABLE, TIM_OC1Init},
-																		{TIM_Channel_2, GPIO_Pin_7, ENABLE, TIM_OC2Init},
-																		{TIM_Channel_3, GPIO_Pin_8, ENABLE, TIM_OC3Init},
-																		{TIM_Channel_4, GPIO_Pin_9, ENABLE, TIM_OC4Init}};
+static SERVO_PWM_STRUCT servo_pwm = {{TIM_Channel_1, GPIO_Pin_6, ENABLE, TIM_OC1Init, TIM_SetCompare1},
+																		{TIM_Channel_2, GPIO_Pin_7, ENABLE, TIM_OC2Init, TIM_SetCompare2},
+																		{TIM_Channel_3, GPIO_Pin_8, ENABLE, TIM_OC3Init, TIM_SetCompare3},
+																		{TIM_Channel_4, GPIO_Pin_9, ENABLE, TIM_OC4Init, TIM_SetCompare4}};
 
 /**
   * @brief  Servo initialization
@@ -81,7 +81,7 @@ void servo_init(void){
   * @param  val: Value from 0 to 1000
   * @retval None
   */
-void servo_control(u8 servo_id , u16 val) {
+void servo_control(SERVO_ID servo_id , u16 val) {
 /***************************************************************************************************	
 	for hitec 5945 & 7955 and futaba S3010, min pulse width=900us, max pulse width=2100us
 	val is the percentage of possible turning angles for the servo from 0.1% to 100%
@@ -104,13 +104,8 @@ void servo_control(u8 servo_id , u16 val) {
 //	if (ccr_val < 200 || ccr_val > 550)
 //		return;
 	
-	if (servo_id == SERVO1 )
-		TIM_SetCompare1(SERVO_TIM, ccr_val );	//set for ocr
-	else if (servo_id == SERVO2 )
-		TIM_SetCompare2(SERVO_TIM, ccr_val );
-	else if ( servo_id == SERVO3 )
-		TIM_SetCompare3(SERVO_TIM, ccr_val );
-	else if ( servo_id == SERVO4 )
-		TIM_SetCompare4(SERVO_TIM, ccr_val );
-
+  if (((u8) servo_id) < SERVO_COUNT) {
+    servo_pwm[servo_id].TIM_SetCompare(SERVO_TIM, ccr_val);
+  }
+  
 }

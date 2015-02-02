@@ -1,3 +1,24 @@
+/**
+  ******************************************************************************
+  * @file    battery.c
+  * @author  Kenneth Au
+  * @version V1.0.0
+  * @date    01-February-2015
+  * @brief   This file provides battery ADC functions, including initialization, 
+  *          battery ADC value getter, battery ADC voltage value getter, battery
+  *          ADC value average getter. 
+	*
+  ******************************************************************************
+  * @attention
+  *
+  * This source is designed for application use. Unless necessary, try NOT to
+	* modify the function definition. The constants which are more likely to 
+	* vary among different schematics have been placed as pre-defined constant
+	* (i.e., "#define") in the header file.
+	*
+  ******************************************************************************
+  */
+  
 #include "battery.h"
 
 #define DVDAx100 ((SAMPLE_BATTERY_VOLTAGE_2-SAMPLE_BATTERY_VOLTAGE_1)*100/(SAMPLE_BATTERY_ADC_2-SAMPLE_BATTERY_ADC_1))
@@ -6,7 +27,6 @@ static u16 adc_value = 0;
 static u16 battery_values[BATTERY_VALUE_COUNT] = {0};
 static u16 battery_value_taken = 0;
 static u16 battery_value_id = 0;
-static char battery_string[] = "00.00V";
 
 /**
   * @brief  Inintialization of ADC for voltage calculation
@@ -100,28 +120,7 @@ u16 get_voltage_avg(void)
 	}
 }
 
-/**
-	* @brief Get the string (array pointer) of the battery voltage
-	* @example "12.54V" / "04.30V" / "USB"
-	* @param None
-	* @retval A string (character array pointer)
-	*/
-char* get_voltage_string(void)
-{
-	u16 voltage = get_voltage();
-	/* if (battery_check() == BATTERY_USB) {
-		strcpy(battery_string, "USB");
-	} else */
-	{
-		strcpy(battery_string, "00.00V");
-		battery_string[0] += (voltage / 1000) % 10;
-		battery_string[1] += (voltage / 100) % 10;
-		battery_string[3] += (voltage / 10) % 10;
-		battery_string[4] += (voltage) % 10;
-	}
-	
-	return battery_string;
-}
+
 
 /**
 	* @brief Check the battery level and return the result enumator

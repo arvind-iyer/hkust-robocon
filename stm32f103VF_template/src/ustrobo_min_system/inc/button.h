@@ -5,7 +5,7 @@
 #include "stm32f10x_gpio.h"
 #include "gpio.h"
 #include "stm32f10x_tim.h"
-#include "lcd_red.h"
+#include "tft.h"
 
 #define BUTTON_JS1_UP_GPIO				((GPIO*) &PD0)
 #define BUTTON_JS1_LEFT_GPIO			((GPIO*) &PD1)
@@ -21,8 +21,9 @@
 
 #define	BUTTON_1_GPIO							((GPIO*) &PB6)
 #define	BUTTON_2_GPIO							((GPIO*) &PB7)
-#define	BUTTON_COUNT							12
-#define BUTTON_RELEASED_LIMIT			20
+
+#define	BUTTON_COUNT							12    /*!< Number of buttons */
+#define BUTTON_RELEASED_LIMIT			20    /*!< Reset the button release time after the limit */
 
 typedef enum {
 	BUTTON_JS1_UP 			= 0,
@@ -37,7 +38,6 @@ typedef enum {
 	BUTTON_JS2_CENTER		= 9,
 	BUTTON_1						= 10,
 	BUTTON_2						= 11
-
 } BUTTON;
 
 typedef enum {

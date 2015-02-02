@@ -14,7 +14,7 @@
 
 #include "buzzer.h"
 #include "led.h"
-#include "lcd_red.h"
+#include "tft.h"
 #include "interface.h"
 #include "xbc_mb.h"
 #include "button.h"

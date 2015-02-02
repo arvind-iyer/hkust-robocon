@@ -1,7 +1,7 @@
 @echo off
 @echo ================================================
 @echo ^|^|         Shortcut of Hex Flashing           ^|^|
-@echo ^|^|        By Kenneth Au (03/01/2015)          ^|^|
+@echo ^|^|        By Kenneth Au (02/02/2015)          ^|^|
 @echo ================================================
 @echo.
 @echo Checking *.hex file...
@@ -63,7 +63,7 @@ timeout /t 10
 @echo    Arg1: The *.hex file location. In Keil, use "./output/@H.hex".
 @echo    Arg2: The COM Port number (e.g., COM30^). 
 @echo    Arg3: Baudrate (e.g., 115200, 256000^).
-@echo    Arg4: Target device (e.g., STM32F1_XL-density_768K^). It may be detected from the Flash Loader GUI. 
+@echo    Arg4: Target device (e.g., STM32F1_XL-density_768K^). It may be auto detected from the Flash Loader GUI. 
 
 timeout /t 10
 @exit

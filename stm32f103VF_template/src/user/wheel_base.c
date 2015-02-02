@@ -79,6 +79,9 @@ static void wheel_base_auto_bluetooth_decode(u8 id, u8 length, u8* data)
 	}
 }
 
+/**
+  * @brief Handler for wheel base character decoding
+  */
 static void wheel_base_char_bluetooth_decode(u8 id, u8 length, u8* data)
 {
   switch (id) {
@@ -89,6 +92,7 @@ static void wheel_base_char_bluetooth_decode(u8 id, u8 length, u8* data)
     break;
   }
 }
+
 
 /**
 	* @brief Initialization of wheel base, including bluetooth rx filter, and all related variables

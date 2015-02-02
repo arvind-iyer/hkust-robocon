@@ -43,7 +43,6 @@ typedef enum {
 	MOTOR16
 } MOTOR_ID;
 
-
 typedef enum {
 	OPEN_LOOP = 0,
 	CLOSE_LOOP = 1
@@ -57,7 +56,6 @@ void motor_set_acceleration(MOTOR_ID motor_id, u16 accel);
 void motor_lock(MOTOR_ID motor_id);
 
 /*** RX ***/
-void can_motor_feedback_encoder(CanRxMsg msg);
 s32 get_encoder_value(MOTOR_ID motor_id);
 
 #endif			// __CAN_MOTOR_H

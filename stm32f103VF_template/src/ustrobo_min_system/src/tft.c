@@ -1,5 +1,4 @@
-#include "lcd_red.h"
-#include "lcd_font.h"
+#include "tft.h"
 
 //private data
 u16 curr_bg_color = BLACK;

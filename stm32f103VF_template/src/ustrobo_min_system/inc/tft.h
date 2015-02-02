@@ -3,7 +3,7 @@
 
 #include "stm32f10x.h"
 #include "stm32f10x_gpio.h"
-#include "lcd_font.h"
+#include "tft_ascii.h"
 
 #include <stdio.h>
 #include <stdarg.h>

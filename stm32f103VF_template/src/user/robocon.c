@@ -4,6 +4,7 @@ static u16 ticks_img 	= (u16)-1;
 
 void robocon_main(void)
 {
+  // Send the acceleration data
 	wheel_base_tx_acc();
 	
 	while (1) {

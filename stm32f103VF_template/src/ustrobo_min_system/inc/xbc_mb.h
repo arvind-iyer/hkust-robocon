@@ -6,7 +6,7 @@
 #include "stm32f10x_spi.h"
 #include "stm32f10x_tim.h"
 #include "delay.h"
-#include "lcd_red.h"
+#include "tft.h"
 #include "ticks.h"
 
 #define XBC_SPI			SPI2

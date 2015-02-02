@@ -3,10 +3,35 @@
 #define get_can_motor_id(motor_id)	(CAN_MOTOR_BASE + (u8)motor_id)
 static s32 can_motor_encoder_value[CAN_MOTOR_COUNT] = {0};
 
+/**
+  * @brief The private (static) function for decoding CAN message
+  * @param msg: the CAN msg for decoding
+  */
+static void can_motor_feedback_decoding(CanRxMsg msg) 
+{
+	switch (msg.Data[0]) {
+		case CAN_ENCODER_FEEDBACK:
+			if (msg.DLC == CAN_ENCODER_FEEDBACK_LENGTH) {
+				// Range check 
+				if (msg.StdId >= CAN_MOTOR_BASE && msg.StdId < CAN_MOTOR_BASE + CAN_MOTOR_COUNT) {
+					s32 feedback = n_bytes_to_one(&msg.Data[1], 4);
+					can_motor_encoder_value[msg.StdId - CAN_MOTOR_BASE] = feedback;
+				}
+			}
+		break;
+	}
+}
+
+/**
+  * @brief Motor (through CAN protocol) initialization 
+  * @param None
+  * @retval None 
+  */
 void can_motor_init(void)
 {
-	can_rx_add_filter(CAN_MOTOR_BASE, CAN_RX_MASK_DIGIT_0_F, can_motor_feedback_encoder);
+	can_rx_add_filter(CAN_MOTOR_BASE, CAN_RX_MASK_DIGIT_0_F, can_motor_feedback_decoding);
 }
+
 
 /*** TX ***/
 /**
@@ -99,22 +124,13 @@ void motor_lock(MOTOR_ID motor_id)
 	can_tx_enqueue(msg);
 }
 
-/*** RX ***/
-void can_motor_feedback_encoder(CanRxMsg msg)
-{
-	switch (msg.Data[0]) {
-		case CAN_ENCODER_FEEDBACK:
-			if (msg.DLC == CAN_ENCODER_FEEDBACK_LENGTH) {
-				// Range check 
-				if (msg.StdId >= CAN_MOTOR_BASE && msg.StdId < CAN_MOTOR_BASE + CAN_MOTOR_COUNT) {
-					s32 feedback = n_bytes_to_one(&msg.Data[1], 4);
-					can_motor_encoder_value[msg.StdId - CAN_MOTOR_BASE] = feedback;
-				}
-			}
-		break;
-	}
-}
 
+/*** RX ***/
+/**
+  * @brief Get the motor encoder value (based on CAN rx result)
+  * @param motor_id: The can motor ID
+  * @retval The encoder value of the selected CAN motor
+  */
 s32 get_encoder_value(MOTOR_ID motor_id)
 {
 	return can_motor_encoder_value[motor_id];

@@ -1,3 +1,24 @@
+/**
+  ******************************************************************************
+  * @file    button.c
+  * @author  Kenneth Au
+  * @version V1.0.0
+  * @date    01-February-2015
+  * @brief   This file provides button functions, including initialization, 
+  *          function of button pressed time, button held time, button
+  *          released time and update function. 
+	*
+  ******************************************************************************
+  * @attention
+  *
+  * This source is designed for application use. Unless necessary, try NOT to
+	* modify the function definition. The constants which are more likely to 
+	* vary among different schematics have been placed as pre-defined constant
+	* (i.e., "#define") in the header file.
+	*
+  ******************************************************************************
+  */
+  
 #include "button.h"
 
 static const GPIO* buttons[BUTTON_COUNT] = {
@@ -35,7 +56,9 @@ void button_init(void)
 }
 
 /**
-	* @brief Update the button state (pressed count and released state)
+	* @brief Update the button state (pressed count and released state). To be called regularly.
+  * @param None
+  * @retval None
 	*/
 void button_update(void)
 {
@@ -58,6 +81,11 @@ void button_update(void)
 	}
 }
 
+/**
+  * @brief Private function of rotating the joystick based on the current LCD orientation
+  * @param b: the button
+  * @retval The button after rotation (non-joystick button will remain the same)
+  */
 static BUTTON rotate_js_button(BUTTON b) {
 	u8 o = tft_get_orientation();
 	if (b <= 3) {
@@ -73,6 +101,11 @@ static BUTTON rotate_js_button(BUTTON b) {
 	return b;
 }
 
+/**
+  * @brief Get the time (unit depends on button_update) of a button being pressed
+  * @param b: The button
+  * @retval The time of a button being pressed
+  */
 u16 button_pressed(BUTTON b)
 {
 	if (b < BUTTON_COUNT) {
@@ -82,11 +115,23 @@ u16 button_pressed(BUTTON b)
 	}
 }
 
+/** 
+  * @brief Get the Boolean of a button being pressed 
+  * @param b: The button
+  * @param threshold: A threshold which the function will always return false before it
+  * @param mod: The multiple which the function will return true after the threshold
+  * @retval Return true when button_pressed(b) returns (threshold + n * mod), where n is a non-negative integer 
+  * @example button_hold(b, 18, 7) will return true when button b is pressed with time 18, 25, 32, 39, ...
+  */
 u8 button_hold(BUTTON b, u16 threshold, u8 mod) {
 	return (button_pressed(b) > threshold) && ((button_pressed(b) - threshold) % mod == 0);
 }
 
-
+/**
+  * @brief Get the time (depends on button_update) of the button being released
+  * @param b: The button
+  * @retval The time of the button being released (from 0 to BUTTON_COUNT). 0 when the button is pressed
+  */
 u16 button_released(BUTTON b) 
 {
 	if (b < BUTTON_COUNT) {
@@ -95,3 +140,4 @@ u16 button_released(BUTTON b)
 		return 0;
 	}
 }
+
