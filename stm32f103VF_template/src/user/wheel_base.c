@@ -193,33 +193,9 @@ void wheel_base_update(void)
   /** 
     * TODO1: Use wheel_base_set_vel(x,y,w) to control the FOUR wheel base motor
     * TODO2: If there is not any Bluetooth RX data after BLUETOOTH_WHEEL_BASE_TIMEOUT, stop the motors
+  
     */
   
-	if (get_full_ticks() - wheel_base_bluetooth_vel_last_update > BLUETOOTH_WHEEL_BASE_TIMEOUT) {
-    // Reset the wheel base velocity if it cannot receive Bluetooth Rx data after the timeout
-		wheel_base_vel.x = wheel_base_vel.y = wheel_base_vel.w = 0;
-	}
-	
-	if (wheel_base_vel_diff() || get_full_ticks() - wheel_base_last_can_tx > WHEEL_BASE_REGULAR_CAN_TX)
-	{
-		s32 speed[4];
-		
-		speed[0] = WHEEL_BASE_XY_VEL_RATIO * (wheel_base_vel.x + wheel_base_vel.y) / 1000 + WHEEL_BASE_W_VEL_RATIO * wheel_base_vel.w / 1000;
-		speed[1] = WHEEL_BASE_XY_VEL_RATIO * (wheel_base_vel.x - wheel_base_vel.y) / 1000 + WHEEL_BASE_W_VEL_RATIO * wheel_base_vel.w / 1000;
-		speed[2] = WHEEL_BASE_XY_VEL_RATIO * (-wheel_base_vel.x - wheel_base_vel.y) / 1000 + WHEEL_BASE_W_VEL_RATIO * wheel_base_vel.w / 1000;
-		speed[3] = WHEEL_BASE_XY_VEL_RATIO * (-wheel_base_vel.x + wheel_base_vel.y) / 1000 + WHEEL_BASE_W_VEL_RATIO * wheel_base_vel.w / 1000;
-				
-		motor_set_vel(MOTOR_BOTTOM_RIGHT,	speed[0], wheel_base_close_loop_flag);
-		motor_set_vel(MOTOR_BOTTOM_LEFT,	speed[1], wheel_base_close_loop_flag);
-		motor_set_vel(MOTOR_TOP_LEFT,			speed[2], wheel_base_close_loop_flag);
-		motor_set_vel(MOTOR_TOP_RIGHT,		speed[3], wheel_base_close_loop_flag);
-
-		wheel_base_vel_prev.x = wheel_base_vel.x;
-		wheel_base_vel_prev.y = wheel_base_vel.y;
-		wheel_base_vel_prev.w = wheel_base_vel.w;
-		
-		wheel_base_last_can_tx = get_full_ticks();
-	}
 	
 }
 

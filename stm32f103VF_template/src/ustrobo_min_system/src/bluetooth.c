@@ -3,7 +3,7 @@
   * @file    bluetooth.c
   * @author  Kenneth Au
   * @version V1.0.0
-  * @date    22-January-2015
+  * @date    02-February-2015
   * @brief   This file provides Bluetooth (acts as an USART port) functions, 
 	*					 including initialization, package transmission with encoding,
 	*					 received data package handler with package decoding.

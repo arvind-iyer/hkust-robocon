@@ -16,24 +16,6 @@ s16 cos_val[91] = {
 
 
 
-s32 get_circle_X(s32 a, s32 radius) {
-	a *= 10;
-	while (a < 0)	a += 3600;
-	while (a > 3600) a -= 3600;
-
-	return (radius * int_cos(a) / 10000); // (rcosT)
-	
-}
-
-s32 get_circle_Y(s32 a, s32 radius) {
-	a *= 10;
-	while (a < 0)	a += 3600;
-	while (a > 3600) a -= 3600;
-
-	return (radius * int_sin(a) / 10000);	// rsinT
-	
-}
-
 
 /**
   * @brief  Approximation of sin function
@@ -206,7 +188,13 @@ void xy_rotate(s32 *x, s32 *y, s32 w) {
 	*y = new_y / 10000;
 }
 
-
+/**
+  * @brief A proper modulus (result is always positive, which ((-n) % p) =/= -(n % p)
+  * @param dividor: n
+  * @param divisor: p
+  * @retval The modulus (n % p)
+  * @example 24 % 7 return 3, -24 % 7 returns 4
+  */
 s32 p_mod(s32 dividor, s32 divisor) {
 		while (dividor < 0) {dividor += divisor;}
 		return dividor % divisor;
@@ -222,20 +210,21 @@ s32 Abs(s32 v)
 	return v < 0 ? -v : v;
 }
 
-s32 s_Abs (s32 v) {
-	return v < 0 ? -v : v;
-}
-
+/**
+  * @brief Square of x
+  * @param x: input
+  * @retval x^2 
+  */
 s32 Sqr (s32 x) {
 	return x * x;
 }
 
 /**
-  * @brief  Rapid sqrt approximation with maximum 3.46% deviation
-  * @param  v: input
-  * @retval square root of 100*v
+  * @brief  Sqrt calculation using binary search, run-time = O(log n)
+  * @param  num: the integer inside the root
+  * @retval square root of num
   */
-s32 Sqrt(s32 num) {
+u32 Sqrt(u32 num) {
 	s32 upper_sqrt = 1, lower_sqrt, range, tmp_sqrt, tmp_sqr;
 	//u8 i = 0;
 	if (num == 0) return 0;
@@ -245,7 +234,7 @@ s32 Sqrt(s32 num) {
 			return 0;	// Overflow happened
 		}
 	}
-
+  
 	lower_sqrt = upper_sqrt >> 1;
 	range = upper_sqrt - lower_sqrt;
 	do {
@@ -254,10 +243,9 @@ s32 Sqrt(s32 num) {
 		if (tmp_sqr < num) {lower_sqrt = tmp_sqrt;}
 		else if (tmp_sqr > num) {upper_sqrt = tmp_sqrt;}
 		else {return tmp_sqrt;}
-		//printf("%d to %d \n", lower_sqrt, upper_sqrt);
 	} while (range >= 2);
 
-	//printf("%d, %d\n", num, (Sqr(lower_sqrt) + Sqr(upper_sqrt)) >> 1);
+  
 	if (num < (Sqr(lower_sqrt) + Sqr(upper_sqrt)) >> 1) {
 		return lower_sqrt;
 	} else {

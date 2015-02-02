@@ -4,12 +4,10 @@
 #include "stm32f10x.h"
 
 extern s16 cos_val[91];
+
 struct Cartesian {
 	s32 x, y;
 };
-
-s32 get_circle_X(s32 a, s32 diameter);
-s32 get_circle_Y(s32 a, s32 diameter);
 
 s32 int_sin(s32 a);
 s32 int_cos(s32 a);
@@ -26,6 +24,6 @@ s32 p_mod(s32 dividor, s32 divisor);
 s32 Abs(s32 v);
 s32 s_Abs (s32 v);
 s32 Sqr (s32 x);
-s32 Sqrt(s32 v);
+u32 Sqrt(u32 num);
 
 #endif		/*  __APPROX_MATH_H */

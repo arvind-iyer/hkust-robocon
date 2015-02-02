@@ -409,34 +409,9 @@
           <GroupName>src</GroupName>
           <Files>
             <File>
-              <FileName>bluetooth.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>.\src\user\bluetooth.c</FilePath>
-            </File>
-            <File>
-              <FileName>can_protocol.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>.\src\user\can_protocol.c</FilePath>
-            </File>
-            <File>
               <FileName>buzzer_song.c</FileName>
               <FileType>1</FileType>
               <FilePath>.\src\user\buzzer_song.c</FilePath>
-            </File>
-            <File>
-              <FileName>can_motor.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>.\src\user\can_motor.c</FilePath>
-            </File>
-            <File>
-              <FileName>crc.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>.\src\user\crc.c</FilePath>
-            </File>
-            <File>
-              <FileName>interface.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>.\src\user\interface.c</FilePath>
             </File>
             <File>
               <FileName>main.c</FileName>
@@ -458,11 +433,6 @@
               <FileType>1</FileType>
               <FilePath>.\src\user\wheel_base_pid.c</FilePath>
             </File>
-            <File>
-              <FileName>system_test.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>.\src\user\system_test.c</FilePath>
-            </File>
           </Files>
         </Group>
         <Group>
@@ -479,6 +449,11 @@
               <FilePath>.\src\ustrobo_min_system\src\battery.c</FilePath>
             </File>
             <File>
+              <FileName>bluetooth.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\src\ustrobo_min_system\src\bluetooth.c</FilePath>
+            </File>
+            <File>
               <FileName>button.c</FileName>
               <FileType>1</FileType>
               <FilePath>.\src\ustrobo_min_system\src\button.c</FilePath>
@@ -489,52 +464,19 @@
               <FilePath>.\src\ustrobo_min_system\src\buzzer.c</FilePath>
             </File>
             <File>
-              <FileName>debug.c</FileName>
+              <FileName>can_motor.c</FileName>
               <FileType>1</FileType>
-              <FilePath>.\src\ustrobo_min_system\src\debug.c</FilePath>
-              <FileOption>
-                <CommonProperty>
-                  <UseCPPCompiler>2</UseCPPCompiler>
-                  <RVCTCodeConst>0</RVCTCodeConst>
-                  <RVCTZI>0</RVCTZI>
-                  <RVCTOtherData>0</RVCTOtherData>
-                  <ModuleSelection>0</ModuleSelection>
-                  <IncludeInBuild>0</IncludeInBuild>
-                  <AlwaysBuild>0</AlwaysBuild>
-                  <GenerateAssemblyFile>2</GenerateAssemblyFile>
-                  <AssembleAssemblyFile>2</AssembleAssemblyFile>
-                  <PublicsOnly>2</PublicsOnly>
-                  <StopOnExitCode>11</StopOnExitCode>
-                  <CustomArgument></CustomArgument>
-                  <IncludeLibraryModules></IncludeLibraryModules>
-                  <ComprImg>1</ComprImg>
-                </CommonProperty>
-                <FileArmAds>
-                  <Cads>
-                    <interw>2</interw>
-                    <Optim>0</Optim>
-                    <oTime>2</oTime>
-                    <SplitLS>2</SplitLS>
-                    <OneElfS>2</OneElfS>
-                    <Strict>2</Strict>
-                    <EnumInt>2</EnumInt>
-                    <PlainCh>2</PlainCh>
-                    <Ropi>2</Ropi>
-                    <Rwpi>2</Rwpi>
-                    <wLevel>0</wLevel>
-                    <uThumb>2</uThumb>
-                    <uSurpInc>2</uSurpInc>
-                    <uC99>2</uC99>
-                    <useXO>2</useXO>
-                    <VariousControls>
-                      <MiscControls></MiscControls>
-                      <Define></Define>
-                      <Undefine></Undefine>
-                      <IncludePath></IncludePath>
-                    </VariousControls>
-                  </Cads>
-                </FileArmAds>
-              </FileOption>
+              <FilePath>.\src\ustrobo_min_system\src\can_motor.c</FilePath>
+            </File>
+            <File>
+              <FileName>can_protocol.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\src\ustrobo_min_system\src\can_protocol.c</FilePath>
+            </File>
+            <File>
+              <FileName>crc.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\src\ustrobo_min_system\src\crc.c</FilePath>
             </File>
             <File>
               <FileName>delay.c</FileName>
@@ -542,14 +484,29 @@
               <FilePath>.\src\ustrobo_min_system\src\delay.c</FilePath>
             </File>
             <File>
-              <FileName>lcd_red.c</FileName>
+              <FileName>encoder.c</FileName>
               <FileType>1</FileType>
-              <FilePath>.\src\ustrobo_min_system\src\lcd_red.c</FilePath>
+              <FilePath>.\src\ustrobo_min_system\src\encoder.c</FilePath>
+            </File>
+            <File>
+              <FileName>gpio.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\src\ustrobo_min_system\src\gpio.c</FilePath>
             </File>
             <File>
               <FileName>gyro.c</FileName>
               <FileType>1</FileType>
               <FilePath>.\src\ustrobo_min_system\src\gyro.c</FilePath>
+            </File>
+            <File>
+              <FileName>interface.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\src\ustrobo_min_system\src\interface.c</FilePath>
+            </File>
+            <File>
+              <FileName>led.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\src\ustrobo_min_system\src\led.c</FilePath>
             </File>
             <File>
               <FileName>motor_pwm.c</FileName>
@@ -562,52 +519,14 @@
               <FilePath>.\src\ustrobo_min_system\src\servo.c</FilePath>
             </File>
             <File>
-              <FileName>system.c</FileName>
+              <FileName>system_test.c</FileName>
               <FileType>1</FileType>
-              <FilePath>.\src\ustrobo_min_system\src\system.c</FilePath>
-              <FileOption>
-                <CommonProperty>
-                  <UseCPPCompiler>2</UseCPPCompiler>
-                  <RVCTCodeConst>0</RVCTCodeConst>
-                  <RVCTZI>0</RVCTZI>
-                  <RVCTOtherData>0</RVCTOtherData>
-                  <ModuleSelection>0</ModuleSelection>
-                  <IncludeInBuild>0</IncludeInBuild>
-                  <AlwaysBuild>0</AlwaysBuild>
-                  <GenerateAssemblyFile>2</GenerateAssemblyFile>
-                  <AssembleAssemblyFile>2</AssembleAssemblyFile>
-                  <PublicsOnly>2</PublicsOnly>
-                  <StopOnExitCode>11</StopOnExitCode>
-                  <CustomArgument></CustomArgument>
-                  <IncludeLibraryModules></IncludeLibraryModules>
-                  <ComprImg>1</ComprImg>
-                </CommonProperty>
-                <FileArmAds>
-                  <Cads>
-                    <interw>2</interw>
-                    <Optim>0</Optim>
-                    <oTime>2</oTime>
-                    <SplitLS>2</SplitLS>
-                    <OneElfS>2</OneElfS>
-                    <Strict>2</Strict>
-                    <EnumInt>2</EnumInt>
-                    <PlainCh>2</PlainCh>
-                    <Ropi>2</Ropi>
-                    <Rwpi>2</Rwpi>
-                    <wLevel>0</wLevel>
-                    <uThumb>2</uThumb>
-                    <uSurpInc>2</uSurpInc>
-                    <uC99>2</uC99>
-                    <useXO>2</useXO>
-                    <VariousControls>
-                      <MiscControls></MiscControls>
-                      <Define></Define>
-                      <Undefine></Undefine>
-                      <IncludePath></IncludePath>
-                    </VariousControls>
-                  </Cads>
-                </FileArmAds>
-              </FileOption>
+              <FilePath>.\src\ustrobo_min_system\src\system_test.c</FilePath>
+            </File>
+            <File>
+              <FileName>tft.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\src\ustrobo_min_system\src\tft.c</FilePath>
             </File>
             <File>
               <FileName>ticks.c</FileName>
@@ -663,72 +582,9 @@
               </FileOption>
             </File>
             <File>
-              <FileName>xbc_mb.c</FileName>
+              <FileName>ultrasonic.c</FileName>
               <FileType>1</FileType>
-              <FilePath>.\src\ustrobo_min_system\src\xbc_mb.c</FilePath>
-            </File>
-            <File>
-              <FileName>led.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>.\src\ustrobo_min_system\src\led.c</FilePath>
-            </File>
-            <File>
-              <FileName>gpio.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>.\src\ustrobo_min_system\src\gpio.c</FilePath>
-            </File>
-            <File>
-              <FileName>tft_160x128.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>.\src\ustrobo_min_system\src\tft_160x128.c</FilePath>
-              <FileOption>
-                <CommonProperty>
-                  <UseCPPCompiler>2</UseCPPCompiler>
-                  <RVCTCodeConst>0</RVCTCodeConst>
-                  <RVCTZI>0</RVCTZI>
-                  <RVCTOtherData>0</RVCTOtherData>
-                  <ModuleSelection>0</ModuleSelection>
-                  <IncludeInBuild>0</IncludeInBuild>
-                  <AlwaysBuild>0</AlwaysBuild>
-                  <GenerateAssemblyFile>2</GenerateAssemblyFile>
-                  <AssembleAssemblyFile>2</AssembleAssemblyFile>
-                  <PublicsOnly>2</PublicsOnly>
-                  <StopOnExitCode>11</StopOnExitCode>
-                  <CustomArgument></CustomArgument>
-                  <IncludeLibraryModules></IncludeLibraryModules>
-                  <ComprImg>1</ComprImg>
-                </CommonProperty>
-                <FileArmAds>
-                  <Cads>
-                    <interw>2</interw>
-                    <Optim>0</Optim>
-                    <oTime>2</oTime>
-                    <SplitLS>2</SplitLS>
-                    <OneElfS>2</OneElfS>
-                    <Strict>2</Strict>
-                    <EnumInt>2</EnumInt>
-                    <PlainCh>2</PlainCh>
-                    <Ropi>2</Ropi>
-                    <Rwpi>2</Rwpi>
-                    <wLevel>2</wLevel>
-                    <uThumb>2</uThumb>
-                    <uSurpInc>2</uSurpInc>
-                    <uC99>2</uC99>
-                    <useXO>2</useXO>
-                    <VariousControls>
-                      <MiscControls></MiscControls>
-                      <Define></Define>
-                      <Undefine></Undefine>
-                      <IncludePath></IncludePath>
-                    </VariousControls>
-                  </Cads>
-                </FileArmAds>
-              </FileOption>
-            </File>
-            <File>
-              <FileName>encoder.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>.\src\ustrobo_min_system\src\encoder.c</FilePath>
+              <FilePath>.\src\ustrobo_min_system\src\ultrasonic.c</FilePath>
             </File>
             <File>
               <FileName>usart.c</FileName>
@@ -736,9 +592,9 @@
               <FilePath>.\src\ustrobo_min_system\src\usart.c</FilePath>
             </File>
             <File>
-              <FileName>ultrasonic.c</FileName>
+              <FileName>xbc_mb.c</FileName>
               <FileType>1</FileType>
-              <FilePath>.\src\ustrobo_min_system\src\ultrasonic.c</FilePath>
+              <FilePath>.\src\ustrobo_min_system\src\xbc_mb.c</FilePath>
             </File>
           </Files>
         </Group>
