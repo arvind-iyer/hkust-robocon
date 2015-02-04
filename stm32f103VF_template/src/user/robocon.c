@@ -2,6 +2,56 @@
 
 static u16 ticks_img 	= (u16)-1;
 
+void wheel_base_joystick_control(void)
+{
+	//wheel_base_set_vel(0,0,0);
+	if (button_pressed(BUTTON_JS2_LEFT))
+	{
+		wheel_base_joyStickCommandFlag_on();
+		wheel_base_set_vel(-wheel_base_get_joystick_speed(),0,0);
+		//commandReceivedFlag=1;
+	}
+	if (button_pressed(BUTTON_JS2_RIGHT))
+	{
+		wheel_base_joyStickCommandFlag_on();
+		wheel_base_set_vel(wheel_base_get_joystick_speed(),0,0);
+	}
+	if (button_pressed(BUTTON_JS2_UP))
+	{
+		wheel_base_joyStickCommandFlag_on();
+		wheel_base_set_vel(0,wheel_base_get_joystick_speed(),0);
+	}
+	if (button_pressed(BUTTON_JS2_DOWN))
+	{
+		wheel_base_joyStickCommandFlag_on();
+		wheel_base_set_vel(0,-wheel_base_get_joystick_speed(),0);
+	}
+	if (button_pressed(BUTTON_JS1_RIGHT))
+	{
+		wheel_base_joyStickCommandFlag_on();
+		wheel_base_set_vel(0,0,wheel_base_get_joystick_speed());
+	}
+	if (button_pressed(BUTTON_JS1_LEFT))
+	{
+		wheel_base_joyStickCommandFlag_on();
+		wheel_base_set_vel(0,0,-wheel_base_get_joystick_speed());
+	}
+	if (button_pressed(BUTTON_JS1_CENTER)==1)
+	{
+		wheel_base_decrease_joystick_speed();
+	}
+	if (button_pressed(BUTTON_JS2_CENTER)==1)
+	{
+		wheel_base_increase_joystick_speed();
+	}
+	
+	
+	
+	
+	
+}
+
+
 void robocon_main(void)
 {
   // Send the acceleration data
@@ -40,6 +90,7 @@ void robocon_main(void)
 			
 			if (ticks_img % 50 == 5) {
 				button_update();
+				wheel_base_joystick_control();
 				if (button_pressed(BUTTON_1) > 10 || button_pressed(BUTTON_2) > 10) {
 					/** Stop the wheel base before return **/
 					return; 
@@ -70,7 +121,7 @@ void robocon_main(void)
 				tft_update();
 			}
 			
-			
 		}
+		
 	}	
 }

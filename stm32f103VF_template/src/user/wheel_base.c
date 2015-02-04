@@ -7,11 +7,14 @@ static u8 wheel_base_speed_mode = WHEEL_BASE_DEFAULT_SPEED_MODE;
 static u32 wheel_base_bluetooth_vel_last_update = 0;
 static char wheel_base_bluetooth_last_char = 0;
 static u32 wheel_base_last_can_tx = 0;
-
+static u32 wheel_base_joystick_vel_last_update=1;
+static u8 wheel_base_joystick_speed=30;	//0% to 100%
 
 static u8 wheel_base_pid_flag = 0;
 static POSITION target_pos = {0, 0, 0};
 static PID wheel_base_pid = {0, 0, 0};
+
+
 
 
 /**
@@ -195,7 +198,18 @@ void wheel_base_update(void)
     * TODO2: If there is not any Bluetooth RX data after BLUETOOTH_WHEEL_BASE_TIMEOUT, stop the motors
   
     */
-  
+	
+  if((get_full_ticks() - wheel_base_joystick_vel_last_update > BLUETOOTH_WHEEL_BASE_TIMEOUT) && (get_full_ticks() - wheel_base_bluetooth_vel_last_update > BLUETOOTH_WHEEL_BASE_TIMEOUT))
+		wheel_base_set_vel(0,0,0);
+	
+	motor_set_vel(MOTOR_BOTTOM_RIGHT,	WHEEL_BASE_XY_VEL_RATIO * (wheel_base_vel.x + wheel_base_vel.y) / 1000 + WHEEL_BASE_W_VEL_RATIO * wheel_base_vel.w / 1000, wheel_base_close_loop_flag);
+	motor_set_vel(MOTOR_BOTTOM_LEFT,	WHEEL_BASE_XY_VEL_RATIO * (wheel_base_vel.x - wheel_base_vel.y) / 1000 + WHEEL_BASE_W_VEL_RATIO * wheel_base_vel.w / 1000, wheel_base_close_loop_flag);
+	motor_set_vel(MOTOR_TOP_LEFT,			WHEEL_BASE_XY_VEL_RATIO * (-wheel_base_vel.x - wheel_base_vel.y) / 1000 + WHEEL_BASE_W_VEL_RATIO * wheel_base_vel.w / 1000, wheel_base_close_loop_flag);
+	motor_set_vel(MOTOR_TOP_RIGHT,		WHEEL_BASE_XY_VEL_RATIO * (-wheel_base_vel.x + wheel_base_vel.y) / 1000 + WHEEL_BASE_W_VEL_RATIO * wheel_base_vel.w / 1000, wheel_base_close_loop_flag);
+
+	wheel_base_vel_prev.x = wheel_base_vel.x;
+	wheel_base_vel_prev.y = wheel_base_vel.y;
+	wheel_base_vel_prev.w = wheel_base_vel.w;
 	
 }
 
@@ -258,4 +272,26 @@ void wheel_base_pid_off(void)
 u8 wheel_base_get_pid_flag(void)
 {
 	return wheel_base_pid_flag;
+}
+
+void wheel_base_joyStickCommandFlag_on(void)
+{
+	wheel_base_joystick_vel_last_update=get_full_ticks();
+}
+
+void wheel_base_increase_joystick_speed(void)
+{
+	if (wheel_base_joystick_speed<100)
+		wheel_base_joystick_speed+=10;
+}
+
+void wheel_base_decrease_joystick_speed(void)
+{
+	if (wheel_base_joystick_speed>0)
+		wheel_base_joystick_speed-=10;
+}
+
+u8 wheel_base_get_joystick_speed(void)
+{
+	return wheel_base_joystick_speed;
 }

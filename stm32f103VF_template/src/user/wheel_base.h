@@ -74,7 +74,9 @@ void wheel_base_set_target_pos(POSITION pos);
 void wheel_base_pid_on(void);
 void wheel_base_pid_off(void);
 u8 wheel_base_get_pid_flag(void);
-
-
+void wheel_base_joyStickCommandFlag_on(void);
+void wheel_base_increase_joystick_speed(void);
+void wheel_base_decrease_joystick_speed(void);
+u8 wheel_base_get_joystick_speed(void);
 
 #endif	/* __WHEEL_BASE_H */

@@ -424,14 +424,14 @@
               <FilePath>.\src\user\robocon.c</FilePath>
             </File>
             <File>
-              <FileName>wheel_base.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>.\src\user\wheel_base.c</FilePath>
-            </File>
-            <File>
               <FileName>wheel_base_pid.c</FileName>
               <FileType>1</FileType>
               <FilePath>.\src\user\wheel_base_pid.c</FilePath>
+            </File>
+            <File>
+              <FileName>wheel_base.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\src\user\wheel_base.c</FilePath>
             </File>
           </Files>
         </Group>
