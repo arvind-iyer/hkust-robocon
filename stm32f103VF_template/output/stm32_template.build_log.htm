@@ -1,0 +1,47 @@
+<html>
+<body>
+<pre>
+<h1>µVision Build Log</h1>
+<h2>Tool Versions:</h2>
+IDE-Version: µVision V5.13.0.0
+Copyright (C) 2014 ARM Ltd and ARM Germany GmbH. All rights reserved.
+License Information: Hauton Tsang, Circuitrix, LLC., LIC=GMZII-TY0F8-LQX0Q-NX1JQ-XGR9T-IJ73G
+ 
+Tool Versions:
+Toolchain:       MDK-ARM Standard  Version: 5.13.0.0
+Toolchain Path:  C:\Keil_v5\ARM\ARMCC\Bin
+C Compiler:      Armcc.exe V5.05 update 1 (build 106)
+Assembler:       Armasm.exe V5.05 update 1 (build 106)
+Linker/Locator:  ArmLink.exe V5.05 update 1 (build 106)
+Library Manager: ArmAr.exe V5.05 update 1 (build 106)
+Hex Converter:   FromElf.exe V5.05 update 1 (build 106)
+CPU DLL:         SARMCM3.DLL V5.13.0.0
+Dialog DLL:      DCM.DLL V1.13.1.0
+Target DLL:      UL2CM3.DLL V1.154.12.0
+Dialog DLL:      TCM.DLL V1.14.4.0
+ 
+<h2>Project:</h2>
+C:\Documents\GitHub\Robocon2015\stm32f103VF_template\Project.uvprojx
+Project File Date:  02/04/2015
+
+<h2>Output:</h2>
+Build target 'stm32_template'
+compiling wheel_base.c...
+src\user\wheel_base.c(8): warning:  #550-D: variable "wheel_base_last_can_tx" was set but never used
+  static u32 wheel_base_last_can_tx = 0;
+src\user\wheel_base.c(12): warning:  #550-D: variable "wheel_base_pid" was set but never used
+  static PID wheel_base_pid = {0, 0, 0};
+src\user\wheel_base.c: 2 warnings, 0 errors
+linking...
+Program Size: Code=35496 RO-data=1472 RW-data=5044 ZI-data=42364  
+FromELF: creating hex file...
+".\output\stm32_template.axf" - 0 Error(s), 2 Warning(s).
+
+<h2>Collection of Component include folders:</h2>
+  C:\Documents\GitHub\Robocon2015\stm32f103VF_template\RTE
+  C:\Keil_v5\ARM\PACK\Keil\STM32F1xx_DFP\1.0.5\Device\Include
+
+<h2>Collection of Component Files used:</h2>
+</pre>
+</body>
+</html>
