@@ -145,6 +145,8 @@ u8 gyro_pos_set(s16 x, s16 y, s16 a)
   * @param  None
   * @retval None
   */
+
+
 void gyro_rx_handler(u8 rx_data)
 {
 	u8 i;
