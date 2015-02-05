@@ -23,6 +23,7 @@ int main(void)
 	bluetooth_init();
 	wheel_base_init();
   ultrasonic_init();
+	servo_init();
 
 	system_start("Robocon 2015  Min System 1.0", 1200);
 	
