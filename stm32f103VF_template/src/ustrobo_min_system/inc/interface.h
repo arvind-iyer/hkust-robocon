@@ -66,7 +66,7 @@ typedef struct {
 } TFT_UI;
 
 
-void system_start(const char* title, u16 duration);
+void system_start(u16 duration);
 void battery_regular_check(void);
 void draw_top_bar(void);
 void menu(u8 default_id, bool pre_enter);

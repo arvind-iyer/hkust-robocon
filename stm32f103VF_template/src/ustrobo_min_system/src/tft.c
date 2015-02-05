@@ -6,7 +6,6 @@ u16 curr_text_color = BLACK;
 u16 curr_text_color_sp = BLACK;
 
 u8 tft_orientation = 0, tft_enabled = 1;
-u8 tft_width = 0, tft_height = 0;
 
 
 char text[CHAR_MAX_X][CHAR_MAX_Y];
@@ -269,8 +268,6 @@ void tft_init(u8 orientation, u16 in_bg_color, u16 in_text_color, u16 in_text_co
 	tft_fill_color(in_bg_color);
 	tft_orientation = orientation;
 	
-	tft_width = (orientation % 2) ? CHAR_MAX_X_HORIZONTAL : CHAR_MAX_X_VERTICAL;
-	tft_height = (orientation % 2) ? CHAR_MAX_Y_HORIZONTAL : CHAR_MAX_Y_VERTICAL;
 
 	for (x = 0; x < CHAR_MAX_X; x++) {
 		for (y = 0; y < CHAR_MAX_Y; y++) {
@@ -366,19 +363,47 @@ u16 tft_get_special_text_color(void)
 	return curr_text_color_sp;
 }
 
+/**
+  * @brief Get the current orientation of the TFT monitor
+  * @param None
+  * @retval The current orientation (0 - 3)
+  */
 u8 tft_get_orientation(void)
 {
 	return tft_orientation;
 }
 
+/**
+  * @brief Set the orientation of the TFT monitor
+  * @param o: orientation (0 - 3)
+  * @retval None
+  */
 void tft_set_orientation(u8 o)
 {
 	tft_orientation = o % 4;
 	tft_force_clear();
-	tft_width = (tft_orientation % 2) ? CHAR_MAX_X_HORIZONTAL : CHAR_MAX_X_VERTICAL;
-	tft_height = (tft_orientation % 2) ? CHAR_MAX_Y_HORIZONTAL : CHAR_MAX_Y_VERTICAL;
-
 }
+
+/**
+  * @brief Get the max character per row exclusively (based on the current orientation)
+  * @param None
+  * @retval The maximum character per row exclusively (if n is returned, range of display is 0..n-1)
+  */
+u8 tft_get_max_x_char(void)
+{
+  return (tft_orientation % 2) ? CHAR_MAX_X_HORIZONTAL : CHAR_MAX_X_VERTICAL;
+}
+
+/**
+  * @brief Get the max character per column exclusively (based on the current orientation)
+  * @param None
+  * @retval The maximum character per column exclusively (if n is returned, range of display is 0..n-1)
+  */
+u8 tft_get_max_y_char(void)
+{
+  return (tft_orientation % 2) ? CHAR_MAX_Y_HORIZONTAL : CHAR_MAX_Y_VERTICAL;
+}
+
 /**
   * @brief  Set the position of one pixel
   * @param  None
@@ -478,9 +503,6 @@ void tft_toggle(void)
 	tft_force_clear();
 	tft_clear();
 	tft_orientation = (tft_orientation+1) % 4;
-	
-	tft_width = (tft_orientation % 2) ? CHAR_MAX_X_HORIZONTAL : CHAR_MAX_X_VERTICAL;
-	tft_height = (tft_orientation % 2) ? CHAR_MAX_Y_HORIZONTAL : CHAR_MAX_Y_VERTICAL;
 }
 
 /**

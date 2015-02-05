@@ -24,7 +24,7 @@ int main(void)
 	wheel_base_init();
   ultrasonic_init();
 
-	system_start("Robocon 2015  Min System 1.0", 1200);
+	system_start(1200);
 	
 	menu_add("Your program", robocon_main);
 	menu_add("Position test", position_test);

@@ -96,13 +96,13 @@ void ascii_test(void)
 				static u8 char_start = STARTING_ASCII;
 				
 				if (button_pressed(BUTTON_JS2_DOWN) == 1 || button_pressed(BUTTON_JS2_UP) == 1) {
-					char_start = (char_start == STARTING_ASCII) ? STARTING_ASCII + tft_width * (tft_height - 2) : STARTING_ASCII;
+					char_start = (char_start == STARTING_ASCII) ? STARTING_ASCII + tft_get_max_x_char() * (tft_get_max_y_char() - 2) : STARTING_ASCII;
 					CLICK_MUSIC;
 				}
 				char char_i = char_start; 
 				/** Display characters from ascii value 0 **/
-				for (u8 y = 2; y < tft_height; ++y) {
-					for (u8 x = 0; x < tft_width; ++x) {
+				for (u8 y = 2; y < tft_get_max_y_char(); ++y) {
+					for (u8 x = 0; x < tft_get_max_x_char(); ++x) {
 						tft_prints(x, y, "%c", char_i);
 						++char_i;
 					}
@@ -144,9 +144,9 @@ void motor_test(void)
 			.type = tft_ui_list,
 			.x = 7, .y = 6,
 			.ui_item.list = {
-				.width = 3,
-				.range.lower = (s32) -150,
-				.range.upper = (s32) 150,
+				.width = 6,
+				.range.lower = (s32) -999,
+				.range.upper = (s32) 999,
 				.selected_int = 0
 			}
 		},
@@ -194,11 +194,11 @@ void motor_test(void)
 					}
 				}
 				
-				if (button_pressed(BUTTON_JS2_LEFT) == 1 || button_hold(BUTTON_JS2_LEFT, 10, 2)) {
+				if (button_pressed(BUTTON_JS2_LEFT) == 1 || button_hold(BUTTON_JS2_LEFT, 10, 1)) {
 					tft_ui_listener(&tft_ui, tft_ui_event_left);
 				}
 				
-				if (button_pressed(BUTTON_JS2_RIGHT) == 1 || button_hold(BUTTON_JS2_RIGHT, 10, 2)) {
+				if (button_pressed(BUTTON_JS2_RIGHT) == 1 || button_hold(BUTTON_JS2_RIGHT, 10, 1)) {
 					tft_ui_listener(&tft_ui, tft_ui_event_right);
 				}
 				
@@ -299,7 +299,7 @@ void button_test(void)
 				tft_prints(0, 1, "BUTTON TEST");
 				for (u8 i = 0, x = 0, y = 2; i < BUTTON_COUNT; ++i) {
 					tft_prints(x, y, "%d:%d(%d)", i, button_pressed((BUTTON) i), button_released((BUTTON) i));
-					if (y < tft_height - 1) {
+					if (y < tft_get_max_y_char() - 1) {
 						++y;
 					} else {
 						x += 7;
