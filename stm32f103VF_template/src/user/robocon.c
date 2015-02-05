@@ -15,6 +15,7 @@ void robocon_main(void)
 				// Every 10 ms (100 Hz)
 				bluetooth_update();
 				wheel_base_update();
+				racket_update();
 			}
 			
 			if (ticks_img % 250 == 1) {
@@ -81,7 +82,7 @@ void robocon_main(void)
           s[0] = '\\';
         }
         tft_prints(0, 6, "Char: %s (%d)", s, special_char_handler_bt_get_last_char());
-        tft_prints(0, 7, "Did receive 'u': %d", did_receive_command());
+        tft_prints(0, 7, "Switch hit: %d", did_receive_command());
 				tft_update();
 			}
 		}

@@ -28,7 +28,7 @@ int main(void)
 
 	system_start("Robocon 2015  Min System 1.0", 1200);
 	
-	menu_add("Your program", robocon_main);
+	menu_add("Robot A Prog", robocon_main);
 	menu_add("Position test", position_test);
 	menu_add("Motor test", motor_test);
 	menu_add("Battery test", battery_test);

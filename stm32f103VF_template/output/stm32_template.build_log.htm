@@ -22,18 +22,18 @@ Dialog DLL:      TCM.DLL V1.14.4.0
  
 <h2>Project:</h2>
 C:\Documents\GitHub\Robocon2015\stm32f103VF_template\Project.uvprojx
-Project File Date:  02/04/2015
+Project File Date:  02/05/2015
 
 <h2>Output:</h2>
 Build target 'stm32_template'
-compiling wheel_base.c...
-src\user\wheel_base.c(8): warning:  #550-D: variable "wheel_base_last_can_tx" was set but never used
-  static u32 wheel_base_last_can_tx = 0;
-src\user\wheel_base.c(12): warning:  #550-D: variable "wheel_base_pid" was set but never used
-  static PID wheel_base_pid = {0, 0, 0};
-src\user\wheel_base.c: 2 warnings, 0 errors
+compiling racket_control.c...
+src\user\racket_control.c(7): warning:  #177-D: variable "prev_encoder_value" was declared but never referenced
+  static u32 prev_encoder_value = 0;
+src\user\racket_control.c(8): warning:  #177-D: variable "current_encoder_distance" was declared but never referenced
+  static u32 current_encoder_distance = 0;
+src\user\racket_control.c: 2 warnings, 0 errors
 linking...
-Program Size: Code=35496 RO-data=1472 RW-data=5044 ZI-data=42364  
+Program Size: Code=35740 RO-data=1472 RW-data=5056 ZI-data=42368  
 FromELF: creating hex file...
 ".\output\stm32_template.axf" - 0 Error(s), 2 Warning(s).
 

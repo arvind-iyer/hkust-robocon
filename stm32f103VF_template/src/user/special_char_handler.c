@@ -1,7 +1,7 @@
 #include "special_char_handler.h"
 
 static char special_char_handler_last_char = 0;
-static void(*special_char_functions[UCHAR_MAX])(void) = {0};
+static void(*special_char_functions[UCHAR_MAX + 1])(void) = {0};
 
 static void char_bluetooth_decode(u8 id, u8 length, u8* data)
 {
