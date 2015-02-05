@@ -79,7 +79,7 @@ void racket_update(void)
 		command_received = false;
 	}
 	if ((!switch_on || command_received) && calibrated) {
-		motor_set_vel(MOTOR5, 500, OPEN_LOOP);
+		motor_set_vel(MOTOR5, 900, OPEN_LOOP);
 	} else {
 		motor_set_vel(MOTOR5, 0, OPEN_LOOP);
 	}
