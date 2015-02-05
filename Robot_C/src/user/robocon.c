@@ -82,8 +82,6 @@ void robocon_main(void)
 	wheel_base_tx_acc();
 	gpio_init(&PE0, GPIO_Speed_2MHz, GPIO_Mode_Out_PP, RCC_APB1Periph_TIM4);
 	//use gpio_write(&PE0, 0 or 1); for pneumatic (piston)
-	//use servo_control(SERVO4, 0 to 1000); for servo control 
-	
 	u8 pneu = 0;
 	while (1) {
 		if (ticks_img != get_ticks()) {
@@ -99,11 +97,6 @@ void robocon_main(void)
 				// Every 250 ms (4 Hz)
 				battery_adc_update();
 			}
-			//if(get_seconds() % 4 == 0)
-			//	servo_control(SERVO4,1000);
-			//else if(get_seconds() % 2 == 0)
-			//	servo_control(SERVO4,0);
-			
 			if (get_seconds() % 10 == 2 && ticks_img == 2) {
 				// Every 10 seconds (0.1 Hz)
 				battery_regular_check();
