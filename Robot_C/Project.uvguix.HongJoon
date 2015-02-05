@@ -1383,9 +1383,9 @@
       </Doc>
       <Doc>
         <Name>.\src\user\robocon.c</Name>
-        <ColumnNumber>52</ColumnNumber>
-        <TopLine>48</TopLine>
-        <CurrentLine>52</CurrentLine>
+        <ColumnNumber>27</ColumnNumber>
+        <TopLine>54</TopLine>
+        <CurrentLine>65</CurrentLine>
         <Folding>1</Folding>
         <ContractedFolders></ContractedFolders>
         <PaneID>0</PaneID>

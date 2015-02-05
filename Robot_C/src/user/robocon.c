@@ -53,7 +53,7 @@ void wheel_base_joystick_control(void)
 	if (button_pressed(BUTTON_JS1_UP)==1)
 	{                                         
 		if (current_servo_PWM<=1500)
-			current_servo_PWM+=300;
+			current_servo_PWM+=150;
 		servo_control(SERVO4,current_servo_PWM);
 		servo_control(SERVO3,current_servo_PWM);
 		servo_control(SERVO2,current_servo_PWM);
@@ -62,7 +62,7 @@ void wheel_base_joystick_control(void)
 	if (button_pressed(BUTTON_JS1_DOWN)==1)	
 	{
 		if (current_servo_PWM>=1300)
-			current_servo_PWM-=300;
+			current_servo_PWM-=150;
 		servo_control(SERVO4,current_servo_PWM);
 		servo_control(SERVO3,current_servo_PWM);
 		servo_control(SERVO2,current_servo_PWM);
