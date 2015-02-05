@@ -7,7 +7,7 @@
 #include "special_char_handler.h"
 #include "stdbool.h"
 
-#define	RACKET_TIMEOUT					30
+#define	RACKET_TIMEOUT					40
 
 void racket_init(void);
 void racket_received_command(void);
