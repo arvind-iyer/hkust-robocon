@@ -14,5 +14,7 @@ void racket_received_command(void);
 bool did_receive_command(void);
 void racket_update(void);
 void racket_calibrate(void);
+void open_pneumatic(void);
+void close_pneumatic(void);
 
 #endif

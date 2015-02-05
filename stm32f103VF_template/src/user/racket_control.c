@@ -11,6 +11,8 @@ void racket_init(void)
 {
 	register_special_char_function('u', racket_received_command);
 	register_special_char_function(']', racket_calibrate);
+	register_special_char_function('y', open_pneumatic);
+	register_special_char_function('j', close_pneumatic);
 
 	/* GPIO configuration */
 	GPIO_InitTypeDef GPIO_InitStructure;
@@ -26,7 +28,8 @@ void racket_init(void)
 	// pneumatic init
 	GPIO_InitStructure.GPIO_Mode = GPIO_Mode_IPU;
   GPIO_InitStructure.GPIO_Speed = GPIO_Speed_50MHz;
-  GPIO_InitStructure.GPIO_Pin = GPIO_Pin_7;
+  GPIO_InitStructure.GPIO_Pin = GPIO_Pin_15;
+	GPIO_Init(GPIOE, &GPIO_InitStructure);
 	
 	GPIO_EXTILineConfig(GPIO_PortSourceGPIOE,GPIO_PinSource7);
 	
@@ -91,4 +94,14 @@ void racket_received_command(void)
 bool did_receive_command(void)
 {
 	return command_received;
+}
+
+void open_pneumatic(void)
+{
+	GPIO_ResetBits(GPIOE, GPIO_Pin_15);
+}
+
+void close_pneumatic(void)
+{
+	GPIO_SetBits(GPIOE, GPIO_Pin_15);
 }
