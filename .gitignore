@@ -221,3 +221,4 @@ FakesAssemblies/
 
 # Visual Studio 6 workspace options file
 *.opt
+stm32f103VF_template/STM32 MainBoard.PDF
