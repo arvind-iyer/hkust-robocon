@@ -1,4 +1,5 @@
 #include "racket_control.h"
+#include "delay.h"
 
 static bool command_received = false;
 static bool switch_on = false;
@@ -6,6 +7,9 @@ static bool calibrated = false;
 static u32 racket_last_cmd_received_time = 0;
 static u32 prev_encoder_value = 0;
 static u32 current_encoder_distance = 0;
+static bool serving_started = false;
+static u32 serving_started_time = 0;
+static bool action_done=false;
 
 void racket_init(void)
 {
@@ -13,6 +17,7 @@ void racket_init(void)
 	register_special_char_function(']', racket_calibrate);
 	register_special_char_function('y', open_pneumatic);
 	register_special_char_function('j', close_pneumatic);
+	register_special_char_function('o', serving);
 
 	/* GPIO configuration */
 	GPIO_InitTypeDef GPIO_InitStructure;
@@ -65,29 +70,34 @@ void EXTI9_5_IRQHandler(void)
 	}
 }
 
-void racket_calibrate(void)
+void racket_calibrate(void)			//calibrate to 1,run before start
 {
 	if (!switch_on) {
 		motor_set_vel(MOTOR5, 300, OPEN_LOOP);
 	}
+	action_done=1;
 	calibrated = true;
 }
 
-void racket_update(void)
+void racket_update(void)    //determine whether the motor should run
 {
 	if (get_full_ticks() - racket_last_cmd_received_time > RACKET_TIMEOUT) {
 		command_received = false;
-	}
-	if ((!switch_on || command_received) && calibrated) {
-		motor_set_vel(MOTOR5, 900, OPEN_LOOP);
+	}	
+	if ((!switch_on ||command_received) && calibrated && action_done) {
+		motor_set_vel(MOTOR5, 800, OPEN_LOOP);
 	} else {
 		motor_set_vel(MOTOR5, 0, OPEN_LOOP);
+		action_done = 0;
 	}
 }
+
+
 
 void racket_received_command(void)
 {
 	command_received = true;
+	action_done = 1;
 	racket_last_cmd_received_time = get_full_ticks();
 }
 
@@ -105,3 +115,29 @@ void close_pneumatic(void)
 {
 	GPIO_SetBits(GPIOE, GPIO_Pin_15);
 }
+
+u32 get_serving_started_time(void){
+	return serving_started_time;
+}
+
+bool get_serving_started(void){
+	return serving_started;
+}
+void set_serving_started(bool started){
+	serving_started = started;
+}
+
+void serving (void){
+	serving_started = true;
+	serving_started_time = get_full_ticks();
+	open_pneumatic();
+}
+
+u8 get_switch(void){
+	return switch_on;
+}
+
+u8 get_calibrated(void){
+	return calibrated;
+}
+

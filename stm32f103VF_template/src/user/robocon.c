@@ -1,6 +1,9 @@
 #include "robocon.h"
 
 static u16 ticks_img 	= (u16)-1;
+static u8 switch_pre=0;
+static u8 switch_cur=0;
+	
 
 void robocon_main(void)
 {
@@ -37,8 +40,7 @@ void robocon_main(void)
 			
 			if (ticks_img % 500 == 4) {
 				led_control(LED_D3, (LED_STATE) (ticks_img == 0));
-			}
-			
+			}			
 			if (ticks_img % 50 == 5) {
 				button_update();
 				if (button_pressed(BUTTON_1) > 10 || button_pressed(BUTTON_2) > 10) {
@@ -83,8 +85,17 @@ void robocon_main(void)
         }
         tft_prints(0, 6, "Char: %s (%d)", s, special_char_handler_bt_get_last_char());
         tft_prints(0, 7, "Switch hit: %d", did_receive_command());
+				tft_prints(0, 8, "switch: %d",get_switch());
+				tft_prints(0, 9, "calibrated: %d",get_calibrated());
+			
+				
 				tft_update();
 			}
+			if (get_serving_started()==true && (get_full_ticks()-get_serving_started_time()>70)) {
+				racket_received_command();
+				set_serving_started(false);
+			}
+			
 		}
 	}	
 }
