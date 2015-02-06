@@ -93,7 +93,9 @@ void racket_update(void)    //determine whether the motor should run
 			motor_set_vel(MOTOR5, 300, OPEN_LOOP);
 		}
 		else {
-			motor_set_vel(MOTOR5, 0, OPEN_LOOP);
+//			motor_set_acceleration(MOTOR5, 1000);
+//			motor_set_vel(MOTOR5, 0, CLOSE_LOOP);
+			motor_lock(MOTOR5);
 			calibrate_mode_on = false;
 			calibrated = true;
 		}
@@ -102,7 +104,9 @@ void racket_update(void)    //determine whether the motor should run
 	else if ((!switch_on) && calibrated) {
 		motor_set_vel(MOTOR5, 800, OPEN_LOOP);
 	} else {
-		motor_set_vel(MOTOR5, 0, OPEN_LOOP);
+//		motor_set_acceleration(MOTOR5, 1000);
+//		motor_set_vel(MOTOR5, 0, CLOSE_LOOP);
+			motor_lock(MOTOR5);
 	}
 	if (serving_started) {
 		if (get_full_ticks() - serving_started_time > MOTOR_OPEN_DELAY){

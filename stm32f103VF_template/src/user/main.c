@@ -25,7 +25,6 @@ int main(void)
   ultrasonic_init();
 	special_char_handler_init();
 	racket_init();
-  servo_init();
   
 	system_start(1200);
 	
