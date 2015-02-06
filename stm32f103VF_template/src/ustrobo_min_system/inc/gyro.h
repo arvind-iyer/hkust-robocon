@@ -14,33 +14,36 @@
 /*** Command List ***/
 #define GYRO_WAKEUP				0x01
 
-#define GYRO_UPDATE				0x10
-#define GYRO_CAL				0x20
-#define GYRO_POS_SET			0x30
-#define GYRO_AUTO_UPDATE		0x40
+#define GYRO_UPDATE				    0x10
+#define GYRO_CAL				      0x20
+#define GYRO_POS_SET			    0x30
+#define GYRO_AUTO_UPDATE	    0x40
 
 /*** Reply Command List ***/
-#define GYRO_REPLY				0x50
-#define GYRO_UPDATED			0x80
+#define GYRO_REPLY				    0x50
+#define GYRO_UPDATED			    0x80
 
 #define GYRO_COMMAND_LENGTH		2
 
-#define GYRO_FLAG_SET_POS		0x01
-#define GYRO_FLAG_CAL			0x02
+#define GYRO_FLAG_SET_POS		  0x01
+#define GYRO_FLAG_CAL			    0x02
 
-#define	X_FLIP						1
-#define	Y_FLIP						1
+
+#define	X_FLIP						1   /*** 1 or -1 **/
+#define	Y_FLIP						1   /*** 1 or -1 **/
+/** Varies along robots (depends on the encoder position) **/
+#define SHIFT_X           0
+#define SHIFT_Y           0
+
 extern volatile u8 gyro_available;
-extern s16 SHIFT_X, SHIFT_Y;
+
 
 typedef struct {
 	s16 x, y, angle;
 } POSITION;
 
 const POSITION* get_pos(void);	// Get the position ({x, y, angle})
-s16 get_X(void);	//get x-coordinate
-s16 get_Y(void);	//get y-coordinate
-s16 get_angle(void);	////get angle
+const POSITION* get_pos_raw(void);
 
 void gyro_init(void);
 void gyro_rx_handler(u8 rx_data);
