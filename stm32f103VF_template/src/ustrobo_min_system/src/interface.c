@@ -9,24 +9,25 @@ static MENU_ITEM menu_list[MENU_LIST_MAX];
 
 /**
 	* @brief System start interface display (to be called directly, delay exists)
-	* @param title: Title
 	* @param duration: the delay time (in ms) of this function
 	* @retval None
 	*/
-void system_start(const char* title, u16 duration)
+void system_start(u16 duration)
 {
+  const char* title = "Robocon 2015  Min System 1.1";
+  
 	led_control((LED) (LED_D1 | LED_D2 | LED_D3), LED_ON);
 	tft_clear();
 
-	char tmp[CHAR_MAX_X-2] = "";
+	char tmp[CHAR_MAX_X-1] = "";
 	tft_clear();
 	tft_prints(1, 1, "[HKUST]");
 	tft_prints(1, 2, "[Robotics Team]");
 	
-	strncpy(tmp, title, tft_width-2);
+	strncpy(tmp, title, tft_get_max_x_char()-2);
 	tft_prints(1, 4, "%s", tmp);
-	if (strlen(title) >= tft_width-2) {
-		strncpy(tmp, &title[tft_width-2], tft_width-2);
+	if (strlen(title) >= tft_get_max_x_char()-2) {
+		strncpy(tmp, &title[tft_get_max_x_char()-2], tft_get_max_x_char()-2);
 		tft_prints(1, 5, "%s", tmp);
 	}
 	
@@ -129,11 +130,11 @@ static void draw_battery_icon(u16 batt)
 	u16 batt_color = 0, batt_boundary = 0;
 	u16 batt_w = 0;
 	if (batt > BATTERY_USB_LEVEL / 10) {
-		tft_prints(tft_width-7, 0, "%2d.%d", batt/10, batt%10);
+		tft_prints(tft_get_max_x_char()-7, 0, "%2d.%d", batt/10, batt%10);
 		batt_color = batt <= 114 ? RED : (batt <= 120 ? ORANGE : GREEN);
 		batt_boundary = batt <= 114 ? RED : WHITE;
 	} else {
-		tft_prints(tft_width-7, 0, " USB");
+		tft_prints(tft_get_max_x_char()-7, 0, " USB");
 		batt_color = SKY_BLUE;
 		batt_boundary = WHITE;
 		batt = 126;
@@ -252,11 +253,11 @@ void menu(u8 default_id, bool pre_enter)
 					}
 				}        
 				/** Change screen orientation **/
-				if (button_pressed(BUTTON_1) == 10) {
+				if (button_pressed(BUTTON_1) == 1) {
 					tft_set_orientation((tft_get_orientation() + 1) % 4);
 					SUCCESSFUL_MUSIC;
 				}
-				if (button_pressed(BUTTON_2) == 10) {
+				if (button_pressed(BUTTON_2) == 1) {
 					tft_set_orientation((tft_get_orientation() + 3) % 4);
 					SUCCESSFUL_MUSIC;
 				}
@@ -271,7 +272,7 @@ void menu(u8 default_id, bool pre_enter)
 				draw_top_bar();
 				
 				// Menu list
-				const u8 items_per_page = tft_height - 2;
+				const u8 items_per_page = tft_get_max_y_char() - 2;
 				u8 page_count = menu_count ? (menu_count - 1) / items_per_page : 0; // Start from 0
 				u8 current_page = menu_selected / items_per_page;	// Start from 0
 				
@@ -292,8 +293,8 @@ void menu(u8 default_id, bool pre_enter)
 				// Bottom bar - page number
 				tft_set_text_color(WHITE);
 				tft_set_bg_color(BLUE2);
-				tft_clear_line(tft_height-1);
-				tft_prints(1, tft_height-1, "%d/%d", current_page + 1, page_count + 1);
+				tft_clear_line(tft_get_max_y_char()-1);
+				tft_prints(1, tft_get_max_y_char()-1, "%d/%d", current_page + 1, page_count + 1);
 				
 				// Reset bg and text color
 				tft_set_bg_color(prev_bg_color);

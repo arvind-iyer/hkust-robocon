@@ -25,8 +25,9 @@ int main(void)
   ultrasonic_init();
 	special_char_handler_init();
 	racket_init();
-
-	system_start("Robocon 2015  Min System 1.0", 1200);
+  servo_init();
+  
+	system_start(1200);
 	
 	menu_add("Robot A Prog", robocon_main);
 	menu_add("Position test", position_test);

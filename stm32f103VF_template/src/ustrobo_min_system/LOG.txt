@@ -1,162 +1,19 @@
-####################################################
-#                                                  #
-#   HKUST Robotics Team                            #
-#       ROBOCON Min System (Version 4.2)           #
-#                        Logged by Chan Wing Hong  #
-#                                                  #
-####################################################
-
-
-
-
-<<< UPDATE LOG >>>
-==================================================== v4.2
-
-  - updating the XBC library, need to update the XBC board
-  - XBC board can display the screen in Mainboard synchronously, with 3bit colors
-
-  - rewriting some of the functions in approx_math.c (int_arc_sin, Sqrt)
-
-==================================================== v4.1
-
-  - rearranging the order of initializations in main.c, which may cause the program to crash!
-    - UART may need to be put at the front
-    - LM629 may need to be put at the last
-
-  - fixing the UI bugs in "Encoder Test"
+/**
+  ******************************************************************************
+  * STM32F103VG Mainboard Library
+  * Maintained by Kenneth Au
+  * Version: (Robocon 2015) Version 1.1
+  * Last update: 4th February 
+ ******************************************************************************
+  */
   
-  - fixing the crash when pressing "Set Zero" in "Position Test" if gyro is not ready
-
-==================================================== v4.0
-
-  - rearranging the new project structure, which makes the min system be the shared files for all projects
   
-  - adding comments to all library files
-  
-  - rewriting the data tansmission part of Red LCD
-  - building a new user-interface, support only the Red LCD now
-    - 4 orientation (landscape, portrait)
-    - adding a startup page, for displaying useful information of the program
-    - dynamic menu
-    - remaking the user-interface of some testing pages
-    
-  - replacing the servo and motor_pwm libraries, in order to make some of the library individual (can be un-include for some cases)
-  - replacing the xbc library
-  
-  - rewriting the Sqrt() in approx_math.c
-  
-  - modifying the communication part between the GYRO and Mainboard (including both mainboard and gyro programs)
-  
-  - buzzer uses timer instead of delay now
-  
-====================================================
+/** Version 1.1 (4th Feb, 2015) **/
+- Improvement of the interface 
+	- Speed selector width widened (the motor testing module)
+	- Holding the changing button (left & right) will have a faster speed
+- Shorter click music
+- For "tft", replaced the global variable tft_width and tft_height with tft_get_max_x_char() and tft_get_max_x_char()
 
-
-
-
-<<< FILE STRUCTURE >>>
-====================================================
-
-    +  stm32_template
-        |-- Project.uvopt
-        |-- Project.uvproj
-        |-- Project_stm32_template.dep
-        |-- Project.uvgui.***
-        +-- src
-        |  |-- main.c
-        |  +-- main.h
-        +-- output
-            +-- ***
-
-    +  C:\
-        |-- stm32
-            |-- stm32f10x_std
-            |  |-- inc
-            |  |  |-- core_cm3.h
-            |  |  |-- misc.h
-            |  |  |-- stm32f10x.h
-            |  |  |-- stm32f10x_adc.h
-            |  |  |-- stm32f10x_bkp.h
-            |  |  |-- stm32f10x_can.h
-            |  |  |-- stm32f10x_cec.h
-            |  |  |-- stm32f10x_conf.h
-            |  |  |-- stm32f10x_crc.h
-            |  |  |-- stm32f10x_dac.h
-            |  |  |-- stm32f10x_dbgmcu.h
-            |  |  |-- stm32f10x_dma.h
-            |  |  |-- stm32f10x_exti.h
-            |  |  |-- stm32f10x_flash.h
-            |  |  |-- stm32f10x_fsmc.h
-            |  |  |-- stm32f10x_gpio.h
-            |  |  |-- stm32f10x_i2c.h
-            |  |  |-- stm32f10x_iwdg.h
-            |  |  |-- stm32f10x_pwr.h
-            |  |  |-- stm32f10x_rcc.h
-            |  |  |-- stm32f10x_rtc.h
-            |  |  |-- stm32f10x_sdio.h
-            |  |  |-- stm32f10x_spi.h
-            |  |  |-- stm32f10x_tim.h
-            |  |  |-- stm32f10x_usart.h
-            |  |  |-- stm32f10x_wwdg.h
-            |  |  +-- system_stm32f10x.h
-            |  +-- src
-            |      |-- core_cm3.c
-            |      |-- misc.c
-            |      |-- startup_stm32f10x_hd.s
-            |      |-- startup_stm32f10x_md.s
-            |      |-- stm32f10x_adc.c
-            |      |-- stm32f10x_bkp.c
-            |      |-- stm32f10x_can.c
-            |      |-- stm32f10x_cec.c
-            |      |-- stm32f10x_crc.c
-            |      |-- stm32f10x_dac.c
-            |      |-- stm32f10x_dbgmcu.c
-            |      |-- stm32f10x_dma.c
-            |      |-- stm32f10x_exti.c
-            |      |-- stm32f10x_flash.c
-            |      |-- stm32f10x_fsmc.c
-            |      |-- stm32f10x_gpio.c
-            |      |-- stm32f10x_i2c.c
-            |      |-- stm32f10x_iwdg.c
-            |      |-- stm32f10x_pwr.c
-            |      |-- stm32f10x_rcc.c
-            |      |-- stm32f10x_rtc.c
-            |      |-- stm32f10x_sdio.c
-            |      |-- stm32f10x_spi.c
-            |      |-- stm32f10x_tim.c
-            |      |-- stm32f10x_usart.c
-            |      |-- stm32f10x_wwdg.c
-            |      +-- system_stm32f10x.c
-            +-- ustrobo_min_system
-                |-- src
-                |  |-- approx_math.c
-                |  |-- battery.c
-                |  |-- button.c
-                |  |-- debug.c
-                |  |-- delay.c
-                |  |-- gyro.c
-                |  |-- lcd_red.c
-                |  |-- lm629.c
-                |  |-- motor_pwm.c
-                |  |-- servo.c
-                |  |-- system.c
-                |  |-- ticks.c
-                |  |-- uart.c
-                |  +-- xbc_mb.c
-                +-- inc
-                    |-- approx_math.h
-                    |-- battery.h
-                    |-- button.h
-                    |-- debug.h
-                    |-- delay.h
-                    |-- gyro.h
-                    |-- lcd_font.h
-                    |-- lcd_font_small.h
-                    |-- lcd_red.h
-                    |-- lm629.h
-                    |-- motor_pwm.h
-                    |-- servo.h
-                    |-- system.h
-                    |-- ticks.h
-                    |-- uart.h
-                    +-- xbc_mb.h
+/** Version 1.0 (2nd Feb, 2015) **/
+- First release
