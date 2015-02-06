@@ -8,6 +8,10 @@
   */
   
   
+/** Version 1.2 (6th Feb, 2015)	**/
+- Implementation of the positioning system (gyro.*)
+
+
 /** Version 1.1 (4th Feb, 2015) **/
 - Improvement of the interface 
 	- Speed selector width widened (the motor testing module)

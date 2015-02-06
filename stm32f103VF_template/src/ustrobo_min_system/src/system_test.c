@@ -264,11 +264,12 @@ void position_test(void)
 				tft_clear();
 				draw_top_bar();
 				tft_prints(0, 1, "POSITION TEST");
-				tft_prints(0, 2, " X: %d", get_pos()->x);
-				tft_prints(0, 3, " Y: %d", get_pos()->y);
-				tft_prints(0, 4, " A: %d", get_pos()->angle);
-				tft_prints(0, 5, " Avail: %d", gyro_available);
-				tft_prints(0, 7, " (%c) Calibrate", ticks_img < 500 ? BLACK_BLOCK_ASCII : ' ');
+        tft_prints(0, 2, "  Pos(Raw)");
+				tft_prints(0, 3, " X:%4d(%4d)", get_pos()->x, get_pos_raw()->x);
+				tft_prints(0, 4, " Y:%4d(%4d)", get_pos()->y, get_pos_raw()->y);
+				tft_prints(0, 5, " A:%4d(%4d)", get_pos()->angle, get_pos_raw()->angle);
+				tft_prints(0, 6, " Avail: %d", gyro_available);
+				tft_prints(0, 8, " (%c) Calibrate", ticks_img < 500 ? BLACK_BLOCK_ASCII : ' ');
 				
 				tft_update();
 			}

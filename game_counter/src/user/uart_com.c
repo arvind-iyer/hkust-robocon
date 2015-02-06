@@ -53,14 +53,12 @@ static void uart_com_handler(u8 data)
   }
 }
 
-
 void uart_com_init(void)
 {
   uart_init(UART_COM, UART_BR);
   uart_rx_init(UART_COM, uart_com_handler);
   buffer_i = 0;
   tmp_digit[0] = tmp_digit[1] = tmp_digit[2] = 0;
-  
 }
 
 void uart_update(void)
