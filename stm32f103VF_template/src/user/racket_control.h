@@ -7,7 +7,9 @@
 #include "special_char_handler.h"
 #include "stdbool.h"
 
-#define	RACKET_TIMEOUT					25
+//#define	RACKET_TIMEOUT					25
+#define	PNEUMATIC_OPEN_DELAY	  10
+#define MOTOR_OPEN_DELAY        10
 
 void racket_init(void);
 void racket_received_command(void);
@@ -17,9 +19,6 @@ void racket_calibrate(void);
 void open_pneumatic(void);
 void close_pneumatic(void);
 void serving (void);
-bool get_serving_started(void);
-void set_serving_started(bool);
-u32 get_serving_started_time(void);
 u8 get_switch(void);
 u8 get_calibrated(void);
 

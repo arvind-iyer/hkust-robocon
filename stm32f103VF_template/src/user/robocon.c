@@ -1,9 +1,6 @@
 #include "robocon.h"
 
 static u16 ticks_img 	= (u16)-1;
-static u8 switch_pre=0;
-static u8 switch_cur=0;
-	
 
 void robocon_main(void)
 {
@@ -91,11 +88,6 @@ void robocon_main(void)
 				
 				tft_update();
 			}
-			if (get_serving_started()==true && (get_full_ticks()-get_serving_started_time()>70)) {
-				racket_received_command();
-				set_serving_started(false);
-			}
-			
 		}
 	}	
 }

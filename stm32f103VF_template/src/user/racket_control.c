@@ -1,15 +1,15 @@
 #include "racket_control.h"
 #include "delay.h"
 
-static bool command_received = false;
 static bool switch_on = false;
+static bool calibrate_mode_on = false;
 static bool calibrated = false;
-static u32 racket_last_cmd_received_time = 0;
-static u32 prev_encoder_value = 0;
-static u32 current_encoder_distance = 0;
+static bool interrupt_triggered = false;
+static u32 interrupt_triggered_time;
+//static u32 prev_encoder_value = 0;
+//static u32 current_encoder_distance = 0;
 static bool serving_started = false;
 static u32 serving_started_time = 0;
-static bool action_done=false;
 
 void racket_init(void)
 {
@@ -60,50 +60,62 @@ void racket_init(void)
 void EXTI9_5_IRQHandler(void)
 {
 	if (EXTI_GetITStatus(EXTI_Line7) != RESET) {
-		if (GPIO_ReadInputDataBit(GPIOE, GPIO_Pin_7)){
-			switch_on = true;
-		} else {
-			switch_on = false;
-		}
-		racket_last_cmd_received_time = get_full_ticks();
+		interrupt_triggered_time = get_full_ticks();
+		interrupt_triggered = true;
 	  EXTI_ClearITPendingBit(EXTI_Line7);
 	}
 }
 
 void racket_calibrate(void)			//calibrate to 1,run before start
 {
-	if (!switch_on) {
-		motor_set_vel(MOTOR5, 300, OPEN_LOOP);
-	}
-	action_done=1;
-	calibrated = true;
+	calibrate_mode_on = true;
+}
+
+void racket_received_command(void)
+{
+	switch_on = false;
 }
 
 void racket_update(void)    //determine whether the motor should run
 {
-	if (get_full_ticks() - racket_last_cmd_received_time > RACKET_TIMEOUT) {
-		command_received = false;
-	}	
-	if ((!switch_on ||command_received) && calibrated && action_done) {
+	
+	if (interrupt_triggered && get_full_ticks() - interrupt_triggered_time > 20) {
+		if (GPIO_ReadInputDataBit(GPIOE, GPIO_Pin_7)) {
+			switch_on = true;
+		} else {
+			switch_on = false;
+		}
+		interrupt_triggered = false;
+	}
+	// calibration mode
+	if (calibrate_mode_on) {
+		if (!switch_on) {
+			motor_set_vel(MOTOR5, 300, OPEN_LOOP);
+		}
+		else {
+			motor_set_vel(MOTOR5, 0, OPEN_LOOP);
+			calibrate_mode_on = false;
+			calibrated = true;
+		}
+	}
+	// regular mode
+	else if ((!switch_on) && calibrated) {
 		motor_set_vel(MOTOR5, 800, OPEN_LOOP);
 	} else {
 		motor_set_vel(MOTOR5, 0, OPEN_LOOP);
-		action_done = 0;
+	}
+	if (serving_started) {
+		if (get_full_ticks() - serving_started_time > MOTOR_OPEN_DELAY){
+			racket_received_command();
+			serving_started = false;
+		}
 	}
 }
 
 
-
-void racket_received_command(void)
-{
-	command_received = true;
-	action_done = 1;
-	racket_last_cmd_received_time = get_full_ticks();
-}
-
 bool did_receive_command(void)
 {
-	return command_received;
+	return !switch_on;
 }
 
 void open_pneumatic(void)
@@ -116,21 +128,13 @@ void close_pneumatic(void)
 	GPIO_SetBits(GPIOE, GPIO_Pin_15);
 }
 
-u32 get_serving_started_time(void){
-	return serving_started_time;
-}
-
-bool get_serving_started(void){
-	return serving_started;
-}
-void set_serving_started(bool started){
-	serving_started = started;
-}
-
 void serving (void){
-	serving_started = true;
-	serving_started_time = get_full_ticks();
-	open_pneumatic();
+	// check if pneumatic is closed
+	if (GPIO_ReadInputDataBit(GPIOE, GPIO_Pin_15)) {
+		open_pneumatic();
+		serving_started = true;
+		serving_started_time = get_full_ticks();
+	}
 }
 
 u8 get_switch(void){
