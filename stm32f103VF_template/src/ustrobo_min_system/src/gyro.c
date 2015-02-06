@@ -26,8 +26,6 @@ void gyro_init(void)
 	uart_rx_init(GYRO_UART,gyro_rx_handler);
 }
 
-s16    SHIFT_X = 0; // -200;	//53//	193//  -163	//	98		//79
-s16    SHIFT_Y = 0; // -618;	//40// 	-50// 	-41	//	170		//336
 
 /**
 	* @brief Get the position object
@@ -39,28 +37,9 @@ const POSITION* get_pos(void)
 	return &gyro_pos;
 }
 
-/**
-  * @brief  Get the X coordinate
-  * @param  None
-  * @retval X coordinate
-  */
-s16 get_X(void)
+const POSITION* get_pos_raw(void)
 {
-	
-  s16 pos_x = (X_FLIP*gyro_pos.x*10000-SHIFT_X*10000+SHIFT_X*int_cos(gyro_pos.angle)+SHIFT_Y*int_sin(gyro_pos.angle))/10000;
-	return pos_x;
-}
-
-/**
-  * @brief  Get the Y coordinate
-  * @param  None
-  * @retval Y coordinate
-  */
-s16 get_Y(void)
-{
-	
-	s16 pos_y = (Y_FLIP*gyro_pos.y*10000-SHIFT_Y*10000+SHIFT_Y*int_cos(gyro_pos.angle)-SHIFT_X*int_sin(gyro_pos.angle))/10000;
-	return pos_y;
+  return &gyro_pos_raw;
 }
 
 /**
