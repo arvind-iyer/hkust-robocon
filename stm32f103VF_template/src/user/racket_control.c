@@ -11,6 +11,38 @@ static u32 interrupt_triggered_time;
 static bool serving_started = false;
 static u32 serving_started_time = 0;
 
+static u8 racket_mode = 0;
+static u16 racket_speed = 1800;
+static u16 racket_delay = 10;
+
+u16 get_racket_speed() {
+	return racket_speed;
+}
+
+u16 get_racket_delay() {
+	return racket_delay;
+}
+
+
+void increase_racket_speed() {
+	if(racket_speed < 1800)
+		racket_speed += 5;
+}
+
+void decrease_racket_speed() {
+	if(racket_speed > 0)
+			racket_speed -= 5;
+}
+
+void increase_racket_delay() {
+	racket_delay += 5;
+}
+
+void decrease_racket_delay() {
+	racket_delay -= 5;
+}
+
+
 void racket_init(void)
 {
 	register_special_char_function('u', racket_received_command);
@@ -18,6 +50,12 @@ void racket_init(void)
 	register_special_char_function('y', open_pneumatic);
 	register_special_char_function('j', close_pneumatic);
 	register_special_char_function('o', serving);
+	
+	register_special_char_function('=', increase_racket_speed); // +
+	register_special_char_function('-', decrease_racket_speed); // -
+	register_special_char_function('.', increase_racket_delay); // >
+	register_special_char_function(',', decrease_racket_delay); // <
+	
 
 	/* GPIO configuration */
 	GPIO_InitTypeDef GPIO_InitStructure;
@@ -74,6 +112,7 @@ void racket_calibrate(void)			//calibrate to 1,run before start
 void racket_received_command(void)
 {
 	switch_on = false;
+	racket_mode = 0;
 }
 
 void racket_update(void)    //determine whether the motor should run
@@ -87,29 +126,45 @@ void racket_update(void)    //determine whether the motor should run
 		}
 		interrupt_triggered = false;
 	}
+	
+	
+	/* code added by Antony */
+	uint8_t switchNow = GPIO_ReadInputDataBit(GPIOE, GPIO_Pin_7);
+	if(racket_mode == 0 && switchNow == false) {
+		racket_mode = 1;
+	}
+	if(racket_mode == 1 && switchNow == true) {
+		racket_mode = 2;
+//		motor_set_acceleration(MOTOR5, 1000);
+//		motor_set_vel(MOTOR5, 0, CLOSE_LOOP);
+		motor_lock(MOTOR5);
+	}
+	
+	
+	
 	// calibration mode
 	if (calibrate_mode_on) {
 		if (!switch_on) {
 			motor_set_vel(MOTOR5, 300, OPEN_LOOP);
 		}
 		else {
-			motor_set_acceleration(MOTOR5, 1000);
-			motor_set_vel(MOTOR5, 0, CLOSE_LOOP);
-//			motor_lock(MOTOR5);
+	//		motor_set_acceleration(MOTOR5, 1000);
+	//		motor_set_vel(MOTOR5, 0, CLOSE_LOOP);
+			motor_lock(MOTOR5);
 			calibrate_mode_on = false;
 			calibrated = true;
 		}
 	}
 	// regular mode
 	else if ((!switch_on) && calibrated) {
-		motor_set_vel(MOTOR5, 1300, OPEN_LOOP);
+		motor_set_vel(MOTOR5, racket_speed, OPEN_LOOP);
 	} else {
-		motor_set_acceleration(MOTOR5, 1000);
-		motor_set_vel(MOTOR5, 0, CLOSE_LOOP);
-//			motor_lock(MOTOR5);
+//		motor_set_acceleration(MOTOR5, 1000);
+//		motor_set_vel(MOTOR5, 0, CLOSE_LOOP);
+			motor_lock(MOTOR5);
 	}
 	if (serving_started) {
-		if (get_full_ticks() - serving_started_time > MOTOR_OPEN_DELAY){
+		if (get_full_ticks() - serving_started_time > racket_delay){
 			racket_received_command();
 			serving_started = false;
 		}

@@ -22,4 +22,12 @@ void serving (void);
 u8 get_switch(void);
 u8 get_calibrated(void);
 
+void add_racket_speed(void);
+void decrease_racket_speed(void);
+void add_racket_delay(void);
+void decrease_racket_delay(void);
+u16 get_racket_speed(void);
+u16 get_racket_delay(void);
+
+
 #endif

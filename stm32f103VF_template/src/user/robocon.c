@@ -81,8 +81,11 @@ void robocon_main(void)
           s[0] = '\\';
         }
         tft_prints(0, 6, "Char: %s (%d)", s, special_char_handler_bt_get_last_char());
-        tft_prints(0, 7, "Switch hit: %d", did_receive_command());
-				tft_prints(0, 8, "switch: %d",get_switch());
+        //tft_prints(0, 7, "Switch hit: %d", did_receive_command());
+				//tft_prints(0, 8, "switch: %d",get_switch());
+				tft_prints(0, 7, "R_speed: %d", get_racket_speed());
+				tft_prints(0, 8, "R_delay: %d", get_racket_delay());
+				
 				tft_prints(0, 9, "calibrated: %d",get_calibrated());
 			
 				
