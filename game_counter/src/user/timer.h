@@ -28,5 +28,8 @@ void timer_set(u16 t);
 void timer_update(void);
 void timer_start(u8 pre_counter);
 void timer_stop(void);
+bool is_timer_start(void);
+u32 get_timer_ms(void);
+
 
 #endif  /* __TIMER_H */

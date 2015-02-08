@@ -19,7 +19,8 @@ int main(void)
   uart_com_init();
   
   timer_set(60);
-  buzzer_control(1, 1000);
+  //buzzer_control(1, 1000);
+  buzzer_play_song(MARIO_BEGIN, 60, 0);
   
   while (1) {
     if (ticks_img != get_ticks()) {
@@ -60,9 +61,14 @@ int main(void)
         }
         
         if (button_pressed(BUTTON_4) == 1) {
-          game_mode = (game_mode + 1) % TIMER_MODE_COUNT;
-          timer_set(game_mode_time[game_mode]);
-          buzzer_control(2, 80);
+          if (!is_timer_start()) {
+            // Change mode
+            game_mode = (game_mode + 1) % TIMER_MODE_COUNT;
+            timer_set(game_mode_time[game_mode]);
+            buzzer_control_note(2, 80, game_mode == 0 ? NOTE_D : \
+              (game_mode == 1 ? NOTE_E : (game_mode == 2 ? NOTE_Fs : NOTE_G)), 7);
+          }
+          
         }
         uart_update();
         

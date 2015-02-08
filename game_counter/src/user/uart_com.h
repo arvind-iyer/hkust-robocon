@@ -11,4 +11,5 @@
 #endif  /* __UART_COM_H */
 
 void uart_com_init(void);
+void uart_com_tx(const char * tx_buf, ...);
 void uart_update(void);

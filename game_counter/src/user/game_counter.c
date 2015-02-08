@@ -104,8 +104,8 @@ void game_counter_set_time(u8 minute, u8 seconds)
     seconds -= 60;
   }
   
-  game_counter_set_digit_id(0, minute);
-  game_counter_set_digit_id(1, seconds / 10);
+  game_counter_set_digit_id(0, minute  % 10);
+  game_counter_set_digit_id(1, (seconds / 10) % 10);
   game_counter_set_digit_id(2, seconds % 10);
 }
 
