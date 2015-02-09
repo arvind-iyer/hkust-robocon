@@ -10,6 +10,7 @@
 //#define	RACKET_TIMEOUT					25
 #define	PNEUMATIC_OPEN_DELAY	  10
 #define MOTOR_OPEN_DELAY        10
+#define ENCODER_THRESHOLD				10000
 
 void racket_init(void);
 void racket_received_command(void);
@@ -20,7 +21,9 @@ void open_pneumatic(void);
 void close_pneumatic(void);
 void serving (void);
 u8 get_switch(void);
-u8 get_calibrated(void);
+s32 get_calibrated(void);
+s32 get_current(void);
+s32 get_prev(void);
 
 void add_racket_speed(void);
 void decrease_racket_speed(void);

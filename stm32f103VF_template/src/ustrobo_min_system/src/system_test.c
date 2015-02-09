@@ -737,20 +737,8 @@ void xbc_test(void)
 	*/
 void gpio_pin_test(void)
 {
-	RCC_APB2PeriphClockCmd(RCC_APB2Periph_GPIOE, ENABLE);
-	/* Pin E test */
-	GPIO_InitTypeDef GPIO_InitStructure;
-	GPIO_InitStructure.GPIO_Speed = GPIO_Speed_2MHz;
-	GPIO_InitStructure.GPIO_Mode = GPIO_Mode_IPD;
-	GPIO_InitStructure.GPIO_Pin = GPIO_Pin_All;
-	GPIO_Init(GPIOE, &GPIO_InitStructure);
-	
-  GPIO_InitStructure.GPIO_Mode = GPIO_Mode_IPU;
-	GPIO_InitStructure.GPIO_Pin = GPIO_Pin_9;
-	GPIO_Init(GPIOB, &GPIO_InitStructure);
-  
 	u16 curr_test_pin = GPIO_Pin_0;
-	vu16 initial_input = 0;		// None of GPIOE is used before test
+	vu16 initial_input = GPIO_ReadInputData(GPIOE);		// None of GPIOE is used before test
 	u16 last_input = GPIO_Pin_0;		
 	u8 pin_no = 0;
 	bool test_done = false;
@@ -779,7 +767,7 @@ void gpio_pin_test(void)
 				}
 				
 				if (!test_done) {
-					if ((GPIO_ReadInputData(GPIOE) - initial_input) == curr_test_pin && last_input == initial_input) {
+					if ((GPIO_ReadInputData(GPIOE) ^ initial_input) == curr_test_pin && last_input == initial_input) {
 						SUCCESSFUL_MUSIC;
 						if (curr_test_pin != GPIO_Pin_15) {
 							curr_test_pin <<= 1;
