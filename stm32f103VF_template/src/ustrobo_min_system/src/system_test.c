@@ -117,6 +117,7 @@ void ascii_test(void)
 
 void motor_test(void)
 {	
+  static const s32 SPEED_SCALE = 10;
 	TFT_UI_ITEM
 		motor_list = {
 			.type = tft_ui_list,
@@ -145,8 +146,8 @@ void motor_test(void)
 			.x = 7, .y = 6,
 			.ui_item.list = {
 				.width = 6,
-				.range.lower = (s32) -999,
-				.range.upper = (s32) 999,
+				.range.lower = (s32) -2000 / SPEED_SCALE,
+				.range.upper = (s32) 2000 / SPEED_SCALE,
 				.selected_int = 0
 			}
 		},
@@ -211,7 +212,7 @@ void motor_test(void)
 			if (ticks_img % 50 == 5) {
 				if (tft_ui_get_val(&motor_test_flag)) {
 					// Start setting velocity
-					motor_set_vel((MOTOR_ID) tft_ui_get_val(&motor_list), (s32) tft_ui_get_val(&motor_speed), \
+					motor_set_vel((MOTOR_ID) tft_ui_get_val(&motor_list), (s32) tft_ui_get_val(&motor_speed) * SPEED_SCALE, \
 						(CLOSE_LOOP_FLAG) tft_ui_get_val(&motor_loop_type));
 				} else {
 					// Stop
@@ -228,7 +229,7 @@ void motor_test(void)
 				tft_prints(0, 3, "ID: 0x%03X", CAN_MOTOR_BASE + tft_ui_get_val(&motor_list)); 
 				tft_prints(0, 4, "Encoder: %d", get_encoder_value((MOTOR_ID) tft_ui_get_val(&motor_list)));				
 				tft_prints(6, 5, "%s", tft_ui_get_val(&motor_loop_type) == CLOSE_LOOP ? "CLOSE" : "OPEN");
-				tft_prints(0, 6, "Speed:   %d", tft_ui_get_val(&motor_speed));
+				tft_prints(0, 6, "Speed:   %d", tft_ui_get_val(&motor_speed) * SPEED_SCALE);
 				tft_prints(0, 7, "   Start test");
 				
 				tft_ui_update(&tft_ui, ticks_img % 500 < 250);
