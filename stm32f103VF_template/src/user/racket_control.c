@@ -8,8 +8,6 @@ static bool interrupt_triggered = false;
 static u32 interrupt_triggered_time;
 //static u32 prev_encoder_value = 0;
 //static u32 current_encoder_distance = 0;
-static bool serving_started = false;
-static u32 serving_started_time = 0;
 
 static u8 racket_mode = 0;
 static u16 racket_speed = 1800;
@@ -45,11 +43,8 @@ void decrease_racket_delay() {
 
 void racket_init(void)
 {
-	register_special_char_function('u', racket_received_command);
+	register_special_char_function('i', racket_received_command);
 	register_special_char_function(']', racket_calibrate);
-	register_special_char_function('y', open_pneumatic);
-	register_special_char_function('j', close_pneumatic);
-	register_special_char_function('o', serving);
 	
 	register_special_char_function('=', increase_racket_speed); // +
 	register_special_char_function('-', decrease_racket_speed); // -
@@ -67,12 +62,6 @@ void racket_init(void)
   GPIO_InitStructure.GPIO_Speed = GPIO_Speed_50MHz;
   GPIO_InitStructure.GPIO_Pin = GPIO_Pin_7;
   GPIO_Init(GPIOE, &GPIO_InitStructure);
-	
-	// pneumatic init	
-	GPIO_InitStructure.GPIO_Mode = GPIO_Mode_Out_PP;
-  GPIO_InitStructure.GPIO_Speed = GPIO_Speed_50MHz;
-  GPIO_InitStructure.GPIO_Pin = GPIO_Pin_15;
-	GPIO_Init(GPIOE, &GPIO_InitStructure);
 	
 	GPIO_EXTILineConfig(GPIO_PortSourceGPIOE,GPIO_PinSource7);
 	
@@ -163,37 +152,12 @@ void racket_update(void)    //determine whether the motor should run
 //		motor_set_vel(MOTOR5, 0, CLOSE_LOOP);
 			motor_lock(MOTOR5);
 	}
-	if (serving_started) {
-		if (get_full_ticks() - serving_started_time > racket_delay){
-			racket_received_command();
-			serving_started = false;
-		}
-	}
 }
 
 
 bool did_receive_command(void)
 {
 	return !switch_on;
-}
-
-void open_pneumatic(void)
-{
-	GPIO_ResetBits(GPIOE, GPIO_Pin_15);
-}
-
-void close_pneumatic(void)
-{
-	GPIO_SetBits(GPIOE, GPIO_Pin_15);
-}
-
-void serving (void){
-	// check if pneumatic is closed
-	if (GPIO_ReadInputDataBit(GPIOE, GPIO_Pin_15)) {
-		open_pneumatic();
-		serving_started = true;
-		serving_started_time = get_full_ticks();
-	}
 }
 
 u8 get_switch(void){
