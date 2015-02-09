@@ -24,12 +24,12 @@ int main(void)
 	wheel_base_init();
   ultrasonic_init();
 	special_char_handler_init();
-	racket_init();
+//	racket_init();
 	pivot_init();
   
 	system_start(1200);
 	
-	menu_add("Robot A Prog", robocon_main);
+	menu_add("Robot B Prog", robocon_main);
 	menu_add("Position test", position_test);
 	menu_add("Motor test", motor_test);
 	menu_add("Battery test", battery_test);

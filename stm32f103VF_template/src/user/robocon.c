@@ -15,7 +15,7 @@ void robocon_main(void)
 				// Every 10 ms (100 Hz)
 				bluetooth_update();
 				wheel_base_update();
-				racket_update();
+				pivot_update();
 			}
 			
 			if (ticks_img % 250 == 1) {
@@ -83,10 +83,9 @@ void robocon_main(void)
         tft_prints(0, 6, "Char: %s (%d)", s, special_char_handler_bt_get_last_char());
         //tft_prints(0, 7, "Switch hit: %d", did_receive_command());
 				//tft_prints(0, 8, "switch: %d",get_switch());
-				tft_prints(0, 7, "R_speed: %d", get_racket_speed());
-				tft_prints(0, 8, "R_delay: %d", get_racket_delay());
-				
-				tft_prints(0, 9, "calibrated: %d",get_calibrated());
+				tft_prints(0, 7, "left: %d", get_left_mode());
+				tft_prints(0, 8, "right: %d", get_right_mode());
+				tft_prints(0, 9, "motor: %d",get_motor_mode());
 			
 				
 				tft_update();
