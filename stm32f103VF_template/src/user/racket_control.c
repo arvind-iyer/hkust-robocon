@@ -179,8 +179,8 @@ void racket_update(void)    //determine whether the motor should run
 	if (calibrate_mode_on) {
 		if (switch_hit < 2) {
 			calibrated = false;
-			motor_set_vel(MOTOR5, -200, OPEN_LOOP);
-			current_speed = 200;
+			motor_set_vel(MOTOR5, -150, OPEN_LOOP);
+			current_speed = 150;
 		} else {
 			calibrate_mode_on = false;
 			calibrated = true;
@@ -243,7 +243,7 @@ u8 get_switch(void){
 }
 
 s32 get_calibrated(void){
-	return turn_encoder_value;
+	return racket_delay;
 }
 
 s32 get_current(void){
