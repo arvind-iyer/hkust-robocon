@@ -12,6 +12,8 @@ static u32 serving_started_time = 0;
 static bool switch_stat;
 static u8 switch_hit = 0;
 
+static u32 current_speed = 0;
+
 static u16 racket_speed = 1800;
 static u16 racket_delay = 10;
 
@@ -42,6 +44,25 @@ void decrease_racket_delay() {
 	racket_delay -= 5;
 }
 
+void slow_serve_speed_set(void) {
+	racket_speed = 1000;
+}
+
+void mid_serve_speed_set(void) {
+	racket_speed = 1400;
+}
+
+void fast_serve_speed_set(void) {
+	racket_speed = 1800;
+}
+
+void motor_spin(void) {
+	motor_set_vel(MOTOR5, -1000, OPEN_LOOP);
+}
+
+void motor_emergency_stop(void) {
+	motor_lock(MOTOR5);
+}
 
 void racket_init(void)
 {
@@ -50,6 +71,11 @@ void racket_init(void)
 	register_special_char_function('y', open_pneumatic);
 	register_special_char_function('j', close_pneumatic);
 	register_special_char_function('o', serving);
+	register_special_char_function('b', slow_serve_speed_set);
+	register_special_char_function('n', mid_serve_speed_set);
+	register_special_char_function('m', fast_serve_speed_set);
+	register_special_char_function('h', motor_spin);
+	register_special_char_function('g', motor_emergency_stop);
 	
 	register_special_char_function('=', increase_racket_speed); // +
 	register_special_char_function('-', decrease_racket_speed); // -
@@ -68,13 +94,13 @@ void racket_init(void)
   GPIO_InitStructure.GPIO_Speed = GPIO_Speed_50MHz;
   GPIO_InitStructure.GPIO_Pin = GPIO_Pin_7;
   GPIO_Init(GPIOE, &GPIO_InitStructure);
-/*
+
 	// pneumatic init	
 	GPIO_InitStructure.GPIO_Mode = GPIO_Mode_Out_PP;
   GPIO_InitStructure.GPIO_Speed = GPIO_Speed_50MHz;
   GPIO_InitStructure.GPIO_Pin = GPIO_Pin_15;
 	GPIO_Init(GPIOE, &GPIO_InitStructure);
-	
+/*
 	GPIO_EXTILineConfig(GPIO_PortSourceGPIOE,GPIO_PinSource7);
 	
 	// EXTI configuration
@@ -153,22 +179,30 @@ void racket_update(void)    //determine whether the motor should run
 	if (calibrate_mode_on) {
 		if (switch_hit < 2) {
 			calibrated = false;
-			motor_set_vel(MOTOR5, -300, OPEN_LOOP);
+			motor_set_vel(MOTOR5, -200, OPEN_LOOP);
+			current_speed = 200;
 		} else {
 			calibrate_mode_on = false;
 			calibrated = true;
 			turn_encoder_value = current_encoder_value - prev_encoder_value;
+			target_encoder_value = current_encoder_value;
 		}
 	}
 	// regular mode
 	else if (calibrated) {
 		if (get_encoder_value(MOTOR5) >= target_encoder_value) {
 			current_encoder_value = get_encoder_value(MOTOR5);
-			//		motor_set_acceleration(MOTOR5, 1000);
-			//		motor_set_vel(MOTOR5, 0, CLOSE_LOOP);
+			// motor_set_acceleration(MOTOR5, 1000);
+			// motor_set_vel(MOTOR5, 0, CLOSE_LOOP);
 			motor_lock(MOTOR5);
+			current_speed = 0;
+		} else if (get_encoder_value(MOTOR5) <= target_encoder_value - turn_encoder_value / 2){
+			motor_set_vel(MOTOR5, -racket_speed, OPEN_LOOP);
+			current_speed = racket_speed;
 		} else {
-			motor_set_vel(MOTOR5, racket_speed, OPEN_LOOP);
+			s32 vel_error = (target_encoder_value - get_encoder_value(MOTOR5))* racket_speed  / turn_encoder_value + 200;
+			motor_set_vel(MOTOR5, -vel_error, OPEN_LOOP);
+			current_speed = vel_error;
 		}
 	}
 	if (serving_started) {
@@ -213,11 +247,9 @@ s32 get_calibrated(void){
 }
 
 s32 get_current(void){
-	return current_encoder_value;
+	return current_speed;
 }
 
 s32 get_prev(void){
 	return prev_encoder_value;
 }
-
-
