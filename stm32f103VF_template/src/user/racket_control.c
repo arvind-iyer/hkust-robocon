@@ -15,7 +15,19 @@ static u8 switch_hit = 0;
 static u32 current_speed = 0;
 
 static u16 racket_speed = 1800;
-static u16 racket_delay = 10;
+static u16 racket_delay = 264;    //tested best result
+
+//added for upper rackets
+static bool up_calibrate_mode_on = false;
+static bool up_calibrated = false;
+static s32 up_prev_encoder_value = 0;
+static s32 up_current_encoder_value = 0;
+static s32 up_target_encoder_value = 0;
+static s32 up_turn_encoder_value = 0;
+static bool up_switch_stat;
+static u8 up_switch_hit = 0;
+static u32 up_current_speed = 0;
+static u16 up_racket_speed = 1800;
 
 u16 get_racket_speed() {
 	return racket_speed;
@@ -37,11 +49,11 @@ void decrease_racket_speed() {
 }
 
 void increase_racket_delay() {
-	racket_delay += 5;
+	racket_delay += 1;
 }
 
 void decrease_racket_delay() {
-	racket_delay -= 5;
+	racket_delay -= 1;
 }
 
 void slow_serve_speed_set(void) {
@@ -77,24 +89,36 @@ void racket_init(void)
 	register_special_char_function('h', motor_spin);
 	register_special_char_function('g', motor_emergency_stop);
 	
+	register_special_char_function('z', up_racket_cmd);
+	register_special_char_function('x', up_racket_calibrate);
+	
+	
 	register_special_char_function('=', increase_racket_speed); // +
 	register_special_char_function('-', decrease_racket_speed); // -
 	register_special_char_function('.', increase_racket_delay); // >
 	register_special_char_function(',', decrease_racket_delay); // <
 	
 	switch_stat = GPIO_ReadInputDataBit(GPIOE, GPIO_Pin_7);
+	up_switch_stat = GPIO_ReadInputDataBit(GPIOD, GPIO_Pin_11);
 
 	// GPIO configuration
 	GPIO_InitTypeDef GPIO_InitStructure;
 	
 	RCC_APB2PeriphClockCmd(RCC_APB2Periph_GPIOE, ENABLE);
+	RCC_APB2PeriphClockCmd(RCC_APB2Periph_GPIOD, ENABLE);
 	
-	// switch init
+	// switch_servxing init
 	GPIO_InitStructure.GPIO_Mode = GPIO_Mode_IPU;
   GPIO_InitStructure.GPIO_Speed = GPIO_Speed_50MHz;
   GPIO_InitStructure.GPIO_Pin = GPIO_Pin_7;
   GPIO_Init(GPIOE, &GPIO_InitStructure);
-
+	
+	//switch_upper_racket init
+	GPIO_InitStructure.GPIO_Mode = GPIO_Mode_IPU;
+  GPIO_InitStructure.GPIO_Speed = GPIO_Speed_50MHz;
+  GPIO_InitStructure.GPIO_Pin = GPIO_Pin_11;
+  GPIO_Init(GPIOD, &GPIO_InitStructure);
+	
 	// pneumatic init	
 	GPIO_InitStructure.GPIO_Mode = GPIO_Mode_Out_PP;
   GPIO_InitStructure.GPIO_Speed = GPIO_Speed_50MHz;
@@ -205,12 +229,14 @@ void racket_update(void)    //determine whether the motor should run
 			current_speed = vel_error;
 		}
 	}
+	
 	if (serving_started) {
 		if (get_full_ticks() - serving_started_time > racket_delay){
 			racket_received_command();
 			serving_started = false;
 		}
 	}
+	
 }
 
 
@@ -253,3 +279,73 @@ s32 get_current(void){
 s32 get_prev(void){
 	return prev_encoder_value;
 }
+
+
+
+// added for upper rackets
+
+void up_racket_update(void)    //determine whether the motor should run
+{
+	if(GPIO_ReadInputDataBit(GPIOD, GPIO_Pin_11) != up_switch_stat) {
+		up_switch_stat = GPIO_ReadInputDataBit(GPIOD, GPIO_Pin_11);
+		if (up_switch_stat) {
+			++up_switch_hit;
+			if (!up_prev_encoder_value) {
+				up_prev_encoder_value = get_encoder_value(MOTOR6);
+			} else if (!up_current_encoder_value) {
+				up_current_encoder_value = get_encoder_value(MOTOR6);
+			}
+		}
+	}
+	// calibration mode
+	if (up_calibrate_mode_on) {
+		if (up_switch_hit < 2) {
+			up_calibrated = false;
+			motor_set_vel(MOTOR6, -150, OPEN_LOOP);
+			up_current_speed = 150;
+		} else {
+			up_calibrate_mode_on = false;
+			up_calibrated = true;
+			up_turn_encoder_value = up_current_encoder_value - up_prev_encoder_value;
+			up_target_encoder_value = up_current_encoder_value;
+		}
+	}
+	// regular mode
+	else if (up_calibrated) {
+		if (get_encoder_value(MOTOR6) >= up_target_encoder_value) {
+			up_current_encoder_value = get_encoder_value(MOTOR6);
+			motor_lock(MOTOR6);
+			up_current_speed = 0;
+		} else if (get_encoder_value(MOTOR6) <= up_target_encoder_value - up_turn_encoder_value / 2){
+			motor_set_vel(MOTOR6, -up_racket_speed, OPEN_LOOP);
+			up_current_speed = up_racket_speed;
+		} else {
+			s32 vel_error = (up_target_encoder_value - get_encoder_value(MOTOR6))* up_racket_speed  / up_turn_encoder_value + 200;
+			motor_set_vel(MOTOR6, -vel_error, OPEN_LOOP);
+			up_current_speed = vel_error;
+		}
+	}
+	
+}
+
+void up_racket_cmd(void)
+{
+	if (up_calibrated) {
+		up_target_encoder_value = up_current_encoder_value + up_turn_encoder_value;
+	}
+}
+
+void up_racket_calibrate (void){
+	up_calibrate_mode_on = true;
+	up_prev_encoder_value = 0;
+	up_current_encoder_value = 0;
+	up_turn_encoder_value = 0;
+	up_calibrated = false;
+	up_switch_hit = 0;
+}
+
+u8 get_up_switch(void){
+	return GPIO_ReadInputDataBit(GPIOD, GPIO_Pin_11) ;
+}
+
+

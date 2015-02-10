@@ -31,6 +31,9 @@ void add_racket_delay(void);
 void decrease_racket_delay(void);
 u16 get_racket_speed(void);
 u16 get_racket_delay(void);
-
+void up_racket_cmd(void);
+void up_racket_calibrate(void);
+void up_racket_update(void);
+u8 get_up_switch(void);
 
 #endif
