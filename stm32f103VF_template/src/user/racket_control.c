@@ -9,9 +9,8 @@ static s32 target_encoder_value = 0;
 static s32 turn_encoder_value = 0;
 static bool serving_started = false;
 static u32 serving_started_time = 0;
-static bool switch_state;
+static bool switch_stat;
 static u8 switch_hit = 0;
-static u32 switch_interrupt_trigger_time = 0;
 
 static u32 current_speed = 0;
 
@@ -83,7 +82,7 @@ void racket_init(void)
 	register_special_char_function('.', increase_racket_delay); // >
 	register_special_char_function(',', decrease_racket_delay); // <
 	
-	switch_state = GPIO_ReadInputDataBit(GPIOE, GPIO_Pin_7);
+	switch_stat = GPIO_ReadInputDataBit(GPIOE, GPIO_Pin_7);
 
 	// GPIO configuration
 	GPIO_InitTypeDef GPIO_InitStructure;
@@ -101,7 +100,7 @@ void racket_init(void)
   GPIO_InitStructure.GPIO_Speed = GPIO_Speed_50MHz;
   GPIO_InitStructure.GPIO_Pin = GPIO_Pin_15;
 	GPIO_Init(GPIOE, &GPIO_InitStructure);
-
+/*
 	GPIO_EXTILineConfig(GPIO_PortSourceGPIOE,GPIO_PinSource7);
 	
 	// EXTI configuration
@@ -121,33 +120,31 @@ void racket_init(void)
 	NVIC_InitStructure.NVIC_IRQChannelPreemptionPriority = 1;
 	NVIC_InitStructure.NVIC_IRQChannelSubPriority = 1;
 	NVIC_Init(&NVIC_InitStructure);
+*/
 }
-
+/*
 void EXTI9_5_IRQHandler(void)
 {
 	if (EXTI_GetITStatus(EXTI_Line7) != RESET) {
-		if (GPIO_ReadInputDataBit(GPIOE, GPIO_Pin_7) != switch_state && get_full_ticks() - switch_interrupt_trigger_time > SWITCH_TIMEOUT) {
-			switch_interrupt_trigger_time = get_full_ticks();
-			switch_state = GPIO_ReadInputDataBit(GPIOE, GPIO_Pin_7);
-			if (switch_state) {
-				switch_hit++;
-				if (!prev_encoder_value) {
-					prev_encoder_value = get_encoder_value(MOTOR5);
-				} else if (!current_encoder_value) {
+		if(calibrate_mode_on) {
+			if (!switch_hit_once && GPIO_ReadInputDataBit(GPIOE, GPIO_Pin_7)) {
+				prev_encoder_value = get_encoder_value(MOTOR5);
+				switch_hit_once = true;
+			} else {
+				if (switch_hit_once && (get_encoder_value(MOTOR5) - prev_encoder_value > ENCODER_THRESHOLD) && GPIO_ReadInputDataBit(GPIOE, GPIO_Pin_7)) {
 					current_encoder_value = get_encoder_value(MOTOR5);
+					turn_encoder_value = current_encoder_value - prev_encoder_value;
+					switch_hit_once = false;
+					motor_lock(MOTOR5);
+					calibrate_mode_on = false;
+					calibrated = true;
 				}
 			}
-		}
-		if (calibrate_mode_on && switch_hit == 2) {
-			calibrate_mode_on = false;
-			calibrated = true;
-			turn_encoder_value = current_encoder_value - prev_encoder_value;
-			target_encoder_value = current_encoder_value;
 		}
 	  EXTI_ClearITPendingBit(EXTI_Line7);
 	}
 }
-
+*/
 void racket_calibrate(void)			//calibrate to 1, run before start
 {
 	calibrate_mode_on = true;
@@ -167,11 +164,29 @@ void racket_received_command(void)
 
 void racket_update(void)    //determine whether the motor should run
 {
+	if(GPIO_ReadInputDataBit(GPIOE, GPIO_Pin_7) != switch_stat) {
+		switch_stat = GPIO_ReadInputDataBit(GPIOE, GPIO_Pin_7);
+		if (switch_stat) {
+			++switch_hit;
+			if (!prev_encoder_value) {
+				prev_encoder_value = get_encoder_value(MOTOR5);
+			} else if (!current_encoder_value) {
+				current_encoder_value = get_encoder_value(MOTOR5);
+			}
+		}
+	}
 	// calibration mode
 	if (calibrate_mode_on) {
-		calibrated = false;
-		motor_set_vel(MOTOR5, -150, OPEN_LOOP);
-		current_speed = 150;
+		if (switch_hit < 2) {
+			calibrated = false;
+			motor_set_vel(MOTOR5, -150, OPEN_LOOP);
+			current_speed = 150;
+		} else {
+			calibrate_mode_on = false;
+			calibrated = true;
+			turn_encoder_value = current_encoder_value - prev_encoder_value;
+			target_encoder_value = current_encoder_value;
+		}
 	}
 	// regular mode
 	else if (calibrated) {
@@ -232,7 +247,7 @@ s32 get_calibrated(void){
 }
 
 s32 get_current(void){
-	return switch_hit;
+	return current_speed;
 }
 
 s32 get_prev(void){
