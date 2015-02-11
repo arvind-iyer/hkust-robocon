@@ -439,9 +439,9 @@
               <FilePath>.\src\user\special_char_handler.c</FilePath>
             </File>
             <File>
-              <FileName>racket_control.c</FileName>
+              <FileName>serving_control.c</FileName>
               <FileType>1</FileType>
-              <FilePath>.\src\user\racket_control.c</FilePath>
+              <FilePath>.\src\user\serving_control.c</FilePath>
             </File>
           </Files>
         </Group>

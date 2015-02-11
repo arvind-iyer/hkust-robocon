@@ -7,7 +7,7 @@
 #include "special_char_handler.h"
 #include "stdbool.h"
 
-#define	SWITCH_TIMEOUT					10
+#define	SWITCH_TIMEOUT					15
 #define	PNEUMATIC_OPEN_DELAY	  10
 #define MOTOR_OPEN_DELAY        10
 #define ENCODER_THRESHOLD				10000

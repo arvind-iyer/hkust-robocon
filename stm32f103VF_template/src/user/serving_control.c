@@ -148,6 +148,8 @@ void serving_init(void)
 	NVIC_InitStructure.NVIC_IRQChannelPreemptionPriority = 1;
 	NVIC_InitStructure.NVIC_IRQChannelSubPriority = 1;
 	NVIC_Init(&NVIC_InitStructure);
+	
+	close_pneumatic();
 }
 
 void EXTI9_5_IRQHandler(void)
@@ -159,16 +161,6 @@ void EXTI9_5_IRQHandler(void)
 			switch_state = GPIO_ReadInputDataBit(GPIOE, GPIO_Pin_7);
 			// Only when switch is being turned on
 			if (switch_state) {
-				// do nothing if calibrating
-				if (!calibrate_mode_on) {
-					// decelerate when hitting the switch again
-					motor_set_acceleration(MOTOR5, 1799);
-					motor_set_vel(MOTOR5, -10, CLOSE_LOOP);
-					current_speed = 10;
-				}
-			}
-			// Only when switch is being turned off
-			else {
 				if (calibrate_mode_on) {
 					calibrate_mode_on = false;
 					calibrated = true;
@@ -177,6 +169,18 @@ void EXTI9_5_IRQHandler(void)
 				}
 				motor_lock(MOTOR5);
 				current_speed = 0;
+				/*
+				// do nothing if calibrating
+				if (!calibrate_mode_on) {
+					// decelerate when hitting the switch again
+					motor_set_acceleration(MOTOR5, 1000);
+					motor_set_vel(MOTOR5, -20, CLOSE_LOOP);
+					current_speed = 20;
+				}
+				*/
+			}
+			// Only when switch is being turned off
+			else {
 			}
 		}
 	  EXTI_ClearITPendingBit(EXTI_Line7);
@@ -209,7 +213,7 @@ u8 serving_get_switch(void){
 }
 
 s32 serving_get_calibrated(void){
-	return racket_delay;
+	return switch_state;
 }
 
 s32 serving_get_current(void){
