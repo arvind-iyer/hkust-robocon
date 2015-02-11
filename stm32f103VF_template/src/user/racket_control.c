@@ -1,101 +1,74 @@
-#include "serving_control.h"
+#include "racket_control.h"
 #include "delay.h"
 
 static bool calibrate_mode_on = false;
 static bool calibrated = false;
+static s32 prev_encoder_value = 0;
+static s32 current_encoder_value = 0;
+static s32 target_encoder_value = 0;
+static s32 turn_encoder_value = 0;
 static bool serving_started = false;
 static u32 serving_started_time = 0;
 static bool switch_state;
 static u8 switch_hit = 0;
 static u32 switch_interrupt_trigger_time = 0;
 
-static bool swing_start = false;
-
 static u32 current_speed = 0;
 
 static u16 racket_speed = 1800;
 static u16 racket_delay = 10;
 
-// Begin internal functions
+u16 get_racket_speed() {
+	return racket_speed;
+}
 
-static void increase_racket_speed() {
+u16 get_racket_delay() {
+	return racket_delay;
+}
+
+
+void increase_racket_speed() {
 	if(racket_speed < 1800)
 		racket_speed += 5;
 }
 
-static void decrease_racket_speed() {
+void decrease_racket_speed() {
 	if(racket_speed > 0)
 			racket_speed -= 5;
 }
 
-static void increase_racket_delay() {
+void increase_racket_delay() {
 	racket_delay += 5;
 }
 
-static void decrease_racket_delay() {
+void decrease_racket_delay() {
 	racket_delay -= 5;
 }
 
-static void slow_serve_speed_set(void) {
+void slow_serve_speed_set(void) {
 	racket_speed = 1000;
 }
 
-static void mid_serve_speed_set(void) {
+void mid_serve_speed_set(void) {
 	racket_speed = 1400;
 }
 
-static void fast_serve_speed_set(void) {
+void fast_serve_speed_set(void) {
 	racket_speed = 1800;
 }
 
-static void motor_spin(void) {
+void motor_spin(void) {
 	motor_set_vel(MOTOR5, -1000, OPEN_LOOP);
 }
 
-static void motor_emergency_stop(void) {
+void motor_emergency_stop(void) {
 	motor_lock(MOTOR5);
 }
 
-
-static void open_pneumatic(void)
+void racket_init(void)
 {
-	GPIO_ResetBits(GPIOE, GPIO_Pin_15);
-}
-
-static void close_pneumatic(void)
-{
-	GPIO_SetBits(GPIOE, GPIO_Pin_15);
-}
-
-static void serving (void){
-	// check if pneumatic is closed
-	if (GPIO_ReadInputDataBit(GPIOE, GPIO_Pin_15)) {
-		open_pneumatic();
-		serving_started = true;
-		serving_started_time = get_full_ticks();
-	}
-}
-
-static void serving_calibrate(void)			//calibrate to 1, run before start
-{
-	calibrate_mode_on = true;
-	calibrated = false;
-	switch_hit = 0;
-}
-
-static void serving_received_command(void)
-{
-	if (calibrated) {
-		swing_start = true;
-	}
-}
-
-// end internal functions
-
-void serving_init(void)
-{
-	register_special_char_function('u', serving_received_command);
-	register_special_char_function(']', serving_calibrate);
+	register_special_char_function('u', racket_received_command);
+	register_special_char_function(']', racket_calibrate);
 	register_special_char_function('y', open_pneumatic);
 	register_special_char_function('j', close_pneumatic);
 	register_special_char_function('o', serving);
@@ -153,42 +126,47 @@ void serving_init(void)
 void EXTI9_5_IRQHandler(void)
 {
 	if (EXTI_GetITStatus(EXTI_Line7) != RESET) {
-		// Debounced edge trigger
 		if (GPIO_ReadInputDataBit(GPIOE, GPIO_Pin_7) != switch_state && get_full_ticks() - switch_interrupt_trigger_time > SWITCH_TIMEOUT) {
 			switch_interrupt_trigger_time = get_full_ticks();
 			switch_state = GPIO_ReadInputDataBit(GPIOE, GPIO_Pin_7);
-			// Only when switch is being turned on
 			if (switch_state) {
-				// do nothing if calibrating
-				if (!calibrate_mode_on) {
-					// decelerate when hitting the switch again
-					motor_set_acceleration(MOTOR5, 1799);
-					motor_set_vel(MOTOR5, -10, CLOSE_LOOP);
-					current_speed = 10;
+				switch_hit++;
+				if (!prev_encoder_value) {
+					prev_encoder_value = get_encoder_value(MOTOR5);
+				} else if (!current_encoder_value) {
+					current_encoder_value = get_encoder_value(MOTOR5);
 				}
 			}
-			// Only when switch is being turned off
-			else {
-				if (calibrate_mode_on) {
-					calibrate_mode_on = false;
-					calibrated = true;
-				} else if (swing_start) {
-					swing_start = false;
-				}
-				motor_lock(MOTOR5);
-				current_speed = 0;
-			}
+		}
+		if (calibrate_mode_on && switch_hit == 2) {
+			calibrate_mode_on = false;
+			calibrated = true;
+			turn_encoder_value = current_encoder_value - prev_encoder_value;
+			target_encoder_value = current_encoder_value;
 		}
 	  EXTI_ClearITPendingBit(EXTI_Line7);
 	}
 }
 
-void serving_update(void)    //determine whether the motor should run
+void racket_calibrate(void)			//calibrate to 1, run before start
 {
-	if (swing_start) {
-		motor_set_vel(MOTOR5, -racket_speed, OPEN_LOOP);
-		current_speed = racket_speed;
+	calibrate_mode_on = true;
+	prev_encoder_value = 0;
+	current_encoder_value = 0;
+	turn_encoder_value = 0;
+	calibrated = false;
+	switch_hit = 0;
+}
+
+void racket_received_command(void)
+{
+	if (calibrated) {
+		target_encoder_value = current_encoder_value + turn_encoder_value;
 	}
+}
+
+void racket_update(void)    //determine whether the motor should run
+{
 	// calibration mode
 	if (calibrate_mode_on) {
 		calibrated = false;
@@ -196,34 +174,67 @@ void serving_update(void)    //determine whether the motor should run
 		current_speed = 150;
 	}
 	// regular mode
+	else if (calibrated) {
+		if (get_encoder_value(MOTOR5) >= target_encoder_value) {
+			current_encoder_value = get_encoder_value(MOTOR5);
+			// motor_set_acceleration(MOTOR5, 1000);
+			// motor_set_vel(MOTOR5, 0, CLOSE_LOOP);
+			motor_lock(MOTOR5);
+			current_speed = 0;
+		} else if (get_encoder_value(MOTOR5) <= target_encoder_value - turn_encoder_value / 2){
+			motor_set_vel(MOTOR5, -racket_speed, OPEN_LOOP);
+			current_speed = racket_speed;
+		} else {
+			s32 vel_error = (target_encoder_value - get_encoder_value(MOTOR5))* racket_speed  / turn_encoder_value + 200;
+			motor_set_vel(MOTOR5, -vel_error, OPEN_LOOP);
+			current_speed = vel_error;
+		}
+	}
 	if (serving_started) {
 		if (get_full_ticks() - serving_started_time > racket_delay){
-			serving_received_command();
+			racket_received_command();
 			serving_started = false;
 		}
 	}
 }
 
-u8 serving_get_switch(void){
+
+bool did_receive_command(void)
+{
+	return false;
+}
+
+void open_pneumatic(void)
+{
+	GPIO_ResetBits(GPIOE, GPIO_Pin_15);
+}
+
+void close_pneumatic(void)
+{
+	GPIO_SetBits(GPIOE, GPIO_Pin_15);
+}
+
+void serving (void){
+	// check if pneumatic is closed
+	if (GPIO_ReadInputDataBit(GPIOE, GPIO_Pin_15)) {
+		open_pneumatic();
+		serving_started = true;
+		serving_started_time = get_full_ticks();
+	}
+}
+
+u8 get_switch(void){
 	return switch_hit;
 }
 
-s32 serving_get_calibrated(void){
+s32 get_calibrated(void){
 	return racket_delay;
 }
 
-s32 serving_get_current(void){
+s32 get_current(void){
 	return switch_hit;
 }
 
-s32 serving_get_prev(void){
-	return current_speed;
-}
-
-u16 serving_get_racket_speed() {
-	return racket_speed;
-}
-
-u16 serving_get_racket_delay() {
-	return racket_delay;
+s32 get_prev(void){
+	return prev_encoder_value;
 }

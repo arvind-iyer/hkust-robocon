@@ -27,7 +27,7 @@
 #include "bluetooth.h"
 #include "wheel_base.h"
 #include "special_char_handler.h"
-#include "serving_control.h"
+#include "racket_control.h"
 
 void robocon_main(void);
 #endif	/* __ROBOCON_H */
