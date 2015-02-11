@@ -7,7 +7,7 @@
 #include "special_char_handler.h"
 #include "stdbool.h"
 
-//#define	RACKET_TIMEOUT					25
+#define	SWITCH_TIMEOUT					10
 #define	PNEUMATIC_OPEN_DELAY	  10
 #define MOTOR_OPEN_DELAY        10
 #define ENCODER_THRESHOLD				10000
