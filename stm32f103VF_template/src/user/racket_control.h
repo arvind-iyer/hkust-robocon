@@ -14,7 +14,6 @@
 
 void racket_init(void);
 void racket_received_command(void);
-bool did_receive_command(void);
 void racket_update(void);
 void racket_calibrate(void);
 void open_pneumatic(void);
@@ -31,6 +30,9 @@ void add_racket_delay(void);
 void decrease_racket_delay(void);
 u16 get_racket_speed(void);
 u16 get_racket_delay(void);
-
+void up_racket_cmd(void);
+void up_racket_calibrate(void);
+void up_racket_update(void);
+u8 get_up_switch(void);
 
 #endif
