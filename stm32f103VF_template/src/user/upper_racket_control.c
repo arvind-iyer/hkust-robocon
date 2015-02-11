@@ -1,4 +1,4 @@
-#include "racket_control.h"
+#include "upper_racket_control.h"
 #include "delay.h"
 
 static bool switch_on = false;
@@ -6,8 +6,8 @@ static bool calibrate_mode_on = false;
 static bool calibrated = false;
 static bool interrupt_triggered = false;
 static u32 interrupt_triggered_time;
-//static u32 prev_encoder_value = 0;
-//static u32 current_encoder_distance = 0;
+static u32 prev_encoder_value = 0;
+static u32 current_encoder_distance = 0;
 
 static u8 racket_mode = 0;
 static u16 racket_speed = 1800;
@@ -84,12 +84,10 @@ void racket_init(void)
 	NVIC_Init(&NVIC_InitStructure);
 }
 
-void EXTI9_5_IRQHandler(void)
+void EXTI0_IRQHandler(void)
 {
-	if (EXTI_GetITStatus(EXTI_Line7) != RESET) {
-		interrupt_triggered_time = get_full_ticks();
-		interrupt_triggered = true;
-	  EXTI_ClearITPendingBit(EXTI_Line7);
+	if (EXTI_GetITStatus(EXTI_Line0) != RESET) {
+	  EXTI_ClearITPendingBit(EXTI_Line0);
 	}
 }
 
@@ -106,39 +104,12 @@ void racket_received_command(void)
 
 void racket_update(void)    //determine whether the motor should run
 {
-	
-	if (interrupt_triggered && get_full_ticks() - interrupt_triggered_time > 20) {
-		if (GPIO_ReadInputDataBit(GPIOE, GPIO_Pin_7)) {
-			switch_on = true;
-		} else {
-			switch_on = false;
-		}
-		interrupt_triggered = false;
-	}
-	
-	
-	/* code added by Antony */
-	uint8_t switchNow = GPIO_ReadInputDataBit(GPIOE, GPIO_Pin_7);
-	if(racket_mode == 0 && switchNow == false) {
-		racket_mode = 1;
-	}
-	if(racket_mode == 1 && switchNow == true) {
-		racket_mode = 2;
-//		motor_set_acceleration(MOTOR5, 1000);
-//		motor_set_vel(MOTOR5, 0, CLOSE_LOOP);
-		motor_lock(MOTOR5);
-	}
-	
-	
-	
 	// calibration mode
 	if (calibrate_mode_on) {
 		if (!switch_on) {
 			motor_set_vel(MOTOR5, 300, OPEN_LOOP);
 		}
 		else {
-	//		motor_set_acceleration(MOTOR5, 1000);
-	//		motor_set_vel(MOTOR5, 0, CLOSE_LOOP);
 			motor_lock(MOTOR5);
 			calibrate_mode_on = false;
 			calibrated = true;
@@ -148,8 +119,6 @@ void racket_update(void)    //determine whether the motor should run
 	else if ((!switch_on) && calibrated) {
 		motor_set_vel(MOTOR5, racket_speed, OPEN_LOOP);
 	} else {
-//		motor_set_acceleration(MOTOR5, 1000);
-//		motor_set_vel(MOTOR5, 0, CLOSE_LOOP);
 			motor_lock(MOTOR5);
 	}
 }
