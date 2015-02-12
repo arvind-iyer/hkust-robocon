@@ -448,11 +448,6 @@
               <FileType>1</FileType>
               <FilePath>.\src\user\upper_racket_control.c</FilePath>
             </File>
-            <File>
-              <FileName>lower_racket_control.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>.\src\user\lower_racket_control.c</FilePath>
-            </File>
           </Files>
         </Group>
         <Group>

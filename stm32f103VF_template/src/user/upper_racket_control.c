@@ -1,139 +1,205 @@
 #include "upper_racket_control.h"
 #include "delay.h"
 
-static bool switch_on = false;
-static bool calibrate_mode_on = false;
-static bool calibrated = false;
-static bool interrupt_triggered = false;
-static u32 interrupt_triggered_time;
-static u32 prev_encoder_value = 0;
-static u32 current_encoder_distance = 0;
+static u32 current_time = 0;
+static bool s1_switch = 0;
+static bool s2_switch = 0;
+static bool b1_switch = 0;
+static bool b2_switch = 0;
+static bool b3_switch = 0;
 
-static u8 racket_mode = 0;
-static u16 racket_speed = 1800;
-static u16 racket_delay = 10;
+static s32 pos_s1_encoder_value = 0;	// MOTOR7
+static s32 pos_s2_encoder_value = 0;	// MOTOR7
+static s32 pos_b1_encoder_value = 0;	// MOTOR6
+static s32 pos_b2_encoder_value = 0;	// MOTOR6
+static s32 pos_b3_encoder_value = 0;	// MOTOR5
+static s32 target_motor5_encoder_value = 0;
+static s32 target_motor6_encoder_value = 0;
+static s32 target_motor7_encoder_value = 0;
 
-u16 get_racket_speed() {
-	return racket_speed;
+static bool low_calibrate_mode = 1;
+static bool low_calibrated = 0;
+static u8 low_calibrate_switch_off_count = 0;
+static bool low_calibrate_leave_switch = 1;
+static bool low_racket_moving = 0;
+static u32 low_racket_moving_start_time = 0;
+
+static bool high_calibrate_mode = 0;
+static bool high_calibrated = 0;
+static bool high_racket_moving = 0;
+static u32 high_racket_moving_start_time = 0;
+static u8 high_racket_status = 0;
+
+static s32 low_speed = 1600;
+static s32 high_speed = 1;
+
+void increase_low_speed() {
+	if(low_speed<1799) low_speed += 1;
+}
+void decrease_low_speed() {
+	if(low_speed>0) low_speed -= 1;
+}
+void increase_high_speed() {
+	if(high_speed<1700) high_speed += 1;
+}
+void decrease_high_speed() {
+	if(high_speed>0) high_speed -= 1;
+}
+s32 get_low_speed() { return low_speed; }
+s32 get_high_speed() { return high_speed; }
+
+u8 get_high_racket_status() { return high_racket_status; }
+
+bool get_s1(void) { return s1_switch; }
+bool get_s2(void) { return s2_switch; }
+bool get_b1(void) { return b1_switch; }
+bool get_b2(void) { return b2_switch; }
+bool get_b3(void) { return b3_switch; }
+s32 get_b1e() {
+	return pos_b1_encoder_value;
+}
+s32 get_b2e() {
+	return pos_b2_encoder_value;
 }
 
-u16 get_racket_delay() {
-	return racket_delay;
+void low_racket_move(void) {
+	low_racket_moving = 1;
+	low_racket_moving_start_time = get_full_ticks();
 }
 
-
-void increase_racket_speed() {
-	if(racket_speed < 1800)
-		racket_speed += 5;
+void low_racket_calibrate(void) {
+	low_calibrate_mode = 1;
+	low_calibrate_switch_off_count = 0;
 }
 
-void decrease_racket_speed() {
-	if(racket_speed > 0)
-			racket_speed -= 5;
+void high_racket_move(void) {
+	high_racket_moving = 1;
+	high_racket_status = 0;
+	high_racket_moving_start_time = get_full_ticks();
 }
 
-void increase_racket_delay() {
-	racket_delay += 5;
+void high_racket_calibrate(void) {
+	high_calibrate_mode = 1;
 }
 
-void decrease_racket_delay() {
-	racket_delay -= 5;
-}
-
-
-void racket_init(void)
-{
-	register_special_char_function('i', racket_received_command);
-	register_special_char_function(']', racket_calibrate);
+void racket_init(void) {
+  register_special_char_function('/', low_racket_move);
+	register_special_char_function(';', low_racket_calibrate);
 	
-	register_special_char_function('=', increase_racket_speed); // +
-	register_special_char_function('-', decrease_racket_speed); // -
-	register_special_char_function('.', increase_racket_delay); // >
-	register_special_char_function(',', decrease_racket_delay); // <
+	register_special_char_function(' ', high_racket_move);
+	register_special_char_function('l', high_racket_calibrate);
 	
-
-	/* GPIO configuration */
-	GPIO_InitTypeDef GPIO_InitStructure;
+	register_special_char_function('>', increase_high_speed);
+	register_special_char_function('<', decrease_high_speed);
+	register_special_char_function('.', increase_low_speed);
+	register_special_char_function(',', decrease_low_speed);
 	
 	RCC_APB2PeriphClockCmd(RCC_APB2Periph_GPIOE, ENABLE);
 	
-	// switch init
+	/* GPIO configuration */
+	GPIO_InitTypeDef GPIO_InitStructure;
+	
+	// Swithces initialization
 	GPIO_InitStructure.GPIO_Mode = GPIO_Mode_IPU;
   GPIO_InitStructure.GPIO_Speed = GPIO_Speed_50MHz;
-  GPIO_InitStructure.GPIO_Pin = GPIO_Pin_7;
+  GPIO_InitStructure.GPIO_Pin = S1_Pin | S2_Pin;
   GPIO_Init(GPIOE, &GPIO_InitStructure);
 	
-	GPIO_EXTILineConfig(GPIO_PortSourceGPIOE,GPIO_PinSource7);
+	GPIO_InitStructure.GPIO_Mode = GPIO_Mode_IPU;
+  GPIO_InitStructure.GPIO_Speed = GPIO_Speed_50MHz;
+  GPIO_InitStructure.GPIO_Pin = B1_Pin | B2_Pin | B3_Pin;
+  GPIO_Init(GPIOE, &GPIO_InitStructure);
+}
+
+void racket_update(void) {
+	// !! When S1 or S2 is pressed, the value is 0.
+	s1_switch = !GPIO_ReadInputDataBit(GPIOE, S1_Pin);
+	s2_switch = !GPIO_ReadInputDataBit(GPIOE, S2_Pin);
+	// !! When B1, B2 or B3 are pressed, the value is 1.
+	b1_switch =  GPIO_ReadInputDataBit(GPIOE, B1_Pin);
+	b2_switch =  GPIO_ReadInputDataBit(GPIOE, B2_Pin);
+	b3_switch =  GPIO_ReadInputDataBit(GPIOE, B3_Pin);
 	
-	/* EXTI configuration */
-	EXTI_InitTypeDef EXTI_InitStructure;
-
-	EXTI_InitStructure.EXTI_Line = EXTI_Line7;
-	EXTI_InitStructure.EXTI_Mode = EXTI_Mode_Interrupt;
-	EXTI_InitStructure.EXTI_Trigger = EXTI_Trigger_Rising_Falling;
-	EXTI_InitStructure.EXTI_LineCmd = ENABLE;
-	EXTI_Init(&EXTI_InitStructure);
+	current_time =  get_full_ticks();
 	
-	/* NVIC configuration */
-	NVIC_InitTypeDef NVIC_InitStructure;
-
-	NVIC_InitStructure.NVIC_IRQChannel = EXTI9_5_IRQn;
-	NVIC_InitStructure.NVIC_IRQChannelCmd = ENABLE;
-	NVIC_InitStructure.NVIC_IRQChannelPreemptionPriority = 1;
-	NVIC_InitStructure.NVIC_IRQChannelSubPriority = 1;
-	NVIC_Init(&NVIC_InitStructure);
-}
-
-void EXTI0_IRQHandler(void)
-{
-	if (EXTI_GetITStatus(EXTI_Line0) != RESET) {
-	  EXTI_ClearITPendingBit(EXTI_Line0);
-	}
-}
-
-void racket_calibrate(void)			//calibrate to 1,run before start
-{
-	calibrate_mode_on = true;
-}
-
-void racket_received_command(void)
-{
-	switch_on = false;
-	racket_mode = 0;
-}
-
-void racket_update(void)    //determine whether the motor should run
-{
-	// calibration mode
-	if (calibrate_mode_on) {
-		if (!switch_on) {
-			motor_set_vel(MOTOR5, 300, OPEN_LOOP);
-		}
-		else {
-			motor_lock(MOTOR5);
-			calibrate_mode_on = false;
-			calibrated = true;
+	// "Low racket"
+	// Calibrate Mode
+	if (low_calibrate_mode == 1) {
+		if (b3_switch == 0) {
+			motor_set_vel(MOTOR5, 240, OPEN_LOOP);
+			low_calibrate_leave_switch = 1;
+		} else {
+			if(low_calibrate_leave_switch == 1) {
+				low_calibrate_switch_off_count += 1;
+				low_calibrate_leave_switch = 0;
+			}
+			if (low_calibrate_switch_off_count >= 2) {
+				motor_lock(MOTOR5);
+				low_calibrate_mode = 0;
+				low_calibrated = 1;
+			}
 		}
 	}
-	// regular mode
-	else if ((!switch_on) && calibrated) {
-		motor_set_vel(MOTOR5, racket_speed, OPEN_LOOP);
-	} else {
+	// Regular Mode
+	else if(low_calibrated == 1) {
+		if (b3_switch == 1 && (current_time - low_racket_moving_start_time > 100) ) {
+			low_racket_moving = 0;
+		}
+		
+		if (low_racket_moving == 1) {
+			motor_set_vel(MOTOR5, low_speed, OPEN_LOOP);
+		} else {
 			motor_lock(MOTOR5);
+		}
+	}
+	
+	
+	
+	// "High racket"
+	if (high_calibrate_mode == 1) {
+		if (!pos_b1_encoder_value) {
+			if (b1_switch == 0) {
+				motor_set_vel(MOTOR6, DIR_TOWARDS_B1 * 300, OPEN_LOOP);
+			} else {
+				motor_lock(MOTOR6);
+				pos_b1_encoder_value = get_encoder_value(MOTOR6);
+			}
+		} else if (!pos_b2_encoder_value) {
+			if(b2_switch==0) {
+				motor_set_vel(MOTOR6, DIR_TOWARDS_B2 * 300, OPEN_LOOP);
+			} else {
+				motor_lock(MOTOR6);
+				pos_b2_encoder_value = get_encoder_value(MOTOR6);
+			}
+		} else if (pos_b1_encoder_value && pos_b2_encoder_value) {
+			if(b1_switch == 0) {
+				motor_set_vel(MOTOR6, DIR_TOWARDS_B1 * 300, OPEN_LOOP);
+			} else {
+				//temp = get_encoder_value(MOTOR6);
+				motor_lock(MOTOR6);
+				high_calibrated = 1;
+				high_calibrate_mode = 0;
+			}
+		}
+	} else if (high_calibrated == 1) {
+		if (high_racket_moving == 1) {
+			// When the B2 switch is hit, go back to B1 and finish the command
+			if (high_racket_status == 0 && b2_switch==1) {
+				high_racket_status = 1;
+				motor_lock(MOTOR6);
+			} else if (high_racket_status == 1 && b1_switch==1) {
+				high_racket_status = 2;
+				motor_lock(MOTOR6);
+			}
+			
+			if (high_racket_status == 0) {
+				motor_set_vel(MOTOR6, DIR_TOWARDS_B2 * high_speed, OPEN_LOOP);
+			} else if (high_racket_status == 1) {
+				motor_set_vel(MOTOR6, DIR_TOWARDS_B1 * high_speed, OPEN_LOOP);
+			} else if (high_racket_status == 2) {
+				motor_lock(MOTOR6);
+			}
+
+		}
 	}
 }
-
-
-bool did_receive_command(void)
-{
-	return !switch_on;
-}
-
-u8 get_switch(void){
-	return switch_on;
-}
-
-u8 get_calibrated(void){
-	return calibrated;
-}
-

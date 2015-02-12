@@ -16,6 +16,7 @@ void robocon_main(void)
 				bluetooth_update();
 				wheel_base_update();
 				pivot_update();
+				racket_update();
 			}
 			
 			if (ticks_img % 250 == 1) {
@@ -80,13 +81,20 @@ void robocon_main(void)
           s[1] = s[0];
           s[0] = '\\';
         }
-        tft_prints(0, 6, "Char: %s (%d)", s, special_char_handler_bt_get_last_char());
+        //tft_prints(0, 6, "Char: %s (%d)", s, special_char_handler_bt_get_last_char());
         //tft_prints(0, 7, "Switch hit: %d", did_receive_command());
 				//tft_prints(0, 8, "switch: %d",get_switch());
-				tft_prints(0, 7, "left: %d", get_left_mode());
-				tft_prints(0, 8, "right: %d", get_right_mode());
-				tft_prints(0, 9, "motor: %d",get_motor_mode());
+				
+				//tft_prints(0, 7, "left: %d", get_left_mode());
+				//tft_prints(0, 8, "right: %d", get_right_mode());
+				//tft_prints(0, 9, "motor: %d",get_motor_mode());
 			
+				tft_prints(0, 6, "%d %d %d %d %d", get_s1(), get_s2(), get_b1(), get_b2(), get_b3() );
+				tft_prints(0, 7, "B1: %d", get_b1e());
+				tft_prints(0, 8, "hrs: %d", get_high_racket_status() );
+				tft_prints(0, 9, "hs: %d", get_high_speed() );
+				
+				
 				
 				tft_update();
 			}

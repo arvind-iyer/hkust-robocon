@@ -28,7 +28,7 @@
 #include "wheel_base.h"
 #include "special_char_handler.h"
 #include "upper_racket_control.h"
-#include "lower_racket_control.h"
+//#include "lower_racket_control.h"
 #include "pivot_control.h"
 
 void robocon_main(void);

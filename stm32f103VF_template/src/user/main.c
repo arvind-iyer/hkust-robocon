@@ -24,8 +24,8 @@ int main(void)
 	wheel_base_init();
   ultrasonic_init();
 	special_char_handler_init();
-//	racket_init();
-	pivot_init();
+	racket_init();
+//	pivot_init();
   
 	system_start(1200);
 	

@@ -7,7 +7,7 @@
 #include "special_char_handler.h"
 #include "stdbool.h"
 
-#define SWITCH_GPIO GPIOE    //GPIO?
+/* #define SWITCH_GPIO GPIOE    //GPIO?
 #define SWITCH_LEFT_Pin GPIO_Pin_1   //Pin? 
 #define SWITCH_RIGHT_Pin GPIO_Pin_2    //Pin?
 
@@ -21,5 +21,6 @@ void pivot_turn_right(void);
 u8 get_left_mode(void);
 u8 get_right_mode(void);
 u8 get_motor_mode(void);
+*/
 
 #endif
