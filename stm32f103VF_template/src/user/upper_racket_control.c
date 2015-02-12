@@ -17,7 +17,7 @@ static s32 target_motor5_encoder_value = 0;
 static s32 target_motor6_encoder_value = 0;
 static s32 target_motor7_encoder_value = 0;
 
-static bool low_calibrate_mode = 1;
+static bool low_calibrate_mode = 0;
 static bool low_calibrated = 0;
 static u8 low_calibrate_switch_off_count = 0;
 static bool low_calibrate_leave_switch = 1;

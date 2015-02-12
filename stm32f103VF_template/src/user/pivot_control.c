@@ -1,4 +1,4 @@
-#include "pivot_control.h"
+//#include "pivot_control.h"
 /*
 static bool interrupt_triggered = false;
 static u32 interrupt_triggered_time;
@@ -11,13 +11,12 @@ static u32 motor_triggered_time;
 
 static u16 pivot_speed = 1800; */
 
-//void pivot_init(void)  {
-	/*	register_special_char_function('u', pivot_turn_left);
-		register_special_char_function('o', pivot_turn_right);
-	*/
+/* void pivot_init(void)  {
+	register_special_char_function('u', pivot_turn_left);
+	register_special_char_function('o', pivot_turn_right);
 	
-	/* GPIO configuration */
-	/* GPIO_InitTypeDef GPIO_InitStructure;
+	// GPIO configuration
+	GPIO_InitTypeDef GPIO_InitStructure;
 	
 	RCC_APB2PeriphClockCmd(RCC_APB2Periph_GPIOE, ENABLE);   
 	
@@ -28,17 +27,17 @@ static u16 pivot_speed = 1800; */
   GPIO_Init(SWITCH_GPIO, &GPIO_InitStructure);
 	
 	GPIO_EXTILineConfig(GPIO_PortSourceGPIOE,GPIO_PinSource7);
-	*/
-	/* EXTI configuration */
-	/*EXTI_InitTypeDef EXTI_InitStructure;
+	
+	// EXTI configuration
+	EXTI_InitTypeDef EXTI_InitStructure;
 
 	EXTI_InitStructure.EXTI_Line = EXTI_Line7;
 	EXTI_InitStructure.EXTI_Mode = EXTI_Mode_Interrupt;
 	EXTI_InitStructure.EXTI_Trigger = EXTI_Trigger_Rising_Falling;
 	EXTI_InitStructure.EXTI_LineCmd = ENABLE;
 	EXTI_Init(&EXTI_InitStructure);
-	*/
-	/* NVIC configuration */
+	
+	// NVIC configuration
 	NVIC_InitTypeDef NVIC_InitStructure;
 
 	NVIC_InitStructure.NVIC_IRQChannel = EXTI9_5_IRQn;
@@ -46,7 +45,7 @@ static u16 pivot_speed = 1800; */
 	NVIC_InitStructure.NVIC_IRQChannelPreemptionPriority = 1;
 	NVIC_InitStructure.NVIC_IRQChannelSubPriority = 1;
 	NVIC_Init(&NVIC_InitStructure);
-//}
+} */
 
 // error in this handler  change EXTI
 /*void EXTI9_5_IRQHandler(void)

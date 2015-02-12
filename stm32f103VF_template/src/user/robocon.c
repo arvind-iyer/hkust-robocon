@@ -91,12 +91,12 @@ void robocon_main(void)
 			
 				tft_prints(0, 6, "%d %d %d %d %d", get_s1(), get_s2(), get_b1(), get_b2(), get_b3() );
 				tft_prints(0, 7, "B1: %d", get_b1e());
-				tft_prints(0, 8, "hrs: %d", get_high_racket_status() );
 				tft_prints(0, 9, "hs: %d", get_high_speed() );
 				
 				
 				
 				tft_update();
+				NVIC_EnableIRQ(EXTI15_10_IRQn);
 			}
 		}
 	}	

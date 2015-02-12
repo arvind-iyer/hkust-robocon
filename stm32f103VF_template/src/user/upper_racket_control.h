@@ -7,15 +7,11 @@
 #include "special_char_handler.h"
 #include "stdbool.h"
 
-//#define	RACKET_TIMEOUT					25
-#define	PNEUMATIC_OPEN_DELAY	  10
-#define MOTOR_OPEN_DELAY        10
-
-#define S1_Pin	GPIO_Pin_7	// GPIOE
-#define S2_Pin	GPIO_Pin_1	// GPIOE
-#define B1_Pin	GPIO_Pin_2	// GPIOE
-#define B2_Pin	GPIO_Pin_15 // GPIOE
-#define B3_Pin	GPIO_Pin_14 // GPIOE
+#define S1_Pin	GPIO_Pin_5	// GPIOE
+#define S2_Pin	GPIO_Pin_6	// GPIOE
+#define B1_Pin	GPIO_Pin_13	// GPIOE
+#define B2_Pin	GPIO_Pin_14 // GPIOE
+#define B3_Pin	GPIO_Pin_15 // GPIOE
 
 // The value of this definition should be either 1 or -1 only
 #define DIR_TOWARDS_B1	-1
@@ -40,8 +36,9 @@ bool get_b2(void);
 bool get_b3(void);
 s32 get_b1e(void);
 s32 get_b2e(void);
-
 s32 get_low_speed(void);
+u32 get_it(void);
+
 
 void add_racket_speed(void);
 void decrease_racket_speed(void);
