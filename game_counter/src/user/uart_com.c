@@ -64,7 +64,9 @@ static void uart_com_handler(u8 data)
     uart_com_tx("%02d:%02d.%03d\r\n", (timer_ms / 1000) / 60, (timer_ms / 1000) % 60, timer_ms % 1000); 
   } else if (data == 'u' || data == 'U') {
     timer_set(0);
-    timer_start(data == 'u' ? 0 : 3);
+    if (!is_timer_start()) {
+      buzzer_control_note(2, 80, NOTE_A, 7);
+    }
   }
 }
 

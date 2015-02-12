@@ -19,10 +19,17 @@ void timer_init(void)
 
 void timer_set(u16 t)
 {
-  if (t > 9 * 60 + 59) {t = 9 * 60 + 59;}
   if (!timer_on_flag) {
     timer = t; 
     ticks_counter = 0;
+    
+    if (t >= TIMER_COUNT_LIMIT) {t = TIMER_COUNT_LIMIT - 1;}
+    
+    if (timer > 0) {
+      timer_mode = DOWN_COUNTING;
+    } else {
+      timer_mode = UP_COUNTING;
+    }
   }
 }
 
@@ -63,8 +70,7 @@ void timer_update(void)
             
             if (timer == 0) {
                 // Times up!
-                //buzzer_control(1, 2000);
-                buzzer_control_note(1, 2000, NOTE_F, 7);
+                buzzer_control_note(1, 1500, NOTE_F, 7);
                 timer_on_flag = false;
             } else {
               if (timer <= TIMER_COUNTING_DOWN_BUZZ || timer == 30) {
@@ -87,6 +93,10 @@ void timer_update(void)
           } else {
             if (!pre_counter_timer) {
               ++timer;
+              // Prevent Overflow
+              if (timer >= TIMER_COUNT_LIMIT) {
+                timer = 0;
+              }
             }
           } 
         }
@@ -105,7 +115,11 @@ void timer_update(void)
       game_counter_set_digit_id(1, pre_counter_timer);
       game_counter_set_digit_id(2, pre_counter_timer);
     } else {
-      game_counter_set_time(timer / 60, timer % 60);
+      if (timer_mode == UP_COUNTING && !timer_on_flag) {
+        game_counter_display_up();
+      } else {
+        game_counter_set_time(timer / 60, timer % 60);
+      }
     }
   } else if (ticks_counter == 500) {
     if (!timer_on_flag) {
@@ -121,15 +135,14 @@ void timer_update(void)
 void timer_start(u8 pre_counter)
 {
   if (!timer_on_flag) {
-    if (timer > 0) {
-      timer_mode = DOWN_COUNTING;
-    } else {
-      timer_mode = UP_COUNTING;
-    }
+    
     timer_on_flag = true;
     ticks_counter = 0;
+    if (timer_mode == UP_COUNTING) {
+      timer = 0;
+    }
     pre_counter_timer = pre_counter;
-    buzzer_control_note(1, 2000, NOTE_F, 7);
+    buzzer_control_note(1, 1500, NOTE_F, 7);
     timer_toggle_flag = true;
   }
 }

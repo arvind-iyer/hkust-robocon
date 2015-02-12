@@ -12,6 +12,7 @@
 #define TIMER_UPDATE_INTERVAL     10  /** MUST BE A FACTOR OF 500 */
 #define TIMER_COUNTING_DOWN_BUZZ  5
 
+#define TIMER_COUNT_LIMIT          (10 * 60) // 10 minutes (exclusive)
 typedef struct {
   u8 minute;
   u8 second;

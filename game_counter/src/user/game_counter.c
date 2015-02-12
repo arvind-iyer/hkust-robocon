@@ -32,7 +32,7 @@ static LED_TUBE LED_DIGIT[LED_DIGIT_COUNT][LED_SEGMENT_COUNT] = {
   }
 };
 
-static const u8 DIGIT_MAP[11][LED_SEGMENT_COUNT]={
+static const u8 DIGIT_MAP[][LED_SEGMENT_COUNT]={
     {1, 1, 1, 1, 1, 1, 0}, /*!< Digit 0 */
     {0, 1, 1, 0, 0, 0, 0}, /*!< Digit 1 */
     {1, 1, 0, 1, 1, 0, 1}, /*!< Digit 2 */
@@ -43,7 +43,9 @@ static const u8 DIGIT_MAP[11][LED_SEGMENT_COUNT]={
     {1, 1, 1, 0, 0, 0, 0}, /*!< Digit 7 */
     {1, 1, 1, 1, 1, 1, 1}, /*!< Digit 8 */
     {1, 1, 1, 1, 0, 1, 1}, /*!< Digit 9 */
-    {0, 0, 0, 0, 0, 0, 0}  /*!< No digit */
+    {0, 0, 0, 0, 0, 0, 0},  /*!< No digit */
+    {0, 1, 1, 1, 1, 1, 0},  /*!< Letter U */
+    {1, 1, 0, 0, 1, 1, 1},  /*!< Letter P */
 };
   
 static LED_TUBE LED_COLON = {&PB1, false};
@@ -110,3 +112,9 @@ void game_counter_set_time(u8 minute, u8 seconds)
 }
 
 
+void game_counter_display_up(void)
+{
+  game_counter_set_digit_id(0, 10);
+  game_counter_set_digit_id(1, 11);
+  game_counter_set_digit_id(2, 12);
+}

@@ -54,5 +54,6 @@ void game_counter_tube_set(u8 digit_id, u8 segment, u8 mode);
 void game_counter_colon_set(u8 mode);
 void game_counter_set_digit_id(u8 digit_id, u8 digit);
 void game_counter_set_time(u8 minute, u8 seconds);
+void game_counter_display_up(void);
 
 #endif /* __BUZZER_H */
