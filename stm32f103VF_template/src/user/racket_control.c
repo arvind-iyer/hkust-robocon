@@ -15,7 +15,8 @@ static u8 switch_hit = 0;
 static u32 current_speed = 0;
 
 static u16 racket_speed = 1800;
-static u16 racket_delay = 264;    //tested best result
+static u16 racket_delay = 258;    //tested best result
+static u32 racket_delay_adjust_time = 0;
 
 //added for upper rackets
 static bool up_calibrate_mode_on = false;
@@ -74,11 +75,19 @@ static void decrease_racket_speed() {
 }
 
 static void increase_racket_delay() {
-	racket_delay += 1;
+	if((get_full_ticks() - racket_delay_adjust_time > 80) {
+		racket_delay_adjust_time = get_full_ticks();
+		racket_delay += 1;
+	}
 }
 
 static void decrease_racket_delay() {
-	racket_delay -= 1;
+	if(get_full_ticks() - racket_delay_adjust_time > 80) {
+		if(racket_delay > 0) {
+			racket_delay_adjust_time = get_full_ticks();
+			racket_delay -= 1;
+		}
+	}
 }
 
 static void slow_serve_speed_set(void) {
