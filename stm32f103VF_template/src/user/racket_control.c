@@ -262,8 +262,8 @@ void racket_update(void)    //determine whether the motor should run
 	if (calibrate_mode_on) {
 		if (switch_hit < 2) {
 			calibrated = false;
-			motor_set_vel(MOTOR5, -150, OPEN_LOOP);
-			current_speed = 150;
+			motor_set_vel(MOTOR5, -12, CLOSE_LOOP);
+			current_speed = 12;
 		} else {
 			calibrate_mode_on = false;
 			calibrated = true;
