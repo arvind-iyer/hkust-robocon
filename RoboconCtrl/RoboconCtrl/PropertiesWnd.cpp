@@ -205,6 +205,9 @@ std::vector<std::basic_string<TCHAR>> CPropertiesWnd::GetSettings()
 	if (((CString)m_wndPropList.GetProperty(1)->GetSubItem(6)->GetValue()).IsEmpty()) {
 		m_wndPropList.GetProperty(1)->GetSubItem(6)->SetValue(_T("0"));
 	}
+	if (((CString)m_wndPropList.GetProperty(1)->GetSubItem(7)->GetValue()).IsEmpty()) {
+		m_wndPropList.GetProperty(1)->GetSubItem(7)->SetValue(_T("0"));
+	}
 	string_vector.push_back(((CString)m_wndPropList.GetProperty(0)->GetSubItem(0)->GetValue()).GetString());
 	string_vector.push_back(((CString)m_wndPropList.GetProperty(0)->GetSubItem(1)->GetValue()).GetString());
 	string_vector.push_back(((CString)m_wndPropList.GetProperty(1)->GetSubItem(0)->GetValue()).GetString());
@@ -214,6 +217,7 @@ std::vector<std::basic_string<TCHAR>> CPropertiesWnd::GetSettings()
 	string_vector.push_back(((CString)m_wndPropList.GetProperty(1)->GetSubItem(4)->GetValue()).GetString());
 	string_vector.push_back(((CString)m_wndPropList.GetProperty(1)->GetSubItem(5)->GetValue()).GetString());
 	string_vector.push_back(((CString)m_wndPropList.GetProperty(1)->GetSubItem(6)->GetValue()).GetString());
+	string_vector.push_back(((CString)m_wndPropList.GetProperty(1)->GetSubItem(7)->GetValue()).GetString());
 
 	return string_vector;
 }
@@ -279,6 +283,9 @@ void CPropertiesWnd::InitPropList()
 	pGroup2->AddSubItem(pProp);
 
 	pProp = new CMFCPropertyGridProperty(_T("Double Click"), (_variant_t)to_string(0).c_str(), _T("Turn double click for position on or off."));
+	pGroup2->AddSubItem(pProp);
+
+	pProp = new CMFCPropertyGridProperty(_T("Save PID Data"), (_variant_t)to_string(0).c_str(), _T("Enable or disable PID data saving."));
 	pGroup2->AddSubItem(pProp);
 
 	m_wndPropList.AddProperty(pGroup2);

@@ -357,6 +357,10 @@ UINT __cdecl CMainFrame::read_thread(LPVOID app_ptr){
 UINT __cdecl CMainFrame::write_thread(LPVOID app_ptr){
 	special_msg_keys.clear();
 	while (serial != NULL && serial->is_connected()){
+		if (GetForegroundWindow() != AfxGetMainWnd()) {
+			Sleep(write_sleep_duration);
+			continue;
+		}
 		int x = 0;
 		int y = 0;
 		int w = 0;
@@ -571,25 +575,6 @@ BOOL CMainFrame::PreTranslateMessage(MSG* msg)
 	writemode = stoi(settings[3]);
 	write_sleep_duration = stoi(settings[6]);
 	read_sleep_duration = stoi(settings[7]);
-	/*
-	if (msg && msg->message == WM_KEYDOWN && GetFocus() != NULL){
-		if (msg->wParam != 0x51 && msg->wParam != 0x57 && msg->wParam != 0x45 && msg->wParam != 0x41 && msg->wParam != 0x53 && msg->wParam != 0x44 && msg->wParam != 0x5A && msg->wParam != 0x43) {
-			BYTE kb[256] = { 0 };
-			TCHAR buffer[2] = { 0 };
-			if (ToUnicode(msg->wParam, MapVirtualKey(msg->wParam, MAPVK_VK_TO_VSC), kb, buffer, 1, 0)){
-				special_msg_keys = special_msg_keys + buffer[0];
-				special_msg_keys.erase(std::unique(special_msg_keys.begin(), special_msg_keys.end()), special_msg_keys.end());
-			}
-		}
-	}
-	else if (msg && msg->message == WM_KEYUP) {
-		BYTE kb[256] = { 0 };
-		TCHAR buffer[2] = {};
-		if (ToUnicode(msg->wParam, MapVirtualKey(msg->wParam, MAPVK_VK_TO_VSC), kb, buffer, 1, 0)){
-			special_msg_keys.erase(std::remove(special_msg_keys.begin(), special_msg_keys.end(), buffer[0]), special_msg_keys.end());
-		}
-	}
-	*/
 	return CFrameWndEx::PreTranslateMessage(msg);
 }
 

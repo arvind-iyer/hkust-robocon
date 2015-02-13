@@ -91,7 +91,7 @@ CRoboconCtrlView::~CRoboconCtrlView()
 		oss << _T("data") << i << _T(".csv");
 		if (GetFileAttributes(oss.str().c_str()) == INVALID_FILE_ATTRIBUTES) {
 			if (!robot_path_data.empty()) {
-				std::stringstream file_path;
+				std::ostringstream file_path;
 				file_path << "data" << i << ".csv";
 
 				std::ofstream output_data;
@@ -699,8 +699,8 @@ LRESULT CRoboconCtrlView::reset_coord(WPARAM w, LPARAM l) {
 		std::basic_ostringstream<TCHAR> oss;
 		oss << _T("data") << i <<_T(".csv");
 		if (GetFileAttributes(oss.str().c_str()) == INVALID_FILE_ATTRIBUTES) {
-			if (!robot_path_data.empty()) {
-				std::stringstream file_path;
+			if (!robot_path_data.empty() && stoi(((CMainFrame*)AfxGetMainWnd())->GetSettings()[9]) != 0) {
+				std::ostringstream file_path;
 				file_path << "data" << i << ".csv";
 
 				std::ofstream output_data;
