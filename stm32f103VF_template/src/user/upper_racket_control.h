@@ -37,7 +37,10 @@ bool get_b3(void);
 s32 get_b1e(void);
 s32 get_b2e(void);
 s32 get_low_speed(void);
+s32 get_high_speed(void);
+s32 get_pivot_speed(void);
 u32 get_it(void);
+void pivot_update(void);
 
 
 void add_racket_speed(void);

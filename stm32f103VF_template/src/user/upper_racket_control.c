@@ -30,8 +30,15 @@ static bool high_racket_moving = 0;
 static u32 high_racket_moving_start_time = 0;
 static u8 high_racket_status = 0;
 
+static u32 last_rotate_left_time = 0;
+static u32 last_rotate_right_time = 0;
+
 static s32 low_speed = 1600;
-static s32 high_speed = 1;
+static s32 high_speed = 1200;
+static s32 pivot_speed = 600;
+
+void pivot_rotate_left();
+void pivot_rotate_right();
 
 void increase_low_speed() {
 	if(low_speed<1799) low_speed += 1;
@@ -40,13 +47,21 @@ void decrease_low_speed() {
 	if(low_speed>0) low_speed -= 1;
 }
 void increase_high_speed() {
-	if(high_speed<1700) high_speed += 1;
+	if(high_speed<1799) high_speed += 1;
 }
 void decrease_high_speed() {
 	if(high_speed>0) high_speed -= 1;
 }
+void increase_pivot_speed() {
+	if(pivot_speed<1799) pivot_speed += 1;
+}
+void decrease_pivot_speed() {
+	if(pivot_speed>0)	pivot_speed -= 1;
+}
+
 s32 get_low_speed() { return low_speed; }
 s32 get_high_speed() { return high_speed; }
+s32 get_pivot_speed() { return pivot_speed; }
 
 u8 get_high_racket_status() { return high_racket_status; }
 
@@ -93,6 +108,11 @@ void racket_init(void) {
 	register_special_char_function('<', decrease_high_speed);
 	register_special_char_function('.', increase_low_speed);
 	register_special_char_function(',', decrease_low_speed);
+	
+	register_special_char_function('r', pivot_rotate_left);
+	register_special_char_function(']', pivot_rotate_right);
+	register_special_char_function('=', increase_pivot_speed);
+	register_special_char_function('-', decrease_pivot_speed);
 	
 	RCC_APB2PeriphClockCmd(RCC_APB2Periph_GPIOE, ENABLE);
 	
@@ -202,4 +222,24 @@ void racket_update(void) {
 
 		}
 	}
+	
+	// Pivot
+	if (!s1_switch && last_rotate_left_time!=0 && (current_time - last_rotate_left_time < 15) ) {
+		motor_set_vel(MOTOR7, -pivot_speed, OPEN_LOOP);
+	} else if (!s2_switch && last_rotate_right_time!=0 && (current_time - last_rotate_right_time < 15) ) {
+		motor_set_vel(MOTOR7, pivot_speed, OPEN_LOOP);
+	} else {
+		motor_lock(MOTOR7);
+	}
+		
 }
+	
+	// Pivot
+void pivot_rotate_left(void){
+	last_rotate_left_time = get_full_ticks();
+}
+void pivot_rotate_right(void){
+	last_rotate_right_time = get_full_ticks();
+}
+	
+	
