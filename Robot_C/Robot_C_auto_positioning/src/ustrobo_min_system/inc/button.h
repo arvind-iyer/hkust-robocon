@@ -26,7 +26,7 @@
 #define BUTTON_RELEASED_LIMIT			20    /*!< Reset the button release time after the limit */
 
 /** switch **/
-#define ROTATE_SWITCH_GPIO        ((GPIO*) &PE1)
+#define ROTATE_SWITCH_GPIO        ((GPIO*) &PE3)
 #define RACKET_SWITCH_GPIO        ((GPIO*) &PE2)
 
 typedef enum {

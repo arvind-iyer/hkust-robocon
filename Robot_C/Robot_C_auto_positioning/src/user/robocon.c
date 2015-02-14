@@ -9,22 +9,6 @@ static bool key_trigger_enable = true;
 static bool current_pneumatic=0;
 
 
-//static bool serve_enable = false;
-//static bool auto_serve_done = false;
-//static bool smash_enable = false;
-//static bool lock_enable = false;
-
-//static u32 time_delay_serve = 400;
-//static s32 smash_speed = 200;
-//static s32 encoder_b4_serve = 0;
-//static s32 rough_half_cycle_racket_encoder = -12000;
-//static u32 time_serve = 0;
-//static u32 time_duration_serve=1;
-//static bool serve_in_progress=0;
-
-//static const u32 INFINITYANDBEYOND = 2000;
-//static bool IRsensor = false;
-
 void wheel_base_joystick_control(void)
 {
 	//wheel_base_set_vel(0,0,0);
