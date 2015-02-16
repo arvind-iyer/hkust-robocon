@@ -53,11 +53,11 @@ void wheel_base_joystick_control(void)
 	}
 }
 
-static void pneumatic_control(bool data)
+static void pneumatic_control(bool data)		// 
 {
 	gpio_write(&PE9, !data);
 }
-
+/*
 static void handle_bluetooth_input(void)
 {
 	if (key_trigger_enable && !bluetooth_is_key_release())
@@ -79,12 +79,19 @@ static void handle_bluetooth_input(void)
 	}
 	
 }
+*/
+
+void racket_run()
+{
+	racket_set_vel(20, OPEN_LOOP);
+}
+
 
 
 void robocon_main(void)
 {
 	
-  
+  register_special_char_function('k', racket_run);
 //  static char last_key;
   // Send the acceleration data
 	wheel_base_tx_acc();
@@ -97,7 +104,7 @@ void robocon_main(void)
 			if (ticks_img % 10 == 0) {
         wheel_base_update();	//wheel_base_update now also handles auto positioning system
 				bluetooth_update();
-        handle_bluetooth_input();
+        //handle_bluetooth_input();
  
         button_update();
 				racket_update();
