@@ -83,15 +83,20 @@ static void handle_bluetooth_input(void)
 
 void racket_run()
 {
-	racket_set_vel(20, OPEN_LOOP);
+	racket_set_vel(80, OPEN_LOOP);
 }
 
-
+void print()
+{
+	tft_prints(0,7, "we got something!");
+	tft_update();
+}
 
 void robocon_main(void)
 {
 	
   register_special_char_function('k', racket_run);
+	register_special_char_function('l', print);
 //  static char last_key;
   // Send the acceleration data
 	wheel_base_tx_acc();
@@ -159,6 +164,7 @@ void robocon_main(void)
           s[0] = '\\';
         }
         tft_prints(0, 6, "Char: %s (%d)", s, wheel_base_bluetooth_get_last_char());
+				tft_prints(0,5, "Switch = %d", gpio_read_input(&PE3));
 				tft_update();
 			}
 			

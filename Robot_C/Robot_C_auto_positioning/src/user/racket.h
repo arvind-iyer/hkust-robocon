@@ -25,7 +25,7 @@
 #define KEY_STOP_RACKET 'p'
 #define KEY_LOCK_RACKET 'o'
 
-
+void racket_init(void);
 void racket_update(void);
 void racket_stop(void);
 void racket_lock(void);
