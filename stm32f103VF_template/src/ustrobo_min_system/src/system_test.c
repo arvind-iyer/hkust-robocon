@@ -240,6 +240,8 @@ void motor_test(void)
 
 void position_test(void)
 {
+  u8 line = 0;
+  
 	while (true) {
 		if (ticks_img != get_ticks()) {
 			ticks_img = get_ticks();
@@ -255,9 +257,22 @@ void position_test(void)
 				}
 				
 				if (button_pressed(BUTTON_JS2_CENTER) == 1) {
-					gyro_cal();
-					CLICK_MUSIC;
+          if (line == 0) {
+            gyro_cal();
+            CLICK_MUSIC;
+          } else {
+            if (gyro_pos_set(0, 0, 0)) {
+              CLICK_MUSIC;
+            } else {
+              FAIL_MUSIC;
+            }
+          }
+					
 				}
+        
+        if (button_pressed(BUTTON_JS2_UP) == 1 || button_pressed(BUTTON_JS2_DOWN) == 1) {
+          line ^= 1;
+        }
 			}
 			
 			if (ticks_img % 50 == 6) {
@@ -269,7 +284,8 @@ void position_test(void)
 				tft_prints(0, 4, " Y:%4d(%4d)", get_pos()->y, get_pos_raw()->y);
 				tft_prints(0, 5, " A:%4d(%4d)", get_pos()->angle, get_pos_raw()->angle);
 				tft_prints(0, 6, " Avail: %d", gyro_available);
-				tft_prints(0, 8, " (%c) Calibrate", ticks_img < 500 ? BLACK_BLOCK_ASCII : ' ');
+				tft_prints(0, 8, " (%c) Calibrate", ticks_img < 500 && !line ? BLACK_BLOCK_ASCII : ' ');
+        tft_prints(0, 9, " (%c) Set zero", ticks_img < 500 && line ? BLACK_BLOCK_ASCII : ' ');
 				
 				tft_update();
 			}

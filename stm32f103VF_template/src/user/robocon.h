@@ -26,7 +26,7 @@
 #include "gyro.h"
 #include "bluetooth.h"
 #include "wheel_base.h"
-
+#include "wheel_base_pid.h"
 
 void robocon_main(void);
 #endif	/* __ROBOCON_H */
