@@ -10,7 +10,7 @@ void racket_init(void)
 	
 	//For Racket_Switch at PE2
 	EXTI_InitTypeDef   EXTI_InitStructure;
-	GPIO_EXTILineConfig(GPIO_PortSourceGPIOE, GPIO_PinSource2);
+	GPIO_EXTILineConfig(GPIO_PortSourceGPIOE, RACKET_PIN_SOURCE);
   EXTI_InitStructure.EXTI_Line = RACKET_SWITCH_LINE;
   EXTI_InitStructure.EXTI_Mode = EXTI_Mode_Interrupt;
   EXTI_InitStructure.EXTI_Trigger = EXTI_Trigger_Rising;
@@ -26,7 +26,7 @@ void racket_init(void)
 
 	
 	//For ROTATE_SWITCH at PE3
-	GPIO_EXTILineConfig(GPIO_PortSourceGPIOE, GPIO_PinSource4);
+	GPIO_EXTILineConfig(GPIO_PortSourceGPIOE, ROTATE_PIN_SOURCE);
   EXTI_InitStructure.EXTI_Line = ROTATE_SWITCH_LINE;
   EXTI_InitStructure.EXTI_Mode = EXTI_Mode_Interrupt;
   EXTI_InitStructure.EXTI_Trigger = EXTI_Trigger_Rising;
@@ -36,7 +36,7 @@ void racket_init(void)
 	NVIC_InitStructure.NVIC_IRQChannelPreemptionPriority = 0x0F;
 	NVIC_InitStructure.NVIC_IRQChannelSubPriority = 0x0F;
 	NVIC_InitStructure.NVIC_IRQChannelCmd = ENABLE;
-	NVIC_InitStructure.NVIC_IRQChannel = RACKET_IRQn;
+	NVIC_InitStructure.NVIC_IRQChannel = ROTATE_IRQn;
 	NVIC_Init(&NVIC_InitStructure);
 	
 	
@@ -78,7 +78,7 @@ RACKET_SWITCH_INTERRUPT_HANDLER
 {
   if(EXTI_GetITStatus(RACKET_SWITCH_LINE) != RESET) 
 	{
-    
+    racket_lock();
     EXTI_ClearITPendingBit(RACKET_SWITCH_LINE);
   }
 }
@@ -87,7 +87,7 @@ ROTATE_SWITCH_INTERRUPT_HANDLER
 {
 	if(EXTI_GetITStatus(ROTATE_SWITCH_LINE) != RESET)
 	{
-		
+		racket_lock();
 		EXTI_ClearITPendingBit(ROTATE_SWITCH_LINE);
 	}
 }

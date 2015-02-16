@@ -8,10 +8,12 @@
 
 #define RACKET_SWITCH_LINE 	EXTI_Line2
 #define RACKET_IRQn 			 	EXTI2_IRQn
+#define RACKET_PIN_SOURCE 	GPIO_PinSource2
 
 
 #define ROTATE_SWITCH_LINE 	EXTI_Line3
 #define ROTATE_IRQn 			 	EXTI3_IRQn
+#define ROTATE_PIN_SOURCE 	GPIO_PinSource3
 
 #define RACKET_SWITCH_INTERRUPT_HANDLER void EXTI2_IRQHandler(void)
 #define ROTATE_SWITCH_INTERRUPT_HANDLER void EXTI3_IRQHandler(void)	
