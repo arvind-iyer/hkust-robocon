@@ -72,7 +72,6 @@ void wheel_base_positioning_auto(void);
 void wheel_base_tx_position(void);
 
 bool bluetooth_is_key_release(void);
-void wheel_base_set_pid(PID pid);
 POSITION wheel_base_get_target_pos(void);
 void wheel_base_set_target_pos(POSITION pos);
 void wheel_base_pid_on(void);

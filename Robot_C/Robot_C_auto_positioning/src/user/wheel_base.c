@@ -275,17 +275,6 @@ void wheel_base_tx_position(void)
 	bluetooth_tx_package(BLUETOOTH_WHEEL_BASE_POS_ID, 6, data);
 }
 
-/**
-	* @brief Set PID
-	* @param PID to be set
-	* @retval None.
-	*/
-void wheel_base_set_pid(PID pid)
-{
-	wheel_base_pid.Kp = pid.Kp;
-	wheel_base_pid.Ki = pid.Ki;
-	wheel_base_pid.Kd = pid.Kd;
-}
 
 POSITION wheel_base_get_target_pos(void)
 {

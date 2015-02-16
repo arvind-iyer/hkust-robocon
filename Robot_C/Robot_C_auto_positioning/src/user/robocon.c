@@ -100,7 +100,7 @@ void robocon_main(void)
         handle_bluetooth_input();
  
         button_update();
-				//racket_control();
+				racket_update();
 				// Every 10 ms (100 Hz)
         
 			}
