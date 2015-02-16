@@ -1,7 +1,9 @@
 #ifndef __RACKET_H
 #define __RACKET_H
-
-#include "main.h"
+#include "stm32f10x.h"
+#include "stm32f10x_gpio.h"
+#include "stm32f10x_exti.h"
+#include "misc.h"
 #include "special_char_handler.h"
 
 #define RACKET MOTOR5
@@ -28,6 +30,6 @@ void racket_update(void);
 void racket_stop(void);
 void racket_lock(void);
 void racket_set_vel(s32 vel, CLOSE_LOOP_FLAG loop);
-s32 racket_get_vel();
+s32 racket_get_vel(void);
 
 #endif
