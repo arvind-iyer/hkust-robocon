@@ -27,7 +27,7 @@ void close_pneumatic(void);
 void serving (void);
 u8 get_switch(void);
 u8 get_calibrated(void);
-u8 get_high_racket_status();
+u8 get_high_racket_status(void);
 
 bool get_s1(void);
 bool get_s2(void);

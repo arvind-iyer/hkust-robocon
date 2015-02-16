@@ -37,25 +37,25 @@ static s32 low_speed = 1600;
 static s32 high_speed = 1200;
 static s32 pivot_speed = 600;
 
-void pivot_rotate_left();
-void pivot_rotate_right();
+void pivot_rotate_left(void);
+void pivot_rotate_right(void);
 
-void increase_low_speed() {
+void increase_low_speed(void) {
 	if(low_speed<1799) low_speed += 1;
 }
-void decrease_low_speed() {
+void decrease_low_speed(void) {
 	if(low_speed>0) low_speed -= 1;
 }
-void increase_high_speed() {
+void increase_high_speed(void) {
 	if(high_speed<1799) high_speed += 1;
 }
-void decrease_high_speed() {
+void decrease_high_speed(void) {
 	if(high_speed>0) high_speed -= 1;
 }
-void increase_pivot_speed() {
+void increase_pivot_speed(void) {
 	if(pivot_speed<1799) pivot_speed += 1;
 }
-void decrease_pivot_speed() {
+void decrease_pivot_speed(void) {
 	if(pivot_speed>0)	pivot_speed -= 1;
 }
 
