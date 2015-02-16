@@ -14,6 +14,7 @@ void robocon_main(void)
 			if (ticks_img % 10 == 0) {
 				// Every 10 ms (100 Hz)
 				bluetooth_update();
+        wheel_base_pid_update();
 				wheel_base_update();
 				racket_update();
 				up_racket_update();   

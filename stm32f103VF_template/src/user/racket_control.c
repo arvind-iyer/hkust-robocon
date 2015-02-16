@@ -75,7 +75,7 @@ static void decrease_racket_speed() {
 }
 
 static void increase_racket_delay() {
-	if((get_full_ticks() - racket_delay_adjust_time > 80) {
+	if(get_full_ticks() - racket_delay_adjust_time > 80) {
 		racket_delay_adjust_time = get_full_ticks();
 		racket_delay += 1;
 	}

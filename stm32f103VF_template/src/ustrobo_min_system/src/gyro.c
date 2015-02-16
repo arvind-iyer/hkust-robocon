@@ -97,9 +97,7 @@ u8 gyro_pos_set(s16 x, s16 y, s16 a)
 	u16 ticks_last = get_ticks();
 	reply_flag &= ~GYRO_FLAG_SET_POS;
 	// Shift
-	x = (x*10000+SHIFT_X*10000-SHIFT_X*int_cos(a)-SHIFT_Y*int_sin(a))/10000;
-	y = (y*10000+SHIFT_Y*10000-SHIFT_Y*int_cos(a)+SHIFT_X*int_sin(a))/10000;
-	
+  
 	
 	uart_tx_byte(GYRO_UART, GYRO_WAKEUP);
 	uart_tx_byte(GYRO_UART, GYRO_POS_SET);
@@ -189,8 +187,9 @@ void gyro_rx_handler(u8 rx_data)
 							gyro_pos_raw.angle = (s16) a;
               
               // Calculate the corrected position
-              gyro_pos.x = (X_FLIP*gyro_pos_raw.x*10000-SHIFT_X*10000+SHIFT_X*int_cos(gyro_pos_raw.angle)+SHIFT_Y*int_sin(gyro_pos_raw.angle))/10000;
-              gyro_pos.y = (Y_FLIP*gyro_pos_raw.y*10000-SHIFT_Y*10000+SHIFT_Y*int_cos(gyro_pos_raw.angle)-SHIFT_X*int_sin(gyro_pos_raw.angle))/10000;
+              /** TODO: Cancel the offset, varies along the robots **/
+              gyro_pos.x = X_FLIP * gyro_pos_raw.x;
+              gyro_pos.y = Y_FLIP * gyro_pos_raw.y;
               gyro_pos.angle = gyro_pos_raw.angle;
               
 						} else {
