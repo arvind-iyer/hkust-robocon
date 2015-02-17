@@ -11,6 +11,9 @@ static void uart_buffer_reset(void)
 {
   uart_buffer[0] = '\0';
   uart_buffer_i = 0;
+  timer_set_counter = 0;
+  timer_clock_set_flag(TIMER_SET_OFF);
+  uart_set_flag = false;
 }
 
 static void uart_com_handler(u8 data)
@@ -23,7 +26,6 @@ static void uart_com_handler(u8 data)
     if (strstr(uart_buffer, "timer")) {
       timer_clock_mode_toggle(false);
       uart_buffer_reset();
-      uart_set_flag = false;
     } else if (strstr(uart_buffer, "get")) {
       
       //uart_com_tx();
@@ -42,11 +44,13 @@ static void uart_com_handler(u8 data)
       buzzer_control_note(2, 100, NOTE_C, 7);
         
     } else if (strstr(uart_buffer, "set_hour")) {
-      uart_buffer_reset();
+      timer_set_counter = 0;
+      uart_buffer[0] = '\0';
       timer_clock_set_flag(TIMER_SET_HOUR);
       buzzer_control_note(3, 100, NOTE_C, 7);
     } else if (strstr(uart_buffer, "set_minute")) {
-      uart_buffer_reset();
+      timer_set_counter = 0;
+      uart_buffer[0] = '\0';
       timer_clock_set_flag(TIMER_SET_MINUTE);
       buzzer_control_note(3, 100, NOTE_C, 7);
     } else if (strstr(uart_buffer, "set_second")) {
@@ -56,11 +60,13 @@ static void uart_com_handler(u8 data)
       set_current_time(time);
       buzzer_control_note(3, 100, NOTE_C, 7);
     } else if (strstr(uart_buffer, "alarm_hour")) {
-      uart_buffer_reset();
+      timer_set_counter = 0;
+      uart_buffer[0] = '\0';
       timer_clock_set_flag(TIMER_SET_ALARM_HOUR);
       buzzer_control_note(3, 50, NOTE_G, 7);
     } else if (strstr(uart_buffer, "alarm_minute")) {
-      uart_buffer_reset();
+      timer_set_counter = 0;
+      uart_buffer[0] = '\0';
       timer_clock_set_flag(TIMER_SET_ALARM_MINUTE);
       buzzer_control_note(3, 50, NOTE_G, 7);
     } else if (strstr(uart_buffer, "alarm_off")) {
@@ -194,7 +200,7 @@ void uart_update(void)
 {
   if (uart_set_flag) {
     ++timer_set_counter;
-    if (timer_set_counter == 1000) {  // 10 seconds
+    if (timer_set_counter >= 1000) {  // 10 seconds
       timer_set_counter = 0;
       buffer_i = 0;
       uart_buffer_i = 0;
