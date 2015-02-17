@@ -8,6 +8,7 @@
 #define UART_COM    COM1
 #define UART_BR     9600
 #define UART_RX_BUFFER_COUNT    50
+#define UART_BUFFER_SIZE      120
 #endif  /* __UART_COM_H */
 
 void uart_com_init(void);

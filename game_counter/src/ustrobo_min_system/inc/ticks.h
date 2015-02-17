@@ -15,6 +15,11 @@ extern volatile u16 seconds;
 
 u16 get_ticks(void);
 u16 get_seconds(void);
+void set_current_time(u32 time);
+u32 get_current_time(void);
+u32 get_time(void);
+void set_time(u32 time);
+
 u32 get_full_ticks(void);
 void ticks_init(void);
 

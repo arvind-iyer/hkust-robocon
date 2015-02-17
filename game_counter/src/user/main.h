@@ -34,6 +34,7 @@
 #include "game_counter.h"
 #include "timer.h"
 #include "uart_com.h"
+#include "rtc.h"
 
 #define TIMER_MODE_COUNT    4
 

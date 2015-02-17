@@ -2,7 +2,8 @@
 
 volatile u16 ticks = 0;
 volatile u16 seconds = 0;
-
+volatile u32 current_time = 0;
+  
 /**
   * @brief  Get the ticks passed from 0-999
   * @param  None
@@ -19,6 +20,16 @@ u16 get_ticks(void) {
   */
 u16 get_seconds(void) {
 	return seconds;
+}
+
+void set_current_time(u32 time) 
+{
+  current_time = time;
+}
+
+u32 get_current_time(void)
+{
+  return current_time;
 }
 
 u32 get_full_ticks(void)
@@ -77,6 +88,12 @@ TICKS_IRQHandler
     if (ticks >= 999) {
       ticks = 0;
       seconds++;
+      if (current_time >= 24 * 60 * 60 - 1) {
+        current_time = 0;
+      } else {
+        ++current_time;
+      }
+      
     } else {
       ticks++;
     }

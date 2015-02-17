@@ -7,8 +7,11 @@
 #define LED_SEGMENT_COUNT   7
 #define LED_DIGIT_COUNT     3
 
-#define NO_DIGIT  10
-
+#define DIGIT_A   10
+#define DIGIT_11  11
+#define NO_DIGIT  12
+#define DIGIT_U   13
+#define DIGIT_P   14
 
 typedef struct {
   const GPIO* gpio;
