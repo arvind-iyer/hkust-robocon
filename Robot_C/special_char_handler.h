@@ -6,9 +6,10 @@
 #define BLUETOOTH_RECEIVE_CHAR_ID           0x70    // RX
 
 #include "stm32f10x.h"
+#include "ticks.h"
 #include "can_motor.h"
 #include "bluetooth.h"
-#include "ticks.h"
+
 
 char special_char_handler_bt_get_last_char(void);
 void special_char_handler_init(void);

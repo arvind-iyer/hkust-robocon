@@ -31,7 +31,8 @@
 #include "robocon.h"
 #include "wheel_base.h"
 #include "ultrasonic.h"
-#include "racket.h"
 #include "special_char_handler.h"
+#include "racket.h"
+
 
 #endif /* __MAIN_H */

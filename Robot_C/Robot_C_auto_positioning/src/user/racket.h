@@ -5,6 +5,9 @@
 #include "stm32f10x_exti.h"
 #include "misc.h"
 #include "special_char_handler.h"
+#include "button.h"
+#include "can_motor.h"
+#include "approx_math.h"
 
 #define RACKET MOTOR5
 
@@ -24,12 +27,17 @@
 //Controls
 #define KEY_STOP_RACKET 'p'
 #define KEY_LOCK_RACKET 'o'
+#define KEY_CALIB_RACKET 'l'
+#define KEY_HIT_RACKET 'k'
+
 
 void racket_init(void);
 void racket_update(void);
-void racket_stop(void);
-void racket_lock(void);
-void racket_set_vel(s32 vel, CLOSE_LOOP_FLAG loop);
-s32 racket_get_vel(void);
+static void racket_stop(void);
+static void racket_lock(void);
+static void racket_calibrate(void);
+static void racket_hit(void);
+static void racket_set_vel(s32 vel, CLOSE_LOOP_FLAG loop);
+static s32 racket_get_vel(void);
 
 #endif

@@ -11,6 +11,7 @@ static void char_bluetooth_decode(u8 id, u8 length, u8* data)
 				special_char_handler_last_char = data[0];
 				if (special_char_functions[(unsigned char)data[0]] != 0){
 					special_char_functions[(unsigned char)data[0]]();
+					
 				}
       }
     break;

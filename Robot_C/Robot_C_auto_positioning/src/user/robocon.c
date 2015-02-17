@@ -57,7 +57,15 @@ static void pneumatic_control(bool data)		//
 {
 	gpio_write(&PE9, !data);
 }
-/*
+
+
+
+static void print()
+{
+	tft_prints(0,7, "we got something!");
+	tft_update();
+}
+
 static void handle_bluetooth_input(void)
 {
 	if (key_trigger_enable && !bluetooth_is_key_release())
@@ -67,9 +75,17 @@ static void handle_bluetooth_input(void)
 		disable_auto_positioning();
 		switch (wheel_base_bluetooth_get_last_char())
 		{
-			case 'k':
-				current_pneumatic = !current_pneumatic;
-				pneumatic_control(current_pneumatic);
+			case KEY_HIT_RACKET:
+				racket_hit();
+			break;
+			case KEY_CALIB_RACKET:
+				racket_calibrate();
+			break;
+			case KEY_LOCK_RACKET:
+				racket_lock();
+			break;
+			case KEY_STOP_RACKET:
+				racket_stop();
 			break;
 	 }
 	}
@@ -79,29 +95,16 @@ static void handle_bluetooth_input(void)
 	}
 	
 }
-*/
-
-void racket_run()
-{
-	racket_set_vel(80, OPEN_LOOP);
-}
-
-void print()
-{
-	tft_prints(0,7, "we got something!");
-	tft_update();
-}
 
 void robocon_main(void)
 {
-	
-  register_special_char_function('k', racket_run);
-	register_special_char_function('l', print);
+
 //  static char last_key;
   // Send the acceleration data
 	wheel_base_tx_acc();
+	racket_init();
 	gpio_init(&PE9, GPIO_Speed_10MHz, GPIO_Mode_Out_PP, 1);		// pneumatic GPIO
-	
+	register_special_char_function('m',print);
 	while (1) {
 		if (ticks_img != get_ticks()) {
 			ticks_img = get_ticks();
@@ -109,7 +112,7 @@ void robocon_main(void)
 			if (ticks_img % 10 == 0) {
         wheel_base_update();	//wheel_base_update now also handles auto positioning system
 				bluetooth_update();
-        //handle_bluetooth_input();
+        handle_bluetooth_input();
  
         button_update();
 				racket_update();
@@ -128,7 +131,12 @@ void robocon_main(void)
 				battery_regular_check();
 			}
 
-      if (ticks_img % 10 == 3) {
+      if (ticks_img % 100 == 3) {
+				if(special_char_handler_bt_get_last_char() == 'k')
+				{
+					tft_prints(0,7, "HIT");
+					tft_update();
+				}
       }
 			
 			if (ticks_img % 100 == 3) {
@@ -163,7 +171,8 @@ void robocon_main(void)
           s[1] = s[0];
           s[0] = '\\';
         }
-        tft_prints(0, 6, "Char: %s (%d)", s, wheel_base_bluetooth_get_last_char());
+				
+        tft_prints(0, 6, "Char: %s (%d) %c", s, wheel_base_bluetooth_get_last_char(), special_char_handler_bt_get_last_char());
 				tft_prints(0,5, "Switch = %d", gpio_read_input(&PE3));
 				tft_update();
 			}
