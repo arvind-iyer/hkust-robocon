@@ -3,7 +3,7 @@
 static bool clock_mode = false;
 static TIMER_SET_FLAG timer_set_flag = TIMER_SET_OFF;
 static u32 alarm_clock = 0;
-static bool alarm_flag = false;
+static bool alarm_flag = false;     /*!< Flag of alarm is on */
 static bool timer_on_flag = false;
 static bool timer_toggle_flag = false;
 
@@ -134,11 +134,25 @@ void timer_update(void)
     if (ticks_counter == 0) {
       game_counter_colon_set(1);
       ticks_counter = 0;
+      u32 display_time = 0;
       u32 current_time = get_current_time();
-      u8 second = current_time % 60;
-      u8 minute = (current_time / 60) % 60;
-      u8 hour = (current_time / 3600) % 24;
+      switch (timer_set_flag) {
+        case TIMER_SET_OFF:
+        case TIMER_SET_HOUR:
+        case TIMER_SET_MINUTE:
+          display_time = current_time;
+        break;
+        
+        case TIMER_SET_ALARM_HOUR:
+        case TIMER_SET_ALARM_MINUTE:
+          display_time = alarm_clock;
+        break;
+      }
+     
       
+      u8 second = display_time % 60;
+      u8 minute = (display_time / 60) % 60;
+      u8 hour = (display_time / 3600) % 24;
       hour %= 12; // same for AM and PM
       
       game_counter_set_digit_id(0, hour);
@@ -154,18 +168,36 @@ void timer_update(void)
         }
       }
       
+      // ALARM BUZZ!
       if (alarm_flag && current_time == alarm_clock) {
         buzzer_play_song(MARIO_BEGIN, 80, 0);
       }
       
     } else if (ticks_counter == 500) {
-      game_counter_colon_set(0);
-      if (timer_set_flag == TIMER_SET_HOUR) {
-        game_counter_set_digit_id(0, NO_DIGIT);
-      } else if (timer_set_flag == TIMER_SET_MINUTE) {
-        game_counter_set_digit_id(1, NO_DIGIT);
-        game_counter_set_digit_id(2, NO_DIGIT);
+      if (timer_set_flag == TIMER_SET_ALARM_HOUR || timer_set_flag == TIMER_SET_ALARM_MINUTE) {
+        // Keep turning on colon for alarm setting
+        game_counter_colon_set(1);
+      } else {
+        game_counter_colon_set(0);
       }
+      
+      
+      switch (timer_set_flag) {
+        case TIMER_SET_HOUR:
+        case TIMER_SET_ALARM_HOUR:
+          game_counter_set_digit_id(0, NO_DIGIT);
+        break;
+        
+        case TIMER_SET_MINUTE:
+        case TIMER_SET_ALARM_MINUTE:
+          game_counter_set_digit_id(1, NO_DIGIT);
+          game_counter_set_digit_id(2, NO_DIGIT);
+        break;
+        
+        default:
+        break;
+      }
+      
     }
     
   } else {
