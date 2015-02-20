@@ -625,6 +625,11 @@
                 </FileArmAds>
               </FileOption>
             </File>
+            <File>
+              <FileName>my_string.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\src\user\my_string.c</FilePath>
+            </File>
           </Files>
         </Group>
         <Group>
