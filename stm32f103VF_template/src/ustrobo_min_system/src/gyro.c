@@ -1,4 +1,5 @@
 #include "gyro.h"
+#include "wheel_base.h"
 #include "approx_math.h"
 #include "special_char_handler.h"
 
@@ -39,12 +40,17 @@ void reset_gyro_minmax() {
 	max_gyro_x = max_gyro_y = -1024;
 	min_gyro_x = min_gyro_y = 1023;
 }
+void eStop() {
+	wheel_base_pid_off();
+}
+
 void gyro_register_char (void){
 	register_special_char_function('X', add_shift_x );
 	register_special_char_function('x', lower_shift_x);
 	register_special_char_function('V', add_shift_y);
 	register_special_char_function('v', lower_shift_y);
 	register_special_char_function('B', reset_gyro_minmax);
+	register_special_char_function('f', eStop);
 }
 
 void add_shift_x (void){
