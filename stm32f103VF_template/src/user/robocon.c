@@ -14,7 +14,7 @@ void robocon_main(void)
 			if (ticks_img % 10 == 0) {
 				// Every 10 ms (100 Hz)
 				bluetooth_update();
-        wheel_base_pid_update();
+ //       wheel_base_pid_update();
 				wheel_base_update();
 				pivot_update();
 				racket_update();
@@ -90,11 +90,13 @@ void robocon_main(void)
 				//tft_prints(0, 8, "right: %d", get_right_mode());
 				//tft_prints(0, 9, "motor: %d",get_motor_mode());
 			
-				tft_prints(0, 6, "%d %d %d %d %d", get_s1(), get_s2(), get_b1(), get_b2(), get_b3() );
-				tft_prints(0, 8, "pivot:%d", get_pivot_speed() );
-				tft_prints(0, 9, "hs: %d", get_high_speed() );
-				
-				
+//				tft_prints(0, 6, "%d %d %d %d %d", get_s1(), get_s2(), get_b1(), get_b2(), get_b3() );
+//				tft_prints(0, 8, "pivot:%d", get_pivot_speed() );
+//				tft_prints(0, 9, "hs: %d", get_high_speed() );
+				tft_prints(0, 6, "shift_x: %d", get_shift_x() );
+				tft_prints(0, 7, "shift_y: %d", get_shift_y() );	
+				tft_prints(0, 8, "%d<x<%d", get_min_gyro_x(), get_max_gyro_x());
+				tft_prints(0, 9, "%d<y<%d", get_min_gyro_y(), get_max_gyro_y());
 				
 				tft_update();
 				NVIC_EnableIRQ(EXTI15_10_IRQn);

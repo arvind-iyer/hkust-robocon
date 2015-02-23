@@ -25,6 +25,9 @@ int main(void)
   ultrasonic_init();
 	special_char_handler_init();
 	racket_init();
+	gyro_register_char ();
+
+	
 //	pivot_init();
   
 	system_start(1200);
