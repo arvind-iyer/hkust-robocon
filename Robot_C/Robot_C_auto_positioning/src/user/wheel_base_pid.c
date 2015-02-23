@@ -33,6 +33,7 @@ void wheel_base_pid_loop(void)
 	tft_prints(0, 5, "P enabled = %d", auto_positioning_enabled);
 	tft_update();
 	
+d 
 	if (proportion.x+proportion.y < 200 && proportion.x+proportion.y > -200)
 	{
 		wheel_base_pid_off();

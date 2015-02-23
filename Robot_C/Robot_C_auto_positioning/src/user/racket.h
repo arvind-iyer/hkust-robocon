@@ -40,5 +40,7 @@ void racket_update(void);
  void racket_hit(void);
  void racket_set_vel(s32 vel, CLOSE_LOOP_FLAG loop);
  s32 racket_get_vel(void);
-
+ void racket_hit_on(void);
+void racket_hit_off(void);
+s32 get_init_enc(void);
 #endif

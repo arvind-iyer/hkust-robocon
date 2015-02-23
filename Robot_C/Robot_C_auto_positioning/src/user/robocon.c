@@ -98,6 +98,7 @@ void robocon_main(void)
   // Send the acceleration data
 	wheel_base_tx_acc();
 	racket_init();
+	racket_stop();
 	gpio_init(&PE9, GPIO_Speed_10MHz, GPIO_Mode_Out_PP, 1);		// pneumatic GPIO
 	//register_special_char_function('m',print);
 	while (1) {
@@ -169,6 +170,9 @@ void robocon_main(void)
 				
         tft_prints(0, 6, "Char: %s (%d) %c", s, wheel_base_bluetooth_get_last_char(), special_char_handler_bt_get_last_char());
 				tft_prints(0,5, "Switch = %d", gpio_read_input(&PE3));
+				tft_prints(0,8,"Encoder: %d", get_encoder_value(RACKET));
+				tft_prints(0,7,"init: %d", get_init_enc());
+				
 				tft_update();
 			}
 			

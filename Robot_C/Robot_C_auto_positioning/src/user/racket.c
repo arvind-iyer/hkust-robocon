@@ -2,9 +2,11 @@
 
 static s32 racket_vel = 0;
 static CLOSE_LOOP_FLAG loop_flag = OPEN_LOOP;
-static s32 racket_cal_vel = -80;
-static s32 racket_hit_vel =  80;
+static s32 racket_cal_vel = 200;
+static s32 racket_hit_vel = -150;
 static s32 init_encoder_reading = -5000;
+static u8 allow_hit = 0;
+static u8 is_locked = 0;
 void racket_init(void)
 {
 	//Set up special character handlers
@@ -56,44 +58,67 @@ void racket_init(void)
 
 void racket_update(void)
 {
-	if((init_encoder_reading - get_encoder_value(RACKET))   > ENCODER_THRESHOLD)
+	
+	if(get_encoder_value(RACKET) > 2000 && allow_hit)
 	{
-		racket_stop();
-		init_encoder_reading = get_encoder_value(RACKET);
+		racket_lock();
+		racket_hit_off();
 	}
 	motor_set_vel(RACKET, racket_vel, loop_flag);
 	
 }
 
-
+s32 get_init_enc(void)
+{
+	return init_encoder_reading;
+}
 void racket_stop(void)
 {
+	racket_hit_on();
+	is_locked = 0;
 	racket_set_vel(0, OPEN_LOOP);
 }
 
 void racket_lock(void)
 {
+	racket_hit_off();
 	racket_set_vel(0, CLOSE_LOOP);
 }
 
 void racket_calibrate(void)
 {
+	racket_hit_off();
 	racket_set_vel(racket_cal_vel, OPEN_LOOP);
 }
 
 
+void racket_hit_on(void)
+{
+	allow_hit = 1;
+}
+
+void racket_hit_off(void)
+{
+	allow_hit = 0;
+}
 
 void racket_hit(void)
 {
-	if(button_pressed(RACKET_SWITCH))//pe2
+	
+	if(is_locked)//pe3
 	{
-		racket_set_vel(racket_hit_vel, OPEN_LOOP);
 		init_encoder_reading =  get_encoder_value(RACKET);
+		is_locked = 0;
+		racket_hit_on();
+		racket_vel = racket_hit_vel;
+		loop_flag = OPEN_LOOP;
 	}
 	else
 	{
 		racket_calibrate();
+		
 	}	
+	
 }
 
 
@@ -108,24 +133,35 @@ s32 racket_get_vel()
 	return racket_vel;
 }
 
-
+u8 get_lock_status(void)
+{
+	return is_locked;
+}
 
 RACKET_SWITCH_INTERRUPT_HANDLER
 {
+	if(allow_hit)
+		return;
   if(EXTI_GetITStatus(RACKET_SWITCH_LINE) != RESET) 
 	{
+		is_locked = 1;
     racket_lock();
 		racket_update();
-    EXTI_ClearITPendingBit(RACKET_SWITCH_LINE);
-  }
+   }
+	 EXTI_ClearITPendingBit(RACKET_SWITCH_LINE);
+  
 }
 
 ROTATE_SWITCH_INTERRUPT_HANDLER
 {
+	if(allow_hit)
+		return;
 	if(EXTI_GetITStatus(ROTATE_SWITCH_LINE) != RESET)
 	{
+		is_locked = 1;
 		racket_lock();
 		racket_update();
-		EXTI_ClearITPendingBit(ROTATE_SWITCH_LINE);
 	}
+		EXTI_ClearITPendingBit(ROTATE_SWITCH_LINE);
+	
 }
