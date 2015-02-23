@@ -23,7 +23,6 @@ int main(void)
 	wheel_base_init();
   ultrasonic_init();
   servo_init();
-	special_char_handler_init();
 	racket_init();
 	
   system_start(1200); 

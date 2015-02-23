@@ -60,11 +60,6 @@ static void pneumatic_control(bool data)		//
 
 
 
-static void print()
-{
-	tft_prints(0,7, "we got something!");
-	tft_update();
-}
 
 static void handle_bluetooth_input(void)
 {
@@ -72,19 +67,19 @@ static void handle_bluetooth_input(void)
 	{
 		last_sent_OS_time = get_full_ticks();
 		key_trigger_enable = false;
-		disable_auto_positioning();
+		wheel_base_pid_off();
 		switch (wheel_base_bluetooth_get_last_char())
 		{
-			case KEY_HIT_RACKET:
+			case 'k':
 				racket_hit();
 			break;
-			case KEY_CALIB_RACKET:
+			case 'l':
 				racket_calibrate();
 			break;
-			case KEY_LOCK_RACKET:
+			case 'o':
 				racket_lock();
 			break;
-			case KEY_STOP_RACKET:
+			case 'p':
 				racket_stop();
 			break;
 	 }
@@ -104,7 +99,7 @@ void robocon_main(void)
 	wheel_base_tx_acc();
 	racket_init();
 	gpio_init(&PE9, GPIO_Speed_10MHz, GPIO_Mode_Out_PP, 1);		// pneumatic GPIO
-	register_special_char_function('m',print);
+	//register_special_char_function('m',print);
 	while (1) {
 		if (ticks_img != get_ticks()) {
 			ticks_img = get_ticks();

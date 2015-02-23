@@ -8,11 +8,11 @@ static s32 init_encoder_reading = -5000;
 void racket_init(void)
 {
 	//Set up special character handlers
-	special_char_handler_init();
-	register_special_char_function(KEY_LOCK_RACKET, racket_lock);//o
-	register_special_char_function(KEY_STOP_RACKET, racket_stop);//p
-	register_special_char_function(KEY_HIT_RACKET, racket_hit);//k
-	register_special_char_function(KEY_CALIB_RACKET, racket_calibrate);//l
+//	special_char_handler_init();
+//	register_special_char_function(KEY_LOCK_RACKET, racket_lock);//o
+//	register_special_char_function(KEY_STOP_RACKET, racket_stop);//p
+//	register_special_char_function(KEY_HIT_RACKET, racket_hit);//k
+//	register_special_char_function(KEY_CALIB_RACKET, racket_calibrate);//l
 	
 	
 	
@@ -56,7 +56,7 @@ void racket_init(void)
 
 void racket_update(void)
 {
-	if((init_encoder_reading - get_encoder_value(RACKET))   > 6000)
+	if((init_encoder_reading - get_encoder_value(RACKET))   > ENCODER_THRESHOLD)
 	{
 		racket_stop();
 		init_encoder_reading = get_encoder_value(RACKET);
@@ -66,24 +66,24 @@ void racket_update(void)
 }
 
 
-static void racket_stop(void)
+void racket_stop(void)
 {
 	racket_set_vel(0, OPEN_LOOP);
 }
 
-static void racket_lock(void)
+void racket_lock(void)
 {
 	racket_set_vel(0, CLOSE_LOOP);
 }
 
-static void racket_calibrate(void)
+void racket_calibrate(void)
 {
 	racket_set_vel(racket_cal_vel, OPEN_LOOP);
 }
 
 
 
-static void racket_hit(void)
+void racket_hit(void)
 {
 	if(button_pressed(RACKET_SWITCH))//pe2
 	{
@@ -97,13 +97,13 @@ static void racket_hit(void)
 }
 
 
-static void racket_set_vel(s32 vel, CLOSE_LOOP_FLAG loop)
+void racket_set_vel(s32 vel, CLOSE_LOOP_FLAG loop)
 {
 	racket_vel = vel;
 	loop_flag = loop;
 }	
 
-static s32 racket_get_vel()
+s32 racket_get_vel()
 {
 	return racket_vel;
 }

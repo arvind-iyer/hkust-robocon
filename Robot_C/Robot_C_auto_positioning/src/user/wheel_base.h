@@ -8,6 +8,7 @@
 #include "ticks.h"
 #include "gyro.h"
 #include "tft.h"
+#include "wheel_base_pid.h"
 
 // Protocol
 #define	BLUETOOTH_WHEEL_BASE_VEL_ID	    			0x40    // RX
@@ -54,11 +55,7 @@ static const MOTOR_ID
 	MOTOR_TOP_RIGHT 			= MOTOR2;		//changed from MOTOR4
 
 
-typedef	struct {
-	s32 Kp, Ki, Kd;
-} PID;
 
-void disable_auto_positioning(void);
 
 void wheel_base_init(void);
 void wheel_base_set_speed_mode(u8 s);

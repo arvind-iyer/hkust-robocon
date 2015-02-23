@@ -13,14 +13,9 @@ static u8 wheel_base_joystick_speed=30;	//0% to 100%
 
 static u8 wheel_base_pid_flag = 0;
 static POSITION target_pos = {0, 0, 0};
-static PID wheel_base_pid = {0, 0, 0};
+//static PID wheel_base_pid = {0, 0, 0};
 
-static bool auto_positioning_enabled=false;
 
-void disable_auto_positioning()
-{
-	auto_positioning_enabled=0;
-}
 
 /**
 	* @brief Handler for the bluetooth RX with id 0x4?
@@ -34,7 +29,7 @@ static void wheel_base_bluetooth_decode(u8 id, u8 length, u8* data)
 	switch (id) {
 		
 		case BLUETOOTH_WHEEL_BASE_VEL_ID:
-			auto_positioning_enabled=0;	//abort auto_positioning
+			wheel_base_pid_off();	//abort auto_positioning
 			if (length == 3) {
 				s8	x_vel = (s8)data[0],
 						y_vel = (s8)data[1],
@@ -53,7 +48,7 @@ static void wheel_base_bluetooth_decode(u8 id, u8 length, u8* data)
 		break;
 			
 		case BLUETOOTH_WHEEL_BASE_SPEED_MODE_ID:
-			auto_positioning_enabled=0;	//abort auto_positioning
+			wheel_base_pid_flag=0;	//abort auto_positioning
 			if (length == 1) {
 				if (data[0] <= 9) {
 					wheel_base_set_speed_mode(data[0]);
@@ -69,7 +64,7 @@ static void wheel_base_auto_bluetooth_decode(u8 id, u8 length, u8* data)
 {
 	switch (id) {
 		case BLUETOOTH_WHEEL_BASE_AUTO_POS_ID:
-			auto_positioning_enabled=1;
+			wheel_base_pid_flag=1;
 			if (length == 6) {
 				target_pos.x = ((data[0] << 8) & 0xFF00) | (data[1] & 0xFF);
 				target_pos.y = ((data[2] << 8) & 0xFF00) | (data[3] & 0xFF);
@@ -207,11 +202,11 @@ void wheel_base_update(void)
     * TODO2: If there is not any Bluetooth RX data after BLUETOOTH_WHEEL_BASE_TIMEOUT, stop the motors
   
     */
-  if(!auto_positioning_enabled && (get_full_ticks() - wheel_base_joystick_vel_last_update > BLUETOOTH_WHEEL_BASE_TIMEOUT) && (get_full_ticks() - wheel_base_bluetooth_vel_last_update > BLUETOOTH_WHEEL_BASE_TIMEOUT))
+  if(!wheel_base_pid_flag && (get_full_ticks() - wheel_base_joystick_vel_last_update > BLUETOOTH_WHEEL_BASE_TIMEOUT) && (get_full_ticks() - wheel_base_bluetooth_vel_last_update > BLUETOOTH_WHEEL_BASE_TIMEOUT))
 		wheel_base_set_vel(0,0,0);	//if no joystick_control, no bluetooth_input, stop_motor
-	if (auto_positioning_enabled)	// if auto positioning is enabled, start auto_motor_positioning
+	if (wheel_base_pid_flag)	// if auto positioning is enabled, start auto_motor_positioning
 	{
-		wheel_base_positioning_auto();
+		wheel_base_pid_loop();
 	}
 	
 	motor_set_vel(MOTOR_BOTTOM_RIGHT,	WHEEL_BASE_XY_VEL_RATIO * (wheel_base_vel.x + wheel_base_vel.y) / 1000 + WHEEL_BASE_W_VEL_RATIO * wheel_base_vel.w / 1000, wheel_base_close_loop_flag);
@@ -230,10 +225,10 @@ void wheel_base_update(void)
 void wheel_base_positioning_auto(void)
 {
 	//every single get_pos()->x value is inverted here.
-	POSITION proportion = {target_pos.x-(-get_pos()->x), target_pos.y-get_pos()->y, target_pos.angle-get_pos()->angle};
+	/*POSITION proportion = {target_pos.x-(-get_pos()->x), target_pos.y-get_pos()->y, target_pos.angle-get_pos()->angle};
 	s32 positioning_magnitude_x = proportion.x/Abs(proportion.x) * wheel_base_speed_mode*2;
 	s32 positioning_magnitude_y = proportion.y/Abs(proportion.y) * wheel_base_speed_mode*2;
-	wheel_base_set_vel(positioning_magnitude_x+proportion.x/200*wheel_base_speed_mode, positioning_magnitude_y+proportion.y/200*wheel_base_speed_mode,0/*proportion.angle/600*wheel_base_speed_mode*/);
+	wheel_base_set_vel(positioning_magnitude_x+proportion.x/200*wheel_base_speed_mode, positioning_magnitude_y+proportion.y/200*wheel_base_speed_mode,0);
 	tft_prints(0, 4, "P :(%3d,%3d,%3d)", proportion.x, proportion.y, proportion.angle);
 	tft_prints(0, 5, "P enabled = %d", auto_positioning_enabled);
 	tft_update();
@@ -242,6 +237,7 @@ void wheel_base_positioning_auto(void)
 	{
 		auto_positioning_enabled=0;
 	}
+	*/
 	//POSITION current_pos = {get_pos() ->x, get_pos() ->y, get_pos()->angle};
 	//POSITION target_pos = {get_pos() ->x, get_pos() ->y+50, get_pos()->angle};
 }

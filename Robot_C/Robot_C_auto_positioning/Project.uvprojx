@@ -434,11 +434,6 @@
               <FilePath>.\src\user\wheel_base.c</FilePath>
             </File>
             <File>
-              <FileName>humanHandler.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>.\humanHandler.c</FilePath>
-            </File>
-            <File>
               <FileName>racket.c</FileName>
               <FileType>1</FileType>
               <FilePath>.\src\user\racket.c</FilePath>

@@ -23,6 +23,7 @@
 #define RACKET_SWITCH_INTERRUPT_HANDLER void EXTI2_IRQHandler(void)
 #define ROTATE_SWITCH_INTERRUPT_HANDLER void EXTI3_IRQHandler(void)	
 	
+#define ENCODER_THRESHOLD 	6000
 
 //Controls
 #define KEY_STOP_RACKET 'p'
@@ -33,11 +34,11 @@
 
 void racket_init(void);
 void racket_update(void);
-static void racket_stop(void);
-static void racket_lock(void);
-static void racket_calibrate(void);
-static void racket_hit(void);
-static void racket_set_vel(s32 vel, CLOSE_LOOP_FLAG loop);
-static s32 racket_get_vel(void);
+ void racket_stop(void);
+ void racket_lock(void);
+ void racket_calibrate(void);
+ void racket_hit(void);
+ void racket_set_vel(s32 vel, CLOSE_LOOP_FLAG loop);
+ s32 racket_get_vel(void);
 
 #endif
