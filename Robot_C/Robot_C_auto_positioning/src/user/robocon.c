@@ -4,6 +4,7 @@
 static u16 ticks_img 	= (u16)-1;
 static u32 last_sent_OS_time = 0;
 static bool key_trigger_enable = true;
+static bool servo_released = false;
 
 //pneumatic racket value
 static bool current_pneumatic=0;
@@ -79,9 +80,29 @@ static void handle_bluetooth_input(void)
 			case 'o':
 				racket_lock();
 			break;
+			case 'y':
+				toggle_servo();
+				break;
+			case 'u':
+				racket_start_serve();
+				break;
 			case 'p':
 				racket_stop();
 			break;
+			case '=':
+				racket_increase_hit_vel();
+				key_trigger_enable = true;
+				break;
+			case '-':
+				racket_decrease_hit_vel();
+				key_trigger_enable = true;
+				break;
+			case '.':
+				racket_serve_increase_delay();
+				break;
+			case ',':
+				racket_serve_decrease_delay();
+				break;
 	 }
 	}
 	else if (bluetooth_is_key_release())
@@ -169,9 +190,11 @@ void robocon_main(void)
         }
 				
         tft_prints(0, 6, "Char: %s (%d) %c", s, wheel_base_bluetooth_get_last_char(), special_char_handler_bt_get_last_char());
+				tft_prints(0,4,"Serve_delay: %d",racket_get_serve_delay());
 				tft_prints(0,5, "Switch = %d", gpio_read_input(&PE3));
 				tft_prints(0,8,"Encoder: %d", get_encoder_value(RACKET));
 				tft_prints(0,7,"init: %d", get_init_enc());
+				tft_prints(0,9,"Racket: %d", racket_get_vel());
 				
 				tft_update();
 			}

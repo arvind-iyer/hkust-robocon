@@ -8,6 +8,7 @@
 #include "button.h"
 #include "can_motor.h"
 #include "approx_math.h"
+#include "servo.h"
 
 #define RACKET MOTOR5
 
@@ -32,15 +33,24 @@
 #define KEY_HIT_RACKET 'k'
 
 
+
+
 void racket_init(void);
 void racket_update(void);
  void racket_stop(void);
  void racket_lock(void);
  void racket_calibrate(void);
  void racket_hit(void);
+void racket_start_serve(void);
  void racket_set_vel(s32 vel, CLOSE_LOOP_FLAG loop);
  s32 racket_get_vel(void);
  void racket_hit_on(void);
 void racket_hit_off(void);
+void racket_increase_hit_vel(void);
+void racket_decrease_hit_vel(void);
+void racket_serve_increase_delay(void);
+void racket_serve_decrease_delay(void);
+u32 racket_get_serve_delay(void);
 s32 get_init_enc(void);
+void toggle_servo(void);
 #endif
