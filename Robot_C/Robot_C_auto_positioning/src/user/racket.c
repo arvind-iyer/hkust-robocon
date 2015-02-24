@@ -62,7 +62,7 @@ void racket_update(void)
 	if(get_encoder_value(RACKET) > 2000 && allow_hit)
 	{
 		racket_lock();
-		racket_hit_off();
+		//racket_hit_off();
 	}
 	motor_set_vel(RACKET, racket_vel, loop_flag);
 	

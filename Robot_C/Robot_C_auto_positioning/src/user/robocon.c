@@ -97,8 +97,8 @@ void robocon_main(void)
 //  static char last_key;
   // Send the acceleration data
 	wheel_base_tx_acc();
-	racket_init();
-	racket_stop();
+	//racket_init();
+	//racket_stop();
 	gpio_init(&PE9, GPIO_Speed_10MHz, GPIO_Mode_Out_PP, 1);		// pneumatic GPIO
 	//register_special_char_function('m',print);
 	while (1) {
@@ -111,7 +111,7 @@ void robocon_main(void)
         handle_bluetooth_input();
  
         button_update();
-				racket_update();
+				//racket_update();
 				// Every 10 ms (100 Hz)
         
 			}
