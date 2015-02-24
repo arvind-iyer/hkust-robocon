@@ -148,6 +148,7 @@ RACKET_SWITCH_INTERRUPT_HANDLER
     racket_lock();
 		racket_update();
    }
+	 EXTI_ClearFlag(RACKET_SWITCH_LINE);
 	 EXTI_ClearITPendingBit(RACKET_SWITCH_LINE);
   
 }
@@ -163,5 +164,5 @@ ROTATE_SWITCH_INTERRUPT_HANDLER
 		racket_update();
 	}
 		EXTI_ClearITPendingBit(ROTATE_SWITCH_LINE);
-	
+	EXTI_ClearFlag(ROTATE_SWITCH_LINE);
 }
