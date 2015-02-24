@@ -2,7 +2,7 @@
 
 static s32 racket_vel = 0;
 static CLOSE_LOOP_FLAG loop_flag = OPEN_LOOP;
-static s32 racket_cal_vel = 200;
+static s32 racket_cal_vel = 8;
 static s32 racket_hit_vel = -150;
 static s32 init_encoder_reading = -5000;
 static u8 allow_hit = 0;
@@ -62,7 +62,7 @@ void racket_update(void)
 	if(get_encoder_value(RACKET) > 2000 && allow_hit)
 	{
 		racket_lock();
-		//racket_hit_off();
+		racket_hit_off();
 	}
 	motor_set_vel(RACKET, racket_vel, loop_flag);
 	
@@ -74,7 +74,7 @@ s32 get_init_enc(void)
 }
 void racket_stop(void)
 {
-	racket_hit_on();
+	racket_hit_off();
 	is_locked = 0;
 	racket_set_vel(0, OPEN_LOOP);
 }
@@ -88,7 +88,7 @@ void racket_lock(void)
 void racket_calibrate(void)
 {
 	racket_hit_off();
-	racket_set_vel(racket_cal_vel, OPEN_LOOP);
+	racket_set_vel(racket_cal_vel, CLOSE_LOOP);
 }
 
 
@@ -140,29 +140,34 @@ u8 get_lock_status(void)
 
 RACKET_SWITCH_INTERRUPT_HANDLER
 {
-	if(allow_hit)
-		return;
+	
   if(EXTI_GetITStatus(RACKET_SWITCH_LINE) != RESET) 
 	{
+		EXTI_ClearFlag(RACKET_SWITCH_LINE);
+		EXTI_ClearITPendingBit(RACKET_SWITCH_LINE);
+		if(allow_hit)
+			return;
 		is_locked = 1;
     racket_lock();
 		racket_update();
    }
-	 EXTI_ClearFlag(RACKET_SWITCH_LINE);
-	 EXTI_ClearITPendingBit(RACKET_SWITCH_LINE);
+	 
   
 }
 
 ROTATE_SWITCH_INTERRUPT_HANDLER
 {
-	if(allow_hit)
-		return;
+	
+	
 	if(EXTI_GetITStatus(ROTATE_SWITCH_LINE) != RESET)
 	{
+		EXTI_ClearITPendingBit(ROTATE_SWITCH_LINE);
+		EXTI_ClearFlag(ROTATE_SWITCH_LINE);
+		if(allow_hit)
+			return;
 		is_locked = 1;
 		racket_lock();
 		racket_update();
 	}
-		EXTI_ClearITPendingBit(ROTATE_SWITCH_LINE);
-	EXTI_ClearFlag(ROTATE_SWITCH_LINE);
+		
 }
