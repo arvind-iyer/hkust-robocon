@@ -1,6 +1,7 @@
 #include "timer.h"
 
 static bool clock_mode = false;
+static u32 timer_off_idle_ms = 0;
 static TIMER_SET_FLAG timer_set_flag = TIMER_SET_OFF;
 static u32 alarm_clock = 0;
 static bool alarm_flag = false;     /*!< Flag of alarm is on */
@@ -27,6 +28,7 @@ void timer_init(void)
   alarm_clock = 0;
   alarm_flag = false;
   timer_next = 0;
+  timer_off_idle_ms = 0;
 }
 
 void timer_clock_set_flag(TIMER_SET_FLAG flag) 
@@ -94,6 +96,7 @@ void timer_clock_mode_toggle(bool flag)
     timer_set_flag = TIMER_SET_OFF;
     clock_mode = flag;
     buzzer_control_note(2, 300, NOTE_G, 7);
+    timer_off_idle_ms = 0;
   }
 }
 
@@ -201,7 +204,9 @@ void timer_update(void)
     }
     
   } else {
+    
     if (timer_on_flag) {
+      timer_off_idle_ms = 0;
       if (pre_counter_timer && ticks_counter == 0) {
         // pre_counter 
         if (pre_counter_timer <= TIMER_COUNTING_DOWN_BUZZ) {
@@ -295,6 +300,15 @@ void timer_update(void)
     
     
     timer_toggle_flag = false;
+    
+    if (!timer_on_flag) {
+      // Timer idle time check
+      timer_off_idle_ms += TIMER_UPDATE_INTERVAL;
+      if (timer_off_idle_ms >= IDLE_TIME_THRESHOLD / TIMER_UPDATE_INTERVAL) {
+        timer_clock_mode_toggle(true);
+      }
+    }
+    
   }
   
   ticks_counter = (ticks_counter + TIMER_UPDATE_INTERVAL) % 1000;

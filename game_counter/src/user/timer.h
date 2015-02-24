@@ -17,6 +17,8 @@
 #define TIMER_COUNT_LIMIT          (10 * 60) // 10 minutes (exclusive)
 #define TIMER_CLOCK_LIMIT           (60 * 60 * 24)
 #define HOUR_ALARM                  1
+
+#define IDLE_TIME_THRESHOLD       30000 // 30 s
 typedef struct {
   u8 minute;
   u8 second;
