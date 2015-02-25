@@ -2,7 +2,7 @@
 
 static s32 racket_vel = 0;
 static CLOSE_LOOP_FLAG loop_flag = OPEN_LOOP;
-static s32 racket_cal_vel = 500;
+static s32 racket_cal_vel = 200;
 static s32 racket_hit_vel = -1300;
 static u32 racket_serve_delay = 510;
 static s32 init_encoder_reading = -5000;
@@ -11,54 +11,7 @@ static u8 is_locked = 0;
 static u8 is_servo_release = 0;
 static u8 serve_enabled=0;
 static u32 racket_serve_start_time=0;
-void racket_init(void)
-{
-	//Set up special character handlers
-//	special_char_handler_init();
-//	register_special_char_function(KEY_LOCK_RACKET, racket_lock);//o
-//	register_special_char_function(KEY_STOP_RACKET, racket_stop);//p
-//	register_special_char_function(KEY_HIT_RACKET, racket_hit);//k
-//	register_special_char_function(KEY_CALIB_RACKET, racket_calibrate);//l
-	
-	
-	
-	
-	// Initialise interrupt - NVIC and EXT(2 and 3) channels
-	
-	//For Racket_Switch at PE2
-//	EXTI_InitTypeDef   EXTI_InitStructure;
-//	GPIO_EXTILineConfig(GPIO_PortSourceGPIOE, RACKET_PIN_SOURCE);
-//  EXTI_InitStructure.EXTI_Line = RACKET_SWITCH_LINE;
-//  EXTI_InitStructure.EXTI_Mode = EXTI_Mode_Interrupt;
-//  EXTI_InitStructure.EXTI_Trigger = EXTI_Trigger_Falling;
-//  EXTI_InitStructure.EXTI_LineCmd = ENABLE;
-//  EXTI_Init(&EXTI_InitStructure);
-//	
-//	NVIC_InitTypeDef NVIC_InitStructure;
-//	NVIC_InitStructure.NVIC_IRQChannelPreemptionPriority = 0x0F;
-//	NVIC_InitStructure.NVIC_IRQChannelSubPriority = 0x0F;
-//	NVIC_InitStructure.NVIC_IRQChannelCmd = ENABLE;
-//	NVIC_InitStructure.NVIC_IRQChannel = RACKET_IRQn;
-//	NVIC_Init(&NVIC_InitStructure);
 
-//	
-//	//For ROTATE_SWITCH at PE3
-//	GPIO_EXTILineConfig(GPIO_PortSourceGPIOE, ROTATE_PIN_SOURCE);
-//  EXTI_InitStructure.EXTI_Line = ROTATE_SWITCH_LINE;
-//  EXTI_InitStructure.EXTI_Mode = EXTI_Mode_Interrupt;
-//  EXTI_InitStructure.EXTI_Trigger = EXTI_Trigger_Falling;
-//  EXTI_InitStructure.EXTI_LineCmd = ENABLE;
-//  EXTI_Init(&EXTI_InitStructure);
-//	
-//	NVIC_InitStructure.NVIC_IRQChannelPreemptionPriority = 0x0F;
-//	NVIC_InitStructure.NVIC_IRQChannelSubPriority = 0x0F;
-//	NVIC_InitStructure.NVIC_IRQChannelCmd = ENABLE;
-//	NVIC_InitStructure.NVIC_IRQChannel = ROTATE_IRQn;
-//	NVIC_Init(&NVIC_InitStructure);
-
-
-	
-}
 
 void racket_serve_increase_delay(void)
 {
@@ -93,7 +46,7 @@ void racket_update(void)
 	
 	if(get_encoder_value(RACKET) > (2000+racket_hit_vel) && allow_hit)		// during racket_hit(), lock the motor if the racket pass the encoder point.
 	{
-		motor_set_acceleration(RACKET, 1000);
+		motor_set_acceleration(RACKET, 30000);
 		racket_lock();
 		
 		racket_hit_off();

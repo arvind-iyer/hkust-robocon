@@ -232,8 +232,8 @@ bool bluetooth_is_key_release(void)
 	*/
 void wheel_base_tx_position(void)
 {
-	s16 x = -get_pos()->x,		// x position for tx part's been inverted
-			y = get_pos()->y,
+	s16 x = get_pos()->x,		// x position for tx part's been inverted for ROBOT_C
+			y = -get_pos()->y,				// y position for tx part's been inverted for ROBOT_D
 			w = (get_pos()->angle / 10);
 	
 	u8 data[6];

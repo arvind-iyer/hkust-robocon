@@ -7,12 +7,12 @@ void wheel_base_pid_loop(void)
   /** TODO: Code the auto PID **/
   /** Use wheel_base_set_vel(x,y,w) to control wheel base motors */
 	u8 speed_mode = wheel_base_get_speed_mode();
-  POSITION curr_pos = {get_pos()->x, get_pos()->y, get_pos()->angle};
+  POSITION curr_pos = {-(get_pos()->x), -(get_pos()->y), get_pos()->angle};	// For Robot D, both x and y are flipped. For Robot C, only x is flipped.
 	POSITION target = wheel_base_get_target_pos();
 	
-	s32 dx = delX(target, curr_pos);
-	s32 dy = delY(target, curr_pos);
-	s32 dw = delW(target, curr_pos);
+	s32 dx = delX(curr_pos, target);
+	s32 dy = delY(curr_pos, target);
+	s32 dw = delW(curr_pos, target);
 	
 	
 	/* matrix shift applied to the direction of movement */

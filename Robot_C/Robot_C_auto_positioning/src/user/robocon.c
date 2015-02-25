@@ -1,5 +1,21 @@
 #include "robocon.h"
 
+/*
+Important note on changes needed in Robot C and Robot D
+
+Wheel ID should be changed in wheel_base.h
+Encoder value should be changed in wheel_base_pid.c
+Encoder value at tx_position should be changed in wheel_base_tx_position
+
+
+
+
+Details are written in the file
+*/
+
+
+
+
 //system values
 static u16 ticks_img 	= (u16)-1;
 static u32 last_sent_OS_time = 0;

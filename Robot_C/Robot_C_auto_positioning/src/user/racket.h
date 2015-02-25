@@ -35,7 +35,7 @@
 
 
 
-void racket_init(void);
+//void racket_init(void);
 void racket_update(void);
  void racket_stop(void);
  void racket_lock(void);
