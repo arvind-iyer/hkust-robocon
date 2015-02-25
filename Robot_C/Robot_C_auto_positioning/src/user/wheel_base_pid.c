@@ -16,20 +16,19 @@ void wheel_base_pid_loop(void)
 	
 	
 	/* matrix shift applied to the direction of movement */
-	/* untested!!
+	// untested!!
 	s32 shifted_dx = dx*int_cos(curr_pos.angle) - dy*int_sin(curr_pos.angle);
 	s32 shifted_dy = dx*int_sin(curr_pos.angle) + dy*int_cos(curr_pos.angle);
 	shifted_dx/=10000;	//downscale
 	shifted_dy/=10000;	//downscale
 	
-	*/
 	wheel_base_pid.Kp = 200/speed_mode;
 	
-	wheel_base_set_vel(dx/wheel_base_pid.Kp, dy/wheel_base_pid.Kp,0);
-	// wheel_base_set_vel(shifted_dx/wheel_base_pid.Kp, shifted_dy/wheel_base_pid.Kp,0); //untested!
+	//wheel_base_set_vel(dx/wheel_base_pid.Kp, dy/wheel_base_pid.Kp,0);
+	 wheel_base_set_vel(shifted_dx/wheel_base_pid.Kp, shifted_dy/wheel_base_pid.Kp,0); //untested!
 	
 	
-	if (dx+dy < 200 && dx+dy > -200)
+	if (dx+dy < 100 && dx+dy > -100)
 	{
 		wheel_base_pid_off();
 	}

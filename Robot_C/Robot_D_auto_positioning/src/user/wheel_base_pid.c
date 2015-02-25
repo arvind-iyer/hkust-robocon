@@ -7,7 +7,15 @@ void wheel_base_pid_loop(void)
   /** TODO: Code the auto PID **/
   /** Use wheel_base_set_vel(x,y,w) to control wheel base motors */
 	u8 speed_mode = wheel_base_get_speed_mode();
-  POSITION curr_pos = {-(get_pos()->x), -(get_pos()->y), get_pos()->angle};	// For Robot D, both x and y are flipped. For Robot C, only x is flipped.
+  POSITION curr_pos = {(get_pos()->x), (get_pos()->y), get_pos()->angle};	
+	// For Robot D, both x and y are flipped. For Robot C, only x is flipped.
+	switch(ROBOT)
+	{
+		case 'D':
+				curr_pos.y = -curr_pos.y; 
+		case 'C':
+				curr_pos.x = -curr_pos.x;
+	}
 	POSITION target = wheel_base_get_target_pos();
 	
 	s32 dx = delX(curr_pos, target);
@@ -16,17 +24,17 @@ void wheel_base_pid_loop(void)
 	
 	
 	/* matrix shift applied to the direction of movement */
-	/* untested!!
+	/* untested!!*/
 	s32 shifted_dx = dx*int_cos(curr_pos.angle) - dy*int_sin(curr_pos.angle);
 	s32 shifted_dy = dx*int_sin(curr_pos.angle) + dy*int_cos(curr_pos.angle);
 	shifted_dx/=10000;	//downscale
 	shifted_dy/=10000;	//downscale
 	
-	*/
+	
 	wheel_base_pid.Kp = 200/speed_mode;
 	
-	wheel_base_set_vel(dx/wheel_base_pid.Kp, dy/wheel_base_pid.Kp,0);
-	// wheel_base_set_vel(shifted_dx/wheel_base_pid.Kp, shifted_dy/wheel_base_pid.Kp,0); //untested!
+	//wheel_base_set_vel(dx/wheel_base_pid.Kp, dy/wheel_base_pid.Kp,0);
+	wheel_base_set_vel(shifted_dx/wheel_base_pid.Kp, shifted_dy/wheel_base_pid.Kp,0); //untested!
 	
 	
 	if (dx+dy < 200 && dx+dy > -200)

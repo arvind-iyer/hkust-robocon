@@ -148,11 +148,11 @@ void robocon_main(void)
         handle_bluetooth_input();
  
         button_update();
-				racket_update();
 				// Every 10 ms (100 Hz)
         
 			}
 			
+				racket_update();
 			if (ticks_img % 250 == 1) {
 				// Every 250 ms (4 Hz)
 				battery_adc_update();

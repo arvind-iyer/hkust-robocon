@@ -28,19 +28,22 @@
 #define GYRO_FLAG_SET_POS		  0x01
 #define GYRO_FLAG_CAL			    0x02
 
+typedef struct {
+	s16 x, y, angle;
+} POSITION;
+
 
 #define	X_FLIP						1   /*** 1 or -1 **/
 #define	Y_FLIP						1   /*** 1 or -1 **/
 /** Varies along robots (depends on the encoder position) **/
-#define SHIFT_X           0
-#define SHIFT_Y           0
+
+#include "robocon.h"
+#define SHIFT_X           (ROBOT == 'C' ? 0 : 190)
+#define SHIFT_Y           (ROBOT == 'C' ? 420 : 190)
 
 extern volatile u8 gyro_available;
 
 
-typedef struct {
-	s16 x, y, angle;
-} POSITION;
 
 const POSITION* get_pos(void);	// Get the position ({x, y, angle})
 const POSITION* get_pos_raw(void);

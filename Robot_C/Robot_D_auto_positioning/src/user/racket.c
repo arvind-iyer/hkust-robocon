@@ -2,7 +2,7 @@
 
 static s32 racket_vel = 0;
 static CLOSE_LOOP_FLAG loop_flag = OPEN_LOOP;
-static s32 racket_cal_vel = 200;
+static s32 racket_cal_vel = 5 ;
 static s32 racket_hit_vel = -1300;
 static u32 racket_serve_delay = 510;
 static s32 init_encoder_reading = -5000;
@@ -44,11 +44,12 @@ void racket_update(void)
 	}
 	
 	
-	if(get_encoder_value(RACKET) > (2000+racket_hit_vel) && allow_hit)		// during racket_hit(), lock the motor if the racket pass the encoder point.
+	if(get_encoder_value(RACKET) > (init_encoder_reading+ENCODER_THRESHOLD+ racket_hit_vel) && button_pressed(ROTATE_SWITCH))		// during racket_hit(), lock the motor if the racket pass the encoder point.
 	{
-		motor_set_acceleration(RACKET, 30000);
+		motor_set_acceleration(RACKET, 1800);
 		racket_lock();
 		
+		init_encoder_reading = get_encoder_value(RACKET);
 		racket_hit_off();
 		
 	}
@@ -85,7 +86,7 @@ void racket_lock(void)
 void racket_calibrate(void)
 {
 	racket_hit_off();
-	racket_set_vel(racket_cal_vel, OPEN_LOOP);
+	racket_set_vel(racket_cal_vel, CLOSE_LOOP);
 }
 
 

@@ -32,8 +32,8 @@
 #define	X_FLIP						1   /*** 1 or -1 **/
 #define	Y_FLIP						1   /*** 1 or -1 **/
 /** Varies along robots (depends on the encoder position) **/
-#define SHIFT_X           0
-#define SHIFT_Y           0
+#define SHIFT_X           420  // 0 
+#define SHIFT_Y           420  // 0
 
 extern volatile u8 gyro_available;
 
