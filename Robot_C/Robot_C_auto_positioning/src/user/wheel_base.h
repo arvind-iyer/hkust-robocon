@@ -49,10 +49,10 @@ typedef struct {
 } WHEEL_BASE_VEL;
 
 static const MOTOR_ID
-	MOTOR_BOTTOM_RIGHT 		= MOTOR1,		//changed from MOTOR1		//MOTOR3 for C
-	MOTOR_BOTTOM_LEFT 		= MOTOR2,		//changed from MOTOR2		// MOTOR4 for C
-	MOTOR_TOP_LEFT 				= MOTOR3,		//changed from MOTOR3				//MOTOR1 for C
-	MOTOR_TOP_RIGHT 			= MOTOR4;		//changed from MOTOR4				// MOTOR2 for C
+	MOTOR_BOTTOM_RIGHT 		= MOTOR3,		//changed from MOTOR1		//MOTOR3 for C
+	MOTOR_BOTTOM_LEFT 		= MOTOR4,		//changed from MOTOR2		// MOTOR4 for C
+	MOTOR_TOP_LEFT 				= MOTOR1,		//changed from MOTOR3				//MOTOR1 for C
+	MOTOR_TOP_RIGHT 			= MOTOR2;		//changed from MOTOR4				// MOTOR2 for C
 
 
 
