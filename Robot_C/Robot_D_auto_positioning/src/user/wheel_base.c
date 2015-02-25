@@ -235,14 +235,14 @@ void wheel_base_tx_position(void)
 	s16 x = get_pos()->x,		
 			y = get_pos()->y,				
 			w = (get_pos()->angle / 10);
-	switch(ROBOT)
+	/*switch(ROBOT)
 	{
 		case 'D':
 			y = -y;// y position for tx part's been inverted for ROBOT_D
 		break;
 		case 'C':
 			x = -x;// x position for tx part's been inverted for ROBOT_C
-	}
+	}*/
 	
 	u8 data[6];
 	

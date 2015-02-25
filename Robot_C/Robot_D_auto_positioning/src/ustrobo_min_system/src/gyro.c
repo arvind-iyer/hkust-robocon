@@ -1,6 +1,10 @@
 #include "gyro.h"
 #include "approx_math.h"
 
+
+s32 SHIFT_X = (ROBOT == 'C' ? 0 : 190);
+s32 SHIFT_Y = (ROBOT == 'C' ? -420 : 190);
+
 static POSITION gyro_pos = {0, 0, 0};
 static POSITION gyro_pos_raw = {0, 0, 0};
 static u8 rx_state = 0; 
@@ -15,6 +19,33 @@ volatile u8 reply_flag = 0;
 
 volatile u8 gyro_available = 0;
 
+
+void plus_x()
+{
+	SHIFT_X++;
+}
+void minus_x()
+{
+	SHIFT_X--;
+}
+void plus_y()
+{
+	SHIFT_Y++;
+}
+void minus_y()
+{
+	SHIFT_Y--;
+}
+
+s32 gyro_get_shift_x()
+{
+		return SHIFT_X;
+}
+
+s32 gyro_get_shift_y()
+{
+	return SHIFT_Y;
+}
 /**
   * @brief  Initialization of Gyro
   * @param  None

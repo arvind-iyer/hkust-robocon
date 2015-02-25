@@ -33,17 +33,22 @@ typedef struct {
 } POSITION;
 
 
-#define	X_FLIP						1   /*** 1 or -1 **/
-#define	Y_FLIP						1   /*** 1 or -1 **/
+#define	X_FLIP						(ROBOT == 'C' ? -1 : -1)   /*** 1 or -1 **/
+#define	Y_FLIP						(ROBOT == 'C' ? 1: -1)   /*** 1 or -1 **/
 /** Varies along robots (depends on the encoder position) **/
 
 #include "robocon.h"
-#define SHIFT_X           (ROBOT == 'C' ? 0 : 190)
-#define SHIFT_Y           (ROBOT == 'C' ? 420 : 190)
+//#define SHIFT_X           (ROBOT == 'C' ? 0 : 190)
+//#define SHIFT_Y           (ROBOT == 'C' ? -420 : 190)
 
 extern volatile u8 gyro_available;
 
-
+void plus_x();
+void minus_x();
+void plus_y();
+void minus_y();
+s32 gyro_get_shift_x();
+s32 gyro_get_shift_y();
 
 const POSITION* get_pos(void);	// Get the position ({x, y, angle})
 const POSITION* get_pos_raw(void);

@@ -9,13 +9,7 @@ void wheel_base_pid_loop(void)
 	u8 speed_mode = wheel_base_get_speed_mode();
   POSITION curr_pos = {(get_pos()->x), (get_pos()->y), get_pos()->angle};	
 	// For Robot D, both x and y are flipped. For Robot C, only x is flipped.
-	switch(ROBOT)
-	{
-		case 'D':
-				curr_pos.y = -curr_pos.y; 
-		case 'C':
-				curr_pos.x = -curr_pos.x;
-	}
+	
 	POSITION target = wheel_base_get_target_pos();
 	
 	s32 dx = delX(curr_pos, target);

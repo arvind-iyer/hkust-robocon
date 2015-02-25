@@ -4,8 +4,6 @@
 Important note on changes needed in Robot C and Robot D
 
 Wheel ID should be changed in wheel_base.h
-Encoder value should be changed in wheel_base_pid.c
-Encoder value at tx_position should be changed in wheel_base_tx_position
 
 
 
@@ -119,6 +117,22 @@ static void handle_bluetooth_input(void)
 			case ',':
 				racket_serve_decrease_delay();
 				break;
+			case '[':		//only temporary
+				plus_x();
+				key_trigger_enable = true;
+				break;
+			case ']':		// only temporary
+				minus_x();
+				key_trigger_enable = true;
+				break;
+			case '{':		//only temporary
+				plus_y();
+				key_trigger_enable = true;
+				break;
+			case '}':		// only temporary
+				minus_y();
+				key_trigger_enable = true;
+				break;
 	 }
 	}
 	else if (bluetooth_is_key_release())
@@ -206,6 +220,7 @@ void robocon_main(void)
         }
 				
         tft_prints(0, 6, "Char: %s (%d) %c", s, wheel_base_bluetooth_get_last_char(), special_char_handler_bt_get_last_char());
+				tft_prints(0,3,"SHIT: (%d, %d)", gyro_get_shift_x(), gyro_get_shift_y());
 				tft_prints(0,4,"Serve_delay: %d",racket_get_serve_delay());
 				tft_prints(0,5, "Switch = %d", gpio_read_input(&PE3));
 				tft_prints(0,8,"Encoder: %d", get_encoder_value(RACKET));
