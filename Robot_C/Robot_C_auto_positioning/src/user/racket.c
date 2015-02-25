@@ -2,9 +2,9 @@
 
 static s32 racket_vel = 0;
 static CLOSE_LOOP_FLAG loop_flag = OPEN_LOOP;
-static s32 racket_cal_vel = 230;
-static s32 racket_hit_vel = -1000;
-static u32 racket_serve_delay = 500;
+static s32 racket_cal_vel = 500;
+static s32 racket_hit_vel = -1300;
+static u32 racket_serve_delay = 510;
 static s32 init_encoder_reading = -5000;
 static u8 allow_hit = 0;
 static u8 is_locked = 0;
@@ -72,18 +72,18 @@ void racket_serve_decrease_delay(void)
 
 void racket_increase_hit_vel(void)
 {
-	racket_hit_vel-=1;
+	racket_hit_vel-=2;
 }
 
 void racket_decrease_hit_vel(void)
 {
-	racket_hit_vel+=1;
+	racket_hit_vel+=2;
 }
 
 
 void racket_update(void)
 {
-	if (serve_enabled && get_full_ticks()>racket_serve_delay+racket_serve_start_time)
+	if (serve_enabled && get_full_ticks()>racket_serve_delay+racket_serve_start_time)		// execute hit_racket() after serve delay
 	{
 		serve_enabled=0;
 		racket_hit();
@@ -91,7 +91,7 @@ void racket_update(void)
 	}
 	
 	
-	if(get_encoder_value(RACKET) > (2000+racket_hit_vel) && allow_hit)
+	if(get_encoder_value(RACKET) > (2000+racket_hit_vel) && allow_hit)		// during racket_hit(), lock the motor if the racket pass the encoder point.
 	{
 		motor_set_acceleration(RACKET, 1000);
 		racket_lock();
@@ -99,7 +99,7 @@ void racket_update(void)
 		racket_hit_off();
 		
 	}
-	else if(button_pressed(RACKET_SWITCH) || button_pressed(ROTATE_SWITCH))
+	else if(button_pressed(RACKET_SWITCH) || button_pressed(ROTATE_SWITCH))		// if any of the mechanical switch is pressed, lock the motor.
 	{
 		if(!allow_hit)
 		{

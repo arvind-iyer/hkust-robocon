@@ -3,7 +3,7 @@
 
 #include "stm32f10x.h"
 #include "wheel_base.h"
-
+#include "approx_math.h"
 
 typedef	struct {
 	s32 Kp, Ki, Kd;
