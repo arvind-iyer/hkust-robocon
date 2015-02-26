@@ -33,7 +33,7 @@ typedef struct {
 } POSITION;
 
 
-#define	X_FLIP						(ROBOT == 'C' ? -1 : -1)   /*** 1 or -1 **/
+#define	X_FLIP						(ROBOT == 'C' ? 1 : -1)   /*** 1 or -1 **/
 #define	Y_FLIP						(ROBOT == 'C' ? 1: -1)   /*** 1 or -1 **/
 /** Varies along robots (depends on the encoder position) **/
 
@@ -43,12 +43,12 @@ typedef struct {
 
 extern volatile u8 gyro_available;
 
-void plus_x();
-void minus_x();
-void plus_y();
-void minus_y();
-s32 gyro_get_shift_x();
-s32 gyro_get_shift_y();
+void plus_x(void);
+void minus_x(void);
+void plus_y(void);
+void minus_y(void);
+s32 gyro_get_shift_x(void);
+s32 gyro_get_shift_y(void);
 
 const POSITION* get_pos(void);	// Get the position ({x, y, angle})
 const POSITION* get_pos_raw(void);
