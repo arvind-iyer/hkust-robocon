@@ -144,7 +144,7 @@ static void handle_bluetooth_input(void)
 
 void robocon_main(void)
 {
-
+	motor_set_acceleration(RACKET, 3000);
 //  static char last_key;
   // Send the acceleration data
 	wheel_base_tx_acc();
@@ -225,14 +225,15 @@ void robocon_main(void)
         }
 				
         tft_prints(0, 6, "Char: %s (%d) %c", s, wheel_base_bluetooth_get_last_char(), special_char_handler_bt_get_last_char());
-				tft_prints(0,3,"SHIT: (%d, %d)", gyro_get_shift_x(), gyro_get_shift_y());
+				//tft_prints(0,3,"SHIT: (%d, %d)", gyro_get_shift_x(), gyro_get_shift_y());
 				tft_prints(0,4,"Serve_delay: %d",racket_get_serve_delay());
 				tft_prints(0,5, "Switch = %d", gpio_read_input(&PE3));
-				tft_prints(0,2, "x%d y%d", gyro_get_shift_x(), gyro_get_shift_y());
+				//tft_prints(0,2, "x%d y%d", gyro_get_shift_x(), gyro_get_shift_y());
+				tft_prints(0,2, "Laser = %d", gpio_read_input(&PE3));
 				tft_prints(0,8,"Encoder: %d", get_encoder_value(RACKET));
 				tft_prints(0,7,"init: %d", get_init_enc());
 				tft_prints(0,9,"Racket: %d", racket_get_vel());
-				
+				tft_prints(0,3,"stop enc = %d",racket_get_last_stop_encoder_value());
 				tft_update();
 			}
 			
