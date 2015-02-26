@@ -2,6 +2,7 @@
 s32 prev_error;
 s32 error;
 PID wheel_base_pid = {0,0,0};
+
 void wheel_base_pid_loop(void)
 {
   /** TODO: Code the auto PID **/
@@ -31,7 +32,12 @@ void wheel_base_pid_loop(void)
 	wheel_base_set_vel(shifted_dx/wheel_base_pid.Kp, shifted_dy/wheel_base_pid.Kp,0); //untested!
 	
 	
-	if (dx+dy < 200 && dx+dy > -200)
+	
+	/*if ()
+	{
+		
+	}*/
+	if (dx+dy < 100 && dx+dy > -100)
 	{
 		wheel_base_pid_off();
 	}

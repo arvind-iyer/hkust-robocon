@@ -151,6 +151,11 @@ void robocon_main(void)
 	//racket_init();
 	racket_stop();
 	gpio_init(&PE9, GPIO_Speed_10MHz, GPIO_Mode_Out_PP, 1);		// pneumatic GPIO
+	gpio_init(&PE5, GPIO_Speed_10MHz, GPIO_Mode_Out_PP, 1);		//laser sensor GPIO OUT
+	gpio_init(&PE6, GPIO_Speed_10MHz, GPIO_Mode_Out_PP, 1);		// laser sensor GPIO OUT 2
+	//gpio_init(&PE7, GPIO_Speed_10MHz, GPIO_Mode_IPU, 1);		// laser sensor GPIO IN
+	gpio_write(&PE5, 0);		//write 1 to Laser sensor
+	gpio_write(&PE6, 0);		//write 1 to Laser sensor 2
 	//register_special_char_function('m',print);
 	while (1) {
 		if (ticks_img != get_ticks()) {
@@ -223,6 +228,7 @@ void robocon_main(void)
 				tft_prints(0,3,"SHIT: (%d, %d)", gyro_get_shift_x(), gyro_get_shift_y());
 				tft_prints(0,4,"Serve_delay: %d",racket_get_serve_delay());
 				tft_prints(0,5, "Switch = %d", gpio_read_input(&PE3));
+				tft_prints(0,2, "Laser C = %d", gpio_read_input(&PE7));
 				tft_prints(0,8,"Encoder: %d", get_encoder_value(RACKET));
 				tft_prints(0,7,"init: %d", get_init_enc());
 				tft_prints(0,9,"Racket: %d", racket_get_vel());
