@@ -2,8 +2,8 @@
 
 static s32 racket_vel = 0;
 static CLOSE_LOOP_FLAG loop_flag = OPEN_LOOP;
-static s32 racket_cal_vel = 5 ;
-static s32 racket_hit_vel = -1300;
+static s32 racket_cal_vel = 4 ;
+static s32 racket_hit_vel = -1000;
 static u32 racket_serve_delay = 510;
 static s32 init_encoder_reading = -5000;
 static u8 allow_hit = 0;
@@ -11,7 +11,15 @@ static u8 is_locked = 0;
 static u8 is_servo_release = 0;
 static u8 serve_enabled=0;
 static u32 racket_serve_start_time=0;
+static u32 racket_last_laser_trigger_time=0;
+static u32 racket_laser_trigger_interval=1000;
+static u8 racket_laser_trigger_enabled = (ROBOT=='C'? 0: 1);
+static s32 racket_last_stop_encoder_value=0;
 
+s32 racket_get_last_stop_encoder_value()
+{
+	return racket_last_stop_encoder_value;
+}
 
 void racket_serve_increase_delay(void)
 {
@@ -36,6 +44,12 @@ void racket_decrease_hit_vel(void)
 
 void racket_update(void)
 {
+	if (racket_laser_trigger_enabled && !gpio_read_input(&PE7) && get_full_ticks() > racket_last_laser_trigger_time + racket_laser_trigger_interval)
+	{
+		racket_last_laser_trigger_time=get_full_ticks();
+		racket_hit();
+	}
+	
 	if (serve_enabled && get_full_ticks()>racket_serve_delay+racket_serve_start_time)		// execute hit_racket() after serve delay
 	{
 		serve_enabled=0;
@@ -44,9 +58,9 @@ void racket_update(void)
 	}
 	
 	
-	if(get_encoder_value(RACKET) > (init_encoder_reading+ENCODER_THRESHOLD+ racket_hit_vel) && button_pressed(ROTATE_SWITCH))		// during racket_hit(), lock the motor if the racket pass the encoder point.
+	if(get_encoder_value(RACKET) > (init_encoder_reading+ENCODER_THRESHOLD))		// during racket_hit(), lock the motor if the racket pass the encoder point.
 	{
-		motor_set_acceleration(RACKET, 1800);
+		racket_last_stop_encoder_value=get_encoder_value(RACKET);
 		racket_lock();
 		
 		init_encoder_reading = get_encoder_value(RACKET);

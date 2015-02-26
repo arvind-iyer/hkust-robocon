@@ -9,6 +9,8 @@
 #include "can_motor.h"
 #include "approx_math.h"
 #include "servo.h"
+#include "gpio.h"
+#include "robocon.h"
 
 #define RACKET MOTOR5
 
@@ -24,7 +26,7 @@
 #define RACKET_SWITCH_INTERRUPT_HANDLER void EXTI2_IRQHandler(void)
 #define ROTATE_SWITCH_INTERRUPT_HANDLER void EXTI3_IRQHandler(void)	
 	
-#define ENCODER_THRESHOLD 	9200
+#define ENCODER_THRESHOLD 	7200
 
 //Controls
 #define KEY_STOP_RACKET 'p'
@@ -53,4 +55,5 @@ void racket_serve_decrease_delay(void);
 u32 racket_get_serve_delay(void);
 s32 get_init_enc(void);
 void toggle_servo(void);
+s32 racket_get_last_stop_encoder_value();
 #endif
