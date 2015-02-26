@@ -156,11 +156,6 @@ void timer_update(void)
       u8 second = display_time % 60;
       u8 minute = (display_time / 60) % 60;
       u8 hour = (display_time / 3600) % 24;
-      hour %= 12; // same for AM and PM
-      
-      game_counter_set_digit_id(0, hour);
-      game_counter_set_digit_id(1, minute / 10);
-      game_counter_set_digit_id(2, minute % 10);
       
       if (HOUR_ALARM) {
         if (minute == 0 && second == 0) {
@@ -170,6 +165,14 @@ void timer_update(void)
           }
         }
       }
+      
+      hour %= 12; // same for AM and PM
+      
+      game_counter_set_digit_id(0, hour);
+      game_counter_set_digit_id(1, minute / 10);
+      game_counter_set_digit_id(2, minute % 10);
+      
+
       
       // ALARM BUZZ!
       if (alarm_flag && current_time == alarm_clock) {
