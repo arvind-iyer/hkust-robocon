@@ -115,8 +115,11 @@ void racket_lock(void)
 
 void racket_calibrate(void)
 {
-	racket_hit_off();
-	racket_set_vel(racket_cal_vel, CLOSE_LOOP);
+	if (!is_locked)
+	{
+		racket_hit_off();
+		racket_set_vel(racket_cal_vel, CLOSE_LOOP);
+	}
 }
 
 
