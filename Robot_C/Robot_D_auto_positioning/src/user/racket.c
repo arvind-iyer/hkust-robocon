@@ -96,8 +96,8 @@ void racket_update(void)
 	{
 		motor_lock(RACKET);
 	}
-	else if (racket_vel==0 && loop_flag==CLOSE_LOOP)
-		motor_lock(RACKET);
+	//else if (racket_vel==0 && loop_flag==CLOSE_LOOP)
+	//	motor_lock(RACKET);
 	else
 		motor_set_vel(RACKET, racket_vel, loop_flag);
 	
