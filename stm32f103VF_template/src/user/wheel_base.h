@@ -63,6 +63,7 @@ u8 wheel_base_get_speed_mode(void);
 void wheel_base_tx_acc(void);
 void wheel_base_set_vel(s32 x, s32 y, s32 w);
 WHEEL_BASE_VEL wheel_base_get_vel(void);
+WHEEL_BASE_VEL wheel_base_get_prev_vel(void);
 void wheel_base_update(void);
 void wheel_base_tx_position(void);
 

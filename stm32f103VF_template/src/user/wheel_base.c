@@ -5,12 +5,14 @@ static WHEEL_BASE_VEL wheel_base_vel = {0, 0, 0},
 static const CLOSE_LOOP_FLAG wheel_base_close_loop_flag = CLOSE_LOOP;
 static u8 wheel_base_speed_mode = WHEEL_BASE_DEFAULT_SPEED_MODE;
 static u32 wheel_base_bluetooth_vel_last_update = 0;
+
+static u8 wheel_base_acc = 3;
+
 static u32 wheel_base_last_can_tx = 0;
 		
 static u8 wheel_base_pid_flag = 0;
 static POSITION target_pos = {0, 0, 0};
 static PID wheel_base_pid = {0, 0, 0};
-
 
 /**
 	* @brief Handler for the bluetooth RX with id 0x4?
@@ -148,6 +150,11 @@ WHEEL_BASE_VEL wheel_base_get_vel(void)
 	return wheel_base_vel;
 }
 
+WHEEL_BASE_VEL wheel_base_get_prev_vel(void)
+{
+	return wheel_base_vel_prev;
+}
+
 /**
 	* @brief Check if the wheel base velocity is different from the previous one
 	* @param None
@@ -156,6 +163,25 @@ WHEEL_BASE_VEL wheel_base_get_vel(void)
 u8 wheel_base_vel_diff(void)
 {
 	return wheel_base_vel.x != wheel_base_vel_prev.x || wheel_base_vel.y != wheel_base_vel_prev.y || wheel_base_vel.w != wheel_base_vel_prev.w;
+}
+
+// updates wheel base velocity using fake acceleration
+
+static s32 wheel_base_vel_update(s32 current_vel, s32 target_vel)
+{
+	// base case
+	if (target_vel <= current_vel + wheel_base_acc && target_vel >= current_vel - wheel_base_acc)
+	{
+		return target_vel;
+	}
+	else if (target_vel > current_vel + wheel_base_acc)
+	{
+		return current_vel + wheel_base_acc;
+	}
+	else 
+	{
+		return current_vel - wheel_base_acc;
+	}
 }
 
 /**
@@ -170,14 +196,20 @@ void wheel_base_update(void)
     * TODO2: If there is not any Bluetooth RX data after BLUETOOTH_WHEEL_BASE_TIMEOUT, stop the motors
   
     */
-	if ((get_full_ticks() - wheel_base_bluetooth_vel_last_update) > BLUETOOTH_WHEEL_BASE_TIMEOUT) {
+	if ((get_full_ticks() - wheel_base_bluetooth_vel_last_update) > BLUETOOTH_WHEEL_BASE_TIMEOUT && wheel_base_get_pid_flag() != 1) {
 		wheel_base_set_vel(0, 0, 0);
 	}
 	
-	motor_set_vel(MOTOR_TOP_LEFT, ((-wheel_base_vel.y - wheel_base_vel.x) * WHEEL_BASE_XY_VEL_RATIO + wheel_base_vel.w * WHEEL_BASE_W_VEL_RATIO) / 1000, wheel_base_close_loop_flag);
-	motor_set_vel(MOTOR_TOP_RIGHT, ((wheel_base_vel.y - wheel_base_vel.x) * WHEEL_BASE_XY_VEL_RATIO + wheel_base_vel.w * WHEEL_BASE_W_VEL_RATIO) / 1000, wheel_base_close_loop_flag);
-	motor_set_vel(MOTOR_BOTTOM_LEFT, ((-wheel_base_vel.y  + wheel_base_vel.x) * WHEEL_BASE_XY_VEL_RATIO	+ wheel_base_vel.w * WHEEL_BASE_W_VEL_RATIO) / 1000, wheel_base_close_loop_flag);
-	motor_set_vel(MOTOR_BOTTOM_RIGHT, ((wheel_base_vel.y + wheel_base_vel.x) * WHEEL_BASE_XY_VEL_RATIO + wheel_base_vel.w * WHEEL_BASE_W_VEL_RATIO) / 1000, wheel_base_close_loop_flag);
+	// fake acceleration
+	if (wheel_base_vel_diff()){
+		wheel_base_vel_prev.x = wheel_base_vel_update(wheel_base_vel_prev.x, wheel_base_vel.x);
+		wheel_base_vel_prev.y = wheel_base_vel_update(wheel_base_vel_prev.y, wheel_base_vel.y);
+		wheel_base_vel_prev.w = wheel_base_vel_update(wheel_base_vel_prev.w, wheel_base_vel.w);
+	}
+	motor_set_vel(MOTOR_TOP_LEFT, ((-wheel_base_vel_prev.y - wheel_base_vel_prev.x) * WHEEL_BASE_XY_VEL_RATIO + wheel_base_vel_prev.w * WHEEL_BASE_W_VEL_RATIO) / 1000, wheel_base_close_loop_flag);
+	motor_set_vel(MOTOR_TOP_RIGHT, ((wheel_base_vel_prev.y - wheel_base_vel_prev.x) * WHEEL_BASE_XY_VEL_RATIO + wheel_base_vel_prev.w * WHEEL_BASE_W_VEL_RATIO) / 1000, wheel_base_close_loop_flag);
+	motor_set_vel(MOTOR_BOTTOM_LEFT, ((-wheel_base_vel_prev.y  + wheel_base_vel_prev.x) * WHEEL_BASE_XY_VEL_RATIO	+ wheel_base_vel_prev.w * WHEEL_BASE_W_VEL_RATIO) / 1000, wheel_base_close_loop_flag);
+	motor_set_vel(MOTOR_BOTTOM_RIGHT, ((wheel_base_vel_prev.y + wheel_base_vel_prev.x) * WHEEL_BASE_XY_VEL_RATIO + wheel_base_vel_prev.w * WHEEL_BASE_W_VEL_RATIO) / 1000, wheel_base_close_loop_flag);
 }
 
 /**

@@ -186,11 +186,9 @@ void racket_init(void)
 	register_special_char_function('o', open_pneumatic);
 	register_special_char_function('p', close_pneumatic);
 	register_special_char_function('l', serving);
-	register_special_char_function('b', slow_serve_speed_set);
 	register_special_char_function('n', mid_serve_speed_set);
 	register_special_char_function('m', fast_serve_speed_set);
-	register_special_char_function('h', motor_spin);
-	register_special_char_function('g', motor_emergency_stop);
+	register_special_char_function('j', motor_emergency_stop);
 	
 	register_special_char_function('k', up_racket_cmd);
 	register_special_char_function(';', up_racket_calibrate);

@@ -25,13 +25,11 @@ void robocon_main(void)
 				battery_adc_update();
 			}
 			
-			
 			if (get_seconds() % 10 == 2 && ticks_img == 2) {
 				// Every 10 seconds (0.1 Hz)
 				battery_regular_check();
 			}
 
-			
 			if (ticks_img % 100 == 3) {
 				// Every 100 ms (10 Hz)
 				wheel_base_tx_position();
@@ -68,6 +66,7 @@ void robocon_main(void)
 				/** Warning: try not to do many things after tft_update(), as it takes time **/
 
 				WHEEL_BASE_VEL vel = wheel_base_get_vel();
+				WHEEL_BASE_VEL vel_prev = wheel_base_get_prev_vel();
 				tft_clear();
 				draw_top_bar();
 
@@ -85,10 +84,10 @@ void robocon_main(void)
         tft_prints(0, 6, "Char: %s (%d)", s, special_char_handler_bt_get_last_char());
         //tft_prints(0, 7, "Switch hit: %d", did_receive_command());
 				//tft_prints(0, 8, "switch: %d",get_switch());
-				tft_prints(0, 7, "speed: %d", get_current());
-				tft_prints(0, 8, "delay: %d", get_racket_delay());
-				tft_prints(0, 9, "racket: %d", get_racket_speed());	
-				
+				tft_prints(0, 7, "T:(%3d,%3d,%3d)", get_prop(), get_int(), get_der());
+				tft_prints(0, 8, "VP(%3d,%3d,%3d)", vel_prev.x, vel_prev.y, vel_prev.w);
+				tft_prints(0, 8, "PID stat: %d", get_pid_stat());
+
 				tft_update();
 			}
 		}

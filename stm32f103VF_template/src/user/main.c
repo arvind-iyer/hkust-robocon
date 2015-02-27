@@ -22,6 +22,7 @@ int main(void)
   can_motor_init();
 	bluetooth_init();
 	wheel_base_init();
+	wheel_base_pid_init();
   ultrasonic_init();
 	special_char_handler_init();
 	racket_init();
