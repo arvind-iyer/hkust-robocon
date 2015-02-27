@@ -16,11 +16,18 @@ static u32 racket_laser_trigger_interval=1000;
 static u8 racket_laser_trigger_enabled = (ROBOT=='C'? 0: 1);
 static s32 racket_last_stop_encoder_value=0;
 
-s32 racket_get_last_stop_encoder_value()
+s32 racket_get_last_stop_encoder_value(void)
 {
 	return racket_last_stop_encoder_value;
 }
-
+s32 racket_get_laser_hit_delay(void)
+{
+	return racket_laser_trigger_interval;
+}
+void racket_laser_hit_change_delay(s16 val)
+{
+	racket_laser_trigger_interval += val;
+}
 void racket_serve_increase_delay(void)
 {
 	racket_serve_delay+=5;
@@ -48,9 +55,10 @@ void racket_update(void)
 	{
 		racket_last_laser_trigger_time=get_full_ticks();
 		racket_hit();
+		racket_hit_off();
 	}
 	
-	if (serve_enabled && get_full_ticks()>racket_serve_delay+racket_serve_start_time)		// execute hit_racket() after serve delay
+	else if (serve_enabled && get_full_ticks()>racket_serve_delay+racket_serve_start_time)		// execute hit_racket() after serve delay
 	{
 		serve_enabled=0;
 		racket_hit();
@@ -67,7 +75,7 @@ void racket_update(void)
 		racket_hit_off();
 		
 	}
-	else if(button_pressed(RACKET_SWITCH) || button_pressed(ROTATE_SWITCH))		// if any of the mechanical switch is pressed, lock the motor.
+	if(button_pressed(RACKET_SWITCH) || button_pressed(ROTATE_SWITCH))		// if any of the mechanical switch is pressed, lock the motor.
 	{
 		if(!allow_hit)
 		{

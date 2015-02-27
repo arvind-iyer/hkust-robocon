@@ -2,8 +2,8 @@
 #include "approx_math.h"
 
 
-s32 SHIFT_X = (ROBOT == 'C' ? 193 : 190);
-s32 SHIFT_Y = (ROBOT == 'C' ? -781 : 190);
+s32 SHIFT_X = (ROBOT == 'C' ? 970 : 190);
+s32 SHIFT_Y = (ROBOT == 'C' ? -17 : 190);
 
 static POSITION gyro_pos = {0, 0, 0};
 static POSITION gyro_pos_raw = {0, 0, 0};
@@ -157,7 +157,7 @@ void gyro_rx_handler(u8 rx_data)
 {
 	u8 i;
 	u16 x, y, a;
-
+	
 		switch (rx_state) {
 			case 0:	// wakeup
 				if (rx_data == GYRO_WAKEUP) {
@@ -220,9 +220,9 @@ void gyro_rx_handler(u8 rx_data)
               // Calculate the corrected position
               gyro_pos.x = (X_FLIP*gyro_pos_raw.x*10000-SHIFT_X*10000+SHIFT_X*int_cos(gyro_pos_raw.angle)+SHIFT_Y*int_sin(gyro_pos_raw.angle))/10000;
               gyro_pos.y = (Y_FLIP*gyro_pos_raw.y*10000-SHIFT_Y*10000+SHIFT_Y*int_cos(gyro_pos_raw.angle)-SHIFT_X*int_sin(gyro_pos_raw.angle))/10000;
-              gyro_pos.angle = gyro_pos_raw.angle;
+              gyro_pos.angle = gyro_pos_raw.angle+900;
               
-							gyro_pos.x = ROBOT == 'C' ? -gyro_pos.x : gyro_pos.x;
+							//gyro_pos.x = ROBOT == 'C' ? -gyro_pos.x : gyro_pos.x;
 							
 						} else {
 							gyro_available = 0;
@@ -236,6 +236,7 @@ void gyro_rx_handler(u8 rx_data)
 				rx_state = 0;
 				break;
 		}
+		
 }
 
 

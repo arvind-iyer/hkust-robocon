@@ -48,6 +48,10 @@ void racket_start_serve(void);
  s32 racket_get_vel(void);
  void racket_hit_on(void);
 void racket_hit_off(void);
+
+void racket_laser_hit_change_delay(s16 val);
+s32 racket_get_laser_hit_delay(void);
+
 void racket_increase_hit_vel(void);
 void racket_decrease_hit_vel(void);
 void racket_serve_increase_delay(void);
@@ -55,5 +59,5 @@ void racket_serve_decrease_delay(void);
 u32 racket_get_serve_delay(void);
 s32 get_init_enc(void);
 void toggle_servo(void);
-s32 racket_get_last_stop_encoder_value();
+s32 racket_get_last_stop_encoder_value(void);
 #endif
