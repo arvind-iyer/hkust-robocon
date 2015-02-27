@@ -94,10 +94,12 @@ static void handle_bluetooth_input(void)
 			case 'o':
 				racket_lock();
 			break;
-			case 'y':
+			case 'y'://The kewl LASER SERVE
+				is_laser_serve_enabled(1);
 				toggle_servo();
 				break;
-			case 'u':
+			case 'u'://Normal Serve
+				is_laser_serve_enabled(0);
 				racket_start_serve();
 				break;
 			case 'p':

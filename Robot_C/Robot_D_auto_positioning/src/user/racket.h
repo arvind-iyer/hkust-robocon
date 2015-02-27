@@ -51,6 +51,7 @@ void racket_hit_off(void);
 
 void racket_laser_hit_change_delay(s16 val);
 s32 racket_get_laser_hit_delay(void);
+void is_laser_serve_enabled(u8);
 
 void racket_increase_hit_vel(void);
 void racket_decrease_hit_vel(void);

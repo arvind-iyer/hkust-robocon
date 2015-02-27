@@ -48,11 +48,19 @@ void racket_decrease_hit_vel(void)
 	racket_hit_vel+=2;
 }
 
+void is_laser_serve_enabled(u8 bit)
+{
+	if (bit > 1)
+		return;
+	racket_laser_trigger_enabled = bit;
+}
+
 
 void racket_update(void)
 {
-	if (racket_laser_trigger_enabled && !gpio_read_input(&PE7) && get_full_ticks() > racket_last_laser_trigger_time + racket_laser_trigger_interval)
+	if (serve_enabled && racket_laser_trigger_enabled && !gpio_read_input(&PE7) && get_full_ticks() > racket_last_laser_trigger_time + racket_laser_trigger_interval)
 	{
+		serve_enabled = 0;
 		racket_last_laser_trigger_time=get_full_ticks();
 		racket_hit();
 		racket_hit_off();
