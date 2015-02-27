@@ -89,10 +89,17 @@ void racket_update(void)
 		{
 			is_locked = 1;
 			racket_lock();
-	
+			
 		}
 	}
-	motor_set_vel(RACKET, racket_vel, loop_flag);
+	if (is_locked)
+	{
+		motor_lock(RACKET);
+	}
+	else if (racket_vel==0 && loop_flag==CLOSE_LOOP)
+		motor_lock(RACKET);
+	else
+		motor_set_vel(RACKET, racket_vel, loop_flag);
 	
 }
 
@@ -115,7 +122,7 @@ void racket_lock(void)
 
 void racket_calibrate(void)
 {
-	if (!is_locked)
+	if (!is_locked && !button_pressed(ROTATE_SWITCH))
 	{
 		racket_hit_off();
 		racket_set_vel(racket_cal_vel, CLOSE_LOOP);
