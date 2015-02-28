@@ -29,7 +29,7 @@ void wheel_base_pid_loop(void)
 	wheel_base_pid.Kp = 200/speed_mode;
 	
 	//wheel_base_set_vel(dx/wheel_base_pid.Kp, dy/wheel_base_pid.Kp,0);
-	wheel_base_set_vel(shifted_dx/wheel_base_pid.Kp, shifted_dy/wheel_base_pid.Kp,0); //untested!
+	wheel_base_set_vel(shifted_dx/wheel_base_pid.Kp, shifted_dy/wheel_base_pid.Kp,0/*dw/wheel_base_pid.Kp*/); //untested!
 	
 	
 	
@@ -37,10 +37,14 @@ void wheel_base_pid_loop(void)
 	{
 		
 	}*/
+	
+	/*
 	if (dx+dy < 100 && dx+dy > -100)
 	{
 		wheel_base_pid_off();
 	}
+	
+	*/
 	
 	/*
 	POSITION proportion = {target_pos.x-(-get_pos()->x), target_pos.y-get_pos()->y, target_pos.angle-get_pos()->angle};
