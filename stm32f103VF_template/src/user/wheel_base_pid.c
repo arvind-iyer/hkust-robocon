@@ -2,16 +2,16 @@
 #include "special_char_handler.h"
 #include "stdbool.h"
 
-#define STEADY_STATE_SPEED_THRESHOLD 7
+#define STEADY_STATE_SPEED_THRESHOLD 70
 #define STEADY_STATE_TIME_THRESHOLD 150
 
 #define ERROR_THRESHOLD 800
 #define INTEGRAL_THRESHOLD 1000
 #define MOTOR_MAX_SPEED 1000
 
-static int C_PR = 295;
-static int C_IN = 16;
-static int C_DE = 6;
+static int C_PR = 124;
+static int C_IN = 1;
+static int C_DE = 1;
 
 typedef struct {
 	s32 current_error, p_error, i_error, d_error;
@@ -33,6 +33,10 @@ static bool pid_locked = false;
 
 static u8 der_count_up = 0;
 static u8 der_count_down = 0;
+static u8 int_count_up = 0;
+static u8 int_count_down = 0;
+static u8 pro_count_up = 0;
+static u8 pro_count_down = 0;
 
 static void decrease_der(void)
 {
@@ -56,32 +60,58 @@ static void increase_der(void)
 									
 static void decrease_int(void)
 {
-	--C_IN;
+	if (int_count_down == 9) {
+		--C_IN;
+		int_count_down = 0;
+	} else {
+		++int_count_down;
+	}
 }
 
 static void increase_int(void)
 {
-	++C_IN;
+	if (int_count_up == 9) {
+		++C_IN;
+		int_count_up = 0;
+	} else {
+		++int_count_up;
+	}
 }
 									
 static void decrease_prop(void)
 {
-	--C_PR;
+	if (pro_count_down == 9) {
+		--C_PR;
+		pro_count_down = 0;
+	} else {
+		++pro_count_down;
+	}
 }
 
 static void increase_prop(void)
 {
-	++C_PR;
+	if (pro_count_up == 9) {
+		++C_PR;
+		pro_count_up = 0;
+	} else {
+		++pro_count_up;
+	}
+}
+
+static void reset_gyro(void)
+{
+	gyro_pos_set(0, 0, 0);
 }
 
 void wheel_base_pid_init(void)
 {
-	register_special_char_function('v', decrease_prop);
-	register_special_char_function('b', increase_prop);
+	register_special_char_function('r', decrease_prop);
+	register_special_char_function('t', increase_prop);
 	register_special_char_function('f', decrease_int);
 	register_special_char_function('g', increase_int);
-	register_special_char_function('r', decrease_der);
-	register_special_char_function('t', increase_der);
+	register_special_char_function('x', decrease_der);
+	register_special_char_function('v', increase_der);
+	register_special_char_function(' ', reset_gyro);
 }
 
 u8 get_pid_stat(void)
@@ -156,6 +186,26 @@ void wheel_base_pid_update(void)
 	// PID mode check
 	if (wheel_base_get_pid_flag() == 1) {
 		
+		s32 x_error = end_pos.x - get_pos()->x, y_error = end_pos.y - get_pos()->y, t_error = end_pos.angle - get_pos()->angle;
+		
+		if (t_error > 1800) {
+			t_error -= 3600;
+		} else if (t_error < -1800) {
+			t_error += 3600;
+		}
+		
+		s32 x_max_speed, y_max_speed;
+		if (abs(x_error) > abs(y_error))
+		{
+			x_max_speed = MOTOR_MAX_SPEED;
+			y_max_speed = MOTOR_MAX_SPEED * abs(y_error) / abs(x_error);
+		}
+		else
+		{
+			x_max_speed = MOTOR_MAX_SPEED * abs(x_error) / abs(y_error);
+			y_max_speed = MOTOR_MAX_SPEED;
+		}
+		
 		// update position variables and reset PID if target position is changed
 		if (end_pos.x != wheel_base_get_target_pos().x || end_pos.y != wheel_base_get_target_pos().y || end_pos.angle != wheel_base_get_target_pos().angle) {
 			end_pos = wheel_base_get_target_pos();
@@ -163,40 +213,41 @@ void wheel_base_pid_update(void)
 		}
 		
 		// x coordinate PID update
-		if (end_pos.x - get_pos()->x <= ERROR_THRESHOLD && end_pos.x - get_pos()->x >= -ERROR_THRESHOLD) {
+		if (x_error <= ERROR_THRESHOLD && x_error >= -ERROR_THRESHOLD) {
 			// Update PID
 			update_pid(end_pos.x - get_pos()->x, &x_coord_pid);
 			// Set speed according to PID
 			x_speed = C_PR * x_coord_pid.p_error / 100 + C_IN * x_coord_pid.i_error / 100 + C_DE * x_coord_pid.d_error / 100;
-		} else if (end_pos.x - get_pos()->x > 1000) {
+		} else if (x_error > ERROR_THRESHOLD) {
 			// Error too large, just set motor to positive max
-			x_speed = MOTOR_MAX_SPEED;
+			x_speed = x_max_speed;
 		} else {
 			// Error too large, just set motor to negative max
-			x_speed = -MOTOR_MAX_SPEED;
+			x_speed = -x_max_speed;
 		}
 		
 		// y coordinate PID update
-		if (end_pos.y - get_pos()->y <= ERROR_THRESHOLD && end_pos.y - get_pos()->y >= -ERROR_THRESHOLD) {
+		if (y_error <= ERROR_THRESHOLD && y_error >= -ERROR_THRESHOLD) {
 			// Update PID
-			update_pid(end_pos.y - get_pos()->y, &y_coord_pid);
+			update_pid(y_error, &y_coord_pid);
 			// Set speed according to PID
 			y_speed = C_PR * y_coord_pid.p_error / 100 + C_IN * y_coord_pid.i_error / 100 + C_DE * y_coord_pid.d_error / 100;
-		} else if (end_pos.y - get_pos()->y > 1000) {
+		} else if (y_error > ERROR_THRESHOLD) {
 			// Error too large, just set motor to positive max
-			y_speed = MOTOR_MAX_SPEED;
+			y_speed = y_max_speed;
 		} else {
 			// Error too large, just set motor to negative max
-			y_speed = -MOTOR_MAX_SPEED;
+			y_speed = -y_max_speed;
 		}
 		
 		// angle PID update
-		if (end_pos.angle - get_pos()->angle <= ERROR_THRESHOLD && end_pos.angle - get_pos()->angle >= -ERROR_THRESHOLD) {
+		if (t_error <= ERROR_THRESHOLD && t_error >= -ERROR_THRESHOLD) {
 			// Update PID
-			update_pid(end_pos.angle - get_pos()->angle, &t_coord_pid);
+			update_pid(t_error, &t_coord_pid);
 			// Set speed according to PID
 			t_speed = C_PR * t_coord_pid.p_error / 100 + C_IN * t_coord_pid.i_error / 100 + C_DE * t_coord_pid.d_error / 100;
-		} else if (end_pos.angle - get_pos()->angle > 1000) {
+			t_speed = t_speed * 30 / 100;
+		} else if (t_error > ERROR_THRESHOLD) {
 			// Error too large, just set motor to positive max
 			t_speed = MOTOR_MAX_SPEED;
 		} else {

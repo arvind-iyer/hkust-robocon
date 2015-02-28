@@ -14,10 +14,10 @@ static u8 switch_hit = 0;
 
 static u32 current_speed = 0;
 
-static u16 racket_speed = 1400;		//tested best result
+static u16 racket_speed = 1500;		//tested best result
 static u32 racket_speed_adjust_time = 0;
 
-static u16 racket_delay = 253;    //tested best result
+static u16 racket_delay = 240;    //tested best result
 static u32 racket_delay_adjust_time = 0;
 
 //added for upper rackets
@@ -186,6 +186,7 @@ void racket_init(void)
 	register_special_char_function('o', open_pneumatic);
 	register_special_char_function('p', close_pneumatic);
 	register_special_char_function('l', serving);
+	register_special_char_function('b', slow_serve_speed_set);
 	register_special_char_function('n', mid_serve_speed_set);
 	register_special_char_function('m', fast_serve_speed_set);
 	register_special_char_function('j', motor_emergency_stop);
