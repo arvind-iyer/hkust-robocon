@@ -20,8 +20,7 @@ static u32 last_sent_OS_time = 0;
 static bool key_trigger_enable = true;
 static bool servo_released = false;
 
-//pneumatic racket value
-static bool current_pneumatic=0;
+
 
 
 void wheel_base_joystick_control(void)
@@ -68,10 +67,7 @@ void wheel_base_joystick_control(void)
 	}
 }
 
-static void pneumatic_control(bool data)		// 
-{
-	gpio_write(&PE9, !data);
-}
+
 
 
 
@@ -86,49 +82,71 @@ static void handle_bluetooth_input(void)
 		switch (wheel_base_bluetooth_get_last_char())
 		{
 			case 'k':
+				if(ROBOT == 'D')
 				racket_hit();
 			break;
 			case 'l':
+				if(ROBOT == 'D')
 				racket_calibrate();
 			break;
 			case 'o':
+				if(ROBOT == 'D')
 				motor_lock(RACKET);
 			break;
 			case 'y'://The kewl LASER SERVE
+				if(ROBOT == 'D'){
 				is_laser_serve_enabled(1);
 				toggle_servo();
+				}
+				else
+				{
+					//Do pneu serve
+					//current_pneumatic = !current_pneumatic;
+					//racket_pneumatic_set(current_pneumatic);
+				}
 				break;
 			case 'u'://Normal Serve
+				if(ROBOT == 'D'){
 				is_laser_serve_enabled(0);
 				racket_start_serve();
+				}
+				
 				break;
 			case 'p':
+				if(ROBOT == 'D')
 				racket_stop();
 				key_trigger_enable = true;
 			break;
 			case '=':
-				racket_increase_hit_vel();
+				//For both robots
+				racket_change_hit_vel(-2);
 				key_trigger_enable = true;
 				break;
 			case '-':
-				racket_decrease_hit_vel();
+				racket_change_hit_vel(+2);
 				key_trigger_enable = true;
 				break;
 			//Increase and decreaase laser hit delay
 			case '_':
-				racket_laser_hit_change_delay(-1);
-				key_trigger_enable = true;
+				if(ROBOT == 'D'){
+					racket_change_laser_hit_delay(-1);
+					key_trigger_enable = true;
+				}
+				else
+				{
+					
+				}
 				break;
 			case '+':
-				racket_laser_hit_change_delay(+1);
+				racket_change_laser_hit_delay(+1);
 				key_trigger_enable = true;
 				break;
 				
 			case '.':
-				racket_serve_increase_delay();
+				racket_change_serve_delay(+5);
 				break;
 			case ',':
-				racket_serve_decrease_delay();
+				racket_change_serve_delay(-5);
 				break;
 			case '[':		//only temporary
 				plus_x();

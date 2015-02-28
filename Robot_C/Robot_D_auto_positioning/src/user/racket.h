@@ -35,9 +35,11 @@
 #define KEY_HIT_RACKET 'k'
 
 
-
+#define PNEU_GPIO &PE9
 
 //void racket_init(void);
+
+
 void racket_update(void);
  void racket_stop(void);
  void racket_lock(void);
@@ -48,15 +50,14 @@ void racket_start_serve(void);
  s32 racket_get_vel(void);
  void racket_hit_on(void);
 void racket_hit_off(void);
+void racket_pneumatic_set(bool);
 
-void racket_laser_hit_change_delay(s16 val);
+void racket_change_laser_hit_delay(s16 val);
 s32 racket_get_laser_hit_delay(void);
 void is_laser_serve_enabled(u8);
 
-void racket_increase_hit_vel(void);
-void racket_decrease_hit_vel(void);
-void racket_serve_increase_delay(void);
-void racket_serve_decrease_delay(void);
+void racket_change_hit_vel(s16);
+void racket_change_serve_delay(s16);
 u32 racket_get_serve_delay(void);
 s32 get_init_enc(void);
 void toggle_servo(void);
