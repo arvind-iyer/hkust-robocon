@@ -3,7 +3,7 @@
 
 
 //racket variables
-static s32 RACKET_CAL_VEL = 4 ;		
+static s32 RACKET_CAL_VEL = 9 ;		
 static s32 RACKET_HIT_VEL = -1000;				//can be changed by controller
 static u32 RACKET_SERVE_DELAY = (ROBOT == 'C' ? 500 : 510);			// can be changed by controller
 static s32 init_encoder_reading = -5000;
@@ -22,6 +22,7 @@ static u8 racket_laser_trigger_enabled = (ROBOT=='C'? 0: 1);		// flag is raised 
 
 // timer and encoder variables
 static u32 racket_serve_start_time=0;
+static u32 racket_serve_end_time = 0;
 static u32 racket_last_laser_trigger_time=0;
 static u32 racket_laser_trigger_interval=1000;
 static u32 racket_pneu_start_time = 0;
@@ -51,7 +52,7 @@ void racket_change_serve_delay(s16 val)
 
 void racket_change_hit_vel(s16 val)
 {
-	RACKET_HIT_VEL-=2;
+	RACKET_HIT_VEL-=val;
 }
 
 s32 racket_get_vel()
@@ -103,7 +104,7 @@ void is_laser_serve_enabled(u8 bit)
 	racket_laser_trigger_enabled = bit;
 }
 
-
+//Called ever 10ms to check and update racket data and redirect to starting and stopping racket at required points
 void racket_update(void)
 {
 	if(is_pneu_extended && (get_full_ticks() > racket_pneu_start_time + RACKET_SERVE_DELAY))
@@ -131,9 +132,16 @@ void racket_update(void)
 	{
 		racket_last_stop_encoder_value=get_encoder_value(RACKET);
 		motor_lock(RACKET);
-		
+		is_locked = 1;
 		init_encoder_reading = get_encoder_value(RACKET);
 		racket_hit_disable();
+		
+		racket_serve_end_time = get_full_ticks();
+	}
+	if(is_locked && (racket_serve_end_time + 400 < get_full_ticks()))
+	{
+		racket_serve_end_time = get_full_ticks();
+		racket_calibrate();
 	}
 	
 	if(!hit_in_progress && (button_pressed(RACKET_SWITCH) || button_pressed(ROTATE_SWITCH)))		// if any of the mechanical switch is pressed, lock the motor.

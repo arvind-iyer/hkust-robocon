@@ -119,11 +119,11 @@ static void handle_bluetooth_input(void)
 			break;
 			case '=':
 				//For both robots
-				racket_change_hit_vel(-2);
+				racket_change_hit_vel(2);
 				key_trigger_enable = true;
 				break;
 			case '-':
-				racket_change_hit_vel(+2);
+				racket_change_hit_vel(-2);
 				key_trigger_enable = true;
 				break;
 			//Increase and decreaase laser hit delay
