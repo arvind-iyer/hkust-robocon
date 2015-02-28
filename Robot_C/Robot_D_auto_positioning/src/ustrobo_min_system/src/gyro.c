@@ -2,8 +2,8 @@
 #include "approx_math.h"
 
 
-s32 SHIFT_X = (ROBOT == 'C' ? 31 : 190);
-s32 SHIFT_Y = (ROBOT == 'C' ? 980 : 190);
+s32 SHIFT_X = (ROBOT == 'C' ? 31 : 29);
+s32 SHIFT_Y = (ROBOT == 'C' ? 980 : -642);
 
 static POSITION gyro_pos = {0, 0, 0};
 static POSITION gyro_pos_raw = {0, 0, 0};
@@ -217,8 +217,8 @@ void gyro_rx_handler(u8 rx_data)
 							gyro_pos_raw.y = (s16) y;
 							gyro_pos_raw.angle = (s16) a;
               
-							s32 tmp_x = (ROBOT == 'C' ? -y : x);
-							s32 tmp_y = (ROBOT == 'C' ?  x : y);
+							s32 tmp_x = (ROBOT == 'C' ? -y : -y);
+							s32 tmp_y = (ROBOT == 'C' ?  x : x);
               // Calculate the corrected position
 							
               gyro_pos.x = (X_FLIP*tmp_x*10000-SHIFT_X*10000+SHIFT_X*int_cos(gyro_pos_raw.angle)+SHIFT_Y*int_sin(gyro_pos_raw.angle))/10000;

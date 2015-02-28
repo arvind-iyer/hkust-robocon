@@ -172,7 +172,7 @@ void racket_hit(void)
 {
 	if(ROBOT == 'D')
 	{	
-		if(is_locked && button_pressed(ROTATE_SWITCH))//pe3
+		if(button_pressed(ROTATE_SWITCH))//pe3
 		{
 			init_encoder_reading =  get_encoder_value(RACKET);
 			racket_hit_initiated();

@@ -260,9 +260,9 @@ void robocon_main(void)
 				tft_prints(0,4,"Serve_delay: %d",racket_get_serve_delay());
 				tft_prints(0,5, "Switch = %d", gpio_read_input(&PE3));
 				//tft_prints(0,2, "x%d y%d", gyro_get_shift_x(), gyro_get_shift_y());
-				tft_prints(0,7, "LASER%d %d", gpio_read_input(&PE3),racket_get_laser_hit_delay);
+				//tft_prints(0,7, "LASER%d %d", gpio_read_input(&PE3),racket_get_laser_hit_delay);
 				tft_prints(0,8,"Encoder: %d", get_encoder_value(RACKET));
-				//tft_prints(0,7,"init: %d", get_init_enc());
+				tft_prints(0,7,"init: %d", get_init_enc());
 				tft_prints(0,9,"Racket: %d", racket_get_vel());
 				//tft_prints(0,3,"stop enc = %d",racket_get_last_stop_encoder_value());
 				tft_update();
