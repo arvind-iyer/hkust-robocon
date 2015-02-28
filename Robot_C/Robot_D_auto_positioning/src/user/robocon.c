@@ -92,7 +92,7 @@ static void handle_bluetooth_input(void)
 				racket_calibrate();
 			break;
 			case 'o':
-				racket_lock();
+				motor_lock(RACKET);
 			break;
 			case 'y'://The kewl LASER SERVE
 				is_laser_serve_enabled(1);
@@ -104,6 +104,7 @@ static void handle_bluetooth_input(void)
 				break;
 			case 'p':
 				racket_stop();
+				key_trigger_enable = true;
 			break;
 			case '=':
 				racket_increase_hit_vel();
