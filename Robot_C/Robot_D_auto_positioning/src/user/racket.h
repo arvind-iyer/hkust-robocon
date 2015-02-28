@@ -26,7 +26,7 @@
 #define RACKET_SWITCH_INTERRUPT_HANDLER void EXTI2_IRQHandler(void)
 #define ROTATE_SWITCH_INTERRUPT_HANDLER void EXTI3_IRQHandler(void)	
 	
-#define ENCODER_THRESHOLD 	7200
+#define ENCODER_THRESHOLD 	10000
 
 //Controls
 #define KEY_STOP_RACKET 'p'
