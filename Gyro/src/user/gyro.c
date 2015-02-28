@@ -1,4 +1,5 @@
 #include "gyro.h"	 
+#include "flash.h"
 
 volatile s16 curr_ang_vel = 0;
 volatile s16 prev_ang_vel = 0;
@@ -77,30 +78,45 @@ void gyro_init(void)
 
 void gyro_cal(void)
 {
-    s32 gyro_zero32 = 0;
-    s16 gyro_zero = 0;
-    s16 tmp = 0 , i =0;
+    s32 gyro_zero = 0;
+    s32 gyro_zero_sum = 0;
+    s16 gyro_zero_avg = 0;
+    s16 gyro_zero_count = 0;
+    s32 flash_gyro_val = read_flash(0);
+    s16 tmp = 0, i = 0;
     u16 buf = 0;
 	
 	if (gyro_state == 0)
 		return;
 	
+    printf("Flash: %d", read_flash(0));
     for (i = 0; i < 1024; i++) {
-        if (i >= 512) {
+        if (i >= 256) {
             tmp = gyro_get_vel();
-            gyro_zero32 += tmp;
-		if (!(i % 32))
-       		printf("cal zero: %d \n\r",tmp);
+            gyro_zero_sum += tmp;
+            ++gyro_zero_count;
+            gyro_zero_avg = gyro_zero_sum / gyro_zero_count;
+            if (!(i % 16)) {
+              printf("cal zero: %d \n\r",tmp);
+            }
+          
+            if (gyro_zero_count > 20) {
+              if (Abs(gyro_zero_avg - flash_gyro_val) <= 5) {
+                break;
+              }
+            }
         }
 		_delay_ms(4);
     }
 
-    gyro_zero32 = gyro_zero32 / 128;
-    gyro_zero32 = -gyro_zero32;
-    gyro_zero = (s16)gyro_zero32;
-	
-    buf |= gyro_zero;
-	gyro_cal_result = buf;
+    
+    printf("Gyro_zero_avg = %d", gyro_zero_avg);
+    write_flash(0, gyro_zero_avg);
+    
+    printf("Flash: %d", read_flash(0));
+    
+    buf |= gyro_zero_avg * (-4);
+    gyro_cal_result = buf;
 	
     adis_write(GYRO_OFF, buf );
     adis_write(GYRO_COMD, 0x0008 );
