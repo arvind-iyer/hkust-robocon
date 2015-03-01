@@ -17,7 +17,8 @@ static u8 is_servo_release = 0;				// true if servo is at release state, vice ve
 static bool is_pneu_extended = 0; 			// true if pneumatic piston is extended
 //triggers
 static u8 serve_enabled=0;					// flag is raised and waits for timer to trigger racket_hit()
-static u8 racket_laser_trigger_enabled = (ROBOT=='C'? 0: 1);		// flag is raised and waits for timer to trigger racket_hit()
+static u8 racket_laser_not_alligned = 0;		// true if the robot detects error in laser allignment
+//static u8 racket_laser_trigger_enabled = (ROBOT=='C'? 0: 1);		// flag is raised and waits for timer to trigger racket_hit()
 
 
 // timer and encoder variables
@@ -97,13 +98,13 @@ void racket_pneumatic_set(bool data)		//
 	gpio_write(PNEU_GPIO, !data);
 }
 
-void is_laser_serve_enabled(u8 bit)
+/*void is_laser_serve_enabled(u8 bit)
 {
 	if (bit > 1)
 		return;
 	racket_laser_trigger_enabled = bit;
 }
-
+*/
 //Called ever 10ms to check and update racket data and redirect to starting and stopping racket at required points
 void racket_update(void)
 {
@@ -112,12 +113,17 @@ void racket_update(void)
 		is_pneu_extended = 0;
 		racket_pneumatic_set(is_pneu_extended);
 	}
-	if (serve_enabled && racket_laser_trigger_enabled && !gpio_read_input(&PE7) && get_full_ticks() > racket_last_laser_trigger_time + racket_laser_trigger_interval)		//trigger racket with laser
+	if (ROBOT=='D' && gpio_read_input(LASER_GPIO))
 	{
-		serve_enabled = 0;
+		racket_laser_not_alligned=0;
+	}
+	if (ROBOT=='D' && !racket_laser_not_alligned && !gpio_read_input(LASER_GPIO) && get_full_ticks() > racket_last_laser_trigger_time + racket_laser_trigger_interval)		//trigger racket with laser
+	{
+		//serve_enabled = 0;
 		racket_last_laser_trigger_time=get_full_ticks();
 		racket_hit();
-		racket_laser_trigger_enabled=0;
+		racket_laser_not_alligned=1;
+		//racket_laser_trigger_enabled=0;
 	}
 	
 	if (serve_enabled && get_full_ticks()>RACKET_SERVE_DELAY+racket_serve_start_time)		// execute hit_racket() after serve delay
@@ -193,7 +199,7 @@ void racket_hit(void)
 			
 		}	
 	}
-	else
+	else if (!is_pneu_extended)
 	{
 		is_pneu_extended = 1;
 		racket_pneumatic_set(is_pneu_extended);

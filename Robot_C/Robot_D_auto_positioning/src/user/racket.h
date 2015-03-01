@@ -34,7 +34,7 @@
 #define KEY_CALIB_RACKET 'l'
 #define KEY_HIT_RACKET 'k'
 
-
+#define LASER_GPIO &PE7
 #define PNEU_GPIO &PE9
 
 //void racket_init(void);
@@ -54,7 +54,7 @@ void racket_pneumatic_set(bool);
 
 void racket_change_laser_hit_delay(s16 val);
 s32 racket_get_laser_hit_delay(void);
-void is_laser_serve_enabled(u8);
+//void is_laser_serve_enabled(u8);
 
 void racket_change_hit_vel(s16);
 void racket_change_serve_delay(s16);

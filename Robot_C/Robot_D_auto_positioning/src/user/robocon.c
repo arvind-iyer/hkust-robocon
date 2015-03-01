@@ -82,7 +82,6 @@ static void handle_bluetooth_input(void)
 		switch (wheel_base_bluetooth_get_last_char())
 		{
 			case 'k':
-				if(ROBOT == 'D')
 				racket_hit();
 			break;
 			case 'l':
@@ -95,7 +94,7 @@ static void handle_bluetooth_input(void)
 			break;
 			case 'y'://The kewl LASER SERVE
 				if(ROBOT == 'D'){
-				is_laser_serve_enabled(1);
+				//is_laser_serve_enabled(1);
 				toggle_servo();
 				}
 				else
@@ -107,7 +106,7 @@ static void handle_bluetooth_input(void)
 				break;
 			case 'u'://Normal Serve
 				if(ROBOT == 'D'){
-				is_laser_serve_enabled(0);
+				//is_laser_serve_enabled(0);
 				racket_start_serve();
 				}
 				
@@ -181,10 +180,10 @@ void robocon_main(void)
 	wheel_base_tx_acc();
 	//racket_init();
 	racket_stop();
-	gpio_init(&PE9, GPIO_Speed_10MHz, GPIO_Mode_Out_PP, 1);		// pneumatic GPIO
+	gpio_init(&PE9, GPIO_Speed_10MHz, GPIO_Mode_Out_PP, 1);		// pneu matic GPIO
 	gpio_init(&PE5, GPIO_Speed_10MHz, GPIO_Mode_Out_PP, 1);		//laser sensor GPIO OUT
-	gpio_init(&PE6, GPIO_Speed_10MHz, GPIO_Mode_Out_PP, 1);		// laser sensor GPIO OUT 2
-	//gpio_init(&PE7, GPIO_Speed_10MHz, GPIO_Mode_IPU, 1);		// laser sensor GPIO IN
+	gpio_init(&PE6, GPIO_Speed_50MHz, GPIO_Mode_Out_PP, 1);		// laser sensor GPIO OUT 2
+	//gpio_init(&PE7, GPIO_Speed_50MHz, GPIO_Mode_IPU, 0);		// laser sensor GPIO IN
 	gpio_write(&PE5, 0);		//write 1 to Laser sensor
 	gpio_write(&PE6, 0);		//write 1 to Laser sensor 2
 	//register_special_char_function('m',print);
@@ -260,9 +259,9 @@ void robocon_main(void)
 				tft_prints(0,4,"Serve_delay: %d",racket_get_serve_delay());
 				tft_prints(0,5, "Switch = %d", gpio_read_input(&PE3));
 				//tft_prints(0,2, "x%d y%d", gyro_get_shift_x(), gyro_get_shift_y());
-				//tft_prints(0,7, "LASER%d %d", gpio_read_input(&PE3),racket_get_laser_hit_delay);
+				tft_prints(0,7, "LASER%d %d", gpio_read_input(LASER_GPIO),racket_get_laser_hit_delay);
 				tft_prints(0,8,"Encoder: %d", get_encoder_value(RACKET));
-				tft_prints(0,7,"init: %d", get_init_enc());
+				//tft_prints(0,7,"init: %d", get_init_enc());
 				tft_prints(0,9,"Racket: %d", racket_get_vel());
 				//tft_prints(0,3,"stop enc = %d",racket_get_last_stop_encoder_value());
 				tft_update();
