@@ -78,11 +78,9 @@ u8 gyro_cal(void)
 	uart_tx_byte(GYRO_UART, GYRO_CAL);
 	uart_tx_byte(GYRO_UART, 0);
 	
-  u16 timeout = 100;
 	while (!(reply_flag & GYRO_FLAG_CAL)) {
-		if (!(--timeout)) {
+		if ((get_ticks()+1000-ticks_last) % 1000 >= 20)			// 20 ms timeout
 			return 0;
-    }
 	}
 	return 1;
 }
@@ -190,8 +188,8 @@ void gyro_rx_handler(u8 rx_data)
               
               // Calculate the corrected position
               /** TODO: Cancel the offset, varies along the robots **/
-              gyro_pos.x = X_FLIP * gyro_pos_raw.x;
-              gyro_pos.y = Y_FLIP * gyro_pos_raw.y;
+              gyro_pos.x = X_FLIP * gyro_pos_raw.x - (325 * int_sin(gyro_pos_raw.angle + 3483) / 10000 + 65);
+              gyro_pos.y = Y_FLIP * gyro_pos_raw.y + (326 * int_sin(gyro_pos_raw.angle + 2586) / 10000 + 319);
               gyro_pos.angle = gyro_pos_raw.angle;
               
 						} else {
