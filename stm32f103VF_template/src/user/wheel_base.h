@@ -74,6 +74,7 @@ void wheel_base_set_target_pos(POSITION pos);
 void wheel_base_pid_on(void);
 void wheel_base_pid_off(void);
 u8 wheel_base_get_pid_flag(void);
+u32 wheel_base_get_last_manual_timer(void);
 
 // For debugging purpose only
 void wheel_base_override_change_speed(void);
