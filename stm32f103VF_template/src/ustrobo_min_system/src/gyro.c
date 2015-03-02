@@ -78,10 +78,12 @@ u8 gyro_cal(void)
 	uart_tx_byte(GYRO_UART, GYRO_CAL);
 	uart_tx_byte(GYRO_UART, 0);
 	
+	u16 timeout = 100;
 	while (!(reply_flag & GYRO_FLAG_CAL)) {
-		if ((get_ticks()+1000-ticks_last) % 1000 >= 20)			// 20 ms timeout
+		if (!(--timeout)) // Prevent infinite loop
 			return 0;
 	}
+  
 	return 1;
 }
 
