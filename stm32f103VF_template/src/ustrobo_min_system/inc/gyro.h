@@ -29,12 +29,8 @@
 #define GYRO_FLAG_CAL			    0x02
 
 
-
 #define	X_FLIP						1   /*** 1 or -1 **/
 #define	Y_FLIP						1   /*** 1 or -1 **/
-#define SHIFT_X 		shift_x
-#define SHIFT_Y			shift_y
-
 
 extern volatile u8 gyro_available;
 
@@ -51,22 +47,6 @@ void gyro_rx_handler(u8 rx_data);
 void gyro_pos_update(void);		//update gyro values only when auto-update function is disabled in gyro
 u8 gyro_cal(void);	//callibrate gyro
 u8 gyro_pos_set(s16 x, s16 y, s16 a);	//set position of gyro
-POSITION get_position (void);
-
-void add_shift_x (void);
-void add_shift_y (void);
-void lower_shift_x (void);
-void lower_shift_y (void);
-void gyro_register_char (void);
-s32 get_shift_x (void);
-s32 get_shift_y (void);
-s32 get_min_gyro_x();
-s32 get_min_gyro_y();
-s32 get_max_gyro_x();
-s32 get_max_gyro_y();
-
-
-				
 
 
 #endif		/* __GYRO_H */
