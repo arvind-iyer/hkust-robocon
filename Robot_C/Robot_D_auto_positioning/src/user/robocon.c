@@ -183,6 +183,8 @@ void robocon_main(void)
 	gpio_init(&PE9, GPIO_Speed_10MHz, GPIO_Mode_Out_PP, 1);		// pneu matic GPIO
 	gpio_init(&PE5, GPIO_Speed_10MHz, GPIO_Mode_Out_PP, 1);		//laser sensor GPIO OUT
 	gpio_init(&PE6, GPIO_Speed_50MHz, GPIO_Mode_Out_PP, 1);		// laser sensor GPIO OUT 2
+	gpio_init(&PE8, GPIO_Speed_10MHz, GPIO_Mode_Out_PP, 1);		//pneumatic GPIO 2
+	//gpio_init(&);
 	//gpio_init(&PE7, GPIO_Speed_50MHz, GPIO_Mode_IPU, 0);		// laser sensor GPIO IN
 	gpio_write(&PE5, 0);		//write 1 to Laser sensor
 	gpio_write(&PE6, 0);		//write 1 to Laser sensor 2

@@ -36,6 +36,7 @@
 
 #define LASER_GPIO &PE7
 #define PNEU_GPIO &PE9
+#define PNEU_GPIO_DOWN &PE8
 
 //void racket_init(void);
 

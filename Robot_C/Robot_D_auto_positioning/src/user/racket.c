@@ -4,8 +4,8 @@
 
 //racket variables
 static s32 RACKET_CAL_VEL = 9 ;		
-static s32 RACKET_HIT_VEL = -1000;				//can be changed by controller
-static u32 RACKET_SERVE_DELAY = (ROBOT == 'C' ? 500 : 510);			// can be changed by controller
+static s32 RACKET_HIT_VEL = -1320;				//can be changed by controller
+static u32 RACKET_SERVE_DELAY = (ROBOT == 'C' ? 1200 : 495);			// can be changed by controller
 static s32 init_encoder_reading = -5000;
 
 
@@ -96,6 +96,7 @@ void racket_hit_disable(void)
 void racket_pneumatic_set(bool data)		// 
 {
 	gpio_write(PNEU_GPIO, !data);
+	gpio_write(PNEU_GPIO_DOWN, !data);
 }
 
 /*void is_laser_serve_enabled(u8 bit)
