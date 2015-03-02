@@ -1,6 +1,4 @@
 #include "wheel_base.h"
-#include "wheel_base_pid.h"
-#include "special_char_handler.h"
 
 static WHEEL_BASE_VEL wheel_base_vel = {0, 0, 0},
 		wheel_base_vel_prev = {-1, -1, -1};
@@ -8,7 +6,7 @@ static const CLOSE_LOOP_FLAG wheel_base_close_loop_flag = CLOSE_LOOP;
 static u8 wheel_base_speed_mode = WHEEL_BASE_DEFAULT_SPEED_MODE;
 static u32 wheel_base_bluetooth_vel_last_update = 0;
 
-static int wheel_base_acc = 300;
+static u8 wheel_base_acc = 255;
 
 static u32 wheel_base_last_can_tx = 0;
 		
@@ -38,9 +36,6 @@ static void wheel_base_bluetooth_decode(u8 id, u8 length, u8* data)
 					w_vel >= data_range[0] && w_vel <= data_range[1]) {
           
           u16 speed_ratio = SPEED_MODES[wheel_base_speed_mode]; 
-					if (wheel_base_get_pid_flag() == 1) {
-						speed_ratio = 5;
-					}
 					wheel_base_set_vel(x_vel * speed_ratio / 100, y_vel * speed_ratio / 100, w_vel * speed_ratio / 100);
 					wheel_base_bluetooth_vel_last_update = get_full_ticks();
 				}
@@ -82,11 +77,6 @@ static void wheel_base_auto_bluetooth_decode(u8 id, u8 length, u8* data)
 	}
 }
 
-static void stop_motor(void)
-{
-	wheel_base_set_speed_mode(0);
-}
-
 /**
 	* @brief Initialization of wheel base, including bluetooth rx filter, and all related variables
 	*/
@@ -94,7 +84,6 @@ void wheel_base_init(void)
 {
 	bluetooth_rx_add_filter(BLUETOOTH_WHEEL_BASE_VEL_ID, 0xF0, wheel_base_bluetooth_decode);
   bluetooth_rx_add_filter(BLUETOOTH_WHEEL_BASE_AUTO_POS_ID, 0xF0, wheel_base_auto_bluetooth_decode);
-	register_special_char_function(' ', stop_motor);
 	wheel_base_vel.x = wheel_base_vel.y = wheel_base_vel.w = 0;
 	wheel_base_bluetooth_vel_last_update = 0;
 	wheel_base_last_can_tx = 0;
@@ -146,9 +135,9 @@ void wheel_base_tx_acc(void)
 	*/
 void wheel_base_set_vel(s32 x, s32 y, s32 w)
 {
-	wheel_base_vel.x = x * 100;
-	wheel_base_vel.y = y * 100;
-	wheel_base_vel.w = w * 100;
+	wheel_base_vel.x = x;
+	wheel_base_vel.y = y;
+	wheel_base_vel.w = w;
 }
 
 /**
@@ -166,11 +155,6 @@ WHEEL_BASE_VEL wheel_base_get_prev_vel(void)
 	return wheel_base_vel_prev;
 }
 
-u32 wheel_base_get_last_manual_timer(void)
-{
-	return wheel_base_bluetooth_vel_last_update;
-}
-
 /**
 	* @brief Check if the wheel base velocity is different from the previous one
 	* @param None
@@ -183,20 +167,20 @@ u8 wheel_base_vel_diff(void)
 
 // updates wheel base velocity using fake acceleration
 
-static s32 wheel_base_vel_update(s32 current_vel, s32 target_vel, s32 wheel_base_accel)
+static s32 wheel_base_vel_update(s32 current_vel, s32 target_vel)
 {
 	// base case
-	if (target_vel <= current_vel + wheel_base_accel && target_vel >= current_vel - wheel_base_accel)
+	if (target_vel <= current_vel + wheel_base_acc && target_vel >= current_vel - wheel_base_acc)
 	{
 		return target_vel;
 	}
-	else if (target_vel > current_vel + wheel_base_accel)
+	else if (target_vel > current_vel + wheel_base_acc)
 	{
-		return current_vel + wheel_base_accel;
+		return current_vel + wheel_base_acc;
 	}
 	else 
 	{
-		return current_vel - wheel_base_accel;
+		return current_vel - wheel_base_acc;
 	}
 }
 
@@ -212,39 +196,20 @@ void wheel_base_update(void)
     * TODO2: If there is not any Bluetooth RX data after BLUETOOTH_WHEEL_BASE_TIMEOUT, stop the motors
   
     */
-	if ((get_full_ticks() - wheel_base_bluetooth_vel_last_update) > BLUETOOTH_WHEEL_BASE_TIMEOUT && (wheel_base_get_pid_flag() != 1 || (wheel_base_get_pid_flag() && get_pid_stat()))) {
+	if ((get_full_ticks() - wheel_base_bluetooth_vel_last_update) > BLUETOOTH_WHEEL_BASE_TIMEOUT && wheel_base_get_pid_flag() != 1) {
 		wheel_base_set_vel(0, 0, 0);
 	}
 	
 	// fake acceleration
 	if (wheel_base_vel_diff()){
-		int x_error = abs(wheel_base_vel.x);
-		int y_error = abs(wheel_base_vel.y);
-		if (x_error == 0)
-		{
-			x_error = 1;
-		}
-		if (y_error == 0)
-		{
-			y_error = 1;
-		}
-		s32 x_wheel_base_acc, y_wheel_base_acc;
-		if (x_error > y_error) {
-			x_wheel_base_acc = wheel_base_acc;
-			y_wheel_base_acc = wheel_base_acc * y_error / x_error;
-		} else {
-			x_wheel_base_acc = wheel_base_acc * x_error / y_error;
-			y_wheel_base_acc = wheel_base_acc;
-		}
-		wheel_base_vel_prev.x = wheel_base_vel_update(wheel_base_vel_prev.x, wheel_base_vel.x, x_wheel_base_acc);
-		wheel_base_vel_prev.y = wheel_base_vel_update(wheel_base_vel_prev.y, wheel_base_vel.y, y_wheel_base_acc);
-		wheel_base_vel_prev.w = wheel_base_vel_update(wheel_base_vel_prev.w, wheel_base_vel.w, wheel_base_acc);
+		wheel_base_vel_prev.x = wheel_base_vel_update(wheel_base_vel_prev.x, wheel_base_vel.x);
+		wheel_base_vel_prev.y = wheel_base_vel_update(wheel_base_vel_prev.y, wheel_base_vel.y);
+		wheel_base_vel_prev.w = wheel_base_vel_update(wheel_base_vel_prev.w, wheel_base_vel.w);
 	}
-	
-	motor_set_vel(MOTOR_TOP_LEFT, ((-wheel_base_vel_prev.y - wheel_base_vel_prev.x) * WHEEL_BASE_XY_VEL_RATIO + wheel_base_vel_prev.w * WHEEL_BASE_W_VEL_RATIO) / 100000, wheel_base_close_loop_flag);
-	motor_set_vel(MOTOR_TOP_RIGHT, ((wheel_base_vel_prev.y - wheel_base_vel_prev.x) * WHEEL_BASE_XY_VEL_RATIO + wheel_base_vel_prev.w * WHEEL_BASE_W_VEL_RATIO) / 100000, wheel_base_close_loop_flag);
-	motor_set_vel(MOTOR_BOTTOM_LEFT, ((-wheel_base_vel_prev.y  + wheel_base_vel_prev.x) * WHEEL_BASE_XY_VEL_RATIO	+ wheel_base_vel_prev.w * WHEEL_BASE_W_VEL_RATIO) / 100000, wheel_base_close_loop_flag);
-	motor_set_vel(MOTOR_BOTTOM_RIGHT, ((wheel_base_vel_prev.y + wheel_base_vel_prev.x) * WHEEL_BASE_XY_VEL_RATIO + wheel_base_vel_prev.w * WHEEL_BASE_W_VEL_RATIO) / 100000, wheel_base_close_loop_flag);
+	motor_set_vel(MOTOR_TOP_LEFT, ((-wheel_base_vel_prev.y - wheel_base_vel_prev.x) * WHEEL_BASE_XY_VEL_RATIO + wheel_base_vel_prev.w * WHEEL_BASE_W_VEL_RATIO) / 1000, wheel_base_close_loop_flag);
+	motor_set_vel(MOTOR_TOP_RIGHT, ((wheel_base_vel_prev.y - wheel_base_vel_prev.x) * WHEEL_BASE_XY_VEL_RATIO + wheel_base_vel_prev.w * WHEEL_BASE_W_VEL_RATIO) / 1000, wheel_base_close_loop_flag);
+	motor_set_vel(MOTOR_BOTTOM_LEFT, ((-wheel_base_vel_prev.y  + wheel_base_vel_prev.x) * WHEEL_BASE_XY_VEL_RATIO	+ wheel_base_vel_prev.w * WHEEL_BASE_W_VEL_RATIO) / 1000, wheel_base_close_loop_flag);
+	motor_set_vel(MOTOR_BOTTOM_RIGHT, ((wheel_base_vel_prev.y + wheel_base_vel_prev.x) * WHEEL_BASE_XY_VEL_RATIO + wheel_base_vel_prev.w * WHEEL_BASE_W_VEL_RATIO) / 1000, wheel_base_close_loop_flag);
 }
 
 /**

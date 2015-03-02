@@ -2,23 +2,16 @@
 #include "special_char_handler.h"
 #include "stdbool.h"
 
-#define STEADY_STATE_ERROR_THRESHOLD 20
-#define STEADY_STATE_TIME_THRESHOLD 200
+#define STEADY_STATE_SPEED_THRESHOLD 70
+#define STEADY_STATE_TIME_THRESHOLD 150
 
 #define ERROR_THRESHOLD 800
 #define INTEGRAL_THRESHOLD 1000
-#define MOTOR_MAX_SPEED 1300
+#define MOTOR_MAX_SPEED 1000
 
-#define T_ERROR_THRESHOLD 400
-#define T_MOTOR_MAX_SPEED 500
-
-static int C_PR = 146;
-static int C_IN = 3;
+static int C_PR = 124;
+static int C_IN = 1;
 static int C_DE = 1;
-
-static int C_T_PR = 37;
-static int C_T_IN = 1;
-static int C_T_DE = 1;
 
 typedef struct {
 	s32 current_error, p_error, i_error, d_error;
@@ -34,10 +27,8 @@ static PID_OUTPUT x_coord_pid = {0, 0, 0, 0},
 
 static s32 x_speed = 0, y_speed = 0, t_speed = 0;
 
-static s32 x_steady_state_timer = 0;
-static s32 y_steady_state_timer = 0;
-static s32 t_steady_state_timer = 0;
-									
+static s32 steady_state_timer = 0;
+
 static bool pid_locked = false;
 
 static u8 der_count_up = 0;
@@ -110,23 +101,7 @@ static void increase_prop(void)
 static void reset_gyro(void)
 {
 	gyro_pos_set(0, 0, 0);
-	POSITION target_pos = {0, 0, 0};
-	wheel_base_set_target_pos(target_pos);
 }
-
-static void set_starting_pos(void)
-{
-	gyro_pos_set(0, 4700, 0);
-	POSITION target_pos = {0, 4700, 0};
-	wheel_base_set_target_pos(target_pos);
-}
-
-static void set_serving_pos(void)
-{
-	POSITION target_pos = {114, 4550, 0};
-	wheel_base_set_target_pos(target_pos);
-}
-
 
 void wheel_base_pid_init(void)
 {
@@ -136,9 +111,7 @@ void wheel_base_pid_init(void)
 	register_special_char_function('g', increase_int);
 	register_special_char_function('x', decrease_der);
 	register_special_char_function('v', increase_der);
-	register_special_char_function('/', reset_gyro);
-	register_special_char_function('\t', set_starting_pos);
-	register_special_char_function('R', set_serving_pos);
+	register_special_char_function(' ', reset_gyro);
 }
 
 u8 get_pid_stat(void)
@@ -202,6 +175,7 @@ void reset_pid(void)
 	x_coord_pid = reset;
 	y_coord_pid = reset;
 	t_coord_pid = reset;
+	pid_locked = false;
 }
 
 void wheel_base_pid_update(void)
@@ -212,70 +186,8 @@ void wheel_base_pid_update(void)
 	// PID mode check
 	if (wheel_base_get_pid_flag() == 1) {
 		
-		// do not calculate PID if adjusting manually after PID is reached
-		
-		if (pid_locked && (get_full_ticks() - wheel_base_get_last_manual_timer()) < BLUETOOTH_WHEEL_BASE_TIMEOUT + 50)
-		{
-			wheel_base_set_target_pos(*get_pos());
-			reset_pid();
-			return;
-		}
-		
-		// update position variables and reset PID if target position is changed
-		if (end_pos.x != wheel_base_get_target_pos().x || end_pos.y != wheel_base_get_target_pos().y || end_pos.angle != wheel_base_get_target_pos().angle) {
-			end_pos = wheel_base_get_target_pos();
-			reset_pid();
-			pid_locked = false;
-		}
-		
 		s32 x_error = end_pos.x - get_pos()->x, y_error = end_pos.y - get_pos()->y, t_error = end_pos.angle - get_pos()->angle;
-		bool x_lock = false, y_lock = false, t_lock = false;
 		
-		// update steady state timer if not in threshold
-		if (x_error > STEADY_STATE_ERROR_THRESHOLD || x_error < -STEADY_STATE_ERROR_THRESHOLD)
-		{
-			x_steady_state_timer = get_full_ticks();
-		}
-		if (y_error > STEADY_STATE_ERROR_THRESHOLD || y_error < -STEADY_STATE_ERROR_THRESHOLD)
-		{
-			y_steady_state_timer = get_full_ticks();
-		}
-		if (t_error > STEADY_STATE_ERROR_THRESHOLD || t_error < -STEADY_STATE_ERROR_THRESHOLD)
-		{
-			t_steady_state_timer = get_full_ticks();
-		}
-		
-		// when timer is expired, then we reset PID and adjust the position
-		if (get_full_ticks() - x_steady_state_timer > STEADY_STATE_TIME_THRESHOLD)
-		{
-			end_pos.x = get_pos()->x;
-			x_coord_pid = reset;
-			x_lock = true;
-		}
-		if (get_full_ticks() - y_steady_state_timer > STEADY_STATE_TIME_THRESHOLD)
-		{
-			end_pos.y = get_pos()->y;
-			y_coord_pid = reset;
-			y_lock = true;
-		}
-		if (get_full_ticks() - t_steady_state_timer > STEADY_STATE_TIME_THRESHOLD)
-		{
-			end_pos.angle = get_pos()->angle;
-			t_coord_pid = reset;
-			t_lock = true;
-		}
-		// disable angle pid
-		t_lock = true;
-		
-		// update lock PID
-		if (x_lock && y_lock && t_lock)
-		{
-			pid_locked = true;
-		} else {
-			pid_locked = false;
-		}
-		
-		// calculate shortest angle error
 		if (t_error > 1800) {
 			t_error -= 3600;
 		} else if (t_error < -1800) {
@@ -294,10 +206,16 @@ void wheel_base_pid_update(void)
 			y_max_speed = MOTOR_MAX_SPEED;
 		}
 		
+		// update position variables and reset PID if target position is changed
+		if (end_pos.x != wheel_base_get_target_pos().x || end_pos.y != wheel_base_get_target_pos().y || end_pos.angle != wheel_base_get_target_pos().angle) {
+			end_pos = wheel_base_get_target_pos();
+			reset_pid();
+		}
+		
 		// x coordinate PID update
 		if (x_error <= ERROR_THRESHOLD && x_error >= -ERROR_THRESHOLD) {
 			// Update PID
-			update_pid(x_error, &x_coord_pid);
+			update_pid(end_pos.x - get_pos()->x, &x_coord_pid);
 			// Set speed according to PID
 			x_speed = C_PR * x_coord_pid.p_error / 100 + C_IN * x_coord_pid.i_error / 100 + C_DE * x_coord_pid.d_error / 100;
 		} else if (x_error > ERROR_THRESHOLD) {
@@ -323,31 +241,46 @@ void wheel_base_pid_update(void)
 		}
 		
 		// angle PID update
-		if (t_error <= T_ERROR_THRESHOLD && t_error >= -T_ERROR_THRESHOLD) {
+		if (t_error <= ERROR_THRESHOLD && t_error >= -ERROR_THRESHOLD) {
 			// Update PID
 			update_pid(t_error, &t_coord_pid);
 			// Set speed according to PID
-			t_speed = C_T_PR * t_coord_pid.p_error / 100 + C_T_IN * t_coord_pid.i_error / 100 + C_T_DE * t_coord_pid.d_error / 100;
-			t_speed = t_speed;
-		} else if (t_error > T_ERROR_THRESHOLD) {
+			t_speed = C_PR * t_coord_pid.p_error / 100 + C_IN * t_coord_pid.i_error / 100 + C_DE * t_coord_pid.d_error / 100;
+			t_speed = t_speed * 30 / 100;
+		} else if (t_error > ERROR_THRESHOLD) {
 			// Error too large, just set motor to positive max
-			t_speed = T_MOTOR_MAX_SPEED;
+			t_speed = MOTOR_MAX_SPEED;
 		} else {
 			// Error too large, just set motor to negative max
-			t_speed = -T_MOTOR_MAX_SPEED;
+			t_speed = -MOTOR_MAX_SPEED;
 		}
-		u8 speed_ratio;
+		
 		// scale speeds using speed mode
-		if (SPEED_MODES[wheel_base_get_speed_mode()]) {
-			speed_ratio = 60;
-		} else {
-			speed_ratio = 0;
-		}
+		u8 speed_ratio = SPEED_MODES[wheel_base_get_speed_mode()];
 		
 		// disable spinning for now
 		t_speed = 0;
+		
+		// update steady state timer if not in threshold
+		if(x_speed > STEADY_STATE_SPEED_THRESHOLD || x_speed < -STEADY_STATE_SPEED_THRESHOLD ||
+			 y_speed > STEADY_STATE_SPEED_THRESHOLD || y_speed < -STEADY_STATE_SPEED_THRESHOLD ||
+			 t_speed > STEADY_STATE_SPEED_THRESHOLD || t_speed < -STEADY_STATE_SPEED_THRESHOLD)
+		{
+			steady_state_timer = get_full_ticks();
+			pid_locked = false;
+		}
+		
+		// when timer is expired, then we lock the motor
+		if (get_full_ticks() - steady_state_timer > STEADY_STATE_TIME_THRESHOLD)
+		{
+			x_speed = 0;
+			y_speed = 0;
+			t_speed = 0;
+			pid_locked = true;
+		}
 
 		// set velocity
 		wheel_base_set_vel(x_speed * speed_ratio / 1000, y_speed * speed_ratio / 1000, t_speed * speed_ratio / 1000);
+		
 	}
 }
