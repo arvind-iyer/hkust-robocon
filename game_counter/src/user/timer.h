@@ -18,7 +18,11 @@
 #define TIMER_CLOCK_LIMIT           (60 * 60 * 24)
 #define HOUR_ALARM                  1
 
-#define IDLE_TIME_THRESHOLD       30000 // 30 s
+#define ALARM_COUNT               9
+#define IDLE_TIME_THRESHOLD       45000 // 45 s
+
+
+
 typedef struct {
   u8 minute;
   u8 second;
@@ -37,13 +41,20 @@ typedef enum {
   TIMER_SET_ALARM_MINUTE
 } TIMER_SET_FLAG;
 
+typedef struct {
+  u32 time;
+  bool flag;
+  const MUSIC_NOTE* music;
+} ALARM;
+
 void timer_init(void);
 void timer_clock_set_flag(TIMER_SET_FLAG flag);
 TIMER_SET_FLAG timer_clock_get_flag(void);
-bool get_alarm_flag(void);
-void set_alarm_flag(bool flag);
-u32 get_alarm(void);
 
+const ALARM* get_alarm(u8 i);
+void set_alarm_flag(u8 i, bool flag);
+void alarm_id_tmp_set(u8 i);
+  
 bool timer_clock_set(u32 i);
 void timer_clock_mode_toggle(bool flag);
 u8 get_timer_mode(void);

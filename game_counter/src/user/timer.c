@@ -3,8 +3,8 @@
 static bool clock_mode = false;
 static u32 timer_off_idle_ms = 0;
 static TIMER_SET_FLAG timer_set_flag = TIMER_SET_OFF;
-static u32 alarm_clock = 0;
-static bool alarm_flag = false;     /*!< Flag of alarm is on */
+static ALARM alarms[ALARM_COUNT] = {{0,false,BIRTHDAY_SONG}};
+static u8 alarm_id_tmp = 0;
 static bool timer_on_flag = false;
 static bool timer_toggle_flag = false;
 
@@ -25,8 +25,11 @@ void timer_init(void)
   timer_mode = DOWN_COUNTING;
   ticks_counter = 0;
   timer_set_flag = TIMER_SET_OFF;
-  alarm_clock = 0;
-  alarm_flag = false;
+  for (u8 i = 0; i < ALARM_COUNT; ++i) {
+    alarms[i].time = 0;
+    alarms[i].flag = false;
+    alarms[i].music = BIRTHDAY_SONG; 
+  }
   timer_next = 0;
   timer_off_idle_ms = 0;
 }
@@ -41,19 +44,20 @@ TIMER_SET_FLAG timer_clock_get_flag(void)
   return timer_set_flag;
 }
 
-bool get_alarm_flag(void)
+
+const ALARM* get_alarm(u8 i)
 {
-  return alarm_flag;
+  return &alarms[i];
 }
 
-void set_alarm_flag(bool flag) 
+void set_alarm_flag(u8 i, bool flag)
 {
-  alarm_flag = flag;
+  alarms[i].flag = flag;
 }
 
-u32 get_alarm(void)
+void alarm_id_tmp_set(u8 i)
 {
-  return alarm_clock;
+  alarm_id_tmp = i;
 }
 
 bool timer_clock_set(u32 i) 
@@ -63,26 +67,26 @@ bool timer_clock_set(u32 i)
   u8 minute = (current_time / 60) % 60;
   u8 second = current_time % 60;
   
-  u8 alarm_hour = (alarm_clock / 3600) % 24;
-  u8 alarm_minute = (alarm_clock / 60) % 60;
+  u8 alarm_hour = (alarms[alarm_id_tmp].time / 3600) % 24;
+  u8 alarm_minute = (alarms[alarm_id_tmp].time / 60) % 60;
   
   if (timer_set_flag == TIMER_SET_HOUR) {
-    if (hour >= 24) {return false;}
+    if (i >= 24) {return false;}
     hour = i;
     set_current_time(hour * 3600 + minute * 60 + second);
     return true;
   } else if (timer_set_flag == TIMER_SET_MINUTE) {
-    if (minute >= 60) {return false;}
+    if (i >= 60) {return false;}
     minute = i;
     set_current_time(hour * 3600 + minute * 60 + second);
     return true;
   } else if (timer_set_flag == TIMER_SET_ALARM_HOUR) {
-    if (alarm_hour >= 24) {return false;}
-    alarm_clock = i * 3600 + alarm_minute * 60;
+    if (i >= 24) {return false;}
+    alarms[alarm_id_tmp].time = i * 3600 + alarm_minute * 60;
     return true;
   } else if (timer_set_flag == TIMER_SET_ALARM_MINUTE) {
-    if (alarm_minute >= 60) {return false;}
-    alarm_clock = alarm_hour * 3600 + i * 60;
+    if (i >= 60) {return false;}
+    alarms[alarm_id_tmp].time = alarm_hour * 3600 + i * 60;
     return true;
   } else {
     return false;
@@ -148,7 +152,7 @@ void timer_update(void)
         
         case TIMER_SET_ALARM_HOUR:
         case TIMER_SET_ALARM_MINUTE:
-          display_time = alarm_clock;
+          display_time = alarms[alarm_id_tmp].time;
         break;
       }
      
@@ -158,7 +162,7 @@ void timer_update(void)
       u8 hour = (display_time / 3600) % 24;
       
       if (HOUR_ALARM) {
-        if (minute == 0 && second == 0) {
+        if (current_time % 3600 == 0) {
           // No hour alarm from 1 am to 8 am (inclusively)
           if (hour < 1 || hour > 8) {
             buzzer_play_song(MARIO_BEGIN, 80, 0);
@@ -175,8 +179,11 @@ void timer_update(void)
 
       
       // ALARM BUZZ!
-      if (alarm_flag && current_time == alarm_clock) {
-        buzzer_play_song(MARIO_BEGIN, 80, 0);
+      for (u8 i = 0; i < ALARM_COUNT; ++i) {
+        const ALARM* alarm = get_alarm(i);
+        if (alarm->flag && current_time == alarm->time) {
+          buzzer_play_song(BIRTHDAY_SONG, 160, 0);
+        }
       }
       
     } else if (ticks_counter == 500) {
@@ -307,7 +314,7 @@ void timer_update(void)
     if (!timer_on_flag) {
       // Timer idle time check
       timer_off_idle_ms += TIMER_UPDATE_INTERVAL;
-      if (timer_off_idle_ms >= IDLE_TIME_THRESHOLD / TIMER_UPDATE_INTERVAL) {
+      if (timer_off_idle_ms >= IDLE_TIME_THRESHOLD) {
         timer_clock_mode_toggle(true);
       }
     }

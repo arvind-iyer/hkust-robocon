@@ -15,6 +15,7 @@ int main(void)
   //rtc_init();
 	ticks_init();
 	buzzer_init();
+  //rtc_init();
   //button_init(); 
   game_counter_init();
   uart_com_init();

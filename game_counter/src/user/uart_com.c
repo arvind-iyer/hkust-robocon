@@ -36,9 +36,12 @@ static void uart_com_handler(u8 data)
       u8 hour = (current_time / 3600) % 24;
       uart_com_tx("%02d:%02d:%02d\r\n", hour, minute, second); 
       
-      if (get_alarm_flag()) {
-        uart_com_tx("Alarm: %02d:%02d\r\n", (get_alarm() / 3600) % 24, (get_alarm() / 60) % 60);
-      }
+      for (u8 i = 0; i < ALARM_COUNT; ++i) {
+        const ALARM* alarm = get_alarm(i);
+        if (alarm->flag) {
+          uart_com_tx("Alarm%d: %02d:%02d\r\n", i, (alarm->time / 3600) % 24, (alarm->time / 60) % 60);
+        }
+      }    
       uart_buffer_reset();
       
       buzzer_control_note(2, 100, NOTE_C, 7);
@@ -59,25 +62,70 @@ static void uart_com_handler(u8 data)
       time = (time / 60) * 60;
       set_current_time(time);
       buzzer_control_note(3, 100, NOTE_C, 7);
-    } else if (strstr(uart_buffer, "alarm_hour")) {
-      timer_set_counter = 0;
-      uart_buffer[0] = '\0';
-      timer_clock_set_flag(TIMER_SET_ALARM_HOUR);
-      buzzer_control_note(3, 50, NOTE_G, 7);
-    } else if (strstr(uart_buffer, "alarm_minute")) {
-      timer_set_counter = 0;
-      uart_buffer[0] = '\0';
-      timer_clock_set_flag(TIMER_SET_ALARM_MINUTE);
-      buzzer_control_note(3, 50, NOTE_G, 7);
-    } else if (strstr(uart_buffer, "alarm_off")) {
-      uart_buffer_reset();
-      set_alarm_flag(false);
-      buzzer_control_note(1, 500, NOTE_G, 7);
-    } else if (strstr(uart_buffer, "alarm_on")) {
-      uart_buffer_reset();
-      set_alarm_flag(true);
-      buzzer_control_note(2, 200, NOTE_G, 7);
     } else if (uart_buffer_i >= 2) {
+      // Check alarm
+       for (u8 i = 0; i < 3; ++i) {
+        char buffer[50] = "alarm", buffer2[50];
+        char i_str[5];
+        sprintf(i_str, "%d", i);
+        strcat(buffer, i_str);
+        
+          {
+            // On
+            strcpy(buffer2, buffer);
+            strcat(buffer2, "_on");
+            //uart_com_tx("%s\r\n", uart_buffer_tmp);
+            //uart_com_tx("%s (%d)\r\n", buffer2, strstr(uart_buffer_tmp, buffer2));
+            if (strstr(uart_buffer, buffer2)) {
+              uart_buffer_reset();
+              set_alarm_flag(i, true);
+              buzzer_control_note(3, 100, NOTE_C, 8);
+              return;
+            }
+          }
+          
+          {
+            // Off
+            strcpy(buffer2, buffer);
+            strcat(buffer2, "_off");
+            if (strstr(uart_buffer, buffer2)) {
+              uart_buffer_reset();
+              set_alarm_flag(i, true);
+              buzzer_control_note(3, 100, NOTE_C, 8);
+              return;
+            }
+          }
+        
+          {
+            // Set_minute
+            strcpy(buffer2, buffer);
+            strcat(buffer2, "_minute");
+            if (strstr(uart_buffer, buffer2)) { 
+              timer_set_counter = 0;
+              uart_buffer[0] = '\0';
+              timer_clock_set_flag(TIMER_SET_ALARM_MINUTE);
+              alarm_id_tmp_set(i);
+              buzzer_control_note(3, 100, NOTE_C, 7);
+              return;
+            }
+          }
+
+          {
+            // Set_hour
+            strcpy(buffer2, buffer);
+            strcat(buffer2, "_hour");
+            strcpy(uart_buffer, uart_buffer);
+            if (strstr(uart_buffer, buffer2)) { 
+              timer_set_counter = 0;
+              uart_buffer[0] = '\0';
+              timer_clock_set_flag(TIMER_SET_ALARM_HOUR);
+              alarm_id_tmp_set(i);
+              buzzer_control_note(3, 100, NOTE_C, 7);
+              return;
+            }
+          }        
+        }
+        
       // Input the latest TWO digits ASCII
       if (uart_buffer[uart_buffer_i - 1] >= '0' && uart_buffer[uart_buffer_i - 1] <= '9' && \
         uart_buffer[uart_buffer_i - 2] >= '0' && uart_buffer[uart_buffer_i - 2] <= '9') {

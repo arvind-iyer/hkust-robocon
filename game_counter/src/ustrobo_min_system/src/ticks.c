@@ -69,6 +69,7 @@ void ticks_init(void) {
 	NVIC_InitStructure.NVIC_IRQChannelCmd = ENABLE;
 	NVIC_InitStructure.NVIC_IRQChannel = TICKS_IRQn;
 	NVIC_Init(&NVIC_InitStructure);
+  NVIC_SetPriority(TICKS_IRQn, 0);
 	
 	//SysTick_Config(SystemCoreClock/1000);
 	ticks = seconds = 0;
