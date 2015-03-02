@@ -170,7 +170,7 @@ void wheel_base_update(void)
     * TODO2: If there is not any Bluetooth RX data after BLUETOOTH_WHEEL_BASE_TIMEOUT, stop the motors
   
     */
-	if (!wheel_base_get_pid_flag() && ((get_full_ticks() - wheel_base_bluetooth_vel_last_update) > BLUETOOTH_WHEEL_BASE_TIMEOUT) ) {
+	if (!wheel_base_get_pid_flag() && ((get_full_ticks() - wheel_base_bluetooth_vel_last_update) > BLUETOOTH_WHEEL_BASE_TIMEOUT ) ) {
 		wheel_base_set_vel(0, 0, 0);
 	}
 	
@@ -243,7 +243,7 @@ u8 wheel_base_get_pid_flag(void)
 
 void wheel_base_override_set_vel(s32 x, s32 y)
 {
-	u16 speed_ratio = SPEED_MODES[wheel_base_speed_mode]; 
+	u16 speed_ratio = SPEED_MODES[wheel_base_speed_mode];
 	wheel_base_set_vel(x * speed_ratio / 100, y * speed_ratio / 100, 0);
 	wheel_base_bluetooth_vel_last_update = get_full_ticks();
 }
@@ -252,3 +252,5 @@ void wheel_base_override_change_speed(void)
 {
 	wheel_base_set_speed_mode((wheel_base_get_speed_mode() + 1) % 10);
 }
+
+
