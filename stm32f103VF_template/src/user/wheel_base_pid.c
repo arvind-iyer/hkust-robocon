@@ -12,9 +12,9 @@
 #define T_ERROR_THRESHOLD 400
 #define T_MOTOR_MAX_SPEED 500
 
-static int C_PR = 146;
-static int C_IN = 3;
-static int C_DE = 1;
+static int C_PR = 160;
+static int C_IN = 0;
+static int C_DE = 0;
 
 static int C_T_PR = 37;
 static int C_T_IN = 1;
@@ -123,7 +123,7 @@ static void set_starting_pos(void)
 
 static void set_serving_pos(void)
 {
-	POSITION target_pos = {114, 4550, 0};
+	POSITION target_pos = {343, 4293, 0};
 	wheel_base_set_target_pos(target_pos);
 }
 

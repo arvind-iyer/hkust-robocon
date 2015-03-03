@@ -14,10 +14,10 @@ static u8 switch_hit = 0;
 
 static u32 current_speed = 0;
 
-static u16 racket_speed = 1500;		//tested best result
+static u16 racket_speed = 1600;		//tested best result
 static u32 racket_speed_adjust_time = 0;
 
-static u16 racket_delay = 240;    //tested best result
+static u16 racket_delay = 238;    //tested best result
 static u32 racket_delay_adjust_time = 0;
 
 //added for upper rackets
