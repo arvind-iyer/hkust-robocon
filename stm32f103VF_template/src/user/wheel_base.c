@@ -11,6 +11,9 @@ static u8 wheel_base_pid_flag = 0;
 static POSITION target_pos = {0, 0, 0};
 static PID wheel_base_pid = {0, 0, 0};
 
+static s32 old_vel_tl = 0, cur_vel_tl = 0, old_vel_bl = 0, cur_vel_bl = 0,
+old_vel_tr = 0,cur_vel_tr = 0,old_vel_br = 0, cur_vel_br = 0;
+
 
 /**
 	* @brief Handler for the bluetooth RX with id 0x4?
@@ -163,21 +166,125 @@ u8 wheel_base_vel_diff(void)
 	* @param None.
 	* @retval None.
 	*/
-void wheel_base_update(void)
-{
+//void wheel_base_update(void)
+//{
+//  /** 
+//    * TODO1: Use wheel_base_set_vel(x,y,w) to control the FOUR wheel base motor
+//    * TODO2: If there is not any Bluetooth RX data after BLUETOOTH_WHEEL_BASE_TIMEOUT, stop the motors
+//  
+//    */
+//	if (!wheel_base_get_pid_flag() && ((get_full_ticks() - wheel_base_bluetooth_vel_last_update) > BLUETOOTH_WHEEL_BASE_TIMEOUT ) ) {
+//		wheel_base_set_vel(0, 0, 0);
+//	}
+//	
+//	
+////	cur_vel_tl = (-wheel_base_vel.y - wheel_base_vel.x) * WHEEL_BASE_XY_VEL_RATIO + wheel_base_vel.w * WHEEL_BASE_W_VEL_RATIO;
+////	cur_vel_tr = (wheel_base_vel.y - wheel_base_vel.x) * WHEEL_BASE_XY_VEL_RATIO + wheel_base_vel.w * WHEEL_BASE_W_VEL_RATIO;
+////	cur_vel_bl = (-wheel_base_vel.y  + wheel_base_vel.x) * WHEEL_BASE_XY_VEL_RATIO	+ wheel_base_vel.w * WHEEL_BASE_W_VEL_RATIO;
+////	cur_vel_br = (wheel_base_vel.y + wheel_base_vel.x) * WHEEL_BASE_XY_VEL_RATIO + wheel_base_vel.w * WHEEL_BASE_W_VEL_RATIO;
+////	
+//	
+//	motor_set_vel(MOTOR_TOP_LEFT, ((-wheel_base_vel.y - wheel_base_vel.x) * WHEEL_BASE_XY_VEL_RATIO + wheel_base_vel.w * WHEEL_BASE_W_VEL_RATIO) / 1000, wheel_base_close_loop_flag);
+//	motor_set_vel(MOTOR_TOP_RIGHT, ((wheel_base_vel.y - wheel_base_vel.x) * WHEEL_BASE_XY_VEL_RATIO + wheel_base_vel.w * WHEEL_BASE_W_VEL_RATIO) / 1000, wheel_base_close_loop_flag);
+//	motor_set_vel(MOTOR_BOTTOM_LEFT, ((-wheel_base_vel.y  + wheel_base_vel.x) * WHEEL_BASE_XY_VEL_RATIO	+ wheel_base_vel.w * WHEEL_BASE_W_VEL_RATIO) / 1000, wheel_base_close_loop_flag);
+//	motor_set_vel(MOTOR_BOTTOM_RIGHT, ((wheel_base_vel.y + wheel_base_vel.x) * WHEEL_BASE_XY_VEL_RATIO + wheel_base_vel.w * WHEEL_BASE_W_VEL_RATIO) / 1000, wheel_base_close_loop_flag);
+////	if(cur_vel_tl == 0) {
+////	} else if(cur_vel_tl > old_vel_tl) {
+////		cur_vel_tl = old_vel_tl + 1000;
+////	} else if(cur_vel_tl < old_vel_tl) {
+////		cur_vel_tl = old_vel_tl - 1000;
+////	}
+////	if(cur_vel_tr == 0) {
+////	} else if(cur_vel_tr > old_vel_tr) {
+////		cur_vel_tr = old_vel_tr + 1000;
+////	} else if(cur_vel_tr < old_vel_tr) {
+////		cur_vel_tr = old_vel_tr - 1000;
+////	}
+////	if(cur_vel_bl == 0) {
+////	} else if(cur_vel_bl > old_vel_bl) {
+////		cur_vel_bl = old_vel_bl + 1000;
+////	} else if(cur_vel_bl < old_vel_bl) {
+////		cur_vel_bl = old_vel_bl - 1000;
+////	}
+////	if(cur_vel_br == 0) {
+////	} else if(cur_vel_br > old_vel_br) {
+////		cur_vel_br = old_vel_br + 1000;
+////	} else if(cur_vel_br < old_vel_br) {
+////		cur_vel_br = old_vel_br - 1000;
+////	}
+//	
+////	motor_set_vel(MOTOR_TOP_LEFT, cur_vel_tl / 1000, wheel_base_close_loop_flag);
+////	motor_set_vel(MOTOR_TOP_RIGHT, cur_vel_tr / 1000, wheel_base_close_loop_flag);
+////	motor_set_vel(MOTOR_BOTTOM_LEFT, cur_vel_bl / 1000, wheel_base_close_loop_flag);
+////	motor_set_vel(MOTOR_BOTTOM_RIGHT, cur_vel_br / 1000, wheel_base_close_loop_flag);
+////	
+////	if(old_vel_br ==  cur_vel_br ){
+////		old_vel_br =  cur_vel_br ;
+////	}
+////	if(old_vel_tl ==  cur_vel_tl){
+////		old_vel_tl =  cur_vel_tl ;	
+////	}
+////	if(old_vel_bl ==  cur_vel_bl){
+////	old_vel_bl =  cur_vel_bl ;
+////	}
+////	if(old_vel_tr ==  cur_vel_tr){
+////	old_vel_tr =  cur_vel_tr ;
+////	}
+//}
+
+void wheel_base_update() {
   /** 
     * TODO1: Use wheel_base_set_vel(x,y,w) to control the FOUR wheel base motor
     * TODO2: If there is not any Bluetooth RX data after BLUETOOTH_WHEEL_BASE_TIMEOUT, stop the motors
-  
     */
-	if (!wheel_base_get_pid_flag() && ((get_full_ticks() - wheel_base_bluetooth_vel_last_update) > BLUETOOTH_WHEEL_BASE_TIMEOUT ) ) {
-		wheel_base_set_vel(0, 0, 0);
+
+	if(wheel_base_get_pid_flag() == 0) {
+		if ( (get_full_ticks() - wheel_base_bluetooth_vel_last_update) > BLUETOOTH_WHEEL_BASE_TIMEOUT) {
+			wheel_base_set_vel(0, 0, 0);
+		}
+	}
+	cur_vel_tl = ((-wheel_base_vel.y - wheel_base_vel.x) * WHEEL_BASE_XY_VEL_RATIO + wheel_base_vel.w * WHEEL_BASE_W_VEL_RATIO) / 100;
+	cur_vel_tr = ((wheel_base_vel.y - wheel_base_vel.x) * WHEEL_BASE_XY_VEL_RATIO + wheel_base_vel.w * WHEEL_BASE_W_VEL_RATIO) / 100;
+	cur_vel_bl = ((-wheel_base_vel.y  + wheel_base_vel.x) * WHEEL_BASE_XY_VEL_RATIO	+ wheel_base_vel.w * WHEEL_BASE_W_VEL_RATIO) / 100;
+	cur_vel_br = ((wheel_base_vel.y + wheel_base_vel.x) * WHEEL_BASE_XY_VEL_RATIO + wheel_base_vel.w * WHEEL_BASE_W_VEL_RATIO) / 100;
+
+	if(cur_vel_tl==0){}
+	else if(cur_vel_tl > old_vel_tl ) {
+		cur_vel_tl = old_vel_tl + 10;
+	} else if(cur_vel_tl < old_vel_tl) {
+		cur_vel_tl = old_vel_tl - 10;
 	}
 	
-	motor_set_vel(MOTOR_TOP_LEFT, ((-wheel_base_vel.y - wheel_base_vel.x) * WHEEL_BASE_XY_VEL_RATIO + wheel_base_vel.w * WHEEL_BASE_W_VEL_RATIO) / 1000, wheel_base_close_loop_flag);
-	motor_set_vel(MOTOR_TOP_RIGHT, ((wheel_base_vel.y - wheel_base_vel.x) * WHEEL_BASE_XY_VEL_RATIO + wheel_base_vel.w * WHEEL_BASE_W_VEL_RATIO) / 1000, wheel_base_close_loop_flag);
-	motor_set_vel(MOTOR_BOTTOM_LEFT, ((-wheel_base_vel.y  + wheel_base_vel.x) * WHEEL_BASE_XY_VEL_RATIO	+ wheel_base_vel.w * WHEEL_BASE_W_VEL_RATIO) / 1000, wheel_base_close_loop_flag);
-	motor_set_vel(MOTOR_BOTTOM_RIGHT, ((wheel_base_vel.y + wheel_base_vel.x) * WHEEL_BASE_XY_VEL_RATIO + wheel_base_vel.w * WHEEL_BASE_W_VEL_RATIO) / 1000, wheel_base_close_loop_flag);
+	if(cur_vel_tr==0){}
+	else if(cur_vel_tr > old_vel_tr) {
+		cur_vel_tr = old_vel_tr + 10;
+	} else if(cur_vel_tr < old_vel_tr) {
+		cur_vel_tr = old_vel_tr - 10;
+	}
+	
+	if(cur_vel_bl==0){}
+	else if(cur_vel_bl > old_vel_bl) {
+		cur_vel_bl = old_vel_bl + 10;
+	} else if(cur_vel_bl < old_vel_bl) {
+		cur_vel_bl = old_vel_bl - 10;
+	}
+	
+	if(cur_vel_br==0){}
+	else if(cur_vel_br > old_vel_br) {
+		cur_vel_br = old_vel_br + 10;
+	} else if(cur_vel_br < old_vel_br) {
+		cur_vel_br = old_vel_br - 10;
+	}
+	
+	motor_set_vel(MOTOR_TOP_LEFT, cur_vel_tl/10, wheel_base_close_loop_flag);
+	motor_set_vel(MOTOR_TOP_RIGHT, cur_vel_tr/10, wheel_base_close_loop_flag);
+	motor_set_vel(MOTOR_BOTTOM_LEFT, cur_vel_bl/10, wheel_base_close_loop_flag);
+	motor_set_vel(MOTOR_BOTTOM_RIGHT, cur_vel_br/10, wheel_base_close_loop_flag);
+	
+	old_vel_br =  cur_vel_br ;
+	old_vel_tl =  cur_vel_tl ;	
+	old_vel_bl =  cur_vel_bl ;
+	old_vel_tr =  cur_vel_tr ;
 }
 
 /**
@@ -252,5 +359,4 @@ void wheel_base_override_change_speed(void)
 {
 	wheel_base_set_speed_mode((wheel_base_get_speed_mode() + 1) % 10);
 }
-
 
