@@ -19,7 +19,7 @@ static u16 ticks_img 	= (u16)-1;
 static u32 last_sent_OS_time = 0;
 static bool key_trigger_enable = true;
 static bool servo_released = false;
-
+static bool use_xbc_input = false;
 
 
 
@@ -67,7 +67,10 @@ void wheel_base_joystick_control(void)
 	}
 }
 
-
+void set_xbc_input_allowed(bool set)
+{
+	use_xbc_input = set;
+}
 
 
 
@@ -111,6 +114,13 @@ static void handle_bluetooth_input(void)
 				}
 				
 				break;
+			case 'b':
+				set_xbc_input_allowed(true);
+				break;
+			case 'v':
+				set_xbc_input_allowed(false);
+				break;
+			
 			case 'p':
 				if(ROBOT == 'D')
 				racket_stop();
@@ -180,6 +190,7 @@ void robocon_main(void)
 	wheel_base_tx_acc();
 	//racket_init();
 	racket_stop();
+	xbc_init(0);
 	gpio_init(&PE9, GPIO_Speed_10MHz, GPIO_Mode_Out_PP, 1);		// pneu matic GPIO
 	gpio_init(&PE5, GPIO_Speed_10MHz, GPIO_Mode_Out_PP, 1);		//laser sensor GPIO OUT
 	gpio_init(&PE6, GPIO_Speed_50MHz, GPIO_Mode_Out_PP, 1);		// laser sensor GPIO OUT 2
@@ -202,7 +213,9 @@ void robocon_main(void)
 				// Every 10 ms (100 Hz)
         
 			}
-			
+			if (ticks_img % 10 == 0) {
+				xbc_update();
+			}
 				racket_update();
 			if (ticks_img % 250 == 1) {
 				// Every 250 ms (4 Hz)
