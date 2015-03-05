@@ -20,6 +20,7 @@ int main(void)
   game_counter_init();
   uart_com_init();
 
+
   timer_set(60);
   //buzzer_control(1, 1000);
   buzzer_play_song(MARIO_BEGIN, 60, 0);

@@ -159,8 +159,7 @@
 #elif defined SYSCLK_FREQ_56MHz
   uint32_t SystemCoreClock         = SYSCLK_FREQ_56MHz;        /*!< System Clock Frequency (Core Clock) */
 #elif defined SYSCLK_FREQ_72MHz
-#warning NO CRYSTAL
-  uint32_t SystemCoreClock         = SYSCLK_FREQ_72MHz / 9;        /*!< System Clock Frequency (Core Clock) */
+  uint32_t SystemCoreClock         = SYSCLK_FREQ_72MHz;        /*!< System Clock Frequency (Core Clock) */
 #else /*!< HSI Selected as System Clock source */
   uint32_t SystemCoreClock         = HSI_VALUE;        /*!< System Clock Frequency (Core Clock) */
 #endif

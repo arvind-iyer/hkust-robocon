@@ -46,6 +46,26 @@ static void uart_com_handler(u8 data)
       
       buzzer_control_note(2, 100, NOTE_C, 7);
         
+    } else if (strstr(uart_buffer, "volume0")) {
+      uart_buffer_reset();
+      buzzer_set_volume(2);
+      MARIO_BEGIN_MUSIC;
+    } else if (strstr(uart_buffer, "volume1")) {
+      uart_buffer_reset();
+      buzzer_set_volume(10);
+      MARIO_BEGIN_MUSIC;
+    } else if (strstr(uart_buffer, "volume2")) {
+      uart_buffer_reset();
+      buzzer_set_volume(20);
+      MARIO_BEGIN_MUSIC;
+    } else if (strstr(uart_buffer, "volume3")) {
+      uart_buffer_reset();
+      buzzer_set_volume(30);
+      MARIO_BEGIN_MUSIC;
+    } else if (strstr(uart_buffer, "volume4")) {
+      uart_buffer_reset();
+      buzzer_set_volume(40);
+      MARIO_BEGIN_MUSIC;
     } else if (strstr(uart_buffer, "set_hour")) {
       timer_set_counter = 0;
       uart_buffer[0] = '\0';
@@ -62,9 +82,21 @@ static void uart_com_handler(u8 data)
       time = (time / 60) * 60;
       set_current_time(time);
       buzzer_control_note(3, 100, NOTE_C, 7);
+    } else if (strstr(uart_buffer, "mario_start")) {
+      uart_buffer_reset();
+      MARIO_BEGIN_MUSIC;
+    } else if (strstr(uart_buffer, "mario_song")) {
+      uart_buffer_reset();
+      MARIO_MUSIC;
+    } else if (strstr(uart_buffer, "mario_end")) {
+      uart_buffer_reset();
+      MARIO_END_MUSIC;
+    } else if (strstr(uart_buffer, "birthday")) {
+      uart_buffer_reset();
+      BIRTHDAY_MUSIC;
     } else if (uart_buffer_i >= 2) {
       // Check alarm
-       for (u8 i = 0; i < 3; ++i) {
+       for (u8 i = 0; i < ALARM_COUNT; ++i) {
         char buffer[50] = "alarm", buffer2[50];
         char i_str[5];
         sprintf(i_str, "%d", i);

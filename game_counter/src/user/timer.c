@@ -165,7 +165,13 @@ void timer_update(void)
         if (current_time % 3600 == 0) {
           // No hour alarm from 1 am to 8 am (inclusively)
           if (hour < 1 || hour > 8) {
-            buzzer_play_song(MARIO_BEGIN, 80, 0);
+            if (hour == 0 || hour == 12) {
+              MARIO_MUSIC;
+            } else if (hour >= 0 && hour <= 11) {
+              MARIO_END_MUSIC;
+            } else {
+              MARIO_BEGIN_MUSIC;
+            }
           }
         }
       }
@@ -182,7 +188,14 @@ void timer_update(void)
       for (u8 i = 0; i < ALARM_COUNT; ++i) {
         const ALARM* alarm = get_alarm(i);
         if (alarm->flag && current_time == alarm->time) {
-          buzzer_play_song(BIRTHDAY_SONG, 160, 0);
+          static u8 i = 0;
+          i = (i+1) % 2;
+          if (i == 0) {
+            BIRTHDAY_MUSIC;
+          } else {
+            MARIO_MUSIC; 
+          }
+         
         }
       }
       

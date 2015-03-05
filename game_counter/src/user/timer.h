@@ -18,7 +18,7 @@
 #define TIMER_CLOCK_LIMIT           (60 * 60 * 24)
 #define HOUR_ALARM                  1
 
-#define ALARM_COUNT               9
+#define ALARM_COUNT               10
 #define IDLE_TIME_THRESHOLD       45000 // 45 s
 
 
