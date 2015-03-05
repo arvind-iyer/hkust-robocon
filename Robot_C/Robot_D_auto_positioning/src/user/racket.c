@@ -14,7 +14,7 @@ static s32 init_encoder_reading = -5000;
 static u8 hit_in_progress = 0;				// true if racket hit is in progress. Should only be used for temporarily disabling mechanical switch
 static u8 is_locked = 0;							// true iff racket is locked by mechanical switch by calibration
 static u8 is_servo_release = 0;				// true if servo is at release state, vice versa
-static bool is_pneu_extended = 0; 			// true if pneumatic piston is extended
+static bool is_pneu_extended = 1; 			// true if pneumatic piston is extended
 //triggers
 static u8 serve_enabled=0;					// flag is raised and waits for timer to trigger racket_hit()
 static u8 racket_laser_not_alligned = 0;		// true if the robot detects error in laser allignment
