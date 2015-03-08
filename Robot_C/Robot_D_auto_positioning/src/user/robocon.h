@@ -18,7 +18,7 @@
 #include "button.h"
 #include "encoder.h"
   //'C' or 'D'
-#define ROBOT 'C'
+#define ROBOT 'D'
 /*** Optional ***/
 #include "can_protocol.h"
 #include "usart.h"

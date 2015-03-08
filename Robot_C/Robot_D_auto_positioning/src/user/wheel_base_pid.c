@@ -28,8 +28,36 @@ void wheel_base_pid_loop(void)
 	
 	wheel_base_pid.Kp = 200/speed_mode;
 	
-	//wheel_base_set_vel(dx/wheel_base_pid.Kp, dy/wheel_base_pid.Kp,0);
-	wheel_base_set_vel(shifted_dx/wheel_base_pid.Kp, shifted_dy/wheel_base_pid.Kp,0/*dw/wheel_base_pid.Kp*/); //untested!
+	
+	/**ROTATIONAL PID**/
+	s32 w = 0;
+	dw = target.angle - get_pos()->angle;
+	if( (get_pos()->angle !=  target.angle))
+	{
+		if((dw<= 1800 && dw >= 0) || (-dw > 1800))
+		{
+			//Move right
+			w = 10;
+		}
+		else if((dw > 1800) || (-dw < 1800 && dw < 0))
+		{
+			//Move left
+			w = -10;
+		}
+	}
+	//To ensure correctly scaled rotation when crossing over from 359` to 0`
+	if(dw < 0) dw = 3600 -dw;
+	if(Abs(dw) > 1800)dw=dw/2;
+	//w/10 gives a direction. Abs(dw) is magnitude
+	
+	w = w/10 * Abs(dw)/100;//w will range from -36 to 36c
+	w = w < 10 ? w*10 : w;
+	if(Abs(dw) < 10)
+		w = w*Abs(dw)/10;
+	wheel_base_set_vel(0, 0, w);
+	//wheel_base_set_vel(shifted_dx/wheel_base_pid.Kp, shifted_dy/wheel_base_pid.Kp,0/*dw/wheel_base_pid.Kp*/); //untested!
+	
+	
 	
 	
 	
