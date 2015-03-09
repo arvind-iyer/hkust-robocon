@@ -175,13 +175,20 @@ void read_button(void){
 	
 }
 
-static void check_usb_connection(void)
+// restart_flag = 0: No restart after reconnected
+// restart_flag = 1: Restart after reconnected
+// restart_flag = 2: Restart when disconnected
+static void check_usb_connection(u8 restart_flag)
 {      
   static u8 disconnected = 0;
   while(usb_main_loop() != USB_STATE_CONFIGURED)
   {
+    if (restart_flag == 2) {
+       NVIC_SystemReset();
+     }
+    
     static u16 last_second = 999;
-    //disconnected = 1;
+    disconnected = 1;
      if (get_seconds() % 2 == 1 && (get_ticks() == 10 || get_seconds() != last_second && get_ticks() > 10)) {
        last_second = get_seconds();
        buzzer_control_note(2, 100, NOTE_C, 4);
@@ -189,7 +196,10 @@ static void check_usb_connection(void)
    }
   
    if (disconnected) {
-     reset_all_pin(); 
+     if (restart_flag == 1) {
+       NVIC_SystemReset();
+
+     }
      disconnected = 0;
    }
 }
@@ -226,12 +236,14 @@ int main(void){
 	buzzer_control_note(1,200, NOTE_C, 7);	
 	tft_prints(0, 0, "STM32 Init OK!!...");
 	tft_update();
-	
+	spi_init();
+  xbc_chip_deselect();
+  
+  
 	usb_init();
 	usb_start_run();
 	init_xbc_board();
-	spi_init();
-  xbc_chip_deselect();
+	
 	buzzer_control_note(2,60, NOTE_E, 7);
 	
 	while(!set_xbc_config(1)); /* turn on one rumble */	
@@ -270,7 +282,7 @@ int main(void){
 			case 1:
         // TODO:
 				//while(!check_ch376_usb_conn()); //checking usb connection	
-        check_usb_connection();      
+        check_usb_connection(2);      
 				is_failure_data = 1;
 				
 				while(!test_exti){
@@ -426,7 +438,7 @@ u8 exist;
 		if (usb_main_loop() == USB_STATE_CONFIGURED) {
 			break;		
     } else {
-      check_usb_connection();
+      check_usb_connection(0);
     }
 	}
 	tft_prints(0, 0, "init xbc..OK!");
