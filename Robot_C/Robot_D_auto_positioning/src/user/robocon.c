@@ -173,6 +173,9 @@ static void handle_bluetooth_input(void)
 				minus_y();
 				key_trigger_enable = true;
 				break;
+			case 'f':
+			case 'g':
+				wheel_base_pid_off();
 	 }
 	}
 	else if (bluetooth_is_key_release())
