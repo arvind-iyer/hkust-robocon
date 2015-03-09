@@ -2,7 +2,9 @@
 #include "special_char_handler.h"
 #include "stdbool.h"
 
-#define STEADY_STATE_ERROR_THRESHOLD 20
+#define STEADY_STATE_ERROR_THRESHOLD 10
+#define T_STEADY_STATE_ERROR_THRESHOLD 5
+
 #define STEADY_STATE_TIME_THRESHOLD 200
 
 #define ERROR_THRESHOLD 800
@@ -10,15 +12,15 @@
 #define MOTOR_MAX_SPEED 1300
 
 #define T_ERROR_THRESHOLD 400
-#define T_MOTOR_MAX_SPEED 500
+#define T_MOTOR_MAX_SPEED 200
 
-static int C_PR = 160;
-static int C_IN = 0;
+static int C_PR = 264;
+static int C_IN = 8;
 static int C_DE = 0;
 
 static int C_T_PR = 37;
-static int C_T_IN = 1;
-static int C_T_DE = 1;
+static int C_T_IN = 0;
+static int C_T_DE = 0;
 
 typedef struct {
 	s32 current_error, p_error, i_error, d_error;
@@ -127,6 +129,11 @@ static void set_serving_pos(void)
 	wheel_base_set_target_pos(target_pos);
 }
 
+static void set_returning_pos(void)
+{
+	POSITION target_pos = {-1373, 2404, 0};
+	wheel_base_set_target_pos(target_pos);
+}
 
 void wheel_base_pid_init(void)
 {
@@ -134,11 +141,11 @@ void wheel_base_pid_init(void)
 	register_special_char_function('t', increase_prop);
 	register_special_char_function('f', decrease_int);
 	register_special_char_function('g', increase_int);
-	register_special_char_function('x', decrease_der);
-	register_special_char_function('v', increase_der);
+	register_special_char_function('v', decrease_der);
+	register_special_char_function('b', increase_der);
 	register_special_char_function('/', reset_gyro);
 	register_special_char_function('\t', set_starting_pos);
-	register_special_char_function('R', set_serving_pos);
+	register_special_char_function('x', set_serving_pos);
 }
 
 u8 get_pid_stat(void)
@@ -214,7 +221,7 @@ void wheel_base_pid_update(void)
 		
 		// do not calculate PID if adjusting manually after PID is reached
 		
-		if (pid_locked && (get_full_ticks() - wheel_base_get_last_manual_timer()) < BLUETOOTH_WHEEL_BASE_TIMEOUT + 50)
+		if (pid_locked && (get_full_ticks() - wheel_base_get_last_manual_timer()) < BLUETOOTH_WHEEL_BASE_TIMEOUT + 100)
 		{
 			wheel_base_set_target_pos(*get_pos());
 			reset_pid();
@@ -240,7 +247,7 @@ void wheel_base_pid_update(void)
 		{
 			y_steady_state_timer = get_full_ticks();
 		}
-		if (t_error > STEADY_STATE_ERROR_THRESHOLD || t_error < -STEADY_STATE_ERROR_THRESHOLD)
+		if (t_error > T_STEADY_STATE_ERROR_THRESHOLD || t_error < -T_STEADY_STATE_ERROR_THRESHOLD)
 		{
 			t_steady_state_timer = get_full_ticks();
 		}
@@ -265,7 +272,7 @@ void wheel_base_pid_update(void)
 			t_lock = true;
 		}
 		// disable angle pid
-		t_lock = true;
+		// t_lock = true;
 		
 		// update lock PID
 		if (x_lock && y_lock && t_lock)
@@ -309,33 +316,43 @@ void wheel_base_pid_update(void)
 		}
 		
 		// y coordinate PID update
-		if (y_error <= ERROR_THRESHOLD && y_error >= -ERROR_THRESHOLD) {
-			// Update PID
-			update_pid(y_error, &y_coord_pid);
-			// Set speed according to PID
-			y_speed = C_PR * y_coord_pid.p_error / 100 + C_IN * y_coord_pid.i_error / 100 + C_DE * y_coord_pid.d_error / 100;
-		} else if (y_error > ERROR_THRESHOLD) {
+		
+		// Update PID
+		update_pid(y_error, &y_coord_pid);
+		// Set speed according to PID
+		y_speed = C_PR * y_coord_pid.p_error / 100 + C_IN * y_coord_pid.i_error / 100 + C_DE * y_coord_pid.d_error / 100;
+
+		if (y_speed > y_max_speed) {
 			// Error too large, just set motor to positive max
 			y_speed = y_max_speed;
-		} else {
+			// Reset integral
+			y_coord_pid.i_error = 0;
+		} else if (y_speed < -y_max_speed) {
 			// Error too large, just set motor to negative max
 			y_speed = -y_max_speed;
+			// Reset integral
+			y_coord_pid.i_error = 0;
 		}
 		
 		// angle PID update
-		if (t_error <= T_ERROR_THRESHOLD && t_error >= -T_ERROR_THRESHOLD) {
-			// Update PID
-			update_pid(t_error, &t_coord_pid);
-			// Set speed according to PID
-			t_speed = C_T_PR * t_coord_pid.p_error / 100 + C_T_IN * t_coord_pid.i_error / 100 + C_T_DE * t_coord_pid.d_error / 100;
-			t_speed = t_speed;
-		} else if (t_error > T_ERROR_THRESHOLD) {
-			// Error too large, just set motor to positive max
+		
+		// Update PID
+		update_pid(t_error, &t_coord_pid);
+		// Set speed according to PID
+		t_speed = C_T_PR * t_coord_pid.p_error / 100 + C_T_IN * t_coord_pid.i_error / 100 + C_T_DE * t_coord_pid.d_error / 100;
+		
+		if (t_speed > T_MOTOR_MAX_SPEED) {
+			// Speed too positive, just set motor to positive max
 			t_speed = T_MOTOR_MAX_SPEED;
-		} else {
-			// Error too large, just set motor to negative max
+			// Reset integral
+			t_coord_pid.i_error = 0;
+		} else if (t_speed < -T_MOTOR_MAX_SPEED) {
+			// Speed too negative, just set motor to negative max
 			t_speed = -T_MOTOR_MAX_SPEED;
+			// Reset integral
+			t_coord_pid.i_error = 0;
 		}
+		
 		u8 speed_ratio;
 		// scale speeds using speed mode
 		if (SPEED_MODES[wheel_base_get_speed_mode()]) {
@@ -343,9 +360,6 @@ void wheel_base_pid_update(void)
 		} else {
 			speed_ratio = 0;
 		}
-		
-		// disable spinning for now
-		t_speed = 0;
 
 		// set velocity
 		wheel_base_set_vel(x_speed * speed_ratio / 1000, y_speed * speed_ratio / 1000, t_speed * speed_ratio / 1000);

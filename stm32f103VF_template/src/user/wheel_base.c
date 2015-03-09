@@ -8,6 +8,8 @@ static const CLOSE_LOOP_FLAG wheel_base_close_loop_flag = CLOSE_LOOP;
 static u8 wheel_base_speed_mode = WHEEL_BASE_DEFAULT_SPEED_MODE;
 static u32 wheel_base_bluetooth_vel_last_update = 0;
 
+static const u8 WHEEL_BASE_PID_MANUAL_SPEED = 10;
+		
 static int wheel_base_acc = 300;
 
 static u32 wheel_base_last_can_tx = 0;
@@ -39,7 +41,7 @@ static void wheel_base_bluetooth_decode(u8 id, u8 length, u8* data)
           
           u16 speed_ratio = SPEED_MODES[wheel_base_speed_mode]; 
 					if (wheel_base_get_pid_flag() == 1) {
-						speed_ratio = 5;
+						speed_ratio = WHEEL_BASE_PID_MANUAL_SPEED;
 					}
 					wheel_base_set_vel(x_vel * speed_ratio / 100, y_vel * speed_ratio / 100, w_vel * speed_ratio / 100);
 					wheel_base_bluetooth_vel_last_update = get_full_ticks();
@@ -82,9 +84,16 @@ static void wheel_base_auto_bluetooth_decode(u8 id, u8 length, u8* data)
 	}
 }
 
-static void stop_motor(void)
+static void stop_all_motors(void)
 {
-	wheel_base_set_speed_mode(0);
+	while(1) {
+		motor_lock(MOTOR1);
+		motor_lock(MOTOR2);
+		motor_lock(MOTOR3);
+		motor_lock(MOTOR4);
+		motor_lock(MOTOR5);
+		motor_lock(MOTOR6);
+	}
 }
 
 /**
@@ -94,7 +103,7 @@ void wheel_base_init(void)
 {
 	bluetooth_rx_add_filter(BLUETOOTH_WHEEL_BASE_VEL_ID, 0xF0, wheel_base_bluetooth_decode);
   bluetooth_rx_add_filter(BLUETOOTH_WHEEL_BASE_AUTO_POS_ID, 0xF0, wheel_base_auto_bluetooth_decode);
-	register_special_char_function(' ', stop_motor);
+	register_special_char_function(' ', stop_all_motors);
 	wheel_base_vel.x = wheel_base_vel.y = wheel_base_vel.w = 0;
 	wheel_base_bluetooth_vel_last_update = 0;
 	wheel_base_last_can_tx = 0;

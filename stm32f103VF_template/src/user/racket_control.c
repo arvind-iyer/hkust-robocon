@@ -12,6 +12,8 @@ static u32 serving_started_time = 0;
 static bool switch_stat;
 static u8 switch_hit = 0;
 
+static u8 racket_calibration_mode = 0; // 0 - slow, 1 - fast
+
 static u32 current_speed = 0;
 
 static u16 racket_speed = 1600;		//tested best result
@@ -32,6 +34,8 @@ static u8 up_switch_hit = 0;
 static u32 up_current_speed = 0;
 static u16 up_racket_speed = 1800;
 static s32 up_switch_encoder_value = 0;
+
+static bool racket_emergency_stop = false;
 
 static bool up_switch_state;
 static s32 up_switch_interrupt_trigger_time = 0;
@@ -92,37 +96,16 @@ static void decrease_racket_delay() {
 	}
 }
 
-static void slow_serve_speed_set(void) {
-	//racket_speed = 1000;
-	
-	if(get_full_ticks() - racket_speed_adjust_time > 80) {
-		if(racket_speed > 0) {
-			racket_speed_adjust_time = get_full_ticks();
-			racket_speed -= 1;
-		}
-	}
-}
-
-static void mid_serve_speed_set(void) {
-	//racket_speed = 1400;
-}
-
-static void fast_serve_speed_set(void) {
-	//racket_speed = 1800;	
-	if(get_full_ticks() - racket_speed_adjust_time > 80) {
-		if(racket_speed < 1800) {
-			racket_speed_adjust_time = get_full_ticks();
-			racket_speed += 1;
-		}
-	}
-}
-
 static void motor_spin(void) {
 	motor_set_vel(MOTOR5, -1000, OPEN_LOOP);
 }
 
 static void motor_emergency_stop(void) {
-	motor_lock(MOTOR5);
+	racket_emergency_stop = true;
+}
+
+static void disable_motor_emergency_stop(void) {
+	racket_emergency_stop = false;
 }
 
 static void open_pneumatic(void)
@@ -165,7 +148,9 @@ static void racket_calibrate(void)			//calibrate to 1, run before start
 	calibrate_mode_on = true;
 	prev_encoder_value = 0;
 	current_encoder_value = 0;
-	turn_encoder_value = 0;
+	if (racket_calibration_mode != 1) {
+		turn_encoder_value = 0;
+	}
 	calibrated = false;
 	switch_hit = 0;
 }
@@ -177,6 +162,18 @@ static void racket_received_command(void)
 	}
 }
 
+static void set_fast_calibrate_mode(void)
+{
+	if (turn_encoder_value) {
+		racket_calibration_mode = 1;
+	}
+}
+
+static void set_slow_calibrate_mode(void)
+{
+	racket_calibration_mode = 0;
+}
+
 // interface implementation
 
 void racket_init(void)
@@ -186,11 +183,8 @@ void racket_init(void)
 	register_special_char_function('o', open_pneumatic);
 	register_special_char_function('p', close_pneumatic);
 	register_special_char_function('l', serving);
-	register_special_char_function('b', slow_serve_speed_set);
-	register_special_char_function('n', mid_serve_speed_set);
-	register_special_char_function('m', fast_serve_speed_set);
-	register_special_char_function('j', motor_emergency_stop);
-	
+	register_special_char_function('n', set_fast_calibrate_mode);
+	register_special_char_function('m', set_slow_calibrate_mode);
 	register_special_char_function('k', up_racket_cmd);
 	register_special_char_function(';', up_racket_calibrate);
 	
@@ -270,20 +264,37 @@ void EXTI15_10_IRQHandler(void)
 
 void racket_update(void)    //determine whether the motor should run
 {
+	// update encoder values when switch is hit
 	if(GPIO_ReadInputDataBit(GPIOE, GPIO_Pin_7) != switch_stat) {
 		switch_stat = GPIO_ReadInputDataBit(GPIOE, GPIO_Pin_7);
-		if (switch_stat) {
+		if (switch_stat && racket_calibration_mode == 0) {
 			++switch_hit;
 			if (!prev_encoder_value) {
 				prev_encoder_value = get_encoder_value(MOTOR5);
 			} else if (!current_encoder_value) {
 				current_encoder_value = get_encoder_value(MOTOR5);
 			}
+		} else if (switch_stat && racket_calibration_mode == 1) {
+			++switch_hit;
+			current_encoder_value = get_encoder_value(MOTOR5);
 		}
 	}
 	// calibration mode
 	if (calibrate_mode_on) {
-		if (switch_hit < 2) {
+		if (racket_calibration_mode == 1) {
+			if (switch_hit < 1) {
+				calibrated = false;
+				motor_set_vel(MOTOR5, -12, CLOSE_LOOP);
+				current_speed = 12;
+			} else {
+				calibrate_mode_on = false;
+				calibrated = true;
+				motor_lock(MOTOR5);
+				target_encoder_value = current_encoder_value;
+				current_speed = 0;
+				serving_started_time = 0;
+			}
+		} else if (switch_hit < 2) {
 			calibrated = false;
 			motor_set_vel(MOTOR5, -12, CLOSE_LOOP);
 			current_speed = 12;
@@ -320,6 +331,10 @@ void racket_update(void)    //determine whether the motor should run
 		}
 	}
 	
+	// emergency stop override
+	if (racket_emergency_stop) {
+		motor_lock(MOTOR5);
+	}
 }
 
 // added for upper rackets
