@@ -2,6 +2,8 @@
 s32 prev_error;
 s32 error;
 PID wheel_base_pid = {0,0,0};
+u16 integ_dw_index = 0;
+s32 integ_dw_list[5] = {0,0,0,0,0};
 
 void wheel_base_pid_loop(void)
 {
@@ -54,14 +56,25 @@ void wheel_base_pid_loop(void)
 			w = -1;
 		}
 	}
-	if(Abs(dw)> 1800) dw = dw/2;
-	w = w*Abs(dw)/30;
-	//Setting velocity to be minimum magnitude of 19 and max of 40
-	w = Abs(w) < 19 ? w*19/Abs(w) : w;
-	w = Abs(w) > 40 ? w*40/Abs(w) : w;
+	if(Abs(dw)> 1800) dw = 3600 - Abs(dw);
+	w = w*Abs(dw)/25;
+	//Setting velocity to be minimum magnitude of 19 and max of 50
+	
+	//Add integral factor
+	//integ_dw_list[integ_dw_index++] = 
+	
+	
+	
+	w = Abs(w) < 23? w*23/Abs(w) : w;
+	w = Abs(w) > 50 ? w*50/Abs(w) : w;
+	
+	
+	
+	
+	
+	
 	wheel_base_set_vel(0, 0, w);
 	//wheel_base_set_vel(shifted_dx/wheel_base_pid.Kp, shifted_dy/wheel_base_pid.Kp,w); 
-	
 	
 	
 	
