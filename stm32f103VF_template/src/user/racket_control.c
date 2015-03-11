@@ -33,7 +33,7 @@ static u32 last_rotate_right_time = 0;
 static s32 low_speed = 1600;
 static s32 high_speed = 1200;
 
-static bool auto_move_flag = 0;
+static bool auto_move_mode_flag = 0;
 
 void increase_low_speed(void) {
 	if(low_speed<1799) low_speed += 1;
@@ -83,20 +83,20 @@ void high_racket_startup(void) {
 	high_calibrate_mode = 1;
 }
 
-void auto_move_on(void) {
-	auto_move_flag = 1;
+void auto_move_mode_on(void) {
+	auto_move_mode_flag = 1;
 	CLICK_MUSIC;
 }
-void auto_move_off(void) {
-	auto_move_flag = 0;
+void auto_move_mode_off(void) {
+	auto_move_mode_flag = 0;
 	CLICK_MUSIC;
 }
 
 void racket_init(void) {
   register_special_char_function('/', low_racket_move);
 	register_special_char_function(';', low_racket_startup);
-	register_special_char_function('j', auto_move_on);
-	register_special_char_function('k', auto_move_off);
+	register_special_char_function('j', auto_move_mode_on);
+	register_special_char_function('k', auto_move_mode_off);
 	
 	register_special_char_function(' ', high_racket_move);
 	register_special_char_function('l', high_racket_startup);
@@ -126,9 +126,11 @@ void sensor_update(void) {
 	if ( !GPIO_ReadInputDataBit(GPIOE, S1_Pin) || GPIO_ReadInputDataBit(GPIOE, S2_Pin) || GPIO_ReadInputDataBit(GPIOE, S3_Pin) )
 	{
 		SUCCESSFUL_MUSIC;
-		if(request_low_racket_move == 0 && b3_switch == 1) {
-			request_low_racket_move = 1;
-			request_low_racket_move_time = get_full_ticks();
+		if(auto_move_mode_flag == 1) {
+			if(request_low_racket_move == 0 && b3_switch == 1) {
+				request_low_racket_move = 1;
+				request_low_racket_move_time = get_full_ticks();
+			}
 		}
 	}
 }
@@ -164,8 +166,7 @@ void racket_update(void) {
 				}
 			}
 		}
-	}
-	else if(low_calibrated == 1) {
+	}	else if(low_calibrated == 1) {
 	// After Startup
 		if (b3_switch == 1 && (current_time - request_low_racket_move_time > 100) ) {
 			request_low_racket_move = 0;
@@ -176,6 +177,8 @@ void racket_update(void) {
 		} else {
 			motor_lock(MOTOR5);
 		}
+	} else {
+		request_low_racket_move = 0;
 	}
 	
 	// "High racket"
@@ -226,6 +229,8 @@ void racket_update(void) {
 			}
 
 		}
+	} else {
+		request_high_racket_move = 0;
 	}
 	
 	// Pivot
