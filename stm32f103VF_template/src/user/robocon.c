@@ -11,12 +11,13 @@ void robocon_main(void)
 		if (ticks_img != get_ticks()) {
 			ticks_img = get_ticks();
 			
+			sensor_update();
+			
 			if (ticks_img % 10 == 0) {
 				// Every 10 ms (100 Hz)
 				bluetooth_update();
 				wheel_base_pid_update();
 				wheel_base_update();
-				pivot_update();
 				racket_update();
 			}
 			
@@ -90,10 +91,9 @@ void robocon_main(void)
 				//tft_prints(0, 8, "right: %d", get_right_mode());
 				//tft_prints(0, 9, "motor: %d",get_motor_mode());
 			
-//				tft_prints(0, 6, "%d %d %d %d %d", get_s1(), get_s2(), get_b1(), get_b2(), get_b3() );
 //				tft_prints(0, 8, "pivot:%d", get_pivot_speed() );
 //				tft_prints(0, 9, "hs: %d", get_high_speed() );
-				tft_prints(0, 6, "v_x: %d v_y: %d", get_vx(),get_vy() );
+				//tft_prints(0, 6, "v_x: %d v_y: %d", get_vx(),get_vy() );
 			  tft_prints(0, 7, "v_w: %d", get_vw() );
 				tft_prints(0, 8, "%d, %d, %d", get_PID_err_diff_x(),get_PID_err_diff_y (),get_PID_err_diff_w());
 				tft_prints(0, 9, "count: %d",get_change_count ());	

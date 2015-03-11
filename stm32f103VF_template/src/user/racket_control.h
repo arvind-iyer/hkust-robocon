@@ -7,8 +7,12 @@
 #include "special_char_handler.h"
 #include "stdbool.h"
 
+// Sensor GPIO Pin
 #define S1_Pin	GPIO_Pin_5	// GPIOE
 #define S2_Pin	GPIO_Pin_6	// GPIOE
+#define S3_Pin  GPIO_Pin_7	// GPIOE
+
+// Button Switch Pin
 #define B1_Pin	GPIO_Pin_13	// GPIOE
 #define B2_Pin	GPIO_Pin_14 // GPIOE
 #define B3_Pin	GPIO_Pin_15 // GPIOE
@@ -21,6 +25,8 @@ void racket_init(void);
 void racket_received_command(void);
 bool did_receive_command(void);
 void racket_update(void);
+void sensor_update(void);
+
 void racket_calibrate(void);
 void open_pneumatic(void);
 void close_pneumatic(void);
