@@ -12,13 +12,13 @@
 #define MOTOR_MAX_SPEED 1300
 
 #define T_ERROR_THRESHOLD 400
-#define T_MOTOR_MAX_SPEED 200
+#define T_MOTOR_MAX_SPEED 300
 
 static int C_PR = 264;
 static int C_IN = 8;
 static int C_DE = 0;
 
-static int C_T_PR = 37;
+static int C_T_PR = 57;
 static int C_T_IN = 0;
 static int C_T_DE = 0;
 
@@ -220,9 +220,7 @@ void wheel_base_pid_update(void)
 	if (wheel_base_get_pid_flag() == 1) {
 		
 		// do not calculate PID if adjusting manually after PID is reached
-		
-		if (pid_locked && (get_full_ticks() - wheel_base_get_last_manual_timer()) < BLUETOOTH_WHEEL_BASE_TIMEOUT + 100)
-		{
+		if (pid_locked && (get_full_ticks() - wheel_base_get_last_manual_timer()) < BLUETOOTH_WHEEL_BASE_TIMEOUT + 100) {
 			wheel_base_set_target_pos(*get_pos());
 			reset_pid();
 			return;
@@ -353,6 +351,12 @@ void wheel_base_pid_update(void)
 			t_coord_pid.i_error = 0;
 		}
 		
+		// scale speed with angle
+		
+		int x_final_speed = (x_speed * int_cos(get_pos()->angle) / 10000) - (y_speed * int_sin(get_pos()->angle / 10000));
+		int y_final_speed = (y_speed * int_cos(get_pos()->angle) / 10000) + (x_speed * int_sin(get_pos()->angle / 10000));
+		int t_final_speed = t_speed;
+		
 		u8 speed_ratio;
 		// scale speeds using speed mode
 		if (SPEED_MODES[wheel_base_get_speed_mode()]) {
@@ -362,6 +366,6 @@ void wheel_base_pid_update(void)
 		}
 
 		// set velocity
-		wheel_base_set_vel(x_speed * speed_ratio / 1000, y_speed * speed_ratio / 1000, t_speed * speed_ratio / 1000);
+		wheel_base_set_vel(x_final_speed * speed_ratio / 1000, y_final_speed * speed_ratio / 1000, t_final_speed * speed_ratio / 1000);
 	}
 }
