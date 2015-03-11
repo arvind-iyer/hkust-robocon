@@ -109,21 +109,25 @@ void racket_pneumatic_set(bool data)		//
 //Called ever 10ms to check and update racket data and redirect to starting and stopping racket at required points
 void racket_update(void)
 {
+	/*if (ROBOT=='C' && gpio_read_input(LASER_GPIO))
+	{
+		racket_hit();
+	}*/
 	if(is_pneu_extended && (get_full_ticks() > racket_pneu_start_time + RACKET_SERVE_DELAY))
 	{
 		is_pneu_extended = 0;
 		racket_pneumatic_set(is_pneu_extended);
 	}
-	if (ROBOT=='D' && gpio_read_input(LASER_GPIO) && racket_laser_not_alligned)
+	if (/*ROBOT=='D' && */!gpio_read_input(LASER_GPIO) && racket_laser_not_alligned)
 	{
 		racket_laser_not_alligned=0;
-		racket_hit();
+	//	racket_hit();
 		serve_enabled = 0;
 		racket_last_laser_trigger_time=get_full_ticks();
 
 	}
 	
-	if (ROBOT=='D' && !racket_laser_not_alligned && !gpio_read_input(LASER_GPIO) && get_full_ticks() > racket_last_laser_trigger_time + racket_laser_trigger_interval)		//trigger racket with laser
+	if (/*ROBOT=='D' && */!racket_laser_not_alligned && gpio_read_input(LASER_GPIO) && get_full_ticks() > racket_last_laser_trigger_time + racket_laser_trigger_interval)		//trigger racket with laser
 	{
 		////serve_enabled = 0;
 		
