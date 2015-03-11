@@ -7,6 +7,7 @@
 #include "RobotMCtrl.h"
 
 #include "MainFrm.h"
+
 #include <sstream>
 #include <locale>
 #include <codecvt>
@@ -16,6 +17,7 @@
 #include <cmath>
 #include <iomanip>
 #include <memory>
+#include <utility>
 
 #ifdef _DEBUG
 #define new DEBUG_NEW
@@ -68,12 +70,12 @@ static UINT indicators[] =
 
 // CMainFrame construction/destruction
 
-CMainFrame::CMainFrame()
-{
-	// TODO: add member initialization code here
-}
-
 SerialIO* CMainFrame::serial = NULL;
+
+CMainFrame::CMainFrame() : xbox_thread_handle(AfxBeginThread(xbox_write_thread, &serial))
+{
+	// TODO: add member initialization code here	
+}
 
 CMainFrame::~CMainFrame()
 {
@@ -81,15 +83,17 @@ CMainFrame::~CMainFrame()
 		delete serial;
 		serial = NULL;
 
-		HANDLE handles[2] = { 0 };
+		HANDLE handles[3] = { 0 };
 		if (threads[0] != NULL) {
 			handles[0] = threads[0]->m_hThread;
 		}
 		if (threads[1] != NULL) {
 			handles[1] = threads[1]->m_hThread;
 		}
-		WaitForMultipleObjects(2, handles, TRUE, 2000);
+		WaitForMultipleObjects(2, handles, TRUE, INFINITE);
 	}
+	terminate_thread();
+	WaitForSingleObject(xbox_thread_handle, INFINITE);
 }
 
 int CMainFrame::OnCreate(LPCREATESTRUCT lpCreateStruct)

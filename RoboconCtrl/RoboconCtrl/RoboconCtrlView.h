@@ -83,6 +83,8 @@ private:
 
 	std::vector<std::pair<GridCoord, GridCoord>> robot_path_data;
 
+	bool xbox_status;
+
 // Implementation
 public:
 	virtual ~CRoboconCtrlView();
@@ -107,6 +109,7 @@ protected:
 	afx_msg LRESULT refresh_shuttle_coordinates(WPARAM w, LPARAM l);
 	afx_msg BOOL PreTranslateMessage(MSG* pMsg);
 	afx_msg LRESULT reset_coord(WPARAM w, LPARAM l);
+	afx_msg LRESULT refresh_xbox_stat(WPARAM w, LPARAM l);
 
 	DECLARE_MESSAGE_MAP()
 };

@@ -17,7 +17,8 @@ SerialIO::SerialIO(std::basic_string<TCHAR> port_name, int baud_rate, unsigned s
 		if (com_handle == INVALID_HANDLE_VALUE)
 		{
 			//If not success full display an error
-			if (GetLastError() == ERROR_FILE_NOT_FOUND){
+			DWORD errorMessageID = GetLastError();
+			if (errorMessageID == ERROR_FILE_NOT_FOUND){
 				//Print specific message for invalid port
 				std::ostringstream error_stream;
 				error_stream << "ERROR: Handle was not attached, " << converter.to_bytes(port_name).c_str() << " port not available.";
@@ -25,7 +26,16 @@ SerialIO::SerialIO(std::basic_string<TCHAR> port_name, int baud_rate, unsigned s
 			}
 			else
 			{
-				throw std::runtime_error("ERROR: Reason unknown.");
+				LPSTR messageBuffer = nullptr;
+				size_t size = FormatMessageA(FORMAT_MESSAGE_ALLOCATE_BUFFER | FORMAT_MESSAGE_FROM_SYSTEM | FORMAT_MESSAGE_IGNORE_INSERTS,
+					NULL, errorMessageID, MAKELANGID(LANG_NEUTRAL, SUBLANG_DEFAULT), (LPSTR)&messageBuffer, 0, NULL);
+
+				std::string message(messageBuffer, size);
+
+				//Free the buffer.
+				LocalFree(messageBuffer);
+
+				throw std::runtime_error("ERROR: " + message);
 			}
 		}
 		else {

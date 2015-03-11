@@ -48,11 +48,12 @@ BEGIN_MESSAGE_MAP(CRoboconCtrlView, CView)
 	ON_REGISTERED_MESSAGE(UWM_RECEIVE_ROBOT_COORD, refresh_coordinates)
 	ON_REGISTERED_MESSAGE(UWM_RESET_ROBOT_POS, reset_coord)
 	ON_REGISTERED_MESSAGE(UWM_RECEIVE_SHUTTLE_COORD, refresh_shuttle_coordinates)
+	ON_REGISTERED_MESSAGE(UWM_RECEIVE_XBOX, refresh_xbox_stat)
 END_MESSAGE_MAP()
 
 // CRoboconCtrlView construction/destruction
 
-CRoboconCtrlView::CRoboconCtrlView()
+CRoboconCtrlView::CRoboconCtrlView() : xbox_status(false)
 {
 	// TODO: add construction code here
 	current_pos.x = 0.0f;
@@ -292,6 +293,7 @@ void CRoboconCtrlView::DrawIndicator(GLCoord coordinates, GLColor point_ind_colo
 
 	double quad_xpos4 = (cos(-angle) * length * cos(angle_of_quad / 2) - sin(-angle) * -length * sin(angle_of_quad / 2)) + coordinates.x;
 	double quad_ypos4 = (sin(-angle) * length * cos(angle_of_quad / 2) + cos(-angle) * -length * sin(angle_of_quad / 2)) + coordinates.y;
+	
 	if (mode == 0) {
 		glBegin(GL_TRIANGLE_FAN);
 		glColor3f(point_ind_color.r, point_ind_color.g, point_ind_color.b);
@@ -537,6 +539,11 @@ void CRoboconCtrlView::OnDraw(CDC* pDC)
 	std::basic_string<TCHAR> pid_status(_T("PID Status: "));
 	TextOut(pDC->GetSafeHdc(), rect.Width() - 100, rect.Height() - 19, pid_status.c_str(), pid_status.size());
 
+	if (xbox_status)
+	{
+		std::basic_string<TCHAR> xbox_connected(_T("XBOX DETECTED!"));
+		TextOut(pDC->GetSafeHdc(), 1, rect.Height() - 19, xbox_connected.c_str(), xbox_connected.size());
+	}
 	CBrush* pOldBrush;
 	CBrush brushRed(RGB(255, 0, 0));
 	CBrush brushGreen(RGB(0, 255, 0));
@@ -667,7 +674,8 @@ LRESULT CRoboconCtrlView::refresh_coordinates(WPARAM w, LPARAM l) {
 	return 0;
 }
 
-afx_msg LRESULT CRoboconCtrlView::refresh_shuttle_coordinates(WPARAM w, LPARAM l){
+afx_msg LRESULT CRoboconCtrlView::refresh_shuttle_coordinates(WPARAM w, LPARAM l)
+{
 	std::shared_ptr< std::vector<int> > coordinates(reinterpret_cast< std::vector<int>* >(l));
 
 	// store grid coordinate data to memory so we can write it to file later
@@ -682,6 +690,15 @@ afx_msg LRESULT CRoboconCtrlView::refresh_shuttle_coordinates(WPARAM w, LPARAM l
 	return 0;
 }
 
+afx_msg LRESULT CRoboconCtrlView::refresh_xbox_stat(WPARAM w, LPARAM l)
+{
+	bool new_xbox_status = static_cast<bool>(l);
+	if (xbox_status != new_xbox_status) {
+		xbox_status = new_xbox_status;
+		Invalidate();
+	}
+	return 0;
+}
 LRESULT CRoboconCtrlView::reset_coord(WPARAM w, LPARAM l) {
 	robot_pos.valid = FALSE;
 	robot_path.clear();

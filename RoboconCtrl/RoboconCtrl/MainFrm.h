@@ -7,6 +7,7 @@
 #include "PropertiesWnd.h"
 #include "InputWnd.h"
 #include "SerialIO.h"
+#include "CXBOXController.h"
 
 class CMainFrame : public CFrameWndEx
 {
@@ -54,6 +55,7 @@ protected:  // control bar embedded members
 public: 
 // serial port member
 	static SerialIO* serial;
+	HANDLE xbox_thread_handle;
 protected:
 // buffer that stores keys pressed
 	static std::basic_string<TCHAR> special_msg_keys;

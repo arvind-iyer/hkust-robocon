@@ -54,6 +54,9 @@
     <ClInclude Include="RobotMCtrl.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="CXBOXController.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="RoboconCtrl.cpp">
@@ -84,6 +87,9 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="RobotMCtrl.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="CXBOXController.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
