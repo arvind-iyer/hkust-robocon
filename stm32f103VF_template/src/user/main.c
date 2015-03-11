@@ -24,11 +24,9 @@ int main(void)
 	wheel_base_init();
   ultrasonic_init();
 	special_char_handler_init();
+	sensor_init();
 	racket_init();
-	gyro_register_char ();
-
-	
-//	pivot_init();
+	gyro_register_char();
   
 	system_start(1200);
 	

@@ -92,11 +92,21 @@ void auto_move_mode_off(void) {
 	CLICK_MUSIC;
 }
 
+void sensor_init(void) {
+	register_special_char_function('j', auto_move_mode_on);
+	register_special_char_function('k', auto_move_mode_off);
+	
+	GPIO_InitTypeDef GPIO_InitStructure;
+	
+	GPIO_InitStructure.GPIO_Mode = GPIO_Mode_IPD;
+	GPIO_InitStructure.GPIO_Speed = GPIO_Speed_50MHz;
+	GPIO_InitStructure.GPIO_Pin = S1_Pin | S2_Pin | S3_Pin;
+	GPIO_Init(GPIOE, &GPIO_InitStructure);
+}
+
 void racket_init(void) {
   register_special_char_function('/', low_racket_move);
 	register_special_char_function(';', low_racket_startup);
-	register_special_char_function('j', auto_move_mode_on);
-	register_special_char_function('k', auto_move_mode_off);
 	
 	register_special_char_function(' ', high_racket_move);
 	register_special_char_function('l', high_racket_startup);
@@ -106,20 +116,13 @@ void racket_init(void) {
 	register_special_char_function('.', increase_low_speed);
 	register_special_char_function(',', decrease_low_speed);
 	
-	RCC_APB2PeriphClockCmd(RCC_APB2Periph_GPIOE, ENABLE);
-	
 	/* GPIO configuration */
 	GPIO_InitTypeDef GPIO_InitStructure;
-	
-	GPIO_InitStructure.GPIO_Mode = GPIO_Mode_IPD;
-  GPIO_InitStructure.GPIO_Speed = GPIO_Speed_50MHz;
-  GPIO_InitStructure.GPIO_Pin = S1_Pin | S2_Pin | S3_Pin;
-  GPIO_Init(GPIOE, &GPIO_InitStructure);
-	
+
 	GPIO_InitStructure.GPIO_Mode = GPIO_Mode_IPU;
-  GPIO_InitStructure.GPIO_Speed = GPIO_Speed_50MHz;
-  GPIO_InitStructure.GPIO_Pin = B1_Pin | B2_Pin | B3_Pin;
-  GPIO_Init(GPIOE, &GPIO_InitStructure);
+	GPIO_InitStructure.GPIO_Speed = GPIO_Speed_50MHz;
+	GPIO_InitStructure.GPIO_Pin = B1_Pin | B2_Pin | B3_Pin;
+	GPIO_Init(GPIOE, &GPIO_InitStructure);
 }
 
 void sensor_update(void) {

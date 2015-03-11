@@ -21,11 +21,13 @@
 #define DIR_TOWARDS_B1	-1
 #define DIR_TOWARDS_B2	1
 
+void sensor_init(void);
+void sensor_update(void);
+
 void racket_init(void);
 void racket_received_command(void);
 bool did_receive_command(void);
 void racket_update(void);
-void sensor_update(void);
 
 void racket_calibrate(void);
 void open_pneumatic(void);
@@ -44,14 +46,9 @@ s32 get_b1e(void);
 s32 get_b2e(void);
 s32 get_low_speed(void);
 s32 get_high_speed(void);
-s32 get_pivot_speed(void);
-u32 get_it(void);
-void pivot_update(void);
-
 
 void add_racket_speed(void);
 void decrease_racket_speed(void);
 u16 get_racket_speed(void);
-
 
 #endif

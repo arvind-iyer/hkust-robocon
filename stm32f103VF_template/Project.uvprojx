@@ -439,14 +439,9 @@
               <FilePath>.\src\user\special_char_handler.c</FilePath>
             </File>
             <File>
-              <FileName>pivot_control.c</FileName>
+              <FileName>racket_control.c</FileName>
               <FileType>1</FileType>
-              <FilePath>.\src\user\pivot_control.c</FilePath>
-            </File>
-            <File>
-              <FileName>upper_racket_control.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>.\src\user\upper_racket_control.c</FilePath>
+              <FilePath>.\src\user\racket_control.c</FilePath>
             </File>
           </Files>
         </Group>

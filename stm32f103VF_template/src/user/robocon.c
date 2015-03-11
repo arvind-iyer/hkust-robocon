@@ -94,6 +94,7 @@ void robocon_main(void)
 //				tft_prints(0, 8, "pivot:%d", get_pivot_speed() );
 //				tft_prints(0, 9, "hs: %d", get_high_speed() );
 				//tft_prints(0, 6, "v_x: %d v_y: %d", get_vx(),get_vy() );
+				tft_prints(0, 6, "%s %s %s", get_b1()?"[B1]":"B1", get_b2()?"[B2]":"B2", get_b3()?"[B3]":"B3");
 			  tft_prints(0, 7, "v_w: %d", get_vw() );
 				tft_prints(0, 8, "%d, %d, %d", get_PID_err_diff_x(),get_PID_err_diff_y (),get_PID_err_diff_w());
 				tft_prints(0, 9, "count: %d",get_change_count ());	
