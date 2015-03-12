@@ -74,8 +74,8 @@ UINT __cdecl xbox_write_thread(LPVOID app_ptr)
 	while (running) {
 		while (controller == NULL && running)
 		{
-			if (AfxGetApp() && ((CMainFrame*)AfxGetApp()->GetMainWnd())) {
-				(((CMainFrame*)AfxGetApp()->GetMainWnd())->GetActiveView())->PostMessageW(UWM_RECEIVE_XBOX, 0, 0);
+			if (AfxGetApp() && ((CMainFrame*)AfxGetApp()->GetMainWnd()) && (((CMainFrame*)AfxGetApp()->GetMainWnd())->GetActiveView())) {
+				(((CMainFrame*)AfxGetApp()->GetMainWnd())->GetActiveView())->PostMessage(UWM_RECEIVE_XBOX, 0, 0);
 			}
 			controller = new CXBOXController(1);
 			if (!controller->is_connected()) {
@@ -85,10 +85,10 @@ UINT __cdecl xbox_write_thread(LPVOID app_ptr)
 			Sleep(50);
 		}
 
-		while (controller->is_connected() && running)
+		while (contoller && controller->is_connected() && running)
 		{
-			if (AfxGetApp() && ((CMainFrame*)AfxGetApp()->GetMainWnd())) {
-				(((CMainFrame*)AfxGetApp()->GetMainWnd())->GetActiveView())->PostMessageW(UWM_RECEIVE_XBOX, 0, 1);
+			if (AfxGetApp() && ((CMainFrame*)AfxGetApp()->GetMainWnd()) && (((CMainFrame*)AfxGetApp()->GetMainWnd())->GetActiveView())) {
+				(((CMainFrame*)AfxGetApp()->GetMainWnd())->GetActiveView())->PostMessage(UWM_RECEIVE_XBOX, 0, 1);
 			}
 			XINPUT_GAMEPAD x = controller->GetState().Gamepad;
 			short lx = x.sThumbLX, ly = x.sThumbLY, rx = x.sThumbRX, ry = x.sThumbRY;
@@ -150,7 +150,7 @@ UINT __cdecl xbox_write_thread(LPVOID app_ptr)
 				std::basic_ostringstream<TCHAR> string_to_write;
 				string_to_write << _T("Sent Controls | X: ") << lx << _T(" Y: ") << ly << _T(" w: ") << rx;
 				(*serial)->write(RobotMCtrl().manual_mode(lx, ly, rx));
-				if (AfxGetApp() && AfxGetApp()->GetMainWnd()) {
+				if (AfxGetApp() && (CMainFrame*)AfxGetApp()->GetMainWnd()) {
 					AfxGetApp()->GetMainWnd()->PostMessage(UWM_PRINT_OUTPUT_FROM_WRITE, 0, (LPARAM)new std::basic_string<TCHAR>(string_to_write.str()));
 				}
 			}
