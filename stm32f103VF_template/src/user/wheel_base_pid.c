@@ -12,13 +12,13 @@
 #define MOTOR_MAX_SPEED 1300
 
 #define T_ERROR_THRESHOLD 400
-#define T_MOTOR_MAX_SPEED 300
+#define T_MOTOR_MAX_SPEED 500
 
 static int C_PR = 264;
 static int C_IN = 8;
 static int C_DE = 0;
 
-static int C_T_PR = 57;
+static int C_T_PR = 600;
 static int C_T_IN = 0;
 static int C_T_DE = 0;
 
@@ -52,7 +52,7 @@ static u8 pro_count_down = 0;
 static void decrease_der(void)
 {
 	if (der_count_down == 9) {
-		--C_DE;
+		--C_T_DE;
 		der_count_down = 0;
 	} else {
 		++der_count_down;
@@ -62,7 +62,7 @@ static void decrease_der(void)
 static void increase_der(void)
 {
 	if (der_count_up == 9) {
-		++C_DE;
+		++C_T_DE;
 		der_count_up = 0;
 	} else {
 		++der_count_up;
@@ -72,7 +72,7 @@ static void increase_der(void)
 static void decrease_int(void)
 {
 	if (int_count_down == 9) {
-		--C_IN;
+		--C_T_IN;
 		int_count_down = 0;
 	} else {
 		++int_count_down;
@@ -82,7 +82,7 @@ static void decrease_int(void)
 static void increase_int(void)
 {
 	if (int_count_up == 9) {
-		++C_IN;
+		++C_T_IN;
 		int_count_up = 0;
 	} else {
 		++int_count_up;
@@ -92,7 +92,7 @@ static void increase_int(void)
 static void decrease_prop(void)
 {
 	if (pro_count_down == 9) {
-		--C_PR;
+		--C_T_PR;
 		pro_count_down = 0;
 	} else {
 		++pro_count_down;
@@ -102,7 +102,7 @@ static void decrease_prop(void)
 static void increase_prop(void)
 {
 	if (pro_count_up == 9) {
-		++C_PR;
+		++C_T_PR;
 		pro_count_up = 0;
 	} else {
 		++pro_count_up;
@@ -170,17 +170,17 @@ int get_t_speed(void)
 
 int get_prop(void)
 {
-	return C_PR;
+	return C_T_PR;
 }
 
 int get_int(void)
 {
-	return C_IN;
+	return C_T_IN;
 }
 
 int get_der(void)
 {
-	return C_DE;
+	return C_T_DE;
 }
 
 void update_pid(s32 current_error, PID_OUTPUT* input_pid)
@@ -353,8 +353,8 @@ void wheel_base_pid_update(void)
 		
 		// scale speed with angle
 		
-		int x_final_speed = (x_speed * int_cos(get_pos()->angle) / 10000) - (y_speed * int_sin(get_pos()->angle / 10000));
-		int y_final_speed = (y_speed * int_cos(get_pos()->angle) / 10000) + (x_speed * int_sin(get_pos()->angle / 10000));
+		int x_final_speed = (x_speed * int_cos(get_pos()->angle) - y_speed * int_sin(get_pos()->angle)) / 10000;
+		int y_final_speed = (y_speed * int_cos(get_pos()->angle) + x_speed * int_sin(get_pos()->angle)) / 10000;
 		int t_final_speed = t_speed;
 		
 		u8 speed_ratio;
