@@ -10,7 +10,7 @@ static u32 wheel_base_bluetooth_char_last_update = 0;
 static u32 wheel_base_last_can_tx = 0;
 static u32 wheel_base_joystick_vel_last_update=1;
 static u8 wheel_base_joystick_speed=30;	//0% to 100%
-
+static u8 is_turning = 0;
 static u8 wheel_base_pid_flag = 0;
 static POSITION target_pos = {0, 0, 0};
 //static PID wheel_base_pid = {0, 0, 0};
@@ -34,6 +34,8 @@ static void wheel_base_bluetooth_decode(u8 id, u8 length, u8* data)
 				s8	x_vel = (s8)data[0],
 						y_vel = (s8)data[1],
 						w_vel = (s8)data[2];
+				is_turning = (w_vel != 0);
+				wheel_base_set_target_pos((POSITION){get_pos()->x, get_pos()->y,get_pos()->angle});
 				
 				s8 data_range[2] = {-100, 100};
 				if (x_vel >= data_range[0] && x_vel <= data_range[1] &&
@@ -208,6 +210,8 @@ void wheel_base_update(void)
 	{
 		wheel_base_pid_loop();
 	}
+	if(!is_turning)
+		pid_maintain_angle();
 	
 	motor_set_vel(MOTOR_BOTTOM_RIGHT,	WHEEL_BASE_XY_VEL_RATIO * (wheel_base_vel.x + wheel_base_vel.y) / 1000 + WHEEL_BASE_W_VEL_RATIO * wheel_base_vel.w / 1000, wheel_base_close_loop_flag);
 	motor_set_vel(MOTOR_BOTTOM_LEFT,	WHEEL_BASE_XY_VEL_RATIO * (wheel_base_vel.x - wheel_base_vel.y) / 1000 + WHEEL_BASE_W_VEL_RATIO * wheel_base_vel.w / 1000, wheel_base_close_loop_flag);
@@ -217,6 +221,8 @@ void wheel_base_update(void)
 	wheel_base_vel_prev.x = wheel_base_vel.x;
 	wheel_base_vel_prev.y = wheel_base_vel.y;
 	wheel_base_vel_prev.w = wheel_base_vel.w;
+	
+	
 	
 }
 

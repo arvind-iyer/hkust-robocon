@@ -81,7 +81,7 @@ static void handle_bluetooth_input(void)
 	{
 		last_sent_OS_time = get_full_ticks();
 		key_trigger_enable = false;
-		wheel_base_pid_off();
+		//wheel_base_pid_off();
 		switch (wheel_base_bluetooth_get_last_char())
 		{
 			case 'k':
@@ -173,6 +173,16 @@ static void handle_bluetooth_input(void)
 				minus_y();
 				key_trigger_enable = true;
 				break;
+			
+			//Increase Speed Mode
+			case 'P':
+				wheel_base_set_speed_mode(wheel_base_get_speed_mode() + 1);
+				break;
+			//Decrease Speed Mode
+			case 'O':
+				wheel_base_set_speed_mode(wheel_base_get_speed_mode() - 1);
+				break;
+			
 			case 'f':
 			case 'g':
 				wheel_base_pid_off();

@@ -11,6 +11,7 @@ typedef	struct {
 
 void wheel_base_pid_loop(void);
 void wheel_base_set_pid(PID pid);
+void pid_maintain_angle(void);
 s32 delX(POSITION p1, POSITION p2);
 s32 delY(POSITION p1, POSITION p2);
 s32 delW(POSITION p1, POSITION p2);

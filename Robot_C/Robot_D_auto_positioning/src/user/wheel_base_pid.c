@@ -3,7 +3,57 @@ s32 prev_error;
 s32 error;
 PID wheel_base_pid = {0,0,0};
 u16 integ_dw_index = 0;
-s32 integ_dw_list[5] = {0,0,0,0,0};
+s32 integ_dw_list[12] = {0,0,0,0,0,0,0,0,0,0,0,0};
+
+
+
+
+void pid_maintain_angle(void)
+{
+	/**ROTATIONAL PID**/
+	POSITION curr_pos = {(get_pos()->x), (get_pos()->y), get_pos()->angle};	
+	POSITION target = wheel_base_get_target_pos();
+	
+	WHEEL_BASE_VEL curr_vel = wheel_base_get_vel();
+	
+	s32 dw = delW(curr_pos, target);
+	s32 w = 0;
+	dw = target.angle - get_pos()->angle;
+	if( (get_pos()->angle !=  target.angle))
+	{
+		if((dw<= 1800 && dw >= 0) || (-dw > 1800))
+		{
+			//Move right
+			w = 1;
+		}
+		else if((dw > 1800) || (-dw < 1800 && dw < 0))
+		{
+			//Move left
+			w = -1;
+		}
+	}
+	if(Abs(dw)> 1800) dw = 3600 - Abs(dw);
+	w = w*Abs(dw)/25;
+	//Setting velocity to be minimum magnitude of 19 and max of 50
+	
+	//Add integral factor
+	integ_dw_list[integ_dw_index++] = dw/40;
+	if(integ_dw_index >= 12) integ_dw_index = 0;
+	s32 wi = 0;
+	for (int i = 0; i < 12; i++)
+	{
+		wi+=Abs(integ_dw_list[i]);
+	}
+	w+=(w/Abs(w))*(wi/2);
+	
+	
+	w = Abs(w) < 26? w*26/Abs(w) : w;
+	w = Abs(w) > 70 ? w*70/Abs(w) : w;
+	
+	wheel_base_set_vel(curr_vel.x, curr_vel.y, w);
+}
+
+
 
 void wheel_base_pid_loop(void)
 {
@@ -40,40 +90,7 @@ void wheel_base_pid_loop(void)
 	wheel_base_pid.Kp = 200/speed_mode;
 	
 	
-	/**ROTATIONAL PID**/
-	s32 w = 0;
-	dw = target.angle - get_pos()->angle;
-	if( (get_pos()->angle !=  target.angle))
-	{
-		if((dw<= 1800 && dw >= 0) || (-dw > 1800))
-		{
-			//Move right
-			w = 1;
-		}
-		else if((dw > 1800) || (-dw < 1800 && dw < 0))
-		{
-			//Move left
-			w = -1;
-		}
-	}
-	if(Abs(dw)> 1800) dw = 3600 - Abs(dw);
-	w = w*Abs(dw)/25;
-	//Setting velocity to be minimum magnitude of 19 and max of 50
-	
-	//Add integral factor
-	//integ_dw_list[integ_dw_index++] = 
-	
-	
-	
-	w = Abs(w) < 23? w*23/Abs(w) : w;
-	w = Abs(w) > 50 ? w*50/Abs(w) : w;
-	
-	
-	
-	
-	
-	
-	wheel_base_set_vel(0, 0, w);
+	pid_maintain_angle();
 	//wheel_base_set_vel(shifted_dx/wheel_base_pid.Kp, shifted_dy/wheel_base_pid.Kp,w); 
 	
 	
