@@ -31,6 +31,7 @@
 #include "upper_racket_control.h"
 //#include "lower_racket_control.h"
 #include "pivot_control.h"
+#include "can_motor.h"
 
 void robocon_main(void);
 #endif	/* __ROBOCON_H */

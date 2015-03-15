@@ -71,21 +71,19 @@ void robocon_main(void)
 				tft_clear();
 				draw_top_bar();
 
-				tft_prints(0, 1, "V:(%3d,%3d,%3d)", vel.x, vel.y, vel.w);
-				tft_prints(0, 2, "Speed: %d", wheel_base_get_speed_mode());
-				tft_prints(0, 3, "(%-4d,%-4d,%-4d)", get_pos()->x, get_pos()->y,get_pos()->angle);
-				tft_prints(0, 4, "%s", wheel_base_get_pid_flag() ? "[AUTO]" : "MANUAL");
-				tft_prints(0, 5, "(%-4d,%-4d,%-4d)", wheel_base_get_target_pos().x, wheel_base_get_target_pos().y, wheel_base_get_target_pos().angle);
-				char s[3] = {special_char_handler_bt_get_last_char(), '\0'};
-        if (s[0] == '[' || s[0] == ']') {
-          // Replace "[" and "]" as "\[" and "\]"
-          s[1] = s[0];
-          s[0] = '\\';
-        }
+//				tft_prints(0, 1, "V:(%3d,%3d,%3d)", vel.x, vel.y, vel.w);
+				tft_prints(0, 1, "1_%d,2_%d,3_%d", get_sensor_feedback_0(),get_sensor_feedback_1(),get_sensor_feedback_2());
+				tft_prints(0, 2, "4_%d,5_%d,6_%d", get_sensor_feedback_3(),get_sensor_feedback_4(),get_sensor_feedback_5());
+				
+				tft_prints(0, 3, "R_%d, G_%d", get_sensor_feedback_6(),get_sensor_feedback_7());
+				tft_prints(0, 4, "B_%d", get_sensor_feedback_8());
+				tft_prints(0, 5, "R_%d,  G_%d", get_sensor_feedback_9(),get_sensor_feedback_10());
+				tft_prints(0, 6, "B_%d", get_sensor_feedback_11());
+				
+				
         //tft_prints(0, 6, "Char: %s (%d)", s, special_char_handler_bt_get_last_char());
         //tft_prints(0, 7, "Switch hit: %d", did_receive_command());
 				//tft_prints(0, 8, "switch: %d",get_switch());
-				
 				//tft_prints(0, 7, "left: %d", get_left_mode());
 				//tft_prints(0, 8, "right: %d", get_right_mode());
 				//tft_prints(0, 9, "motor: %d",get_motor_mode());
@@ -93,10 +91,7 @@ void robocon_main(void)
 //				tft_prints(0, 6, "%d %d %d %d %d", get_s1(), get_s2(), get_b1(), get_b2(), get_b3() );
 //				tft_prints(0, 8, "pivot:%d", get_pivot_speed() );
 //				tft_prints(0, 9, "hs: %d", get_high_speed() );
-				tft_prints(0, 6, "v_x: %d v_y: %d", get_vx(),get_vy() );
-			  tft_prints(0, 7, "v_w: %d", get_vw() );
-				tft_prints(0, 8, "%d, %d, %d", get_PID_err_diff_x(),get_PID_err_diff_y (),get_PID_err_diff_w());
-				tft_prints(0, 9, "count: %d",get_change_count ());	
+
 				tft_update();
 				NVIC_EnableIRQ(EXTI15_10_IRQn);
 			}

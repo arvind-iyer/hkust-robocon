@@ -23,6 +23,14 @@
 #define CAN_ENCODER_FEEDBACK_LENGTH		5
 #define CAN_ENCODER_FEEDBACK					0x22
 
+/***  SENSOR  ***/
+#define LIGHTSENSOR_ENABLE 0x13
+#define LIGHTSENSOR_DISABLE 0x12
+#define LIGHT_SENSOR_2		0x14
+#define LIGHT_SENSOR_3		0x15
+
+
+
 
 typedef enum {
 	MOTOR1 = 0,
@@ -54,6 +62,26 @@ void can_motor_init(void);
 void motor_set_vel(MOTOR_ID motor_id, s32 vel, CLOSE_LOOP_FLAG close_loop_flag);
 void motor_set_acceleration(MOTOR_ID motor_id, u16 accel);
 void motor_lock(MOTOR_ID motor_id);
+static void can_sensor_feedback_decoding(CanRxMsg msg);
+void can_sensor_init(void);
+
+u8 get_sensor_feedback_0 (void);
+u8 get_sensor_feedback_1 (void);
+u8 get_sensor_feedback_2 (void);
+u8 get_sensor_feedback_3 (void);
+u8 get_sensor_feedback_4 (void);
+u8 get_sensor_feedback_5 (void);
+u8 get_sensor_feedback_6 (void);
+u8 get_sensor_feedback_7 (void);
+u8 get_sensor_feedback_8 (void);
+u8 get_sensor_feedback_9 (void);
+u8 get_sensor_feedback_10 (void);
+u8 get_sensor_feedback_11 (void);
+u8 get_sensor_feedback_12 (void);
+u8 get_sensor_feedback_13 (void);
+u8 get_sensor_feedback_14 (void);
+u8 get_sensor_feedback_15 (void);
+
 
 /*** RX ***/
 s32 get_encoder_value(MOTOR_ID motor_id);

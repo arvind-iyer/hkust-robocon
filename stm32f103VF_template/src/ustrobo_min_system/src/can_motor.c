@@ -2,7 +2,8 @@
 
 #define get_can_motor_id(motor_id)	(CAN_MOTOR_BASE + (u8)motor_id)
 static s32 can_motor_encoder_value[CAN_MOTOR_COUNT] = {0};
-
+static u16 feedback[16]={0};
+ 
 /**
   * @brief The private (static) function for decoding CAN message
   * @param msg: the CAN msg for decoding
@@ -135,5 +136,110 @@ s32 get_encoder_value(MOTOR_ID motor_id)
 {
 	return can_motor_encoder_value[motor_id];
 }
+
+
+
+/// added for light sensor
+
+void can_sensor_init(void){
+	can_rx_add_filter(0x000, 0x000 , can_sensor_feedback_decoding);
+}
+
+static void can_sensor_feedback_decoding(CanRxMsg msg){
+	switch (msg.Data[0]) {
+		case LIGHTSENSOR_ENABLE:
+			if (msg.DLC == 7) {
+				// Range check 
+				feedback[0] = msg.Data [1];
+				feedback[1] = msg.Data [2];
+				feedback[2] = msg.Data [3];
+				feedback[3] = msg.Data [4];
+				feedback[4] = msg.Data [5];
+				feedback[5] = msg.Data [6];
+			}
+		break;
+		case LIGHTSENSOR_DISABLE:
+			if (msg.DLC == 7) {
+				// Range check 
+				feedback[6] = (u16)n_bytes_to_one(&msg.Data[1], 2);
+				feedback[7] = (u16) n_bytes_to_one(&msg.Data[3], 2);
+				feedback[8] = (u16)n_bytes_to_one(&msg.Data[5], 2);
+			}
+		break;
+		case LIGHT_SENSOR_2:
+			if (msg.DLC == 7) {
+				// Range check 
+				feedback[9] = (u16)n_bytes_to_one(&msg.Data[1], 2);
+				feedback[10] = (u16)n_bytes_to_one(&msg.Data[3], 2);
+				feedback[11] = (u16)n_bytes_to_one(&msg.Data[5], 2);
+			}
+		break;
+		case LIGHT_SENSOR_3:
+			if (msg.DLC == 4) {
+				// Range check 
+				feedback[12] = (u16)n_bytes_to_one(&msg.Data[1], 2);
+				feedback[13] = msg.Data [3];
+				
+			}
+		break;
+	}
+}
+
+	
+
+u8 get_sensor_feedback_0 (void){
+	return feedback[0] ;
+}
+u8 get_sensor_feedback_1 (void){
+	return feedback[1] ;
+}
+u8 get_sensor_feedback_2 (void){
+	return feedback[2] ;
+}
+
+u8 get_sensor_feedback_3 (void){
+	return feedback[3] ;
+}
+
+u8 get_sensor_feedback_4 (void){
+	return feedback[4] ;
+}
+u8 get_sensor_feedback_5 (void){
+	return feedback[5] ;
+}
+u8 get_sensor_feedback_6 (void){
+	return feedback[6] ;
+}
+u8 get_sensor_feedback_7 (void){
+	return feedback[7] ;
+}
+u8 get_sensor_feedback_8 (void){
+	return feedback[8] ;
+}
+u8 get_sensor_feedback_9 (void){
+	return feedback[9] ;
+}
+u8 get_sensor_feedback_10 (void){
+	return feedback[10] ;
+}
+u8 get_sensor_feedback_11 (void){
+	return feedback[11] ;
+}
+u8 get_sensor_feedback_12 (void){
+	return feedback[12] ;
+}
+u8 get_sensor_feedback_13 (void){
+	return feedback[13] ;
+}
+u8 get_sensor_feedback_14 (void){
+	return feedback[14] ;
+}
+u8 get_sensor_feedback_15 (void){
+	return feedback[15] ;
+}
+
+
+
+
 
 

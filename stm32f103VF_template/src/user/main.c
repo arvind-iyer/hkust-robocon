@@ -19,7 +19,8 @@ int main(void)
 	battery_adc_init();
 	can_init();
 	can_rx_init();
-  can_motor_init();
+ // can_motor_init();
+	can_sensor_init();
 	bluetooth_init();
 	wheel_base_init();
   ultrasonic_init();

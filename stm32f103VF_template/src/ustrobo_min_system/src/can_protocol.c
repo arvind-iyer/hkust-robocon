@@ -354,7 +354,6 @@ CAN_Rx_IRQHandler
       ++can_rx_count;
 		}		
 	}
-
 }
 
 /*** Protocol Encoding / Decoding function ***/
