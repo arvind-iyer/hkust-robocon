@@ -85,7 +85,7 @@ UINT __cdecl xbox_write_thread(LPVOID app_ptr)
 			Sleep(50);
 		}
 
-		while (contoller && controller->is_connected() && running)
+		while (controller && controller->is_connected() && running)
 		{
 			if (AfxGetApp() && ((CMainFrame*)AfxGetApp()->GetMainWnd()) && (((CMainFrame*)AfxGetApp()->GetMainWnd())->GetActiveView())) {
 				(((CMainFrame*)AfxGetApp()->GetMainWnd())->GetActiveView())->PostMessage(UWM_RECEIVE_XBOX, 0, 1);
@@ -147,11 +147,55 @@ UINT __cdecl xbox_write_thread(LPVOID app_ptr)
 			oss << std::endl;
 			OutputDebugString(oss.str().c_str());
 			if (*serial != NULL && running) {
-				std::basic_ostringstream<TCHAR> string_to_write;
-				string_to_write << _T("Sent Controls | X: ") << lx << _T(" Y: ") << ly << _T(" w: ") << rx;
-				(*serial)->write(RobotMCtrl().manual_mode(lx, ly, rx));
-				if (AfxGetApp() && (CMainFrame*)AfxGetApp()->GetMainWnd()) {
-					AfxGetApp()->GetMainWnd()->PostMessage(UWM_PRINT_OUTPUT_FROM_WRITE, 0, (LPARAM)new std::basic_string<TCHAR>(string_to_write.str()));
+				if (lx != 0 || ly != 0 || rx != 0) {
+					std::basic_ostringstream<TCHAR> string_to_write;
+					string_to_write << _T("Sent Controls | X: ") << lx << _T(" Y: ") << ly << _T(" w: ") << rx;
+					(*serial)->write(RobotMCtrl().manual_mode(lx, ly, rx));
+					if (AfxGetApp() && (CMainFrame*)AfxGetApp()->GetMainWnd()) {
+						AfxGetApp()->GetMainWnd()->PostMessage(UWM_PRINT_OUTPUT_FROM_WRITE, 0, (LPARAM)new std::basic_string<TCHAR>(string_to_write.str()));
+					}
+				}
+				if (x.wButtons & XINPUT_GAMEPAD_BACK)
+				{
+					(*serial)->write(RobotMCtrl().special_keys('o'));
+					if (AfxGetApp() && (CMainFrame*)AfxGetApp()->GetMainWnd()) {
+						AfxGetApp()->GetMainWnd()->PostMessage(UWM_PRINT_OUTPUT_FROM_WRITE, 0, (LPARAM)new std::basic_string<TCHAR>(_T("Sent XBOX command: o")));
+					}
+				}
+				if (x.wButtons & XINPUT_GAMEPAD_START)
+				{
+					(*serial)->write(RobotMCtrl().special_keys('['));
+					if (AfxGetApp() && (CMainFrame*)AfxGetApp()->GetMainWnd()) {
+						AfxGetApp()->GetMainWnd()->PostMessage(UWM_PRINT_OUTPUT_FROM_WRITE, 0, (LPARAM)new std::basic_string<TCHAR>(_T("Sent XBOX command: [")));
+					}
+				}
+				if (x.wButtons & XINPUT_GAMEPAD_X)
+				{
+					(*serial)->write(RobotMCtrl().special_keys(';'));
+					if (AfxGetApp() && (CMainFrame*)AfxGetApp()->GetMainWnd()) {
+						AfxGetApp()->GetMainWnd()->PostMessage(UWM_PRINT_OUTPUT_FROM_WRITE, 0, (LPARAM)new std::basic_string<TCHAR>(_T("Sent XBOX command: ;")));
+					}
+				}
+				if (x.wButtons & XINPUT_GAMEPAD_B)
+				{
+					(*serial)->write(RobotMCtrl().special_keys('l'));
+					if (AfxGetApp() && (CMainFrame*)AfxGetApp()->GetMainWnd()) {
+						AfxGetApp()->GetMainWnd()->PostMessage(UWM_PRINT_OUTPUT_FROM_WRITE, 0, (LPARAM)new std::basic_string<TCHAR>(_T("Sent XBOX command: l")));
+					}
+				}
+				if (x.wButtons & XINPUT_GAMEPAD_A)
+				{
+					(*serial)->write(RobotMCtrl().special_keys('p'));
+					if (AfxGetApp() && (CMainFrame*)AfxGetApp()->GetMainWnd()) {
+						AfxGetApp()->GetMainWnd()->PostMessage(UWM_PRINT_OUTPUT_FROM_WRITE, 0, (LPARAM)new std::basic_string<TCHAR>(_T("Sent XBOX command: p")));
+					}
+				}
+				if (x.wButtons & XINPUT_GAMEPAD_Y)
+				{
+					(*serial)->write(RobotMCtrl().special_keys('k'));
+					if (AfxGetApp() && (CMainFrame*)AfxGetApp()->GetMainWnd()) {
+						AfxGetApp()->GetMainWnd()->PostMessage(UWM_PRINT_OUTPUT_FROM_WRITE, 0, (LPARAM)new std::basic_string<TCHAR>(_T("Sent XBOX command: k")));
+					}
 				}
 			}
 			Sleep(10);
