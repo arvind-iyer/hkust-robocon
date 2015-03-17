@@ -6,7 +6,9 @@ static const CLOSE_LOOP_FLAG wheel_base_close_loop_flag = CLOSE_LOOP;
 static u8 wheel_base_speed_mode = WHEEL_BASE_DEFAULT_SPEED_MODE;
 static u32 wheel_base_bluetooth_vel_last_update = 0;
 static u32 wheel_base_last_can_tx = 0;
-		
+
+static int wheel_base_acc = 300;		
+
 static u8 wheel_base_pid_flag = 0;
 static POSITION target_pos = {0, 0, 0};
 static PID wheel_base_pid = {0, 0, 0};
@@ -78,6 +80,18 @@ static void wheel_base_auto_bluetooth_decode(u8 id, u8 length, u8* data)
 	}
 }
 
+static void stop_all_motors(void)
+{
+	while(1) {
+		motor_lock(MOTOR1);
+		motor_lock(MOTOR2);
+		motor_lock(MOTOR3);
+		motor_lock(MOTOR4);
+		motor_lock(MOTOR5);
+		motor_lock(MOTOR6);
+	}
+}
+
 /**
 	* @brief Initialization of wheel base, including bluetooth rx filter, and all related variables
 	*/
@@ -85,6 +99,7 @@ void wheel_base_init(void)
 {
 	bluetooth_rx_add_filter(BLUETOOTH_WHEEL_BASE_VEL_ID, 0xF0, wheel_base_bluetooth_decode);
   bluetooth_rx_add_filter(BLUETOOTH_WHEEL_BASE_AUTO_POS_ID, 0xF0, wheel_base_auto_bluetooth_decode);
+	register_special_char_function(' ', stop_all_motors);
 	wheel_base_vel.x = wheel_base_vel.y = wheel_base_vel.w = 0;
 	wheel_base_bluetooth_vel_last_update = 0;
 	wheel_base_last_can_tx = 0;
@@ -151,6 +166,11 @@ WHEEL_BASE_VEL wheel_base_get_vel(void)
 	return wheel_base_vel;
 }
 
+WHEEL_BASE_VEL wheel_base_get_vel_prev(void)
+{
+	return wheel_base_vel_prev;
+}
+
 /**
 	* @brief Check if the wheel base velocity is different from the previous one
 	* @param None
@@ -159,6 +179,17 @@ WHEEL_BASE_VEL wheel_base_get_vel(void)
 u8 wheel_base_vel_diff(void)
 {
 	return wheel_base_vel.x != wheel_base_vel_prev.x || wheel_base_vel.y != wheel_base_vel_prev.y || wheel_base_vel.w != wheel_base_vel_prev.w;
+}
+
+
+s32 simulate_acceleration(s32 current_vel, s32 target_vel, s32 wheel_base_accel) {
+	if (target_vel <= current_vel + wheel_base_accel && target_vel >= current_vel - wheel_base_accel) {
+		return target_vel;
+	}
+	if (target_vel > current_vel + wheel_base_accel) {
+		return current_vel + wheel_base_accel;
+	}
+	return current_vel - wheel_base_accel;
 }
 
 /**
@@ -177,48 +208,45 @@ void wheel_base_update() {
 			wheel_base_set_vel(0, 0, 0);
 		}
 	}
-	cur_vel_tl = ((-wheel_base_vel.y - wheel_base_vel.x) * WHEEL_BASE_XY_VEL_RATIO + wheel_base_vel.w * WHEEL_BASE_W_VEL_RATIO) / 100;
-	cur_vel_tr = ((wheel_base_vel.y - wheel_base_vel.x) * WHEEL_BASE_XY_VEL_RATIO + wheel_base_vel.w * WHEEL_BASE_W_VEL_RATIO) / 100;
-	cur_vel_bl = ((-wheel_base_vel.y  + wheel_base_vel.x) * WHEEL_BASE_XY_VEL_RATIO	+ wheel_base_vel.w * WHEEL_BASE_W_VEL_RATIO) / 100;
-	cur_vel_br = ((wheel_base_vel.y + wheel_base_vel.x) * WHEEL_BASE_XY_VEL_RATIO + wheel_base_vel.w * WHEEL_BASE_W_VEL_RATIO) / 100;
-
-	if(cur_vel_tl==0){}
-	else if(cur_vel_tl > old_vel_tl ) {
-		cur_vel_tl = old_vel_tl + 10;
-	} else if(cur_vel_tl < old_vel_tl) {
-		cur_vel_tl = old_vel_tl - 10;
+	
+	if (wheel_base_vel_diff()) {
+		int x_error = abs(wheel_base_vel.x);
+		int y_error = abs(wheel_base_vel.y);
+		if (x_error==0)		x_error = 1;
+		if (y_error==0)		y_error = 1;
+		
+		s32 x_wheel_base_acc, y_wheel_base_acc;
+		if (x_error > y_error) {
+			x_wheel_base_acc = wheel_base_acc;
+			y_wheel_base_acc = wheel_base_acc * y_error / x_error;
+		} else {
+			x_wheel_base_acc = wheel_base_acc * x_error / y_error;
+			y_wheel_base_acc = wheel_base_acc;
+		}
+		wheel_base_vel_prev.x = simulate_acceleration(wheel_base_vel_prev.x, wheel_base_vel.x, x_wheel_base_acc);
+		wheel_base_vel_prev.y = simulate_acceleration(wheel_base_vel_prev.y, wheel_base_vel.y, y_wheel_base_acc);
+		wheel_base_vel_prev.w = simulate_acceleration(wheel_base_vel_prev.w, wheel_base_vel.w, wheel_base_acc);
 	}
 	
-	if(cur_vel_tr==0){}
-	else if(cur_vel_tr > old_vel_tr) {
-		cur_vel_tr = old_vel_tr + 10;
-	} else if(cur_vel_tr < old_vel_tr) {
-		cur_vel_tr = old_vel_tr - 10;
-	}
+	mvtl = ((-wheel_base_vel_prev.y - wheel_base_vel_prev.x) * WHEEL_BASE_XY_VEL_RATIO + wheel_base_vel_prev.w * WHEEL_BASE_W_VEL_RATIO) / 1000;
+	mvtr = ((wheel_base_vel_prev.y - wheel_base_vel_prev.x) * WHEEL_BASE_XY_VEL_RATIO + wheel_base_vel_prev.w * WHEEL_BASE_W_VEL_RATIO) / 1000;
+	mvbl = ((-wheel_base_vel_prev.y  + wheel_base_vel_prev.x) * WHEEL_BASE_XY_VEL_RATIO	+ wheel_base_vel_prev.w * WHEEL_BASE_W_VEL_RATIO) / 1000;
+	mvbr = ((wheel_base_vel_prev.y + wheel_base_vel_prev.x) * WHEEL_BASE_XY_VEL_RATIO + wheel_base_vel_prev.w * WHEEL_BASE_W_VEL_RATIO) / 1000;
 	
-	if(cur_vel_bl==0){}
-	else if(cur_vel_bl > old_vel_bl) {
-		cur_vel_bl = old_vel_bl + 10;
-	} else if(cur_vel_bl < old_vel_bl) {
-		cur_vel_bl = old_vel_bl - 10;
-	}
+	motor_set_vel(
+		MOTOR_TOP_LEFT,
+		mvtl,
+		wheel_base_close_loop_flag);
+	motor_set_vel(MOTOR_TOP_RIGHT,
+		mvtr,
+		wheel_base_close_loop_flag);
+	motor_set_vel(MOTOR_BOTTOM_LEFT,
+		mvbl,
+		wheel_base_close_loop_flag);
+	motor_set_vel(MOTOR_BOTTOM_RIGHT,
+		mvbr,
+		wheel_base_close_loop_flag);
 	
-	if(cur_vel_br==0){}
-	else if(cur_vel_br > old_vel_br) {
-		cur_vel_br = old_vel_br + 10;
-	} else if(cur_vel_br < old_vel_br) {
-		cur_vel_br = old_vel_br - 10;
-	}
-	
-	motor_set_vel(MOTOR_TOP_LEFT, cur_vel_tl/10, wheel_base_close_loop_flag);
-	motor_set_vel(MOTOR_TOP_RIGHT, cur_vel_tr/10, wheel_base_close_loop_flag);
-	motor_set_vel(MOTOR_BOTTOM_LEFT, cur_vel_bl/10, wheel_base_close_loop_flag);
-	motor_set_vel(MOTOR_BOTTOM_RIGHT, cur_vel_br/10, wheel_base_close_loop_flag);
-	
-	old_vel_br =  cur_vel_br ;
-	old_vel_tl =  cur_vel_tl ;	
-	old_vel_bl =  cur_vel_bl ;
-	old_vel_tr =  cur_vel_tr ;
 }
 
 /**
@@ -294,3 +322,7 @@ void wheel_base_override_change_speed(void)
 	wheel_base_set_speed_mode((wheel_base_get_speed_mode() + 1) % 10);
 }
 
+s32 get_mvtl() { return mvtl; }
+s32 get_mvtr() { return mvtr; }
+s32 get_mvbl() { return mvbl; }
+s32 get_mvbr() { return mvbr; }

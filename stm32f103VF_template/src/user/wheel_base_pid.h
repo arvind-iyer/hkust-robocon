@@ -10,37 +10,35 @@
 #define MAX(x,y) (x>y?x:y)
 #define LIMITED(IN,L1,L2)  (L1<L2 ? (MAX(L1,MIN(IN,L2))) : (MAX(L2,MIN(IN,L1))))
 
-#define xy_vel_limit	60
-#define w_vel_limit 25
-#define pid_acc      100
+#define xy_vel_limit	100
+#define w_vel_limit		100
 
-typedef struct {
-	s32 Kp_xy, Kp_w;
-	s32 Ki_xy, Ki_w;
-	s32 Kd_xy, Kd_w;
-}PID_para;
+#define PID_XY_P	1500
+#define PID_W_P		2000
+
+static s32 pid_ratio_multiplier;
+static s32 pid_ratio_divider;
 
 typedef struct {
 	s32 x;
 	s32 y;
 	s32 w;
-}error;
+} error;
 
 typedef struct {
 	error diff ;
 	error derivative;
-	error intergral;
-}PID_error;
+	error integral;
+} PID_error;
 
 typedef struct {
 	s32 x;
 	s32 y;
 	s32 w;
-}PID_output_vel;
+} PID_output_vel;
 
 
 void wheel_base_pid_update(void);
-void set_PID_val (PID_para para);
 
 s32 get_vx(void);
 s32 get_vy(void);

@@ -23,8 +23,8 @@
 #define WHEEL_BASE_REGULAR_CAN_TX							2000
 
 // Wheel-base speed related
-#define	WHEEL_BASE_XY_VEL_RATIO								707		//  70.7%
-#define	WHEEL_BASE_W_VEL_RATIO								-800		//	-80.0%
+#define	WHEEL_BASE_XY_VEL_RATIO								808		//  Default: 707 (70.7%)
+#define	WHEEL_BASE_W_VEL_RATIO								-800		//	Default: -800 -80.0%
 static const u16 SPEED_MODES[10] =	// In percentage (20 = 20%)
 {
 	0, 10, 20, 30, 40, 50, 60, 70, 80, 90
@@ -57,6 +57,7 @@ typedef	struct {
 	s32 Kp, Ki, Kd;
 } PID;
 
+static s32 mvtl, mvtr, mvbl, mvbr;
 
 void wheel_base_init(void);
 void wheel_base_set_speed_mode(u8 s);
@@ -64,6 +65,11 @@ u8 wheel_base_get_speed_mode(void);
 void wheel_base_tx_acc(void);
 void wheel_base_set_vel(s32 x, s32 y, s32 w);
 WHEEL_BASE_VEL wheel_base_get_vel(void);
+WHEEL_BASE_VEL wheel_base_get_vel_prev(void);
+s32 get_mvtl();
+s32 get_mvtr();
+s32 get_mvbl();
+s32 get_mvbr();
 void wheel_base_update(void);
 void wheel_base_tx_position(void);
 

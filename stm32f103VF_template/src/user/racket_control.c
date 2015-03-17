@@ -85,11 +85,9 @@ void high_racket_startup(void) {
 
 void auto_move_mode_on(void) {
 	auto_move_mode_flag = 1;
-	CLICK_MUSIC;
 }
 void auto_move_mode_off(void) {
 	auto_move_mode_flag = 0;
-	CLICK_MUSIC;
 }
 
 void sensor_init(void) {
@@ -105,10 +103,10 @@ void sensor_init(void) {
 }
 
 void racket_init(void) {
-  register_special_char_function('/', low_racket_move);
+	register_special_char_function('/', low_racket_move);
 	register_special_char_function(';', low_racket_startup);
 	
-	register_special_char_function(' ', high_racket_move);
+	register_special_char_function('m', high_racket_move);
 	register_special_char_function('l', high_racket_startup);
 	
 	register_special_char_function('>', increase_high_speed);
@@ -126,11 +124,12 @@ void racket_init(void) {
 }
 
 void sensor_update(void) {
-	if ( !GPIO_ReadInputDataBit(GPIOE, S1_Pin) || GPIO_ReadInputDataBit(GPIOE, S2_Pin) || GPIO_ReadInputDataBit(GPIOE, S3_Pin) )
+	if ( GPIO_ReadInputDataBit(GPIOE, S1_Pin) || GPIO_ReadInputDataBit(GPIOE, S2_Pin) || GPIO_ReadInputDataBit(GPIOE, S3_Pin) )
 	{
 		SUCCESSFUL_MUSIC;
 		if(auto_move_mode_flag == 1) {
-			if(request_low_racket_move == 0 && b3_switch == 1) {
+			if(request_low_racket_move == 0) {
+				auto_move_mode_flag = 0;
 				request_low_racket_move = 1;
 				request_low_racket_move_time = get_full_ticks();
 			}
@@ -139,6 +138,9 @@ void sensor_update(void) {
 }
 
 void racket_update(void) {
+	if(auto_move_mode_flag == 1) {
+		CLICK_MUSIC;
+	}
 	// !! When B1, B2 or B3 are pressed, the value is 1.
 	b1_switch = GPIO_ReadInputDataBit(GPIOE, B1_Pin);
 	b2_switch = GPIO_ReadInputDataBit(GPIOE, B2_Pin);
@@ -154,19 +156,14 @@ void racket_update(void) {
 			low_calibrate_leave_switch = 1;
 		} else {
 			
-			if(low_calibrate_switch_off_count == 0) {
-			// If the initial status of b3_switch is "hit" in the startup period
-				motor_set_vel(MOTOR5, 240, OPEN_LOOP);
-			} else {
-				if(low_calibrate_leave_switch == 1) {
-					low_calibrate_switch_off_count += 1;
-					low_calibrate_leave_switch = 0;
-				}
-				if (low_calibrate_switch_off_count >= 2) {
-					motor_lock(MOTOR5);
-					low_calibrate_mode = 0;
-					low_calibrated = 1;
-				}
+			if(low_calibrate_leave_switch == 1) {
+				low_calibrate_switch_off_count += 1;
+				low_calibrate_leave_switch = 0;
+			}
+			if (low_calibrate_switch_off_count >= 2) {
+				motor_lock(MOTOR5);
+				low_calibrate_mode = 0;
+				low_calibrated = 1;
 			}
 		}
 	}	else if(low_calibrated == 1) {
