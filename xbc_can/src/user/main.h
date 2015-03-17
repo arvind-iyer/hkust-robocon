@@ -16,7 +16,7 @@
 #include "led.h"
 #include "tft.h"
 #include "interface.h"
-#include "xbc_mb.h"
+//#include "xbc_mb.h"
 #include "button.h"
 #include "encoder.h"
 #include "system_test.h"
@@ -31,5 +31,8 @@
 #include "robocon.h"
 #include "wheel_base.h"
 #include "ultrasonic.h"
+#include "usb_api.h"
+#include "xbc.h"
+
 
 #endif /* __MAIN_H */

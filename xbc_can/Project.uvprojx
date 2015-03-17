@@ -572,6 +572,16 @@
               <FileType>1</FileType>
               <FilePath>.\src\user\system.c</FilePath>
             </File>
+            <File>
+              <FileName>usb_api.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\src\user\usb_api.c</FilePath>
+            </File>
+            <File>
+              <FileName>xbc.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\src\user\xbc.c</FilePath>
+            </File>
           </Files>
         </Group>
         <Group>
