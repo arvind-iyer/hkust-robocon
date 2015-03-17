@@ -20,17 +20,18 @@ u8 is_xbc_controller=0;
 u8 finish_read_flag = 0;
 u8 xbc_error_count = 0;
 u8 is_big_controller=0;
-u32 old_xbc_digital = 0;
+static u32 old_xbc_digital = 0;
+static u32 xbc_digital_raw = 0;
 u16 disconnect_cnt = 0;
 u8 error_xbc_data_cnt = 0; // count error number
 
 //public data
 u32 volatile xbc_press = 0; //edge trigger of digital
 u32 volatile xbc_release = 0; //edge trigger of digital
-u8 volatile xbc_mode = 1; //assume connect = 1, disconnect = 0
-u8 volatile xbc_channel = 1; //channel 1 -4
+u8 volatile xbc_mode = 0;  //assume connect = 1, disconnect = 0
+u8 volatile xbc_channel = 1; //channel 1-4
 u8 volatile old_xbc_mode = 0;
-u32 volatile xbc_digital=0; //conbine two 8bits variable data into one 16bits
+u32 volatile xbc_digital =0; //conbine two 8bits variable data into one 16bits
 s16 volatile xbc_joy[6]={0}; // combine two joy (eight 8bits, two into one) and two special analog (two 8bit)
 u8 volatile xbc_analog = 1;
 
@@ -41,7 +42,8 @@ u8 volatile xbc_data[XBC_DATA_LENGTH]={0};  //store data from xbc
 u8 volatile xbc_up[3];
 u8 volatile timer_flag =1;
 
-void xbc_init(u8 lcd_on){
+void xbc_init(u8 lcd_on) 
+{
 
 	SPI_InitTypeDef SPI_InitStructure;
 	RCC_APB2PeriphClockCmd( RCC_APB2Periph_GPIOB , ENABLE );
@@ -65,8 +67,9 @@ void xbc_init(u8 lcd_on){
 	
 	xbc_timer_init();
 
-	if (!lcd_on)
+	if (!lcd_on) {
 		lcd_extend_enable = 3;
+  }
 
 }
 
@@ -101,7 +104,20 @@ void xbc_gpio_init(void){
 }
 
 u8 get_xbc_mode(){
-	return xbc_mode;
+  static u32 last_connected_ticks = 0;
+  u8 return_val = 0;
+  
+
+  if (xbc_mode == 2) {
+    last_connected_ticks = get_full_ticks();
+    return_val = 1;
+  } else if (xbc_mode == 1) {
+    if (get_full_ticks() - last_connected_ticks < XBC_DISCONNECT_MS) {
+      return_val = 1;
+    }
+  }
+  
+	return return_val;
 }
 
 void xbc_check_flag (void) 
@@ -109,9 +125,8 @@ void xbc_check_flag (void)
 
 }
 
-
-u8 xbc_update(){
-	
+u8 xbc_data_update(void)
+{
 /*
 	*Call period:
 		20ms
@@ -129,8 +144,9 @@ u8 xbc_update(){
 			printf("%xH ",xbc_data[i]);
 		}
 			printf("\r\n");
-			printf("%lx\r\n",xbc_digital);
+			printf("%lx\r\n",xbc_digital_raw);
 */
+  
 		if (!running) // enable xbc
 			running = 1;
 
@@ -141,29 +157,26 @@ u8 xbc_update(){
 		}
 
 		if (ck_flag && xbc_mode == CONNECTED){
-			old_xbc_digital = xbc_digital;
-			xbc_digital = (xbc_data[13] << 16) + (xbc_data[2] << 8) + xbc_data[1];
-			//xbc_digital = xbc_digital & 0x00ffff;
+			xbc_digital_raw = (xbc_data[13] << 16) + (xbc_data[2] << 8) + xbc_data[1];
+			//xbc_digital_raw = xbc_digital_raw & 0x00ffff;
 			xbc_joy[XBC_LT] = (u8)xbc_data[3]; //lt max:255
 			xbc_joy[XBC_RT] = (u8)xbc_data[4]; //rt max:255
+      
 			xbc_joy[XBC_LX] = ((xbc_data[6]<<8) + xbc_data[5]); // lx: -3xxxx to 3xxxx
 			xbc_joy[XBC_LY] = ((xbc_data[8]<<8) + xbc_data[7]); // ly: -3xxxx to 3xxxx
 			xbc_joy[XBC_RX] = ((xbc_data[10]<<8) + xbc_data[9]); // rx: -3xxxx to 3xxxx
 			xbc_joy[XBC_RY] = ((xbc_data[12]<<8) + xbc_data[11]); // ry: -3xxxx to 3xxxx
-
-			/*
+      
 			xbc_joy[XBC_LX] = xbc_joy[XBC_LX] > 8000 ? xbc_joy[XBC_LX] : xbc_joy[XBC_LX] < -8000 ? xbc_joy[XBC_LX]:0;
 			xbc_joy[XBC_LY] = xbc_joy[XBC_LY] > 8000 ? xbc_joy[XBC_LY] : xbc_joy[XBC_LY] < -8000 ? xbc_joy[XBC_LY]:0;
 			xbc_joy[XBC_RX] = xbc_joy[XBC_RX] > 8000 ? xbc_joy[XBC_RX] : xbc_joy[XBC_RX] < -8000 ? xbc_joy[XBC_RX]:0;
 			xbc_joy[XBC_RY] = xbc_joy[XBC_RY] > 8000 ? xbc_joy[XBC_RY] : xbc_joy[XBC_RY] < -8000 ? xbc_joy[XBC_RY]:0;
-			*/
-			xbc_press = xbc_digital & ( xbc_digital ^ old_xbc_digital);
-			xbc_release = old_xbc_digital & ( xbc_digital ^ old_xbc_digital);
+      
 			error_xbc_data_cnt = 0;
 			return 1; //return vaild
 		}
 		else if (error_xbc_data_cnt >50 && !ck_flag){
-			xbc_digital = 0;
+			xbc_digital_raw = 0;
 			xbc_joy[XBC_LT] = 0; //lt max:255
 			xbc_joy[XBC_RT] = 0; //rt max:255
 			xbc_joy[XBC_LX] = 0;
@@ -177,11 +190,36 @@ u8 xbc_update(){
 		}
 
 		if (xbc_press & XBC_XBOX){
-			if (xbc_channel++ > 4)
+			if (xbc_channel++ > 4) {
 				xbc_channel = 1;
+      }
 		}
 
 	return 0;
+}
+
+void xbc_update(void) {
+  xbc_data_update();
+  
+  if (!get_xbc_mode()) {
+    xbc_digital_raw = 0;
+    xbc_joy[XBC_LT] = 0; //lt max:255
+    xbc_joy[XBC_RT] = 0; //rt max:255
+    xbc_joy[XBC_LX] = 0;
+    xbc_joy[XBC_LY] = 0;
+    xbc_joy[XBC_RX] = 0;
+    xbc_joy[XBC_RY] = 0;
+    xbc_press = 0;
+    xbc_release = 0;    
+  }
+  
+  old_xbc_digital = xbc_digital;
+  xbc_digital = xbc_digital_raw;
+  xbc_press = xbc_digital & (old_xbc_digital ^ xbc_digital);
+  xbc_release = old_xbc_digital & (old_xbc_digital ^ xbc_digital);
+  
+
+  led_control(LED_D3, (LED_STATE) get_xbc_mode());
 }
 
 
@@ -360,13 +398,14 @@ void TIM7_IRQHandler(void){
 		case 1: //waiting xbc trigger
 			if (transmit_mode == xbc_rx_mode && !GPIO_ReadInputDataBit(XBC_SPI_PORT,XBC_NSS)){
 				get_xbc_data();
+        //xbc_data_update();
 				disconnect_cnt = 0;
 				xbc_mode = 1;
 			}
 			else if (transmit_mode == tft_tx_mode && !GPIO_ReadInputDataBit(XBC_SPI_PORT,XBC_NSS)){ //send tft to xbc
 				xbc_tft_transmit();
 				disconnect_cnt = 0;
-				xbc_mode = 1;
+				xbc_mode = 2;
 			}
 			else{
 				//transmit_state++;

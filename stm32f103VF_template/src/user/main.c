@@ -14,13 +14,15 @@ int main(void)
 	buzzer_init();
 	button_init();
 	led_init();
-	tft_init(2, WHITE, BLACK, RED);
+	tft_init(0, WHITE, BLACK, RED);
 	gyro_init();
+  xbc_init(1);
 	battery_adc_init();
 	can_init();
 	can_rx_init();
   can_motor_init();
 	bluetooth_init();
+  
 	wheel_base_init();
   ultrasonic_init();
 
@@ -40,7 +42,7 @@ int main(void)
 	menu_add("UART test", uart_test);
   menu_add("Ultra. test", ultra_test);
   
-	menu(0, false);
+	menu(6, false);
 	
 }
 

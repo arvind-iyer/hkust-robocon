@@ -8,6 +8,7 @@
 #include "delay.h"
 #include "tft.h"
 #include "ticks.h"
+#include "led.h"
 
 #define XBC_SPI			SPI2
 #define XBC_NSS 		GPIO_Pin_12
@@ -33,6 +34,7 @@
 #define XBC_TFT_COMPLETE_LINE 0x90
 #define XBC_DATA_LENGTH 20
 
+#define XBC_DISCONNECT_MS   1500
 /***********************************************/
 /* 
  * xbox controller digital signal 
@@ -46,14 +48,14 @@
 #define XBC_BACK	0x0020
 #define XBC_L_JOY	0x0080
 #define XBC_R_JOY	0x0040
-
-#define XBC_A		0x1000
-#define XBC_B		0x2000
-#define XBC_X		0x4000
-#define XBC_Y		0x8000
 #define XBC_LB		0x0100
 #define XBC_RB		0x0200
 #define XBC_XBOX	0x0400
+#define XBC_A		  0x1000
+#define XBC_B		  0x2000
+#define XBC_X		  0x4000
+#define XBC_Y		  0x8000
+
 
 //bottom buttons
 #define L_BUT1	0x010000
@@ -90,7 +92,9 @@ extern volatile u32 xbc_press; // trigger after button pressed
 extern volatile u32 xbc_release; // trigger after button released
 extern u8 volatile xbc_mode; // 0 disconnect, 1 connect
 extern u8 running;
-u8 xbc_update(void);
+u8 xbc_data_update(void);
+
+void xbc_update(void);
 /*******************************************/
 
 /************/

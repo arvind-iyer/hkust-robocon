@@ -204,7 +204,8 @@ static void check_usb_connection(u8 restart_flag)
    }
 }
 
-int main(void){
+int main(void)
+{
 	
 	u8 temp = 0;	
 	u8 i = 0;
@@ -236,6 +237,8 @@ int main(void){
 	buzzer_control_note(1,200, NOTE_C, 7);	
 	tft_prints(0, 0, "STM32 Init OK!!...");
 	tft_update();
+  
+  _delay_ms(200);
 	spi_init();
   xbc_chip_deselect();
   
