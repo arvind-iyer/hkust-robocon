@@ -4,13 +4,13 @@ static u8 state = 0;
 static u8 phase = CH376_TKN_PHASE_DATA1;
 static u8 xbc_data[XBC_DATA_COUNT] = {0};
 static u32 xbc_lcd_data_rx_time_ms = CAN_XBC_LCD_UPDATE_TRIVIAL_TIME;
-
+static u16 battery_val = 0;
 static XBC_LCD_DATA xbc_lcd_data[CHAR_MAX_X_VERTICAL][CHAR_MAX_Y_VERTICAL],
   xbc_lcd_data_prev[CHAR_MAX_X_VERTICAL][CHAR_MAX_Y_VERTICAL];
   
 static void xbc_rx_decoding(CanRxMsg msg)
 {
-  if ((msg.StdId & 0xF00) == (CAN_XBC_MB_TX_ID & 0xF00)) {
+  if ((msg.StdId & 0xF00) == (CAN_XBC_MB_TX_LCD_ID & 0xF00)) {
     u8 x = (msg.StdId >> 4) & 0x0F;
     u8 y = msg.StdId & 0x0F;
     u16 color = msg.Data[0];
@@ -41,9 +41,17 @@ static void xbc_rx_decoding(CanRxMsg msg)
   }
 }
 
+static void xbc_battery_rx_decoding(CanRxMsg msg) 
+{
+  if ((msg.StdId & 0xF00) == (CAN_XBC_MB_TX_BATTERY_ID & 0xF00)) {
+    battery_val = msg.StdId & 0x0FF;
+  }
+}
+
 void xbc_rx_init(void)
 {
-  can_rx_add_filter(CAN_XBC_MB_TX_ID, 0x700, xbc_rx_decoding);
+  can_rx_add_filter(CAN_XBC_MB_TX_LCD_ID, 0x700, xbc_rx_decoding);
+  can_rx_add_filter(CAN_XBC_MB_TX_BATTERY_ID, 0x700, xbc_battery_rx_decoding);
 }
 
 u8 get_xbc_data(u8 i) 
@@ -68,14 +76,14 @@ void xbc_tx_data(void)
       msg[id].length++;
       msg[id].id = CAN_XBC_BASE + id;
     }
-
+    
     for (u8 i = 0; i < sizeof(msg) / sizeof(CAN_MESSAGE); ++i) {
       can_tx_enqueue(msg[i]);
     }
   } else {
     // Disconnected
     CAN_MESSAGE msg;
-    msg.id = 0x90;
+    msg.id = CAN_XBC_BASE + 0;
     msg.length = 0;
     can_tx_enqueue(msg); 
   }
@@ -166,6 +174,9 @@ u8 xbc_rx_lcd_update(void)
       }
     }
     
+    if (battery_val) {
+      draw_battery_icon(battery_val); 
+    }
     return 1;
   }
   

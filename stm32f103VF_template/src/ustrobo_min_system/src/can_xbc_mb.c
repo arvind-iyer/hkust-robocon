@@ -4,6 +4,7 @@ static u32 xbc_digital = 0;
 static s16 xbc_joy[XBC_JOY_COUNT] = {0};
 static u32 last_can_connection = 0;
 static XBC_CONNECTION_MODE xbc_connection = XBC_DISCONNECTED;
+static bool xbc_mb_tx_flag = false;
 
 static XBC_LCD_DATA xbc_lcd_data[CHAR_MAX_X_VERTICAL][CHAR_MAX_Y_VERTICAL],
   xbc_lcd_data_prev[CHAR_MAX_X_VERTICAL][CHAR_MAX_Y_VERTICAL];
@@ -36,9 +37,14 @@ static void can_xbc_mb_decoding(CanRxMsg msg)
       break;
     }
 }
-  
+
+
+
 XBC_CONNECTION_MODE xbc_get_connection(void)
 {
+  if (get_full_ticks() - last_can_connection >= CAN_XBC_CONNECTION_TIMEOUT_MS) {
+    xbc_connection = XBC_DISCONNECTED;
+  }
   return xbc_connection;
 }
 
@@ -99,9 +105,13 @@ void can_xbc_mb_init(void)
       }
     }
     
-    tft_update_trigger(can_xbc_mb_tx);
+    tft_update_trigger(can_xbc_mb_lcd_tx);
 }
 
+void can_xbc_mb_tx_enable(bool flag)
+{
+  xbc_mb_tx_flag = flag;  
+}
 
 static u8 xbc_lcd_data_diff(XBC_LCD_DATA* data1, XBC_LCD_DATA* data2) 
 {
@@ -117,18 +127,19 @@ static u8 xbc_lcd_data_color_diff(XBC_LCD_DATA* data1, XBC_LCD_DATA* data2)
   if (data1 == 0 || data2 == 0) {
     return 0;
   } else {
-    return (data1->color != data2->color /*&& data2->text != ' '*/) || (data1->bg_color != data2->bg_color);
+    return (data1->color != data2->color) || (data1->bg_color != data2->bg_color);
   }
 }
 
 
 
-void can_xbc_mb_tx(void)
+void can_xbc_mb_lcd_tx(void)
 {
+  if (!xbc_mb_tx_flag) {return;}
   bool package_tx_pending = false;
   u8 text_in_package = 0;
   CAN_MESSAGE msg;
-  msg.id = CAN_XBC_MB_TX_ID;
+  msg.id = CAN_XBC_MB_TX_LCD_ID;
   msg.length = 2;
   
   XBC_LCD_DATA* last_tx_data = 0;
@@ -153,7 +164,7 @@ void can_xbc_mb_tx(void)
         }
               
         text_in_package = 0;
-        msg.id = (CAN_XBC_MB_TX_ID & 0xF00) | ((x << 4) & 0xF0) | (y & 0x0F);
+        msg.id = (CAN_XBC_MB_TX_LCD_ID & 0xF00) | ((x << 4) & 0xF0) | (y & 0x0F);
         /*** DATA[0] - COLOR in RGB232***/
         msg.data[0] = RGB565TORGB323(data->color);
         /*** DATA[2] - BG_COLOR in RGB232 ***/
@@ -177,3 +188,14 @@ void can_xbc_mb_tx(void)
   }
   
 }
+
+
+void can_xbc_mb_battery_tx(u16 battery_val)
+{
+  if (!xbc_mb_tx_flag) {return;}
+  CAN_MESSAGE msg;
+  msg.id = (CAN_XBC_MB_TX_BATTERY_ID & 0xF00) | (battery_val & 0xFF);
+  msg.length = 0;   
+  can_tx_enqueue(msg);
+}
+

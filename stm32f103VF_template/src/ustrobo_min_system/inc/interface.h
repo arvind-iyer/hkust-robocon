@@ -70,6 +70,7 @@ typedef struct {
 
 void system_start(u16 duration);
 void battery_regular_check(void);
+void draw_battery_icon(u16 batt);
 void draw_top_bar(void);
 void menu(u8 default_id, bool pre_enter);
 void menu_add(const char* title, void (*fx)(void));

@@ -8,9 +8,11 @@
 #include "tft.h"
 
 
-#define CAN_XBC_BASE        0x090
-#define CAN_XBC_MB_TX_ID    0x100
+#define CAN_XBC_BASE                0x090
+#define CAN_XBC_MB_TX_LCD_ID        0x100
+#define CAN_XBC_MB_TX_BATTERY_ID    0x200
 
+#define CAN_XBC_CONNECTION_TIMEOUT_MS   200
 
 #define RGB565TORGB323(RGB565)  (((RGB565 >> 8) & 0xE0) | ((RGB565 >> 6) & 0x18) | ((RGB565 >> 2) & 0x07))
 #define RGB323TORGB565(RGB323)  (((((RGB323 >> 5) & 0x07) * 0x1F / 0x07) << 11) | ((((RGB323 >> 3) & 0x03) * 0x3F / 0x03) << 5) | (((RGB323) & 0x07) * 0x1F / 0x07))
@@ -43,12 +45,13 @@ typedef struct {
 } XBC_LCD_DATA;
 
 void can_xbc_mb_init(void);
+void can_xbc_mb_tx_enable(bool flag);
 XBC_CONNECTION_MODE xbc_get_connection(void);
 u32 xbc_get_digital(void);
 
 s16 xbc_get_joy_raw(XBC_JOY j);
 s16 xbc_get_joy(XBC_JOY j);
-void can_xbc_mb_tx(void);
-
+void can_xbc_mb_lcd_tx(void);
+void can_xbc_mb_battery_tx(u16 battery_val);
 #endif  /* __CAN_XBC_H */
 

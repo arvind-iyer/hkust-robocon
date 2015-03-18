@@ -414,11 +414,6 @@
               <FilePath>.\src\user\buzzer_song.c</FilePath>
             </File>
             <File>
-              <FileName>main.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>.\src\user\main.c</FilePath>
-            </File>
-            <File>
               <FileName>robocon.c</FileName>
               <FileType>1</FileType>
               <FilePath>.\src\user\robocon.c</FilePath>
@@ -465,6 +460,11 @@
                   </Cads>
                 </FileArmAds>
               </FileOption>
+            </File>
+            <File>
+              <FileName>main.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\src\user\main.c</FilePath>
             </File>
             <File>
               <FileName>ch376_driver.c</FileName>
@@ -581,6 +581,11 @@
               <FileName>xbc.c</FileName>
               <FileType>1</FileType>
               <FilePath>.\src\user\xbc.c</FilePath>
+            </File>
+            <File>
+              <FileName>interface.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\src\user\interface.c</FilePath>
             </File>
           </Files>
         </Group>

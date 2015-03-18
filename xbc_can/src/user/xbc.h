@@ -11,7 +11,9 @@
 #define XBC_DATA_COUNT        13
 
 #define CAN_XBC_BASE                0x90
-#define CAN_XBC_MB_TX_ID            0x100
+#define CAN_XBC_MB_TX_LCD_ID        0x100
+#define CAN_XBC_MB_TX_BATTERY_ID    0x200
+
 #define CAN_XBC_LCD_IDLE_TIME_MS    1500
 #define CAN_XBC_LCD_UPDATE_TRIVIAL_TIME             1
 

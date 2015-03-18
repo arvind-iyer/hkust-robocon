@@ -64,8 +64,8 @@ void reset_all_pin(void){
 	GPIO_InitStructure.GPIO_Pin = GPIO_Pin_11;
 	GPIO_Init(GPIOC, &GPIO_InitStructure);
 	
-	GPIO_InitStructure.GPIO_Pin = XBC_CTL_AO | XBC_CTL_RD | XBC_CTL_WR | XBC_CTL_PCS ;	
-	GPIO_Init(GPIOB, &GPIO_InitStructure);
+	//GPIO_InitStructure.GPIO_Pin = XBC_CTL_AO | XBC_CTL_RD | XBC_CTL_WR | XBC_CTL_PCS ;	
+	//GPIO_Init(GPIOB, &GPIO_InitStructure);
 	
 	GPIO_InitStructure.GPIO_Pin = CH376_HW_RST | CH376_INT_N;	//hardware reset pin 
 	GPIO_Init(GPIOA, &GPIO_InitStructure);

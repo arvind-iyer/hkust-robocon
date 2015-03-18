@@ -229,18 +229,18 @@ int main(void)
  *init ch376 board and xbox controller*
  **************************************/	
 	reset_all_pin(); //set all pin into floating, a trigger to reset ch376 & xbox controller
-	enable_bt_printf(COM1);	
+	//enable_bt_printf(COM1);	
 	tft_init(0, WHITE, BLACK, RED);
 	ticks_init();
 	buzzer_init();
   buzzer_set_note_period(get_note_period(NOTE_C, 5));
 	buzzer_control_note(1,200, NOTE_C, 7);	
-	tft_prints(0, 0, "STM32 Init OK!!...");
-	tft_update();
+	//tft_prints(0, 0, "STM32 Init OK!!...");
+	//tft_update();
   
-  _delay_ms(200);
-	spi_init();
-  xbc_chip_deselect();
+  //_delay_ms(200);
+	//spi_init();
+ // xbc_chip_deselect();
   
   
 	usb_init();
@@ -249,7 +249,9 @@ int main(void)
 	
 	buzzer_control_note(2,60, NOTE_E, 7);
 	
-	while(!set_xbc_config(1)); /* turn on one rumble */	
+	while(!set_xbc_config(4)); /* turn on one rumble */	
+  
+  while(1);
 	tft_clear();
 	tft_prints(0, 0, "XBC Init OK!!...");
 	tft_prints(0, 1, "SPI CONNECTING...");
@@ -436,14 +438,7 @@ u8 exist;
 		break;
 	}
 	printf("init2\r\n");
-	while(1){
-	/* config xbox controller via ch376 */	
-		if (usb_main_loop() == USB_STATE_CONFIGURED) {
-			break;		
-    } else {
-      check_usb_connection(0);
-    }
-	}
+	while(usb_main_loop() != USB_STATE_CONFIGURED);
 	tft_prints(0, 0, "init xbc..OK!");
 	tft_update();
 }

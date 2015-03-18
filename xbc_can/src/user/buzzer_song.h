@@ -4,7 +4,7 @@
 #include "buzzer.h"
 
 extern const MUSIC_NOTE START_UP[];
-extern const MUSIC_NOTE CONNECTED[];
+extern const MUSIC_NOTE CONNECTED_SOUND[];
 extern const MUSIC_NOTE SUCCESSFUL_SOUND[];
 extern const MUSIC_NOTE FAIL_SOUND[];
 extern const MUSIC_NOTE BIRTHDAY_SONG[];

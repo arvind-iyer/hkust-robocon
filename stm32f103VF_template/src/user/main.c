@@ -22,6 +22,7 @@ int main(void)
 	can_rx_init();
   can_motor_init();
   can_xbc_mb_init();
+  can_xbc_mb_tx_enable(true); 
 	bluetooth_init();
   
 	wheel_base_init();

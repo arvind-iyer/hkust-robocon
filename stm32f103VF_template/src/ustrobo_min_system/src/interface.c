@@ -124,8 +124,9 @@ void battery_regular_check(void)
 	* @param batt: The battery level in voltage times 10 (122 for 12.2V)
 	* @retval None
 	*/
-static void draw_battery_icon(u16 batt)
+void draw_battery_icon(u16 batt)
 {
+  
 	u8 pos = (tft_get_orientation() % 2 ? MAX_HEIGHT : MAX_WIDTH);
 	u16 batt_color = 0, batt_boundary = 0;
 	u16 batt_w = 0;
@@ -165,6 +166,7 @@ static void draw_battery_icon(u16 batt)
 		tft_put_pixel(pos-4, 5+i, batt_boundary);
 		tft_put_pixel(pos-3, 5+i, batt_boundary);
 	}
+  
 }
 
 /**
@@ -300,9 +302,7 @@ void menu(u8 default_id, bool pre_enter)
 				tft_set_bg_color(prev_bg_color);
 				tft_set_text_color(prev_text_color);
 				tft_update();
-        
-        // Send monitor data to XBC
-        can_xbc_mb_tx(); 
+   
 			}
 		}
 	}

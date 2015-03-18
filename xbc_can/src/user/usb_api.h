@@ -44,6 +44,8 @@
 
 
 void usb_init(void);
+void reset_xbc(u8 i);
+u8 get_xbc_id(void);
 u8 usb_main_loop(void);
 u8 check_ch376_usb_conn(void);
 u8 usb_get_state(void);
@@ -69,7 +71,7 @@ u8 	 check_usb_data_buff(void);
 u8 read_tkn_status(void);
 u8 get_usb_state(void);
 void tracking_xbc(void);
-
+void xbc_config (u8 function);
 u8 set_xbc_config(u8 function);// 1: setting success, 0 not ok yet
 //extern u8 is_usb_ready;
 

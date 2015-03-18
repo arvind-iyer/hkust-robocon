@@ -33,6 +33,7 @@
 #include "ultrasonic.h"
 #include "usb_api.h"
 #include "xbc.h"
+#include "buzzer_song.h"
 
 
 #endif /* __MAIN_H */
