@@ -245,8 +245,8 @@
       <Focus>0</Focus>
       <tvExpOptDlg>0</tvExpOptDlg>
       <bDave2>0</bDave2>
-      <PathWithFileName>.\src\user\wheel_base.c</PathWithFileName>
-      <FilenameWithoutPath>wheel_base.c</FilenameWithoutPath>
+      <PathWithFileName>.\src\user\ch376_driver.c</PathWithFileName>
+      <FilenameWithoutPath>ch376_driver.c</FilenameWithoutPath>
       <RteFlg>0</RteFlg>
       <bShared>0</bShared>
     </File>
@@ -258,8 +258,8 @@
       <Focus>0</Focus>
       <tvExpOptDlg>0</tvExpOptDlg>
       <bDave2>0</bDave2>
-      <PathWithFileName>.\src\user\wheel_base_pid.c</PathWithFileName>
-      <FilenameWithoutPath>wheel_base_pid.c</FilenameWithoutPath>
+      <PathWithFileName>.\src\user\wheel_base.c</PathWithFileName>
+      <FilenameWithoutPath>wheel_base.c</FilenameWithoutPath>
       <RteFlg>0</RteFlg>
       <bShared>0</bShared>
     </File>
@@ -271,8 +271,8 @@
       <Focus>0</Focus>
       <tvExpOptDlg>0</tvExpOptDlg>
       <bDave2>0</bDave2>
-      <PathWithFileName>.\src\user\ch376_driver.c</PathWithFileName>
-      <FilenameWithoutPath>ch376_driver.c</FilenameWithoutPath>
+      <PathWithFileName>.\src\user\wheel_base_pid.c</PathWithFileName>
+      <FilenameWithoutPath>wheel_base_pid.c</FilenameWithoutPath>
       <RteFlg>0</RteFlg>
       <bShared>0</bShared>
     </File>
@@ -327,7 +327,7 @@
       <GroupNumber>2</GroupNumber>
       <FileNumber>10</FileNumber>
       <FileType>1</FileType>
-      <tvExp>0</tvExp>
+      <tvExp>1</tvExp>
       <Focus>0</Focus>
       <tvExpOptDlg>0</tvExpOptDlg>
       <bDave2>0</bDave2>
@@ -405,7 +405,7 @@
       <GroupNumber>2</GroupNumber>
       <FileNumber>16</FileNumber>
       <FileType>1</FileType>
-      <tvExp>0</tvExp>
+      <tvExp>1</tvExp>
       <Focus>0</Focus>
       <tvExpOptDlg>0</tvExpOptDlg>
       <bDave2>0</bDave2>

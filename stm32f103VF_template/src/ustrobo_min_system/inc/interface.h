@@ -12,6 +12,7 @@
 #include "tft.h"
 #include "led.h"
 #include "xbc_mb.h"
+#include "can_xbc_mb.h"
 
 #define MENU_LIST_MAX			20
 

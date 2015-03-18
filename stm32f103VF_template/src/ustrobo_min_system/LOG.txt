@@ -6,7 +6,9 @@
   * Last update: 15th March 
  ******************************************************************************
   */
-  
+ 
+/** Version 1.5.1 (18th March, 2015 **/
+- XBox library II (mainboard LCD to xbc done) done.
 /** Version 1.5 (18th March, 2015) **/
 - XBox library I (xbc to mainboard done) done.
 

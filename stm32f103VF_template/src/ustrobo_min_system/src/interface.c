@@ -14,7 +14,7 @@ static MENU_ITEM menu_list[MENU_LIST_MAX];
 	*/
 void system_start(u16 duration)
 {
-  const char* title = "Robocon 2015  Min System 1.4";
+  const char* title = "Robocon 2015  Min System 1.5";
   
 	led_control((LED) (LED_D1 | LED_D2 | LED_D3), LED_ON);
 	tft_clear();
@@ -300,6 +300,9 @@ void menu(u8 default_id, bool pre_enter)
 				tft_set_bg_color(prev_bg_color);
 				tft_set_text_color(prev_text_color);
 				tft_update();
+        
+        // Send monitor data to XBC
+        can_xbc_mb_tx(); 
 			}
 		}
 	}

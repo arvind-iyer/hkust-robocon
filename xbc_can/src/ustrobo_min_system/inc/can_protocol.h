@@ -19,7 +19,7 @@
 #define CAN_GPIO_RCC			RCC_APB2Periph_GPIOA
 
 /*** CAN TX CONST ***/
-#define CAN_TX_QUEUE_MAX_SIZE				200
+#define CAN_TX_QUEUE_MAX_SIZE				500
 #define	CAN_TX_IRQn									USB_HP_CAN1_TX_IRQn
 #define CAN_TX_IRQHander						void USB_HP_CAN1_TX_IRQHandler(void)
 
