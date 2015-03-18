@@ -185,8 +185,8 @@ void racket_init(void)
 	register_special_char_function('l', serving);
 	register_special_char_function('n', set_fast_calibrate_mode);
 	register_special_char_function('m', set_slow_calibrate_mode);
-	register_special_char_function('k', up_racket_cmd);
-	register_special_char_function(';', up_racket_calibrate);
+//	register_special_char_function('k', up_racket_cmd);
+//	register_special_char_function(';', up_racket_calibrate);
 	
 	
 	register_special_char_function('=', increase_racket_speed); // +
