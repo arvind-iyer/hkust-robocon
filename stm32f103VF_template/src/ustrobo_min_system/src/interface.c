@@ -428,3 +428,7 @@ u32 tft_ui_get_val(const TFT_UI_ITEM* const item)
   return 0; 
 }
 
+u8 return_listener(void)
+{
+  return button_pressed(BUTTON_1) == 2 || button_pressed(BUTTON_2) == 2;
+}

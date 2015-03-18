@@ -16,7 +16,7 @@ void battery_test(void)
 			}
 			
       if (ticks_img % 20 == 1) {
-          xbc_update();
+          //xbc_update();
       }
       
 			if (ticks_img % 50 == 3) {
@@ -50,7 +50,7 @@ void bluetooth_test(void)
 			}
       
       if (ticks_img % 20 == 1) {
-        xbc_update();
+        //xbc_update();
       }
 			
 			if (ticks_img % 50 == 3) {
@@ -88,7 +88,7 @@ void ascii_test(void)
 			}
 			
       if (ticks_img % 20 == 1) {
-        xbc_update();
+        //xbc_update();
       }
       
 			if (ticks_img % 50 == 3) {
@@ -186,7 +186,7 @@ void motor_test(void)
 			}
 			
       if (ticks_img % 20 == 1) {
-        xbc_update();
+        //xbc_update();
       }
       
 			if (ticks_img % 50 == 3) {
@@ -268,7 +268,7 @@ void position_test(void)
 			}
 			
       if (ticks_img % 20 == 1) {
-        xbc_update();
+        //xbc_update();
       }
       
 			if (ticks_img % 50 == 3) {
@@ -326,7 +326,7 @@ void button_test(void)
 			}
       
       if (ticks_img % 20 == 1) {
-        xbc_update();
+        //xbc_update();
       }
 
 			if (ticks_img % 50 == 3) {
@@ -435,7 +435,7 @@ void buzzer_test(void)
 			}
 			
       if (ticks_img % 20 == 1) {
-        xbc_update();
+        //xbc_update();
       }
       
 			if (ticks_img % 50 == 3) {
@@ -563,7 +563,7 @@ void can_test(void)
       }
       
       if (ticks_img % 20 == 1) {
-          xbc_update();
+          //xbc_update();
       }
       
       if (ticks_img % 50 == 3) {
@@ -633,11 +633,6 @@ void can_test(void)
 
 void xbc_test(void)
 {
-	u8	pressed_cnt = 0;
-	u16 press_times = 0;
-	u32 pre_xbc_press = 0;
-  u32 curr_button = XBC_START;
-  char* curr_stage_msg = "";
 	while (true) {
 		if (ticks_img != get_ticks()) {
 			ticks_img = get_ticks();
@@ -645,155 +640,31 @@ void xbc_test(void)
 				battery_adc_update();
 			}
       if (ticks_img % 20 == 1) {
-        xbc_update();
+        //xbc_update();
       }
 			if (ticks_img % 20 == 3) {
 				button_update();
 				if (return_listener()) {
 					return; 
 				}
-				// Skip or backward
-				if (button_pressed(BUTTON_1) == 1 && pressed_cnt > 0) {
-					--pressed_cnt;
-				}
-				if (button_pressed(BUTTON_2) == 1 && pressed_cnt < 19) {
-					++pressed_cnt;
-				}
 			}
 			
-      if (ticks_img % 20 == 1) {
-          xbc_update();
-      }
       
 			if (ticks_img % 50 == 6){
-				pre_xbc_press = xbc_press;
 				tft_clear();
-        
-				switch (pressed_cnt) {
-					case 0:	
-						curr_stage_msg = "PRESS [START]";
-						curr_button = XBC_START;
-					break;
 
-					case 1:
-						curr_stage_msg = "PRESS [UP]";
-						curr_button =  XBC_UP;
-					break;
-
-					case 2:
-						curr_stage_msg = "PRESS [DOWN]   ";
-						curr_button =  XBC_DOWN;
-					break;
-
-					case 3:
-						curr_stage_msg = "PRESS [LEFT]   ";
-						curr_button =  XBC_LEFT;
-					break;
-
-					case 4:
-						curr_stage_msg = "PRESS [RIGHT]   ";
-						curr_button =  XBC_RIGHT;
-					break;
-
-					case 5:
-						curr_stage_msg = "PRESS [BACK]   ";
-						curr_button =  XBC_BACK;
-					break;
-
-					case 6:
-						curr_stage_msg = "PRESS [A]     ";
-						curr_button =  XBC_A;
-					break;
-
-					case 7:
-						curr_stage_msg = "PRESS [B]    ";
-						curr_button =  XBC_B;
-					break;
-
-					case 8:
-						curr_stage_msg = "PRESS [X]    ";
-						curr_button =  XBC_X;
-					break;
-
-					case 9:
-						curr_stage_msg = "PRESS [Y]     ";
-						curr_button =  XBC_Y;
-					break;
-
-					case 10:
-						curr_stage_msg = "PRESS [LB ]   ";
-						curr_button =  XBC_LB;
-					break;
-
-					case 11:
-						curr_stage_msg = "PRESS [RB ]   ";
-						curr_button =  XBC_RB;
-					break;
-
-					case 12:
-						curr_stage_msg = "PRESS [XBOX  ]   ";
-						curr_button =  XBC_XBOX;
-					break;
-
-					case 13:
-						curr_stage_msg = "[L BUTTON 1]";
-						curr_button =  L_BUT1;
-					break;
-
-					case 14:
-						curr_stage_msg = "[L BUTTON 2]";
-						curr_button =  L_BUT2;
-					break;
-
-					case 15:
-						curr_stage_msg = "[L BUTTON 3]";
-						curr_button =  L_BUT3;
-					break;
-
-					case 16:
-						curr_stage_msg = "[R BUTTON 1]";
-						curr_button =  R_BUT1;
-					break;
-
-					case 17:
-						curr_stage_msg = "[R BUTTON 2]";
-						curr_button =  R_BUT2;
-					break;
-
-					case 18:
-						curr_stage_msg = "[R BUTTON 3]";
-						curr_button =  R_BUT3;
-					break;
-
-					case 19:
-						curr_stage_msg = "press [BACK] exit";
-						tft_prints(0,3,"KEY TEST OK");
-						if (xbc_press & XBC_BACK) {
-							return;
-						}
-          break;
-				}
-        
-        
-        if (xbc_press & curr_button) {
-          ++pressed_cnt;
-          SUCCESSFUL_MUSIC;
-        }
-        
-				if (xbc_press != pre_xbc_press && xbc_press != 0) {
-					++press_times;
-				}
         
 				draw_top_bar();
-				tft_prints(0,1,"XBOX TEST (%d/%d)", get_xbc_mode(), xbc_mode); 
-        tft_prints(0,2,curr_stage_msg);
-        tft_prints(0,3,"Buttons:%X",xbc_digital);
-				tft_prints(0,4,"LT:%3ld RT:%3ld",xbc_joy[XBC_LT],xbc_joy[XBC_RT]);
-				tft_prints(0,5,"LX:%5ld",xbc_joy[XBC_LX]);
-				tft_prints(0,6,"LY:%5ld",xbc_joy[XBC_LY]);
-				tft_prints(0,7,"RX:%5ld",xbc_joy[XBC_RX]);
-				tft_prints(0,8,"RY:%5ld",xbc_joy[XBC_RY]);
-				tft_prints(0,9,"press cnt:%3d",press_times); //normally press once count up 1
+				tft_prints(0,1,"XBOX TEST"); 
+        tft_prints(0,2,"Connection: %d", xbc_get_connection());
+        tft_prints(0,3,"Buttons:0x%04X",xbc_get_digital());
+				tft_prints(0,4,"LT:%3ld(%5d)",xbc_get_joy(XBC_JOY_LT),xbc_get_joy_raw(XBC_JOY_LT));
+        tft_prints(0,5,"RT:%3ld(%5d)",xbc_get_joy(XBC_JOY_RT),xbc_get_joy_raw(XBC_JOY_RT));
+				tft_prints(0,6,"LX:%5ld(%5d)",xbc_get_joy(XBC_JOY_LX),xbc_get_joy_raw(XBC_JOY_LX));
+				tft_prints(0,7,"LY:%5ld(%5d)",xbc_get_joy(XBC_JOY_LY),xbc_get_joy_raw(XBC_JOY_LY));
+				tft_prints(0,8,"RX:%5ld(%5d)",xbc_get_joy(XBC_JOY_RX),xbc_get_joy_raw(XBC_JOY_RX));
+				tft_prints(0,9,"RY:%5ld(%5d)",xbc_get_joy(XBC_JOY_RY),xbc_get_joy_raw(XBC_JOY_RY));
+				//tft_prints(0,9,"press cnt:%3d",press_times); //normally press once count up 1
 				tft_update();
 			}
 		}
@@ -831,7 +702,7 @@ void gpio_pin_test(void)
 		if (ticks_img != get_ticks()) {
 			ticks_img = get_ticks();
       if (ticks_img % 20 == 1) {
-       xbc_update();  
+       //xbc_update();  
       }
       
 			if (ticks_img % 50 == 3) {
@@ -987,7 +858,7 @@ void uart_test(void)
       }
       
       if (ticks_img % 20 == 1) {
-        xbc_update();
+        //xbc_update();
       }
       
       if (ticks_img % 50 == 3) {
@@ -1051,7 +922,7 @@ void ultra_test(void)
       }
       
       if (ticks_img % 20 == 0) {
-        xbc_update();
+        //xbc_update();
       }
       
       if (ticks_img % 50 == 3) {

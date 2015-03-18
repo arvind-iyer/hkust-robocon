@@ -12,7 +12,7 @@ u8 get_xbc_data(u8 i)
 
 void xbc_tx_data(void)
 {
-  /*
+  if (usb_connected()) {
     CAN_MESSAGE msg[XBC_DATA_COUNT / 8 + (XBC_DATA_COUNT % 8 > 0)] = {{.length = 0}};
 
     msg[0].length = 0; 
@@ -24,13 +24,21 @@ void xbc_tx_data(void)
       }
       msg[id].data[i % 8] = xbc_data[i];
       msg[id].length++;
-      msg[id].id = XBC_CAN_ID_BASE + id;
+      msg[id].id = CAN_XBC_BASE + id;
     }
 
     for (u8 i = 0; i < sizeof(msg) / sizeof(CAN_MESSAGE); ++i) {
       can_tx_enqueue(msg[i]);
     }
-    */
+  } else {
+    // Disconnected
+    CAN_MESSAGE msg;
+    msg.id = 0x90;
+    msg.length = 0;
+    can_tx_enqueue(msg); 
+  }
+  
+    /*
   CAN_MESSAGE msg[2];
   msg[0].length = 8;
   msg[0].id = XBC_CAN_ID_BASE + 0;
@@ -44,15 +52,14 @@ void xbc_tx_data(void)
     msg[1].data[i] = xbc_data[i + 8];
   }
  
+  */
 
-  can_tx_enqueue(msg[0]);
-  can_tx_enqueue(msg[1]);
   
 }
 
 void xbc_loop(void)
 {
-  if (usb_get_state() != USB_STATE_CONFIGURED) {
+  if (!usb_connected()) {
     state = 0;
     for (u8 i = 0; i < sizeof(xbc_data) / sizeof(u8); ++i) {
       xbc_data[i] = 0;

@@ -7,6 +7,9 @@
  ******************************************************************************
   */
   
+/** Version 1.5 (18th March, 2015) **/
+- XBox library I (xbc to mainboard done) done.
+
 /** Version 1.4 (15th March, 2015) **/
 - n_bytes_to_one() in can_protocol fixed!
 

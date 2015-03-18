@@ -21,7 +21,10 @@ int main(void)
 	can_init();
 	//can_rx_init();
   
-	buzzer_play_song(START_UP, 120, 0);
+	//buzzer_play_song(START_UP, 120, 0);
+  buzzer_control_note(1, 300, NOTE_A, 5);
+  
+  bool connection = false;
   
   while (1) {
     if (ticks_img != get_ticks()) {
@@ -29,11 +32,17 @@ int main(void)
   
       if (!usb_connected()) {
         // Faster loop if USB not connected
+        if (connection) {connection = false;}
         usb_main_loop();
-        if (ticks_img == 3) {
-          buzzer_control_note(2, 100, NOTE_Fs, 5);
+        if (get_seconds() >= 1 && ticks_img == 3) { 
+          buzzer_control_note(2, 100, NOTE_Fs, 3);
         }
       } else {
+        if (!connection) {
+          connection = true;
+          buzzer_play_song(CONNECTED, 120, 0);
+        }
+        
         if (ticks_img % 5 == 0) {
           usb_main_loop(); 
         }
@@ -41,6 +50,7 @@ int main(void)
         
       if (ticks_img % 20 == 2) {
         xbc_loop();
+        xbc_tx_data();
       }
       
       if (ticks_img % 20 == 4) {
@@ -55,10 +65,7 @@ int main(void)
         
         
       }
-      
-      if (ticks_img % 900 == 2) {
-        xbc_tx_data();
-      }
+
       
       
     }

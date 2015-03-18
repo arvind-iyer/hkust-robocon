@@ -70,7 +70,7 @@ void button_update(void)
       const GPIO* button = buttons[i];
       button_pressed = (gpio_read_input(button) == BUTTON_PRESSED);
     } else {
-      button_pressed = (xbc_digital & xbox_tmp) > 0;
+     // button_pressed = (xbc_digital & xbox_tmp) > 0;
       xbox_tmp <<= 1;
     }
     

@@ -16,11 +16,12 @@ int main(void)
 	led_init();
 	tft_init(0, WHITE, BLACK, RED);
 	gyro_init();
-  xbc_init(1);
+ 
 	battery_adc_init();
 	can_init();
 	can_rx_init();
   can_motor_init();
+  can_xbc_mb_init();
 	bluetooth_init();
   
 	wheel_base_init();

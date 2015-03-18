@@ -7,7 +7,7 @@
 #define XBC_DATA_RAW_COUNT    20
 #define XBC_DATA_COUNT        13
 
-#define XBC_CAN_ID_BASE   0x90
+#define CAN_XBC_BASE   0x90
 
 u8 get_xbc_data(u8 i);
 void xbc_tx_data(void);

@@ -16,7 +16,7 @@
 #include "led.h"
 #include "tft.h"
 #include "interface.h"
-#include "xbc_mb.h"
+#include "can_xbc_mb.h"
 #include "button.h"
 #include "encoder.h"
 #include "system_test.h"
