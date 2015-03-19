@@ -336,15 +336,8 @@ UINT __cdecl xbox_write_thread(LPVOID app_ptr)
 						AfxGetApp()->GetMainWnd()->PostMessage(UWM_PRINT_OUTPUT_FROM_WRITE, 0, (LPARAM)new std::basic_string<TCHAR>(string_to_write.str()));
 					}
 				}
-
-				if (xbc_digital || lx != 0 || ly != 0 || lt != 0 || rt != 0) {
-					(*serial)->write(RobotMCtrl().xbox_keys_part1(xbc_digital, lt, rt, lx, ly));
-				}
-
-				if (rx != 0 || ry != 0)
-				{
-					(*serial)->write(RobotMCtrl().xbox_keys_part2(rx, ry));
-				}
+				(*serial)->write(RobotMCtrl().xbox_keys_part1(xbc_digital, lt, rt, lx, ly));
+				(*serial)->write(RobotMCtrl().xbox_keys_part2(rx, ry));
 			}
 			Sleep(10);
 		}
