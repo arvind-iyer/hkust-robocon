@@ -13,6 +13,8 @@ public:
 	std::pair<std::vector<int>, BOOL> read(std::string string_received);
 	std::string pid_toggle(BOOL pid);
 	std::string special_keys(char key_to_send);
+	std::string xbox_keys_part1(unsigned short xbox_digital, BYTE left_trigger, BYTE right_trigger, SHORT left_joy_x, SHORT left_joy_y);
+	std::string xbox_keys_part2(SHORT right_joy_x, SHORT right_joy_y);
 	~RobotMCtrl();
 };
 

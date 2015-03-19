@@ -248,6 +248,49 @@ std::string RobotMCtrl::special_keys(char key_to_send)
 	return o.str();
 }
 
+std::string RobotMCtrl::xbox_keys_part1(unsigned short xbox_digital, BYTE left_trigger, BYTE right_trigger, SHORT left_joy_x, SHORT left_joy_y)
+{
+	char soh = 0x12;
+	unsigned char id = 0x90;
+	char data_length = 0x08;
+	char data[8] = { (xbox_digital >> 8) & 0xFF, xbox_digital & 0xFF, left_trigger & 0xFF, right_trigger & 0xFF, (static_cast<unsigned short>(left_joy_x) >> 8) & 0xFF, static_cast<unsigned short>(left_joy_x) & 0xFF, (static_cast<unsigned short>(left_joy_y) >> 8) & 0xFF, static_cast<unsigned short>(left_joy_y) & 0xFF };
+	char buffer[2] = { 0, 0 };
+	char eot = 0x34;
+	crc16(buffer, data, 8);
+
+	// construct string to send
+	std::stringstream o;
+	o << soh << static_cast<char>(id) << data_length;
+
+	for (int i = 0; i < 8; ++i)
+	{
+		o << data[i];
+	}
+	o << static_cast<char>(id) << buffer[0] << buffer[1] << eot;
+	return o.str();
+}
+
+std::string RobotMCtrl::xbox_keys_part2(SHORT right_joy_x, SHORT right_joy_y)
+{
+	char soh = 0x12;
+	unsigned char id = 0x91;
+	char data_length = 0x04;
+	char data[4] = { (static_cast<unsigned short>(right_joy_x) >> 8) & 0xFF, static_cast<unsigned short>(right_joy_x) & 0xFF, (static_cast<unsigned short>(right_joy_y) >> 8) & 0xFF, static_cast<unsigned short>(right_joy_y) & 0xFF };
+	char buffer[2] = { 0, 0 };
+	char eot = 0x34;
+	crc16(buffer, data, 4);
+	// construct string to send
+	std::stringstream o;
+	o << soh << static_cast<char>(id) << data_length;
+
+	for (int i = 0; i < 4; ++i)
+	{
+		o << data[i];
+	}
+
+	o << static_cast<char>(id) << buffer[0] << buffer[1] << eot;
+	return o.str();
+}
 
 RobotMCtrl::~RobotMCtrl()
 {
