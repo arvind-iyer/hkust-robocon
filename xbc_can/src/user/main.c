@@ -29,7 +29,7 @@ int main(void)
   //init_xbc_board();
   
 	//buzzer_play_song(START_UP, 120, 0);
-  buzzer_control_note(1, 300, NOTE_A, 5);
+  buzzer_control_note(1, 300, NOTE_G, 4);
   
   
   
