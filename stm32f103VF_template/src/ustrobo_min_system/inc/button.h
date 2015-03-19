@@ -6,7 +6,18 @@
 #include "gpio.h"
 #include "stm32f10x_tim.h"
 #include "tft.h"
-#include "xbc_mb.h"
+#include "can_xbc_mb.h"
+
+/*****/
+#define BUTTON_DOWN_LISTENER()    (button_pressed(BUTTON_JS2_DOWN) == 1 || button_hold(BUTTON_JS2_DOWN, 10, 3) || button_pressed(BUTTON_XBC_S) == 1 || button_hold(BUTTON_XBC_S, 10, 3))
+#define BUTTON_UP_LISTENER()      (button_pressed(BUTTON_JS2_UP) == 1 || button_hold(BUTTON_JS2_UP, 10, 3) || button_pressed(BUTTON_XBC_N) == 1 || button_hold(BUTTON_XBC_N, 10, 3))
+#define BUTTON_LEFT_LISTENER()    (button_pressed(BUTTON_JS2_LEFT) == 1 || button_hold(BUTTON_JS2_LEFT, 10, 1) || button_pressed(BUTTON_XBC_W) == 1 || button_hold(BUTTON_XBC_W, 10, 1))
+#define BUTTON_RIGHT_LISTENER()   (button_pressed(BUTTON_JS2_RIGHT) == 1 || button_hold(BUTTON_JS2_RIGHT, 10, 1) || button_pressed(BUTTON_XBC_E) == 1 || button_hold(BUTTON_XBC_E, 10, 1))
+#define BUTTON_ENTER_LISTENER()   (button_pressed(BUTTON_JS2_CENTER) == 1 || button_pressed(BUTTON_XBC_START) == 1)
+#define BUTTON_RETURN_LISTENER()   (button_pressed(BUTTON_1) == 5 || button_pressed(BUTTON_2) == 5 || button_pressed(BUTTON_XBC_BACK) == 5)
+
+/****/
+
 
 #define BUTTON_JS1_UP_GPIO				((GPIO*) &PD0)
 #define BUTTON_JS1_LEFT_GPIO			((GPIO*) &PD1)
@@ -26,8 +37,8 @@
 #define BUTTON_RELEASED_LIMIT			20    /*!< Reset the button release time after the limit */
 
 #define	BUTTON_COUNT							12    /*!< Number of buttons (exclude XBOX) */
-#define XBC_BUTTON_START_ID          12
-#define XBC_BUTTON_COUNTS         16
+#define XBC_BUTTON_START_ID       12
+#define XBC_BUTTON_COUNTS         20
 
 
 
@@ -46,10 +57,10 @@ typedef enum {
 	BUTTON_1						= 10,
 	BUTTON_2						= 11,
  
-  BUTTON_XBC_UP		    = XBC_BUTTON_START_ID,
-  BUTTON_XBC_DOWN,
-  BUTTON_XBC_LEFT,
-  BUTTON_XBC_RIGHT,
+  BUTTON_XBC_N		    = XBC_BUTTON_START_ID,
+  BUTTON_XBC_S,
+  BUTTON_XBC_W,
+  BUTTON_XBC_E,
   
   BUTTON_XBC_START,
   BUTTON_XBC_BACK,
@@ -65,6 +76,11 @@ typedef enum {
   BUTTON_XBC_B,
   BUTTON_XBC_X,
   BUTTON_XBC_Y,
+  
+  BUTTON_XBC_NE,
+  BUTTON_XBC_SE,
+  BUTTON_XBC_SW,
+  BUTTON_XBC_NW
   
 } BUTTON;
 

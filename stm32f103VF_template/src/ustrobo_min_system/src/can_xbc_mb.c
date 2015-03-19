@@ -21,7 +21,11 @@ static void can_xbc_mb_decoding(CanRxMsg msg)
             xbc_joy[XBC_JOY_LY] = msg.Data[6] + (msg.Data[7] << 8);
             xbc_connection = XBC_ALL_CONNECTED;
           } else {
+            // Disconnected: reset all variables
             xbc_digital = 0;
+            for (u8 i = 0; i < XBC_JOY_COUNT; ++i) {
+              xbc_joy[i] = 0;
+            }
             xbc_connection = XBC_CAN_CONNECTED;
           }
           last_can_connection = get_full_ticks();
@@ -50,16 +54,27 @@ XBC_CONNECTION_MODE xbc_get_connection(void)
 
 u32 xbc_get_digital(void)
 {
-    return xbc_digital;
+  if (xbc_get_connection() == XBC_DISCONNECTED) {
+    return 0;
+  }
+  return xbc_digital;
 }
 
 s16 xbc_get_joy_raw(XBC_JOY j) 
 {
-    return xbc_joy[j];
+  if (xbc_get_connection() == XBC_DISCONNECTED) {
+    return 0;
+  }
+  
+  return xbc_joy[j];
 }
 
 s16 xbc_get_joy(XBC_JOY j)
 {
+  if (xbc_get_connection() == XBC_DISCONNECTED) {
+    return 0;
+  }
+  
   switch (j) {
     case XBC_JOY_LT:
     case XBC_JOY_RT:

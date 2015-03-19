@@ -2,12 +2,15 @@
   ******************************************************************************
   * STM32F103VG Mainboard Library
   * Maintained by Kenneth Au
-  * Version: (Robocon 2015) Version 1.4
-  * Last update: 15th March 
+  * Version: (Robocon 2015) Version 1.5.2
+  * Last update: 19th March 
  ******************************************************************************
   */
  
-/** Version 1.5.1 (18th March, 2015 **/
+/** Version 1.5.2 (19th March, 2015) **/
+- XBox library III (xbc button merged with button functions).
+- XBox protocol improvement (compressed color, data rate).
+/** Version 1.5.1 (18th March, 2015) **/
 - XBox library II (mainboard LCD to xbc done) done.
 /** Version 1.5 (18th March, 2015) **/
 - XBox library I (xbc to mainboard done) done.

@@ -104,8 +104,7 @@ void ascii_test(void)
 				
 				static u8 char_start = STARTING_ASCII;
 				
-				if (button_pressed(BUTTON_JS2_DOWN) == 1 || button_pressed(BUTTON_JS2_UP) == 1
-          || button_pressed(BUTTON_XBC_DOWN) == 1 || button_pressed(BUTTON_XBC_UP) == 1) {
+				if (BUTTON_UP_LISTENER() || BUTTON_DOWN_LISTENER()) {
 					char_start = (char_start == STARTING_ASCII) ? STARTING_ASCII + tft_get_max_x_char() * (tft_get_max_y_char() - 2) : STARTING_ASCII;
 					CLICK_MUSIC;
 				}
@@ -199,27 +198,25 @@ void motor_test(void)
 				// Not allow to move in test mode
 				if (!tft_ui_get_val(&motor_test_flag)) {
 					// Line switcher
-					if (button_pressed(BUTTON_JS2_UP) == 1 || button_pressed(BUTTON_XBC_UP) == 1) {				
+					if (BUTTON_UP_LISTENER()) {				
 						tft_ui_listener(&tft_ui, tft_ui_event_up);
 					}
 					
-					if (button_pressed(BUTTON_JS2_DOWN) == 1 || button_pressed(BUTTON_XBC_DOWN) == 1) {
+
+					if (BUTTON_DOWN_LISTENER()) {
 						tft_ui_listener(&tft_ui, tft_ui_event_down);
 					}
 				}
 				
-				if (button_pressed(BUTTON_JS2_LEFT) == 1 || button_hold(BUTTON_JS2_LEFT, 10, 1)
-          || button_pressed(BUTTON_XBC_LEFT) == 1 || button_hold(BUTTON_XBC_LEFT, 10, 1)) {
+				if (BUTTON_LEFT_LISTENER()) {
 					tft_ui_listener(&tft_ui, tft_ui_event_left);
 				}
 				
-				if (button_pressed(BUTTON_JS2_RIGHT) == 1 || button_hold(BUTTON_JS2_RIGHT, 10, 1)
-          || button_pressed(BUTTON_XBC_RIGHT) == 1 || button_hold(BUTTON_XBC_RIGHT, 10, 1)) {
+				if (BUTTON_RIGHT_LISTENER()) {
 					tft_ui_listener(&tft_ui, tft_ui_event_right);
 				}
 				
-				if (button_pressed(BUTTON_JS2_CENTER) == 1
-          || button_pressed(BUTTON_XBC_START) == 1) {
+				if (BUTTON_ENTER_LISTENER()) {
 					tft_ui_listener(&tft_ui, tft_ui_event_select);
 				}
 
@@ -277,7 +274,7 @@ void position_test(void)
 					return; 
 				}
 				
-				if (button_pressed(BUTTON_JS2_CENTER) == 1 || button_pressed(BUTTON_XBC_START) == 1) {
+				if (BUTTON_ENTER_LISTENER()) {
           if (line == 0) {
             gyro_cal();
             CLICK_MUSIC;
@@ -291,8 +288,7 @@ void position_test(void)
 					
 				}
         
-        if (button_pressed(BUTTON_JS2_UP) == 1 || button_pressed(BUTTON_JS2_DOWN) == 1
-          || button_pressed(BUTTON_XBC_UP) == 1 || button_pressed(BUTTON_XBC_DOWN) == 1) {
+        if (BUTTON_UP_LISTENER() || BUTTON_DOWN_LISTENER()) {
           line ^= 1;
         }
 			}
@@ -341,13 +337,12 @@ void button_test(void)
 				draw_top_bar();
 				tft_prints(0, 1, "BUTTON TEST");
 				for (u8 i = 0, x = 0, y = 2; i < BUTTON_COUNT + XBC_BUTTON_COUNTS; ++i) {
-          u16 output = 0;
           if (button_released((BUTTON) i)) {
-            output = button_released((BUTTON) i);
+            tft_prints(x, y, "[%d]", button_released((BUTTON) i));
           }  else {
-            output = button_pressed((BUTTON) i);
+            tft_prints(x, y, "%d", button_pressed((BUTTON) i));
           }
-					tft_prints(x, y, "%d", output);
+					
 					if (y < tft_get_max_y_char() - 1) {
 						++y;
 					} else {
@@ -447,18 +442,15 @@ void buzzer_test(void)
 				}
 				
 				// Line switcher
-				if (button_pressed(BUTTON_JS2_UP) == 1 || button_hold(BUTTON_JS2_UP, 10, 2)
-          || button_pressed(BUTTON_XBC_UP) == 1 || button_hold(BUTTON_XBC_UP, 10, 2)) {
+				if (BUTTON_UP_LISTENER()) {
 					tft_ui_listener(&tft_ui, tft_ui_event_up);
 				}
 				
-				if (button_pressed(BUTTON_JS2_DOWN) == 1 || button_hold(BUTTON_JS2_DOWN, 10, 2)
-          || button_pressed(BUTTON_XBC_DOWN) == 1 || button_hold(BUTTON_XBC_DOWN, 10, 2)) {
+				if (BUTTON_DOWN_LISTENER()) {
 					tft_ui_listener(&tft_ui, tft_ui_event_down);
 				}
 
-				if (button_pressed(BUTTON_JS2_LEFT) == 1 || button_hold(BUTTON_JS2_LEFT, 10, 2)
-          || button_pressed(BUTTON_XBC_LEFT) == 1 || button_hold(BUTTON_XBC_LEFT, 10, 2)) {
+				if (BUTTON_LEFT_LISTENER()) {
 					tft_ui_listener(&tft_ui, tft_ui_event_left);
           if (tft_ui_get_val(&note_pitch) == NOTE_REST) {
             note_pitch.ui_item.list.selected_int = NOTE_B;
@@ -470,8 +462,7 @@ void buzzer_test(void)
           }
 				}
 				
-				if (button_pressed(BUTTON_JS2_RIGHT) == 1 || button_hold(BUTTON_JS2_RIGHT, 10, 2)
-          || button_pressed(BUTTON_XBC_RIGHT) == 1 || button_hold(BUTTON_XBC_RIGHT, 10, 2)) {
+				if (BUTTON_RIGHT_LISTENER()) {
 					tft_ui_listener(&tft_ui, tft_ui_event_right);
           if (tft_ui_get_val(&note_pitch) == NOTE_REST) {
             note_pitch.ui_item.list.selected_int = NOTE_C;
@@ -483,7 +474,7 @@ void buzzer_test(void)
           }
         }
 				
-				if (button_pressed(BUTTON_JS2_CENTER) == 1 || button_pressed(BUTTON_XBC_START) == 1) {
+				if (BUTTON_ENTER_LISTENER()) {
 					tft_ui_listener(&tft_ui, tft_ui_event_select);
 				}
 			}
@@ -572,25 +563,23 @@ void can_test(void)
           return;
         }
         // Line switcher
-        if (button_pressed(BUTTON_JS2_UP) == 1 || button_pressed(BUTTON_XBC_UP) == 1) {				
+        if (BUTTON_UP_LISTENER()) {				
           tft_ui_listener(&tft_ui, tft_ui_event_up);
         }
         
-        if (button_pressed(BUTTON_JS2_DOWN) == 1 || button_pressed(BUTTON_XBC_DOWN) == 1) {
+        if (BUTTON_DOWN_LISTENER()) {
           tft_ui_listener(&tft_ui, tft_ui_event_down);
         }
         // Line
-        if (button_pressed(BUTTON_JS2_LEFT) == 1 || button_hold(BUTTON_JS2_LEFT, 10, 2)
-          || button_pressed(BUTTON_XBC_LEFT) == 1 || button_hold(BUTTON_XBC_LEFT, 10, 2)) {
+        if (BUTTON_LEFT_LISTENER()) {
 					tft_ui_listener(&tft_ui, tft_ui_event_left);
 				}
 				
-				if (button_pressed(BUTTON_JS2_RIGHT) == 1 || button_hold(BUTTON_JS2_RIGHT, 10, 2)
-          || button_pressed(BUTTON_XBC_RIGHT) == 1 || button_hold(BUTTON_XBC_RIGHT, 10, 2)) {
+				if (BUTTON_RIGHT_LISTENER()) {
 					tft_ui_listener(&tft_ui, tft_ui_event_right);
 				}
 				
-				if (button_pressed(BUTTON_JS2_CENTER) == 1 || button_pressed(BUTTON_XBC_START) == 1) {
+				if (BUTTON_ENTER_LISTENER()) {
 					tft_ui_listener(&tft_ui, tft_ui_event_select);
 				}
       }
@@ -716,7 +705,7 @@ void gpio_pin_test(void)
 						curr_test_pin >>= 1;
 					}
 				}
-				if ((button_pressed(BUTTON_JS2_CENTER) == 1 && test_done) && last_input == initial_input) {
+				if ((BUTTON_ENTER_LISTENER() && test_done) && last_input == initial_input) {
 					return;
 				}
 				
@@ -867,23 +856,23 @@ void uart_test(void)
           return;
         }
         
-        if (button_pressed(BUTTON_JS2_UP) == 1) {				
+        if (BUTTON_UP_LISTENER()) {				
           tft_ui_listener(&tft_ui, tft_ui_event_up);
         }
         
-        if (button_pressed(BUTTON_JS2_DOWN) == 1) {
+        if (BUTTON_DOWN_LISTENER()) {
           tft_ui_listener(&tft_ui, tft_ui_event_down);
         }
         
-        if (button_pressed(BUTTON_JS2_LEFT) == 1 || button_hold(BUTTON_JS2_LEFT, 10, 2)) {
+        if (BUTTON_LEFT_LISTENER()) {
 					tft_ui_listener(&tft_ui, tft_ui_event_left);
 				}
 				
-				if (button_pressed(BUTTON_JS2_RIGHT) == 1 || button_hold(BUTTON_JS2_RIGHT, 10, 2)) {
+				if (BUTTON_RIGHT_LISTENER()) {
 					tft_ui_listener(&tft_ui, tft_ui_event_right);
 				}
 				
-				if (button_pressed(BUTTON_JS2_CENTER) == 1) {
+				if (BUTTON_ENTER_LISTENER()) {
 					tft_ui_listener(&tft_ui, tft_ui_event_select);
 				}        
       }

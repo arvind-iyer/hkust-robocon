@@ -64,17 +64,49 @@ void button_update(void)
 {
   u32 xbox_tmp = 1;
 	for (u8 i = 0; i < BUTTON_COUNT + XBC_BUTTON_COUNTS; ++i) {
-    u8 button_pressed = 0;
+    u8 button_pressed_flag = 0;
     
     if (i < XBC_BUTTON_START_ID) {
       const GPIO* button = buttons[i];
-      button_pressed = (gpio_read_input(button) == BUTTON_PRESSED);
+      button_pressed_flag = (gpio_read_input(button) == BUTTON_PRESSED);
     } else {
-     // button_pressed = (xbc_digital & xbox_tmp) > 0;
-      xbox_tmp <<= 1;
+      // XBOX Buttons
+      // Special case (Diagonal switch)
+      switch (i) {
+          /** Special cases **/
+          case BUTTON_XBC_NE:
+            button_pressed_flag = (xbc_get_digital() & XBC_UP) && (xbc_get_digital() & XBC_RIGHT);
+          break;
+          case BUTTON_XBC_SE:
+            button_pressed_flag = (xbc_get_digital() & XBC_DOWN) && (xbc_get_digital() & XBC_RIGHT);
+          break;
+          case BUTTON_XBC_SW:
+            button_pressed_flag = (xbc_get_digital() & XBC_DOWN) && (xbc_get_digital() & XBC_LEFT);
+          break;
+          case BUTTON_XBC_NW:
+            button_pressed_flag = (xbc_get_digital() & XBC_UP) && (xbc_get_digital() & XBC_LEFT);
+          break;
+            
+          
+          default: 
+            // Normal case
+            button_pressed_flag = (xbc_get_digital() & xbox_tmp) > 0;
+            if (i == BUTTON_XBC_N || i == BUTTON_XBC_E || i == BUTTON_XBC_S || i == BUTTON_XBC_W) {
+              // Diagonal press will be treated as 0
+              u8 pressed_count = ((xbc_get_digital() & XBC_UP) > 0) + ((xbc_get_digital() & XBC_RIGHT) > 0)
+                + ((xbc_get_digital() & XBC_DOWN) > 0) + ((xbc_get_digital() & XBC_LEFT) > 0);
+              if (pressed_count != 1) {
+                button_pressed_flag = 0;
+              }
+            }
+            
+            xbox_tmp <<= 1;
+          break;
+      }
+      
     }
     
-		if (button_pressed) {
+		if (button_pressed_flag) {
 			++button_pressed_count[i];
 			button_released_count[i] = 0;
 		} else {
