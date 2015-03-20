@@ -14,33 +14,24 @@ static s32 target_motor5_encoder_value = 0;
 static s32 target_motor6_encoder_value = 0;
 static s32 target_motor7_encoder_value = 0;
 
-static bool low_calibrate_mode = 0;
-static bool low_calibrated = 0;
-static u8 low_calibrate_switch_off_count = 0;
-static bool low_calibrate_leave_switch = 1;
+// Lower racket variables
+static u8   low_racket_mode = 0;
+static s32  low_racket_speed = 240;
 static bool request_low_racket_move = 0;
-static u32 request_low_racket_move_time = 0;
+static u32  request_low_racket_move_time = 0;
 
+// Higher racket variables
 static bool high_calibrate_mode = 0;
 static bool high_calibrated = 0;
 static bool request_high_racket_move = 0;
 static u32 request_high_racket_move_time = 0;
 static u8 high_racket_status = 0;
 
-static u32 last_rotate_left_time = 0;
-static u32 last_rotate_right_time = 0;
-
-static s32 low_speed = 1600;
 static s32 high_speed = 1200;
 
 static bool auto_move_mode_flag = 0;
+static bool sensor_sound_on = 0;
 
-void increase_low_speed(void) {
-	if(low_speed<1799) low_speed += 1;
-}
-void decrease_low_speed(void) {
-	if(low_speed>0) low_speed -= 1;
-}
 void increase_high_speed(void) {
 	if(high_speed<1799) high_speed += 1;
 }
@@ -48,29 +39,15 @@ void decrease_high_speed(void) {
 	if(high_speed>0) high_speed -= 1;
 }
 
-s32 get_low_speed() { return low_speed; }
-s32 get_high_speed() { return high_speed; }
-
-u8 get_high_racket_status() { return high_racket_status; }
-
-bool get_b1(void) { return b1_switch; }
-bool get_b2(void) { return b2_switch; }
-bool get_b3(void) { return b3_switch; }
-s32 get_b1e() {
-	return pos_b1_encoder_value;
-}
-s32 get_b2e() {
-	return pos_b2_encoder_value;
-}
-
 void low_racket_move(void) {
 	request_low_racket_move = 1;
 	request_low_racket_move_time = get_full_ticks();
 }
 
-void low_racket_startup(void) {
-	low_calibrate_mode = 1;
-	low_calibrate_switch_off_count = 0;
+void low_racket_standby(void) {
+	low_racket_mode = 2;
+	request_low_racket_move = 1;
+	request_low_racket_move_time = get_full_ticks();
 }
 
 void high_racket_move(void) {
@@ -90,9 +67,14 @@ void auto_move_mode_off(void) {
 	auto_move_mode_flag = 0;
 }
 
+void sensor_sound_switch(void) {
+	sensor_sound_on = !sensor_sound_on;
+}
+
 void sensor_init(void) {
 	register_special_char_function('j', auto_move_mode_on);
 	register_special_char_function('k', auto_move_mode_off);
+	register_special_char_function('g', sensor_sound_switch);
 	
 	GPIO_InitTypeDef GPIO_InitStructure;
 	
@@ -104,15 +86,12 @@ void sensor_init(void) {
 
 void racket_init(void) {
 	register_special_char_function('/', low_racket_move);
-	register_special_char_function(';', low_racket_startup);
-	
-	register_special_char_function('m', high_racket_move);
-	register_special_char_function('l', high_racket_startup);
+	register_special_char_function('.', low_racket_standby);
 	
 	register_special_char_function('>', increase_high_speed);
 	register_special_char_function('<', decrease_high_speed);
-	register_special_char_function('.', increase_low_speed);
-	register_special_char_function(',', decrease_low_speed);
+	register_special_char_function('m', high_racket_move);
+	register_special_char_function('l', high_racket_startup);
 	
 	/* GPIO configuration */
 	GPIO_InitTypeDef GPIO_InitStructure;
@@ -126,7 +105,9 @@ void racket_init(void) {
 void sensor_update(void) {
 	if ( GPIO_ReadInputDataBit(GPIOE, S1_Pin) || GPIO_ReadInputDataBit(GPIOE, S2_Pin) || GPIO_ReadInputDataBit(GPIOE, S3_Pin) )
 	{
-		SUCCESSFUL_MUSIC;
+		if (sensor_sound_on == 1) {
+			SUCCESSFUL_MUSIC;
+		}
 		if(auto_move_mode_flag == 1) {
 			if(request_low_racket_move == 0) {
 				auto_move_mode_flag = 0;
@@ -146,42 +127,53 @@ void racket_update(void) {
 	b2_switch = GPIO_ReadInputDataBit(GPIOE, B2_Pin);
 	b3_switch = GPIO_ReadInputDataBit(GPIOE, B3_Pin);
 	
-	current_time =  get_full_ticks();
+	low_racket_update();
+	high_racket_update();
+}
+
+
+/**
+	* @brief Move or stop the lower racket according to other variables. ( Called by racket_update() )
+  */
+void low_racket_update() {
+	current_time = get_full_ticks();
 	
-	// "Low racket"
-	if (low_calibrate_mode == 1) {
-	// Startup
-		if (b3_switch == 0) {
-			motor_set_vel(MOTOR5, 240, OPEN_LOOP);
-			low_calibrate_leave_switch = 1;
-		} else {
-			
-			if(low_calibrate_leave_switch == 1) {
-				low_calibrate_switch_off_count += 1;
-				low_calibrate_leave_switch = 0;
-			}
-			if (low_calibrate_switch_off_count >= 2) {
-				motor_lock(MOTOR5);
-				low_calibrate_mode = 0;
-				low_calibrated = 1;
-			}
+	if (low_racket_mode == 0) {
+		low_racket_speed = 240;
+		if (b3_switch == 1 && (current_time - request_low_racket_move_time > 500) ) {
+			low_racket_mode = 1;
+			request_low_racket_move = 0;
 		}
-	}	else if(low_calibrated == 1) {
-	// After Startup
+	} else if (low_racket_mode == 1) {
+		low_racket_speed = LOW_RACKET_HIT_SPEED;
 		if (b3_switch == 1 && (current_time - request_low_racket_move_time > 100) ) {
 			request_low_racket_move = 0;
 		}
-		
-		if (request_low_racket_move == 1) {
-			motor_set_vel(MOTOR5, low_speed, OPEN_LOOP);
-		} else {
-			motor_lock(MOTOR5);
+	} else if (low_racket_mode == 2) {
+		low_racket_speed = 500;
+		if (current_time - request_low_racket_move_time > 300) {
+			low_racket_mode = 1;
+			request_low_racket_move = 0;
 		}
 	} else {
+		low_racket_speed = 240;
 		request_low_racket_move = 0;
 	}
 	
-	// "High racket"
+	if(request_low_racket_move == 1) {
+		motor_set_vel(MOTOR5, low_racket_speed, OPEN_LOOP);
+	} else {
+		motor_lock(MOTOR5);
+		
+	}
+}
+
+/**
+	* @brief Move or stop the higher racket according to other variables. ( Called by racket_update() )
+  */
+void high_racket_update() {
+	current_time = get_full_ticks();
+	
 	if (high_calibrate_mode == 1) {
 	// Startup
 		if (!pos_b1_encoder_value) {
@@ -232,8 +224,14 @@ void racket_update(void) {
 	} else {
 		request_high_racket_move = 0;
 	}
-	
-	// Pivot
-	motor_lock(MOTOR7);
-		
 }
+
+s32 get_low_racket_speed() { return low_racket_speed; }
+s32 get_low_racket_mode() { return low_racket_mode; }
+s32 get_high_speed() { return high_speed; }
+u8 get_high_racket_status() { return high_racket_status; }
+bool get_b1(void) { return b1_switch; }
+bool get_b2(void) { return b2_switch; }
+bool get_b3(void) { return b3_switch; }
+s32 get_b1e() { return pos_b1_encoder_value; }
+s32 get_b2e() { return pos_b2_encoder_value; }

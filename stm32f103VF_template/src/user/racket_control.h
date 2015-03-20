@@ -20,22 +20,25 @@
 // The value of this definition should be either 1 or -1 only
 #define DIR_TOWARDS_B1	-1
 #define DIR_TOWARDS_B2	1
+#define LOW_RACKET_HIT_SPEED 1600
 
+// Sensor functions
 void sensor_init(void);
 void sensor_update(void);
 
+// All racket functions
 void racket_init(void);
+
+// Lower racket functions
+void low_racket_standby(void);
+void low_racket_update(void);
+
+// Higher racket functions
+void high_racket_update(void);
+
 void racket_received_command(void);
 bool did_receive_command(void);
 void racket_update(void);
-
-void racket_calibrate(void);
-void open_pneumatic(void);
-void close_pneumatic(void);
-void serving (void);
-u8 get_switch(void);
-u8 get_calibrated(void);
-u8 get_high_racket_status(void);
 
 bool get_s1(void);
 bool get_s2(void);
