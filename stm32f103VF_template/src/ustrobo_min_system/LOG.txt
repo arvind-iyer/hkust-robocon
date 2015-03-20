@@ -2,11 +2,18 @@
   ******************************************************************************
   * STM32F103VG Mainboard Library
   * Maintained by Kenneth Au
-  * Version: (Robocon 2015) Version 1.5.2
-  * Last update: 19th March 
+  * Version: (Robocon 2015) Version 1.6
+  * Last update: 20th March, 2015
  ******************************************************************************
   */
  
+/** Version 1.6 (20th March, 2015) **/
+- XBox library FULL
+	- XBox with CAN
+	- XBox with Bluetooth (UI Program)
+	- XBox priority (which one will be used if both CAN Xbox & Bluetooth XBox is connected)
+	
+
 /** Version 1.5.2 (19th March, 2015) **/
 - XBox library III (xbc button merged with button functions).
 - XBox protocol improvement (compressed color, data rate).

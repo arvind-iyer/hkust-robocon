@@ -6,11 +6,10 @@
 #include "can_protocol.h"
 #include "ticks.h"
 #include "tft.h"
-
+#include "xbc_mb.h"
 
 #define CAN_XBC_BASE                0x090
 #define CAN_XBC_MB_TX_LCD_ID        0x100
-#define CAN_XBC_MB_TX_BATTERY_ID    0x200
 
 #define CAN_XBC_CONNECTION_TIMEOUT_MS   200
 
@@ -20,44 +19,11 @@
 #define GRAY4TORGB565(GRAY4) ((GRAY4 << 12) | (GRAY4 << 7) | (GRAY4 << 1))
 
 typedef enum {
-  XBC_DISCONNECTED, 
-  XBC_CAN_CONNECTED,
-  XBC_ALL_CONNECTED
-} XBC_CONNECTION_MODE;
+  CAN_XBC_DISCONNECTED,   /*!< XBC Board CAN Disconnected ***/
+  CAN_XBC_CAN_CONNECTED,  /*!< XBC Board CAN connected, but the XBC USB on the XBC board disconnected ***/
+  CAN_XBC_ALL_CONNECTED   /*!< XBC Board All connected ***/
+} CAN_XBC_CONNECTION_MODE;
 
-#define XBC_JOY_COUNT           6
-#define XBC_JOY_DEADZONE_MIN    ((s16) 4000)
-#define XBC_JOY_DEADZONE_MAX    ((s16) 30000)
-#define XBC_JOY_SCALE           1000  // Self-defined scale
-
-typedef enum {
-  XBC_JOY_LT,         // 1-byte
-  XBC_JOY_RT,         // 1-byte
-  XBC_JOY_LX,         // 2-byte
-  XBC_JOY_LY,         // 2-byte
-  XBC_JOY_RX,         // 2-byte
-  XBC_JOY_RY          // 2-byte
-} XBC_JOY;
-
-/* 
- * xbox controller digital signal 
- * 16 bit form 	
- */
-#define XBC_UP		0x0001
-#define XBC_DOWN	0x0002
-#define XBC_LEFT	0x0004
-#define XBC_RIGHT	0x0008
-#define XBC_START	0x0010
-#define XBC_BACK	0x0020
-#define XBC_L_JOY	0x0080
-#define XBC_R_JOY	0x0040
-#define XBC_LB		0x0100
-#define XBC_RB		0x0200
-#define XBC_XBOX	0x0400
-#define XBC_A		  0x1000
-#define XBC_B		  0x2000
-#define XBC_X		  0x4000
-#define XBC_Y		  0x8000
 
 
 typedef struct {
@@ -68,12 +34,11 @@ typedef struct {
 
 void can_xbc_mb_init(void);
 void can_xbc_mb_tx_enable(bool flag);
-XBC_CONNECTION_MODE xbc_get_connection(void);
-u32 xbc_get_digital(void);
+CAN_XBC_CONNECTION_MODE can_xbc_get_connection(void);
+u32 can_xbc_get_digital(void);
 
-s16 xbc_get_joy_raw(XBC_JOY j);
-s16 xbc_get_joy(XBC_JOY j);
+s16 can_xbc_get_joy_raw(XBC_JOY j);
+s16 can_xbc_get_joy(XBC_JOY j);
 void can_xbc_mb_lcd_tx(void);
-void can_xbc_mb_battery_tx(u16 battery_val);
 #endif  /* __CAN_XBC_H */
 

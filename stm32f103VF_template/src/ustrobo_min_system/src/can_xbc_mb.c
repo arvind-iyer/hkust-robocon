@@ -3,7 +3,7 @@
 static u32 xbc_digital = 0;
 static s16 xbc_joy[XBC_JOY_COUNT] = {0};
 static u32 last_can_connection = 0;
-static XBC_CONNECTION_MODE xbc_connection = XBC_DISCONNECTED;
+static CAN_XBC_CONNECTION_MODE xbc_connection = CAN_XBC_DISCONNECTED;
 static bool xbc_mb_tx_flag = false;
 
 static XBC_LCD_DATA xbc_lcd_data[CHAR_MAX_X_VERTICAL][CHAR_MAX_Y_VERTICAL],
@@ -19,14 +19,14 @@ static void can_xbc_mb_decoding(CanRxMsg msg)
             xbc_joy[XBC_JOY_RT] = msg.Data[3];
             xbc_joy[XBC_JOY_LX] = msg.Data[4] + (msg.Data[5] << 8); 
             xbc_joy[XBC_JOY_LY] = msg.Data[6] + (msg.Data[7] << 8);
-            xbc_connection = XBC_ALL_CONNECTED;
+            xbc_connection = CAN_XBC_ALL_CONNECTED;
           } else {
             // Disconnected: reset all variables
             xbc_digital = 0;
             for (u8 i = 0; i < XBC_JOY_COUNT; ++i) {
               xbc_joy[i] = 0;
             }
-            xbc_connection = XBC_CAN_CONNECTED;
+            xbc_connection = CAN_XBC_CAN_CONNECTED;
           }
           last_can_connection = get_full_ticks();
       break;
@@ -36,7 +36,7 @@ static void can_xbc_mb_decoding(CanRxMsg msg)
           xbc_joy[XBC_JOY_RX] = msg.Data[0] + (msg.Data[1] << 8); 
           xbc_joy[XBC_JOY_RY] = msg.Data[2] + (msg.Data[3] << 8);
           last_can_connection = get_full_ticks();
-          xbc_connection = XBC_ALL_CONNECTED;
+          xbc_connection = CAN_XBC_ALL_CONNECTED;
         }
       break;
     }
@@ -44,34 +44,52 @@ static void can_xbc_mb_decoding(CanRxMsg msg)
 
 
 
-XBC_CONNECTION_MODE xbc_get_connection(void)
+/**
+  * @brief Get the can xbc connection state
+  * @retval @ref XBC_CONNECTION_MODE
+  */
+CAN_XBC_CONNECTION_MODE can_xbc_get_connection(void)
 {
-  if (get_full_ticks() - last_can_connection >= CAN_XBC_CONNECTION_TIMEOUT_MS) {
-    xbc_connection = XBC_DISCONNECTED;
+  if (get_full_ticks() - last_can_connection > CAN_XBC_CONNECTION_TIMEOUT_MS) {
+    xbc_connection = CAN_XBC_DISCONNECTED;
   }
   return xbc_connection;
 }
 
-u32 xbc_get_digital(void)
+/**
+  * @brief Get the xbc button in digital (used with bitwise operator)
+  * @warning return 0 when xbc is disconnected
+  */
+u32 can_xbc_get_digital(void)
 {
-  if (xbc_get_connection() == XBC_DISCONNECTED) {
+  if (can_xbc_get_connection() == CAN_XBC_DISCONNECTED) {
     return 0;
   }
   return xbc_digital;
 }
 
-s16 xbc_get_joy_raw(XBC_JOY j) 
+/**
+  * @brief Get the joy stick value (raw, from the xbc)
+  * @param j: (XBC_JOY) Joy stick id 
+  * @retval The raw joy stick value (-32768 to 32767 for 2-byte; 0 to 255 for 1-byte) 
+  */
+s16 can_xbc_get_joy_raw(XBC_JOY j) 
 {
-  if (xbc_get_connection() == XBC_DISCONNECTED) {
+  if (can_xbc_get_connection() == CAN_XBC_DISCONNECTED) {
     return 0;
   }
   
   return xbc_joy[j];
 }
 
-s16 xbc_get_joy(XBC_JOY j)
+/**
+  * @brief Get the joy stick value (deadzone corrected for the 2-byte joystick)
+  * @param j: (XBC_JOY) Joy stick id
+  * @retval The joy stick value with deadzone (-XBC_JOY_DEADZONE_MIN to XBC_JOY_DEADZONE_MIN for 2-byte, 0 to 255 for 1-byte)
+  */
+s16 can_xbc_get_joy(XBC_JOY j)
 {
-  if (xbc_get_connection() == XBC_DISCONNECTED) {
+  if (can_xbc_get_connection() == CAN_XBC_DISCONNECTED) { 
     return 0;
   }
   
@@ -103,9 +121,12 @@ s16 xbc_get_joy(XBC_JOY j)
   return 0;
 }
 
+/**
+  * @brief CAN Xbc to MB protocol initializatoin 
+  */
 void can_xbc_mb_init(void) 
 {
-    xbc_connection = XBC_DISCONNECTED;
+    xbc_connection = CAN_XBC_DISCONNECTED;
     xbc_digital = 0;
     can_rx_add_filter(CAN_XBC_BASE, CAN_RX_MASK_DIGIT_0_3, can_xbc_mb_decoding);
     for (u8 x = 0; x < CHAR_MAX_X_VERTICAL; ++x) {
@@ -147,7 +168,9 @@ static u8 xbc_lcd_data_color_diff(XBC_LCD_DATA* data1, XBC_LCD_DATA* data2)
 }
 
 
-
+/**
+  * @brief Transmit Mainboard LCD data to XBC
+  */
 void can_xbc_mb_lcd_tx(void)
 {
   if (!xbc_mb_tx_flag) {return;}
@@ -203,14 +226,3 @@ void can_xbc_mb_lcd_tx(void)
   }
   
 }
-
-
-void can_xbc_mb_battery_tx(u16 battery_val)
-{
-  if (!xbc_mb_tx_flag) {return;}
-  CAN_MESSAGE msg;
-  msg.id = (CAN_XBC_MB_TX_BATTERY_ID & 0xF00) | (battery_val & 0xFF);
-  msg.length = 0;   
-  can_tx_enqueue(msg);
-}
-

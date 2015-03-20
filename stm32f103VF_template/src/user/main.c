@@ -21,13 +21,13 @@ int main(void)
 	can_init();
 	can_rx_init();
   can_motor_init();
-  can_xbc_mb_init();
-  can_xbc_mb_tx_enable(true); 
+
 	bluetooth_init();
   
+  xbc_mb_init(XBC_BLUETOOTH_FIRST); 
 	wheel_base_init();
   ultrasonic_init();
-
+  
 	system_start(1200);
 	
 	menu_add("Your program", robocon_main);
@@ -36,7 +36,9 @@ int main(void)
 	menu_add("Battery test", battery_test);
 	menu_add("Bluetooth test", bluetooth_test);
 	menu_add("CAN test", can_test);
-	menu_add("XBox test", xbc_test);
+  menu_add("BT XBox test", bluetooth_xbc_test);
+	menu_add("CAN XBox test", can_xbc_test);
+  menu_add("XBox test", xbc_test);
 	menu_add("Buzzer test", buzzer_test);
 	menu_add("Button test", button_test);
 	menu_add("ASCII test", ascii_test);

@@ -30,6 +30,7 @@
 #include "robocon.h"
 #include "wheel_base.h"
 #include "ultrasonic.h"
+#include "bluetooth_xbc_mb.h"
 
 
 
@@ -41,7 +42,9 @@ void position_test(void);
 void button_test(void);
 void buzzer_test(void);
 void can_test(void);
+void can_xbc_test(void);
 void xbc_test(void);
+void bluetooth_xbc_test(void);
 void gpio_pin_test(void);
 void uart_test(void);
 void ultra_test(void);

@@ -6,7 +6,7 @@
 #include "gpio.h"
 #include "stm32f10x_tim.h"
 #include "tft.h"
-#include "can_xbc_mb.h"
+#include "xbc_mb.h"
 
 /*****/
 #define BUTTON_DOWN_LISTENER()    (button_pressed(BUTTON_JS2_DOWN) == 1 || button_hold(BUTTON_JS2_DOWN, 10, 3) || button_pressed(BUTTON_XBC_S) == 1 || button_hold(BUTTON_XBC_S, 10, 3))

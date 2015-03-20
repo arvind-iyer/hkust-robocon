@@ -620,6 +620,47 @@ void can_test(void)
   }
 }
 
+void can_xbc_test(void)
+{
+	while (true) {
+		if (ticks_img != get_ticks()) {
+			ticks_img = get_ticks();
+			if (ticks_img % 50 == 0) {
+				battery_adc_update();
+			}
+      if (ticks_img % 20 == 1) {
+        //xbc_update();
+      }
+			if (ticks_img % 20 == 3) {
+				button_update();
+				if (return_listener()) {
+					return; 
+				}
+			}
+			
+      
+			if (ticks_img % 50 == 6){
+				tft_clear();
+
+        
+				draw_top_bar();
+				tft_prints(0,1,"CAN XBOX TEST"); 
+        tft_prints(0,2,"Connection: %d", can_xbc_get_connection());
+        tft_prints(0,3,"Buttons:0x%04X", can_xbc_get_digital());
+				tft_prints(0,4,"LT:%3ld(%5d)",can_xbc_get_joy(XBC_JOY_LT),can_xbc_get_joy_raw(XBC_JOY_LT));
+        tft_prints(0,5,"RT:%3ld(%5d)",can_xbc_get_joy(XBC_JOY_RT),can_xbc_get_joy_raw(XBC_JOY_RT));
+				tft_prints(0,6,"LX:%5ld(%5d)",can_xbc_get_joy(XBC_JOY_LX),can_xbc_get_joy_raw(XBC_JOY_LX));
+				tft_prints(0,7,"LY:%5ld(%5d)",can_xbc_get_joy(XBC_JOY_LY),can_xbc_get_joy_raw(XBC_JOY_LY));
+				tft_prints(0,8,"RX:%5ld(%5d)",can_xbc_get_joy(XBC_JOY_RX),can_xbc_get_joy_raw(XBC_JOY_RX));
+				tft_prints(0,9,"RY:%5ld(%5d)",can_xbc_get_joy(XBC_JOY_RY),can_xbc_get_joy_raw(XBC_JOY_RY));
+				//tft_prints(0,9,"press cnt:%3d",press_times); //normally press once count up 1
+				tft_update();
+			}
+		}
+	}
+}
+
+
 void xbc_test(void)
 {
 	while (true) {
@@ -645,8 +686,22 @@ void xbc_test(void)
         
 				draw_top_bar();
 				tft_prints(0,1,"XBOX TEST"); 
-        tft_prints(0,2,"Connection: %d", xbc_get_connection());
-        tft_prints(0,3,"Buttons:0x%04X",xbc_get_digital());
+        char tmp_string[10] = "";
+        switch (xbc_get_connection()) {
+          case XBC_CAN_CONNECTED:
+            strcpy(tmp_string, "CAN");
+          break;
+          
+          case XBC_BLUETOOTH_CONNECTED:
+            strcpy(tmp_string, "BT");
+          break;
+            
+          default:
+            strcpy(tmp_string, "[NONE]");
+          break;
+        }
+        tft_prints(0,2,"Connection: %s", tmp_string);
+        tft_prints(0,3,"Buttons:0x%04X", xbc_get_digital());
 				tft_prints(0,4,"LT:%3ld(%5d)",xbc_get_joy(XBC_JOY_LT),xbc_get_joy_raw(XBC_JOY_LT));
         tft_prints(0,5,"RT:%3ld(%5d)",xbc_get_joy(XBC_JOY_RT),xbc_get_joy_raw(XBC_JOY_RT));
 				tft_prints(0,6,"LX:%5ld(%5d)",xbc_get_joy(XBC_JOY_LX),xbc_get_joy_raw(XBC_JOY_LX));
@@ -660,6 +715,47 @@ void xbc_test(void)
 	}
 }
 
+
+void bluetooth_xbc_test(void)
+{
+	while (true) {
+		if (ticks_img != get_ticks()) {
+			ticks_img = get_ticks();
+			if (ticks_img % 50 == 0) {
+				battery_adc_update();
+        bluetooth_update();
+			}
+      if (ticks_img % 20 == 1) {
+        //xbc_update();
+      }
+			if (ticks_img % 20 == 3) {
+				button_update();
+				if (return_listener()) {
+					return; 
+				}
+			}
+			
+      
+			if (ticks_img % 50 == 6){
+				tft_clear();
+
+        
+				draw_top_bar();
+				tft_prints(0,1,"BT XBOX TEST"); 
+        tft_prints(0,2,"Connection: %d", bluetooth_xbc_get_connection());
+        tft_prints(0,3,"Buttons:0x%04X",bluetooth_xbc_get_digital()); 
+				tft_prints(0,4,"LT:%3ld(%5d)",bluetooth_xbc_get_joy(XBC_JOY_LT),bluetooth_xbc_get_joy_raw(XBC_JOY_LT));
+        tft_prints(0,5,"RT:%3ld(%5d)",bluetooth_xbc_get_joy(XBC_JOY_RT),bluetooth_xbc_get_joy_raw(XBC_JOY_RT));
+				tft_prints(0,6,"LX:%5ld(%5d)",bluetooth_xbc_get_joy(XBC_JOY_LX),bluetooth_xbc_get_joy_raw(XBC_JOY_LX));
+				tft_prints(0,7,"LY:%5ld(%5d)",bluetooth_xbc_get_joy(XBC_JOY_LY),bluetooth_xbc_get_joy_raw(XBC_JOY_LY));
+				tft_prints(0,8,"RX:%5ld(%5d)",bluetooth_xbc_get_joy(XBC_JOY_RX),bluetooth_xbc_get_joy_raw(XBC_JOY_RX));
+				tft_prints(0,9,"RY:%5ld(%5d)",bluetooth_xbc_get_joy(XBC_JOY_RY),bluetooth_xbc_get_joy_raw(XBC_JOY_RY));
+				//tft_prints(0,9,"press cnt:%3d",press_times); //normally press once count up 1
+				tft_update();
+			}
+		}
+	}
+}
 
 /**
 	* @brief 	  Pin test for GPIOE only (will have other later)
