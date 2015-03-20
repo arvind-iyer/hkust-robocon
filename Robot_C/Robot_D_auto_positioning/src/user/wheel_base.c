@@ -116,6 +116,10 @@ void wheel_base_init(void)
 	wheel_base_bluetooth_vel_last_update = 0;
 	wheel_base_last_can_tx = 0;
 	wheel_base_tx_acc();
+	
+	//PID on by default, initial target position = position at time of initialisation
+	wheel_base_pid_on();
+	wheel_base_set_target_pos((POSITION){get_pos()->x, get_pos()->y, get_pos()->angle});
 }
 
 /**
