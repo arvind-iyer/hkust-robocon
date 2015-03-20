@@ -2,15 +2,21 @@
 s32 prev_error;
 s32 error;
 PID wheel_base_pid = {0,0,0};
-u16 integ_dw_index = 0;
+u16 integ_dw_index = 0,integ_dx_index = 0,integ_dy_index = 0;
 s32 integ_dw_list[20] = {0,0,0,0,0,
 												 0,0,0,0,0,
 												 0,0,0,0,0,
 												 0,0,0,0,0};
 
+s32 integ_dx_list[10] = {0,0,0,0,0,
+												 0,0,0,0,0};/*,
+												 0,0,0,0,0,
+												 0,0,0,0,0};*/
 
-
-
+s32 integ_dy_list[10] = {0,0,0,0,0,
+												 0,0,0,0,0};/*,
+												 0,0,0,0,0,
+												 0,0,0,0,0};*/
 
 s32 pid_maintain_angle(void)
 {
@@ -93,9 +99,29 @@ void wheel_base_pid_loop(void)
 	
 	wheel_base_pid.Kp = 200/speed_mode;
 	
+	//xy Integral Part
+	integ_dx_list[integ_dx_index++] = shifted_dx/40;
+	if(integ_dx_index >= 10) integ_dx_index = 0;
+	
+	integ_dy_list[integ_dy_index++] = shifted_dy/40;
+	if(integ_dy_index >= 10) integ_dy_index = 0;
+	
+	dx = shifted_dx/wheel_base_pid.Kp;
+	
+	for (int i = 0; i < 10; i++)
+	{
+		dx+=(integ_dx_list[i]);
+	}
+	
+	dx = shifted_dx/wheel_base_pid.Kp/Abs(shifted_dx/wheel_base_pid.Kp);
+	dx = Abs(shifted_dx/wheel_base_pid.Kp) < 12 ? dx*12 : shifted_dx/wheel_base_pid.Kp; 
+	
+	dy = shifted_dy/wheel_base_pid.Kp/Abs(shifted_dy/wheel_base_pid.Kp);
+	dy = Abs(shifted_dy/wheel_base_pid.Kp) < 12 ? dy*12 : shifted_dy/wheel_base_pid.Kp; 
+	
 	
 	dw = pid_maintain_angle();
-	wheel_base_set_vel(shifted_dx/wheel_base_pid.Kp, shifted_dy/wheel_base_pid.Kp,dw); 
+	wheel_base_set_vel(dx, dy , dw); 
 	
 	
 	//wheel_base_set_vel(wheel_base_get_vel().x, wheel_base_get_vel().y, dw);

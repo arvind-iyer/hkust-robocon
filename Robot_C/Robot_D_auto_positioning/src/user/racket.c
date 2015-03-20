@@ -4,8 +4,8 @@
 
 //racket variables
 static s32 RACKET_CAL_VEL = 9 ;		
-static s32 RACKET_HIT_VEL = -300;//-1320;				//can be changed by controller
-static u32 RACKET_SERVE_DELAY = (ROBOT == 'C' ? 1200 : 495);			// can be changed by controller
+static s32 RACKET_HIT_VEL = -1350;			//can be changed by controller
+static u32 RACKET_SERVE_DELAY = (ROBOT == 'C' ? 1200 : 510);			// can be changed by controller
 static s32 init_encoder_reading = -5000;
 
 
@@ -118,7 +118,7 @@ void racket_update(void)
 		is_pneu_extended = 0;
 		racket_pneumatic_set(is_pneu_extended);
 	}
-	if (/*ROBOT=='D' && */!gpio_read_input(LASER_GPIO) && racket_laser_not_alligned)
+	if (ROBOT=='C' && !gpio_read_input(LASER_GPIO) && racket_laser_not_alligned)
 	{
 		racket_laser_not_alligned=0;
 	//	racket_hit();
@@ -127,7 +127,7 @@ void racket_update(void)
 
 	}
 	
-	if (/*ROBOT=='D' && */!racket_laser_not_alligned && gpio_read_input(LASER_GPIO) && get_full_ticks() > racket_last_laser_trigger_time + racket_laser_trigger_interval)		//trigger racket with laser
+	if (ROBOT=='C' && !racket_laser_not_alligned && gpio_read_input(LASER_GPIO) && get_full_ticks() > racket_last_laser_trigger_time + racket_laser_trigger_interval)		//trigger racket with laser
 	{
 		////serve_enabled = 0;
 		
@@ -164,7 +164,7 @@ void racket_update(void)
 		racket_calibrate();
 	}
 	
-	if(racket_laser_not_alligned && !hit_in_progress && (button_pressed(RACKET_SWITCH) || button_pressed(ROTATE_SWITCH)) )		// if any of the mechanical switch is pressed, lock the motor.
+	if(/*racket_laser_not_alligned &&*/ !hit_in_progress && (button_pressed(RACKET_SWITCH) || button_pressed(ROTATE_SWITCH)) )		// if any of the mechanical switch is pressed, lock the motor.
 	{
 			is_locked = 1;
 			motor_lock(RACKET);
