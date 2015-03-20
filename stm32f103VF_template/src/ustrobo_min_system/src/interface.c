@@ -14,7 +14,7 @@ static MENU_ITEM menu_list[MENU_LIST_MAX];
 	*/
 void system_start(u16 duration)
 {
-  const char* title = "Robocon 2015  Min System 1.2";
+  const char* title = "Robocon 2015  Min System 1.6";
   
 	led_control((LED) (LED_D1 | LED_D2 | LED_D3), LED_ON);
 	tft_clear();
@@ -84,7 +84,7 @@ void system_start(u16 duration)
   for (u16 i = 0; i < duration / 4; ++i) {
     _delay_ms(4);
     button_update();
-    if (button_pressed(BUTTON_JS2_CENTER) == 1) {
+    if (BUTTON_ENTER_LISTENER()) {
       break; 
     }
   }
@@ -124,8 +124,9 @@ void battery_regular_check(void)
 	* @param batt: The battery level in voltage times 10 (122 for 12.2V)
 	* @retval None
 	*/
-static void draw_battery_icon(u16 batt)
+void draw_battery_icon(u16 batt)
 {
+  
 	u8 pos = (tft_get_orientation() % 2 ? MAX_HEIGHT : MAX_WIDTH);
 	u16 batt_color = 0, batt_boundary = 0;
 	u16 batt_w = 0;
@@ -165,6 +166,7 @@ static void draw_battery_icon(u16 batt)
 		tft_put_pixel(pos-4, 5+i, batt_boundary);
 		tft_put_pixel(pos-3, 5+i, batt_boundary);
 	}
+  
 }
 
 /**
@@ -219,14 +221,14 @@ void menu(u8 default_id, bool pre_enter)
 				button_update();
 							
 				/** Menu item shift **/
-				if (button_pressed(BUTTON_JS2_DOWN) == 1 || button_hold(BUTTON_JS2_DOWN, 10, 1)) {
+				if (BUTTON_DOWN_LISTENER()) {
 					// Go down the list
 					if (menu_selected < menu_count - 1) {
 						++menu_selected; 
 					} else {
 						menu_selected = 0;
 					}
-				} else if (button_pressed(BUTTON_JS2_UP) == 1 || button_hold(BUTTON_JS2_UP, 10, 1)) {
+				} else if (BUTTON_UP_LISTENER()) {
 					if (menu_selected > 0) {
 						--menu_selected;
 					} else {
@@ -235,7 +237,7 @@ void menu(u8 default_id, bool pre_enter)
 				}
 				
 				/** Enter menu **/
-				if (button_pressed(BUTTON_JS2_CENTER) == 1 || pre_enter) {
+				if (BUTTON_ENTER_LISTENER() || pre_enter) {
 					if (menu_list[menu_selected].fx == 0) {
 						// NULL FUNCTION
 						buzzer_play_song(FAIL_SOUND, 120, 100);
@@ -253,7 +255,7 @@ void menu(u8 default_id, bool pre_enter)
 					}
 				}        
 				/** Change screen orientation **/
-				if (button_pressed(BUTTON_1) == 1) {
+				if (button_pressed(BUTTON_1) == 1 || button_pressed(BUTTON_XBC_BACK) == 1) {
 					tft_set_orientation((tft_get_orientation() + 1) % 4);
 					SUCCESSFUL_MUSIC;
 				}
@@ -300,6 +302,7 @@ void menu(u8 default_id, bool pre_enter)
 				tft_set_bg_color(prev_bg_color);
 				tft_set_text_color(prev_text_color);
 				tft_update();
+   
 			}
 		}
 	}
@@ -428,3 +431,7 @@ u32 tft_ui_get_val(const TFT_UI_ITEM* const item)
   return 0; 
 }
 
+u8 return_listener(void)
+{
+  return BUTTON_RETURN_LISTENER();
+}

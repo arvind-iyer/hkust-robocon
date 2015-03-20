@@ -31,5 +31,6 @@
 #include "robocon.h"
 #include "wheel_base.h"
 #include "ultrasonic.h"
+#include "xbc_mb.h"
 
 #endif /* __MAIN_H */

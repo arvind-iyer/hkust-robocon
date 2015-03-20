@@ -27,6 +27,7 @@ int main(void)
 	sensor_init();
 	racket_init();
 	gyro_register_char();
+  xbc_mb_init(XBC_BLUETOOTH_FIRST);
   
 	system_start(1200);
 	
