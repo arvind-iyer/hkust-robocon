@@ -9,6 +9,7 @@
 #include "gyro.h"
 #include "tft.h"
 #include "wheel_base_pid.h"
+#include "robocon.h"
 
 // Protocol
 #define	BLUETOOTH_WHEEL_BASE_VEL_ID	    			0x40    // RX
@@ -17,7 +18,7 @@
 #define	BLUETOOTH_WHEEL_BASE_AUTO_START_ID		0x51    // RX
 #define	BLUETOOTH_WHEEL_BASE_AUTO_STOP_ID			0x52    // RX
 #define BLUETOOTH_WHEEL_BASE_POS_ID						0x60    // TX
-#define BLUETOOTH_WHEEL_BASE_CHAR_ID           0x70    // RX
+#define BLUETOOTH_WHEEL_BASE_CHAR_ID          0x70    // RX
 
 
 #define	BLUETOOTH_WHEEL_BASE_TIMEOUT					100
@@ -26,7 +27,7 @@
 
 // Wheel-base speed related
 #define	WHEEL_BASE_XY_VEL_RATIO								707		//  70.7%
-#define	WHEEL_BASE_W_VEL_RATIO								-800		//	-80.0%
+#define	WHEEL_BASE_W_VEL_RATIO								-400		//	-80.0%
 static const u16 SPEED_MODES[10] =	// In percentage (20 = 20%)
 {
 	0, 10, 20, 30, 40, 50, 60, 70, 80, 90
@@ -37,10 +38,10 @@ static const u16 SPEED_MODES[10] =	// In percentage (20 = 20%)
 #define	WHEEL_BASE_DEFAULT_SPEED_MODE					3			// from 0 to 9
 
 // Wheel base motors acceleration (CONSTANT, to be configured upon startup)
-#define	WHEEL_BASE_BR_ACC											600		// Bottom-right wheel
-#define	WHEEL_BASE_BL_ACC										  600		// Bottom-left wheel
-#define	WHEEL_BASE_TL_ACC											600		// Top-left wheel
-#define	WHEEL_BASE_TR_ACC											600 		// Top-right wheel
+#define	WHEEL_BASE_BR_ACC											200		// Bottom-right wheel
+#define	WHEEL_BASE_BL_ACC										  200		// Bottom-left wheel
+#define	WHEEL_BASE_TL_ACC											200		// Top-left wheel
+#define	WHEEL_BASE_TR_ACC											200 		// Top-right wheel
 
 typedef struct {
 	s32 x;
@@ -49,10 +50,10 @@ typedef struct {
 } WHEEL_BASE_VEL;
 
 static const MOTOR_ID
-	MOTOR_BOTTOM_RIGHT 		= MOTOR3,		//changed from MOTOR1		//MOTOR3 for C
-	MOTOR_BOTTOM_LEFT 		= MOTOR4,		//changed from MOTOR2		// MOTOR4 for C
-	MOTOR_TOP_LEFT 				= MOTOR1,		//changed from MOTOR3				//MOTOR1 for C
-	MOTOR_TOP_RIGHT 			= MOTOR2;		//changed from MOTOR4				// MOTOR2 for C
+	MOTOR_BOTTOM_RIGHT 		= (ROBOT == 'D' ? MOTOR1 : MOTOR3),		//changed from MOTOR1		//MOTOR3 for C
+	MOTOR_BOTTOM_LEFT 		= (ROBOT == 'D' ? MOTOR2 : MOTOR4),		//changed from MOTOR2		// MOTOR4 for C
+	MOTOR_TOP_LEFT 				= (ROBOT == 'D' ? MOTOR3 : MOTOR1),		//changed from MOTOR3				//MOTOR1 for C
+	MOTOR_TOP_RIGHT 			= (ROBOT == 'D' ? MOTOR4 : MOTOR2);		//changed from MOTOR4				// MOTOR2 for C
 
 
 
