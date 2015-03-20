@@ -23,6 +23,7 @@ int main(void)
 	wheel_base_init();
   ultrasonic_init();
   servo_init();
+  xbc_mb_init(XBC_BLUETOOTH_FIRST);
   system_start(1200); 
   
 	menu_add("Your program", robocon_main);

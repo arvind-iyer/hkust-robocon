@@ -105,5 +105,6 @@ void tft_fill_color(u16 color);
 u8 tft_char_is_changed(u8 x, u8 y);
 void tft_prints(u8 x, u8 y, const char * pstr, ...);
 void tft_update(void);
+void tft_update_trigger(void (*fx)(void));
 
 #endif		/* __LCD_RED_H */

@@ -18,6 +18,8 @@ u8 text_bg_color_prev[CHAR_MAX_X][CHAR_MAX_Y];/*for transmit for xbc, msb 4bits:
 
 u16 print_pos = 0;
 
+static void (*tft_update_trigger_fx)(void) = 0;
+
 /**
   * @brief  Initialization of SPI for TFT
   * @param  None
@@ -752,4 +754,14 @@ void tft_update(void)
 			}
 			break;
 	}
+  
+  if (tft_update_trigger_fx != 0) {
+    tft_update_trigger_fx(); 
+  }
 }
+
+void tft_update_trigger(void (*fx)(void))
+{
+  tft_update_trigger_fx = fx;
+}
+

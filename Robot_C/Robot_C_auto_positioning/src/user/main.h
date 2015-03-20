@@ -33,6 +33,7 @@
 #include "ultrasonic.h"
 #include "special_char_handler.h"
 #include "racket.h"
+#include "xbc_mb.h"
 
 
 #endif /* __MAIN_H */
