@@ -90,7 +90,6 @@ void wheel_base_pid_loop(void)
 	
 	
 	/* matrix shift applied to the direction of movement */
-	/* untested!!*/
 	s32 shifted_dx = dx*int_cos(curr_pos.angle) - dy*int_sin(curr_pos.angle);
 	s32 shifted_dy = dx*int_sin(curr_pos.angle) + dy*int_cos(curr_pos.angle);
 	shifted_dx/=10000;	//downscale
@@ -122,38 +121,7 @@ void wheel_base_pid_loop(void)
 	
 	dw = pid_maintain_angle();
 	wheel_base_set_vel(dx, dy , dw); 
-	
-	
-	//wheel_base_set_vel(wheel_base_get_vel().x, wheel_base_get_vel().y, dw);
-	
-	/*if ()
-	{
-		
-	}*/
-	
-	/*
-	if (dx+dy < 100 && dx+dy > -100)
-	{
-		wheel_base_pid_off();
-	}
-	
-	*/
-	
-	/*
-	POSITION proportion = {target_pos.x-(-get_pos()->x), target_pos.y-get_pos()->y, target_pos.angle-get_pos()->angle};
-	s32 positioning_magnitude_x = proportion.x/Abs(proportion.x) * wheel_base_speed_mode*2;
-	s32 positioning_magnitude_y = proportion.y/Abs(proportion.y) * wheel_base_speed_mode*2;
-	wheel_base_set_vel(positioning_magnitude_x+proportion.x/200*wheel_base_speed_mode, positioning_magnitude_y+proportion.y/200*wheel_base_speed_mode,0);
-	tft_prints(0, 4, "P :(%3d,%3d,%3d)", proportion.x, proportion.y, proportion.angle);
-	tft_prints(0, 5, "P enabled = %d", auto_positioning_enabled);
-	tft_update();
-	
-d 
-	if (proportion.x+proportion.y < 200 && proportion.x+proportion.y > -200)
-	{
-		wheel_base_pid_off();
-	}
-	*/
+
 }
 
 /**

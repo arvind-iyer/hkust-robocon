@@ -80,4 +80,6 @@ void wheel_base_increase_joystick_speed(void);
 void wheel_base_decrease_joystick_speed(void);
 u8 wheel_base_get_joystick_speed(void);
 
+void is_it_turning(u8 val);
+void is_it_moving(u8);
 #endif	/* __WHEEL_BASE_H */

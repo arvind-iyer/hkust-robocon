@@ -117,9 +117,11 @@ void wheel_base_init(void)
 	wheel_base_last_can_tx = 0;
 	wheel_base_tx_acc();
 	
-	//PID on by default, initial target position = position at time of initialisation
+	//PID on at beginning
+	wheel_base_set_target_pos(wheel_base_get_target_pos());
 	wheel_base_pid_on();
-	wheel_base_set_target_pos((POSITION){get_pos()->x, get_pos()->y, get_pos()->angle});
+	
+	
 }
 
 /**
@@ -209,10 +211,12 @@ void wheel_base_update(void)
     * TODO2: If there is not any Bluetooth RX data after BLUETOOTH_WHEEL_BASE_TIMEOUT, stop the motors
   
     */
-  if(!wheel_base_pid_flag && (get_full_ticks() - wheel_base_joystick_vel_last_update > BLUETOOTH_WHEEL_BASE_TIMEOUT) && (get_full_ticks() - wheel_base_bluetooth_vel_last_update > BLUETOOTH_WHEEL_BASE_TIMEOUT))
+  if( (!wheel_base_pid_flag && (get_full_ticks() - wheel_base_joystick_vel_last_update > BLUETOOTH_WHEEL_BASE_TIMEOUT) && (get_full_ticks() - wheel_base_bluetooth_vel_last_update > BLUETOOTH_WHEEL_BASE_TIMEOUT)))
 		wheel_base_set_vel(0,0,0);	//if no joystick_control, no bluetooth_input, stop_motor
-	if (wheel_base_pid_flag || !is_turning)	// if auto positioning is enabled, start auto_motor_positioning
+	if ((wheel_base_pid_flag || !is_turning ) && !(Abs(xbc_get_joy(XBC_JOY_LX)) > 0 || Abs(xbc_get_joy(XBC_JOY_LY)) > 0))	// if auto positioning is enabled, start auto_motor_positioning
 	{
+		if(!(Abs(xbc_get_joy(XBC_JOY_LX)) > 0 || Abs(xbc_get_joy(XBC_JOY_LY)) > 0))
+			wheel_base_set_target_pos((POSITION){get_pos()->x, get_pos()->y, wheel_base_get_target_pos().angle});
 		wheel_base_pid_loop();
 	}
 //	if(!is_turning)
@@ -246,14 +250,6 @@ void wheel_base_tx_position(void)
 	s16 x = get_pos()->x,		
 			y = get_pos()->y,				
 			w = (get_pos()->angle / 10);
-	/*switch(ROBOT)
-	{
-		case 'D':
-			y = -y;// y position for tx part's been inverted for ROBOT_D
-		break;
-		case 'C':
-			x = -x;// x position for tx part's been inverted for ROBOT_C
-	}*/
 	
 	u8 data[6];
 	
@@ -314,4 +310,13 @@ void wheel_base_decrease_joystick_speed(void)
 u8 wheel_base_get_joystick_speed(void)
 {
 	return wheel_base_joystick_speed;
+}
+
+void is_it_moving(u8 val)
+{
+	is_moving = val;
+}
+void is_it_turning(u8 val)
+{
+	is_turning = val;
 }
