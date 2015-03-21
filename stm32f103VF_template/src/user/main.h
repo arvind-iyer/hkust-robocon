@@ -31,6 +31,7 @@
 #include "wheel_base.h"
 #include "ultrasonic.h"
 #include "xbc_mb.h"
+#include "nec.h"
 
 
 #endif /* __MAIN_H */

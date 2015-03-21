@@ -26,10 +26,11 @@ int main(void)
   
   xbc_mb_init(XBC_BLUETOOTH_FIRST); 
 	wheel_base_init();
-  ultrasonic_init();
+  //ultrasonic_init();
+  nec_init();
+
   
-	system_start(1200);
-	
+  
 	menu_add("Your program", robocon_main);
 	menu_add("Position test", position_test);
 	menu_add("Motor test", motor_test);
