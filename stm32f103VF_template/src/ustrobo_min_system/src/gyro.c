@@ -111,7 +111,6 @@ u8 gyro_pos_set(s16 x, s16 y, s16 a)
 	uart_tx_byte(GYRO_UART, a >> 8);
 	uart_tx_byte(GYRO_UART, a & 0xFF);
 	
-	#warning hard_coding
 	u16 timeout = 100;
 	while (!(reply_flag & GYRO_FLAG_SET_POS)) {
 		if (!(--timeout)) {

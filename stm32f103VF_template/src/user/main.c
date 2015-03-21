@@ -26,7 +26,7 @@ int main(void)
   ultrasonic_init();
 	special_char_handler_init();
 	racket_init();
-  
+  xbc_mb_init(XBC_BLUETOOTH_FIRST);
 	system_start(1200);
 	
 	menu_add("Robot A Prog", robocon_main);

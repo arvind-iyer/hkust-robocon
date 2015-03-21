@@ -21,7 +21,7 @@
   
 #include "button.h"
 
-static const GPIO* buttons[BUTTON_COUNT] = {
+static const GPIO* buttons[BUTTON_COUNT] = { 
 	BUTTON_JS1_UP_GPIO,
 	BUTTON_JS1_LEFT_GPIO,
 	BUTTON_JS1_DOWN_GPIO,
@@ -36,8 +36,8 @@ static const GPIO* buttons[BUTTON_COUNT] = {
 	BUTTON_2_GPIO
 };
 
-static u16 button_pressed_count[BUTTON_COUNT];
-static u16 button_released_count[BUTTON_COUNT];
+static u16 button_pressed_count[BUTTON_COUNT + XBC_BUTTON_COUNTS];
+static u16 button_released_count[BUTTON_COUNT + XBC_BUTTON_COUNTS];
 
 
 /**
@@ -62,9 +62,51 @@ void button_init(void)
 	*/
 void button_update(void)
 {
-	for (u8 i = 0; i < BUTTON_COUNT; ++i) {
-		const GPIO* button = buttons[i];
-		if (gpio_read_input(button) == BUTTON_PRESSED) {
+  u32 xbox_tmp = 1;
+	for (u8 i = 0; i < BUTTON_COUNT + XBC_BUTTON_COUNTS; ++i) {
+    u8 button_pressed_flag = 0;
+    
+    if (i < XBC_BUTTON_START_ID) {
+      const GPIO* button = buttons[i];
+      button_pressed_flag = (gpio_read_input(button) == BUTTON_PRESSED);
+    } else {
+      // XBOX Buttons
+      // Special case (Diagonal switch)
+      switch (i) {
+          /** Special cases **/
+          case BUTTON_XBC_NE:
+            button_pressed_flag = (xbc_get_digital() & XBC_UP) && (xbc_get_digital() & XBC_RIGHT);
+          break;
+          case BUTTON_XBC_SE:
+            button_pressed_flag = (xbc_get_digital() & XBC_DOWN) && (xbc_get_digital() & XBC_RIGHT);
+          break;
+          case BUTTON_XBC_SW:
+            button_pressed_flag = (xbc_get_digital() & XBC_DOWN) && (xbc_get_digital() & XBC_LEFT);
+          break;
+          case BUTTON_XBC_NW:
+            button_pressed_flag = (xbc_get_digital() & XBC_UP) && (xbc_get_digital() & XBC_LEFT);
+          break;
+            
+          
+          default: 
+            // Normal case
+            button_pressed_flag = (xbc_get_digital() & xbox_tmp) > 0;
+            if (i == BUTTON_XBC_N || i == BUTTON_XBC_E || i == BUTTON_XBC_S || i == BUTTON_XBC_W) {
+              // Diagonal press will be treated as 0
+              u8 pressed_count = ((xbc_get_digital() & XBC_UP) > 0) + ((xbc_get_digital() & XBC_RIGHT) > 0)
+                + ((xbc_get_digital() & XBC_DOWN) > 0) + ((xbc_get_digital() & XBC_LEFT) > 0);
+              if (pressed_count != 1) {
+                button_pressed_flag = 0;
+              }
+            }
+            
+            xbox_tmp <<= 1;
+          break;
+      }
+      
+    }
+    
+		if (button_pressed_flag) {
 			++button_pressed_count[i];
 			button_released_count[i] = 0;
 		} else {
@@ -108,7 +150,7 @@ static BUTTON rotate_js_button(BUTTON b) {
   */
 u16 button_pressed(BUTTON b)
 {
-	if (b < BUTTON_COUNT) {
+	if (b < BUTTON_COUNT + XBC_BUTTON_COUNTS) {
 		return button_pressed_count[rotate_js_button(b)];
 	} else {
 		return 0;
@@ -134,7 +176,7 @@ u8 button_hold(BUTTON b, u16 threshold, u8 mod) {
   */
 u16 button_released(BUTTON b) 
 {
-	if (b < BUTTON_COUNT) {
+	if (b < BUTTON_COUNT + XBC_BUTTON_COUNTS) {
 		return button_released_count[rotate_js_button(b)];
 	} else {
 		return 0;
