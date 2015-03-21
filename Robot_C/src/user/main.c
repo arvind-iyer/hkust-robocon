@@ -1,6 +1,5 @@
 #include "main.h"
 
-
 /**
   * @brief Main function
   * @param None.
@@ -23,10 +22,10 @@ int main(void)
 	bluetooth_init();
 	wheel_base_init();
   ultrasonic_init();
-	servo_init();
-
-	system_start("Robocon 2015  Min System 1.0", 1200);
-	
+  servo_init();
+  xbc_mb_init(XBC_BLUETOOTH_FIRST);
+  system_start(1200); 
+  
 	menu_add("Your program", robocon_main);
 	menu_add("Position test", position_test);
 	menu_add("Motor test", motor_test);

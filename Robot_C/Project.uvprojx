@@ -433,6 +433,16 @@
               <FileType>1</FileType>
               <FilePath>.\src\user\wheel_base.c</FilePath>
             </File>
+            <File>
+              <FileName>racket.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\src\user\racket.c</FilePath>
+            </File>
+            <File>
+              <FileName>special_char_handler.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\special_char_handler.c</FilePath>
+            </File>
           </Files>
         </Group>
         <Group>
@@ -595,6 +605,16 @@
               <FileName>xbc_mb.c</FileName>
               <FileType>1</FileType>
               <FilePath>.\src\ustrobo_min_system\src\xbc_mb.c</FilePath>
+            </File>
+            <File>
+              <FileName>bluetooth_xbc_mb.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\src\ustrobo_min_system\src\bluetooth_xbc_mb.c</FilePath>
+            </File>
+            <File>
+              <FileName>can_xbc_mb.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\src\ustrobo_min_system\src\can_xbc_mb.c</FilePath>
             </File>
           </Files>
         </Group>

@@ -45,7 +45,7 @@ void servo_init(void){
 	TIM_OCInitStructure.TIM_OutputState = TIM_OutputState_Enable;  	// this part enable the output
 	TIM_OCInitStructure.TIM_OutputNState = TIM_OutputState_Disable; // this part disable the Nstate
 	//------------------------------//
-	TIM_OCInitStructure.TIM_Pulse = 1500;														// this part sets the initial CCR value
+	TIM_OCInitStructure.TIM_Pulse = 900;														// this part sets the initial CCR value
 	//------------------------------//
 	
 	// OC Init

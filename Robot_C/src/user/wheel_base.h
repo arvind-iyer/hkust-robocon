@@ -1,11 +1,15 @@
 #ifndef __WHEEL_BASE_H
 #define __WHEEL_BASE_H
 
+#include <stdbool.h>
 #include "stm32f10x.h"
 #include "can_motor.h"
 #include "bluetooth.h"
 #include "ticks.h"
 #include "gyro.h"
+#include "tft.h"
+#include "wheel_base_pid.h"
+#include "robocon.h"
 
 // Protocol
 #define	BLUETOOTH_WHEEL_BASE_VEL_ID	    			0x40    // RX
@@ -14,7 +18,7 @@
 #define	BLUETOOTH_WHEEL_BASE_AUTO_START_ID		0x51    // RX
 #define	BLUETOOTH_WHEEL_BASE_AUTO_STOP_ID			0x52    // RX
 #define BLUETOOTH_WHEEL_BASE_POS_ID						0x60    // TX
-#define BLUETOOTH_WHEEL_BASE_CHAR_ID           0x70    // RX
+#define BLUETOOTH_WHEEL_BASE_CHAR_ID          0x70    // RX
 
 
 #define	BLUETOOTH_WHEEL_BASE_TIMEOUT					100
@@ -23,7 +27,7 @@
 
 // Wheel-base speed related
 #define	WHEEL_BASE_XY_VEL_RATIO								707		//  70.7%
-#define	WHEEL_BASE_W_VEL_RATIO								-800		//	-80.0%
+#define	WHEEL_BASE_W_VEL_RATIO								-400		//	-80.0%
 static const u16 SPEED_MODES[10] =	// In percentage (20 = 20%)
 {
 	0, 10, 20, 30, 40, 50, 60, 70, 80, 90
@@ -46,15 +50,12 @@ typedef struct {
 } WHEEL_BASE_VEL;
 
 static const MOTOR_ID
-	MOTOR_BOTTOM_RIGHT 		= MOTOR1,
-	MOTOR_BOTTOM_LEFT 		= MOTOR2,
-	MOTOR_TOP_LEFT 				= MOTOR3,
-	MOTOR_TOP_RIGHT 			= MOTOR4;
+	MOTOR_BOTTOM_RIGHT 		= (ROBOT == 'D' ? MOTOR1 : MOTOR3),		//changed from MOTOR1		//MOTOR3 for C
+	MOTOR_BOTTOM_LEFT 		= (ROBOT == 'D' ? MOTOR2 : MOTOR4),		//changed from MOTOR2		// MOTOR4 for C
+	MOTOR_TOP_LEFT 				= (ROBOT == 'D' ? MOTOR3 : MOTOR1),		//changed from MOTOR3				//MOTOR1 for C
+	MOTOR_TOP_RIGHT 			= (ROBOT == 'D' ? MOTOR4 : MOTOR2);		//changed from MOTOR4				// MOTOR2 for C
 
 
-typedef	struct {
-	s32 Kp, Ki, Kd;
-} PID;
 
 
 void wheel_base_init(void);
@@ -65,10 +66,10 @@ void wheel_base_set_vel(s32 x, s32 y, s32 w);
 WHEEL_BASE_VEL wheel_base_get_vel(void);
 char wheel_base_bluetooth_get_last_char(void);
 void wheel_base_update(void);
+void wheel_base_positioning_auto(void);
 void wheel_base_tx_position(void);
 
-
-void wheel_base_set_pid(PID pid);
+bool bluetooth_is_key_release(void);
 POSITION wheel_base_get_target_pos(void);
 void wheel_base_set_target_pos(POSITION pos);
 void wheel_base_pid_on(void);
@@ -79,4 +80,6 @@ void wheel_base_increase_joystick_speed(void);
 void wheel_base_decrease_joystick_speed(void);
 u8 wheel_base_get_joystick_speed(void);
 
+void is_it_turning(u8 val);
+void is_it_moving(u8);
 #endif	/* __WHEEL_BASE_H */

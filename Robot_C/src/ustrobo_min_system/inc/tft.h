@@ -63,11 +63,11 @@
 #define CHAR_MAX_Y				10		// max between CHAR_MAX_Y_VERTICAL and CHAR_MAX_Y_HORIZONTAL
 
 //extern u8 tft_orientation;
-extern u8 tft_width;
-extern u8 tft_height;
-extern u16 curr_bg_color;
-extern u16 curr_text_color;
-extern u16 curr_text_color_sp;
+//extern u8 tft_width;
+//extern u8 tft_height;
+//extern u16 curr_bg_color;
+//extern u16 curr_text_color;
+//extern u16 curr_text_color_sp;
 
 extern char text[CHAR_MAX_X][CHAR_MAX_Y];
 extern u16 text_color[CHAR_MAX_X][CHAR_MAX_Y];
@@ -91,7 +91,9 @@ void tft_set_special_color(u16 text_color_sp);
 u16 tft_get_special_text_color(void);
 u8 tft_get_orientation(void);
 void tft_set_orientation(u8 o);
-	
+u8 tft_get_max_x_char(void);
+u8 tft_get_max_y_char(void);
+ 
 void tft_set_pixel_pos(u8 x, u8 y);
 void tft_set_char_pos(u8 x1, u8 y1, u8 x2, u8 y2);
 void tft_force_clear(void);
@@ -103,5 +105,6 @@ void tft_fill_color(u16 color);
 u8 tft_char_is_changed(u8 x, u8 y);
 void tft_prints(u8 x, u8 y, const char * pstr, ...);
 void tft_update(void);
+void tft_update_trigger(void (*fx)(void));
 
 #endif		/* __LCD_RED_H */

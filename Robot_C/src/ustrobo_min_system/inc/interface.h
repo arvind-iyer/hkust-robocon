@@ -11,6 +11,8 @@
 #include "ticks.h"
 #include "tft.h"
 #include "led.h"
+#include "xbc_mb.h"
+#include "can_xbc_mb.h"
 
 #define MENU_LIST_MAX			20
 
@@ -66,11 +68,14 @@ typedef struct {
 } TFT_UI;
 
 
-void system_start(const char* title, u16 duration);
+void system_start(u16 duration);
 void battery_regular_check(void);
+void draw_battery_icon(u16 batt);
 void draw_top_bar(void);
 void menu(u8 default_id, bool pre_enter);
 void menu_add(const char* title, void (*fx)(void));
+
+u8 return_listener(void);
 
 typedef enum {
 	tft_ui_event_left,

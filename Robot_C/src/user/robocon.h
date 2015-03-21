@@ -17,7 +17,8 @@
 #include "xbc_mb.h"
 #include "button.h"
 #include "encoder.h"
-
+  //'C' or 'D'
+#define ROBOT 'C'
 /*** Optional ***/
 #include "can_protocol.h"
 #include "usart.h"
@@ -26,7 +27,12 @@
 #include "gyro.h"
 #include "bluetooth.h"
 #include "wheel_base.h"
+#include "racket.h"
+#include "xbc_mb.h"
+
 
 
 void robocon_main(void);
+bool get_xbc_input_allowed(void);
+void set_xbc_input_allowed(bool);
 #endif	/* __ROBOCON_H */
