@@ -606,6 +606,16 @@
               <FileType>1</FileType>
               <FilePath>.\src\ustrobo_min_system\src\xbc_mb.c</FilePath>
             </File>
+            <File>
+              <FileName>bluetooth_xbc_mb.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\src\ustrobo_min_system\src\bluetooth_xbc_mb.c</FilePath>
+            </File>
+            <File>
+              <FileName>can_xbc_mb.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\src\ustrobo_min_system\src\can_xbc_mb.c</FilePath>
+            </File>
           </Files>
         </Group>
         <Group>

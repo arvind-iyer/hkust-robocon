@@ -109,9 +109,11 @@ u8 gyro_cal(void)
 	uart_tx_byte(GYRO_UART, GYRO_CAL);
 	uart_tx_byte(GYRO_UART, 0);
 	
+	u16 timeout = 100;
 	while (!(reply_flag & GYRO_FLAG_CAL)) {
-		if ((get_ticks()+1000-ticks_last) % 1000 >= 20)			// 20 ms timeout
+		if (!(--timeout)) {
 			return 0;
+		}
 	}
 	return 1;
 }
@@ -140,9 +142,11 @@ u8 gyro_pos_set(s16 x, s16 y, s16 a)
 	uart_tx_byte(GYRO_UART, a >> 8);
 	uart_tx_byte(GYRO_UART, a & 0xFF);
 	
+	u16 timeout = 100;
 	while (!(reply_flag & GYRO_FLAG_SET_POS)) {
-		if ((get_ticks()+1000-ticks_last) % 1000 >= 20)			// 20 ms timeout
+		if (!(--timeout)) {
 			return 0;
+		}
 	}
 
 	return 1;
