@@ -1,0 +1,46 @@
+/**
+  ******************************************************************************
+  * STM32F103VG Mainboard Library
+  * Maintained by Kenneth Au
+  * Version: (Robocon 2015) Version 1.6
+  * Last update: 20th March, 2015
+ ******************************************************************************
+  */
+ 
+/** Version 1.6 (20th March, 2015) **/
+- XBox library FULL
+	- XBox with CAN
+	- XBox with Bluetooth (UI Program)
+	- XBox priority (which one will be used if both CAN Xbox & Bluetooth XBox is connected)
+	
+
+/** Version 1.5.2 (19th March, 2015) **/
+- XBox library III (xbc button merged with button functions).
+- XBox protocol improvement (compressed color, data rate).
+/** Version 1.5.1 (18th March, 2015) **/
+- XBox library II (mainboard LCD to xbc done) done.
+/** Version 1.5 (18th March, 2015) **/
+- XBox library I (xbc to mainboard done) done.
+
+/** Version 1.4 (15th March, 2015) **/
+- n_bytes_to_one() in can_protocol fixed!
+
+
+/** Version 1.3 (2nd March, 2015) **/
+- Gyro_pos_set() fix!
+
+
+/** Version 1.2 (6th Feb, 2015)	**/
+- Implementation of the positioning system (gyro.*)
+
+
+/** Version 1.1 (4th Feb, 2015) **/
+- Improvement of the interface 
+	- Speed selector width widened (the motor testing module)
+	- Holding the changing button (left & right) will have a faster speed
+- Shorter click music
+- For "tft", replaced the global variable tft_width and tft_height with tft_get_max_x_char() and tft_get_max_x_char()
+
+
+/** Version 1.0 (2nd Feb, 2015) **/
+- First release
