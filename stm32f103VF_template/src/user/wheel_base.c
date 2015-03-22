@@ -13,10 +13,6 @@ static u8 wheel_base_pid_flag = 0;
 static POSITION target_pos = {0, 0, 0};
 static PID wheel_base_pid = {0, 0, 0};
 
-static s32 old_vel_tl = 0, cur_vel_tl = 0, old_vel_bl = 0, cur_vel_bl = 0,
-old_vel_tr = 0,cur_vel_tr = 0,old_vel_br = 0, cur_vel_br = 0;
-
-
 /**
 	* @brief Handler for the bluetooth RX with id 0x4?
 	* @param id: ID of the RX package
@@ -308,6 +304,11 @@ void wheel_base_pid_off(void)
 u8 wheel_base_get_pid_flag(void)
 {
 	return wheel_base_pid_flag;
+}
+
+void wheel_base_vel_last_update_refresh(void)
+{
+	wheel_base_bluetooth_vel_last_update = get_full_ticks();
 }
 
 void wheel_base_override_set_vel(s32 x, s32 y)

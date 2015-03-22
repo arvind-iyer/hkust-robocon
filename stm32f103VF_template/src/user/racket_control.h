@@ -30,10 +30,13 @@ void sensor_update(void);
 void racket_init(void);
 
 // Lower racket functions
+void low_racket_move(void);
 void low_racket_standby(void);
 void low_racket_update(void);
 
 // Higher racket functions
+void high_racket_move(void);
+void high_racket_startup(void);
 void high_racket_update(void);
 
 void racket_received_command(void);

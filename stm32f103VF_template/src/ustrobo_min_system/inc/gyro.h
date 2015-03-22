@@ -60,10 +60,10 @@ void lower_shift_y (void);
 void gyro_register_char (void);
 s32 get_shift_x (void);
 s32 get_shift_y (void);
-s32 get_min_gyro_x();
-s32 get_min_gyro_y();
-s32 get_max_gyro_x();
-s32 get_max_gyro_y();
+s32 get_min_gyro_x(void);
+s32 get_min_gyro_y(void);
+s32 get_max_gyro_x(void);
+s32 get_max_gyro_y(void);
 
 
 				
