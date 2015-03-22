@@ -9,30 +9,36 @@
 #include "led.h"
 #include "usart.h"
 
-/*
+
 #define NEC_TIM							TIM9
 #define NEC_RCC							RCC_APB2Periph_TIM9
 #define NEC_IRQn            TIM1_BRK_TIM9_IRQn
 #define NEC_IRQHandler      void TIM1_BRK_TIM9_IRQHandler(void)
-*/
 
-#define NEC_TIM							  TIM10
-#define NEC_RCC							  RCC_APB2Periph_TIM10
-#define NEC_IRQn						  TIM1_UP_TIM10_IRQn
-#define NEC_IRQHandler			  void TIM1_UP_TIM10_IRQHandler(void)
-  
-#define NEC_FREQUENCY       38000 /**38000**/
+
+#define NEC_FREQUENCY       38000
 #define NEC_GPIO            ((GPIO*) &PC6)
 #define NEC_DATA_BIT        8
+#define NEC_DATA_MAX        0xFF   /** For 8 bit **/
+
+typedef u8 NEC_Data_TypeDef;
+
 typedef enum {
-  NEC_NULL,
+  NEC_NULL = 0,
   NEC_BURST, /* BURST ON DETECTED */
   NEC_ADDRESS_LOW,
   NEC_ADDRESS_HIGH,
   NEC_COMMAND_LOW,
   NEC_COMMAND_HIGH,
-  NEC_REPEAT
+  NEC_REPEAT_START,
+  NEC_REPEATING,
 } NEC_STATE;
+
+typedef struct {
+  NEC_Data_TypeDef address, command;
+} NEC_Msg;
+
+static const NEC_Msg NEC_NullMsg = {0,0};
 
 /**
   uart_init(COM1, 115200);
@@ -59,12 +65,12 @@ typedef enum {
 void nec_init(void);
 u16 get_nec_cont_on_max(void);
 u16 get_nec_cont_off_max(void);
-u16 get_nec_state(void);
-u16 get_nec_last_data(void);
+NEC_STATE get_nec_state(void);
+NEC_Data_TypeDef* get_nec_raw_data(void);  /** ARRAY **/
+NEC_Data_TypeDef get_nec_last_data(void);
 
-extern u16 nec_last_address_low;
-extern u16 nec_last_address_high;
-extern u16 nec_last_command_low;
-extern u16 nec_last_command_high;
 
+NEC_Msg get_nec_last_msg(void);
+NEC_Msg get_nec_current_msg(void);
+  
 #endif  /* __NEC_H */

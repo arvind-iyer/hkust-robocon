@@ -1,5 +1,11 @@
 #include "nec.h"
 
+typedef struct {
+  u16 address;
+  void (*fx)(u16 command);
+} NEC_HANDLER_PAIR;
+
+
 static u16 cont_on_count = 0;
 static u16 cont_off_count = 0;
 static u16 cont_on_falling = 0;
@@ -8,32 +14,48 @@ static u16 cont_off_falling = 0;
 static u16 cont_on_max = 0;
 static u16 cont_off_max = 0;
 
-static u16 nec_data_reading_state = 0; /** waiting for data state **/
-static u16 nec_data_current_bit = 0;
-static u16 nec_data_current_buffer = 0;
+static u8 nec_data_reading_state = 0; /** waiting for data state **/
+static u8 nec_data_current_bit = 0;
+static u8 nec_data_current_buffer = 0;
 
-static u16 nec_last_data = (u16)-1;
-
-u16 nec_last_address_low = 0;
-u16 nec_last_address_high = 0;
-u16 nec_last_command_low = 0;
-u16 nec_last_command_high = 0;
+static NEC_Data_TypeDef nec_last_data = (u16)-1;
+static NEC_Data_TypeDef nec_raw_data[4] = {0};
+typedef enum {
+  NEC_RAW_ADDRESS_LOW,
+  NEC_RAW_ADDRESS_HIGH, /** Complement of low **/
+  NEC_RAW_COMMAND_LOW,
+  NEC_RAW_COMMAND_HIGH  /** Complement of low **/
+} nec_raw_data_id;
 
 static NEC_STATE nec_state = NEC_NULL;
 
+
+#define NEC_REPEAT_CYCLE        4
+static u8 nec_current_repeating_id = 0;
+
+static NEC_Msg last_msg = {0, 0};
+static NEC_Msg current_msg = {0, 0}; 
 
 typedef struct {
   u16 min, max;
 } NEC_RANGE;
 
+static const u16 NEC_PULSE_LOW_MAX = 3400;
 static const NEC_RANGE
   NEC_BURST_ON_RANGE = {280, 320},
   NEC_BURST_OFF_RANGE = {130, 185},
   
   NEC_DATA_ON_RANGE = {10, 35},
   NEC_DATA_ONE_OFF_RANGE = {35, 75},
-  NEC_DATA_ZERO_OFF_RANGE = {3, 25}
-  ; 
+  NEC_DATA_ZERO_OFF_RANGE = {5, 25},
+  
+  NEC_REPEAT_START_ON_RANGE = {10, 35},
+  NEC_REPEAT_START_OFF_RANGE = {1300, 1500};
+
+static const NEC_RANGE NEC_REPEAT_RANGE[NEC_REPEAT_CYCLE] = {
+  /* + */ {285, 315}, /* - */ {60, 80},
+  /* + */ {10, 35},   /* - */ {3330, 3380}
+};  
 
 
 static u8 nec_in_range(NEC_RANGE range, u16 val)
@@ -44,20 +66,14 @@ static u8 nec_in_range(NEC_RANGE range, u16 val)
 
 void nec_init(void)
 {
-  gpio_init(NEC_GPIO, GPIO_Speed_50MHz, GPIO_Mode_IPD, 1);
+  gpio_init(NEC_GPIO, GPIO_Speed_2MHz, GPIO_Mode_IPD, 1);
   
   
 	NVIC_InitTypeDef NVIC_InitStructure;
 	TIM_TimeBaseInitTypeDef  TIM_TimeBaseStructure;      									// TimeBase is for timer setting   > refer to P. 344 of library
 
 	RCC_APB2PeriphClockCmd(NEC_RCC , ENABLE);
-	
-//	TICKS_TIM->PSC = SystemCoreClock / 1000000 - 1;		// Prescaler
-//	TICKS_TIM->ARR = 1000;
-//	TICKS_TIM->EGR = 1;
-//	TICKS_TIM->SR = 0;
-//	TICKS_TIM->DIER = 1;
-//	TICKS_TIM->CR1 = 1;
+
 	
 	TIM_TimeBaseStructure.TIM_Period = 10;	                 				       // Timer period, 1000 ticks in one second
 	TIM_TimeBaseStructure.TIM_Prescaler = SystemCoreClock / (NEC_FREQUENCY*10) - 1;     // 72M/1M - 1 = 71
@@ -74,16 +90,23 @@ void nec_init(void)
 	NVIC_InitStructure.NVIC_IRQChannel = NEC_IRQn; 
 	NVIC_Init(&NVIC_InitStructure);
 	
-	//SysTick_Config(SystemCoreClock/1000);
+  last_msg = NEC_NullMsg;
+  current_msg = NEC_NullMsg;
+}
 
+static void nec_set_msg(NEC_Msg* msg, u16 address, u16 command)
+{
+    msg->address = address;
+    msg->command = command;
 }
 
 void nec_state_reset(void)
 {
   nec_state = NEC_NULL;
+  current_msg = NEC_NullMsg;
 }
 
-static u8 nec_process_data(u8 inverse_flag)
+static u8 nec_process_data(void)
 {
   if (nec_data_reading_state) {
     if (nec_in_range(NEC_DATA_ON_RANGE, cont_on_falling)) {
@@ -97,23 +120,22 @@ static u8 nec_process_data(u8 inverse_flag)
     u16 data = (u16)-1;  // Invalid data
     if (nec_in_range(NEC_DATA_ONE_OFF_RANGE, cont_off_falling)) {
       data = 1;
-      if (inverse_flag) {data = 0;}
     } else if (nec_in_range(NEC_DATA_ZERO_OFF_RANGE, cont_off_falling)) {
       data = 0;
-      if (inverse_flag) {data = 1;}
     }
     
     if (data == 0 || data == 1) {
-      //for (u8 i = 0; + i < nec
+      // Data starts from LSB to MSB
       for (u8 i = 0; i < nec_data_current_bit; ++i) {
         data *= 2;
       }
       nec_data_current_buffer += data;
       nec_data_current_bit++;
+      nec_data_reading_state = 1;
       return 1;
       
     } else {
-      //nec_state_reset();
+      nec_state_reset();
       return 0;
     }
   }  
@@ -142,19 +164,26 @@ NEC_IRQHandler
       }
       if (cont_off_count) {
         cont_off_falling = cont_off_count;
-        //uart_tx(COM1, "%d\n", cont_off_falling);
+        printf("-%d", cont_off_falling);
         cont_off_count = 0;
       } else {
         cont_off_falling = 0;
       }
     } else {
-      ++cont_off_count;
+      if (cont_off_count < NEC_PULSE_LOW_MAX) {
+        ++cont_off_count;
+      } else {
+        // Reset
+        cont_off_count = 0;
+        nec_state_reset();
+      }
+      
       if (cont_off_count > cont_off_max) {
         cont_off_max = cont_off_count;
       }
       if (cont_on_count) {
         cont_on_falling = cont_on_count;
-        //uart_tx(COM1, "'%d\n", cont_on_falling);
+        printf("+%d", cont_on_falling);
         cont_on_count = 0;
       } else {
         cont_on_falling = 0;
@@ -167,6 +196,9 @@ NEC_IRQHandler
           if (nec_in_range(NEC_BURST_ON_RANGE, cont_on_falling)) { 
             // Burst on
             nec_state = NEC_BURST;
+          } else {
+            // Wrong signal
+            nec_state_reset();
           }
           break;
           
@@ -178,15 +210,18 @@ NEC_IRQHandler
             nec_data_current_bit = 0;
             nec_data_current_buffer = 0;
             nec_data_reading_state = 1;
+          } else {
+            // Wrong signal
+            nec_state_reset();
           }
         break;
           
         case NEC_ADDRESS_LOW:
           
-          nec_process_data(0);
+          nec_process_data();
           if (nec_data_current_bit >= NEC_DATA_BIT) {
             nec_state = NEC_ADDRESS_HIGH;
-            nec_last_address_low = nec_last_data = nec_data_current_buffer;
+            nec_raw_data[NEC_RAW_ADDRESS_LOW] = nec_last_data = nec_data_current_buffer;
             
             // Buffers reset
             nec_buffer_reset(1);
@@ -195,26 +230,22 @@ NEC_IRQHandler
           
         case NEC_ADDRESS_HIGH:
           //break;
-          nec_process_data(1);
+          nec_process_data();
           if (nec_data_current_bit >= NEC_DATA_BIT) {
             nec_state = NEC_COMMAND_LOW;
-            nec_last_address_high = nec_last_data = nec_data_current_buffer;
+            nec_raw_data[NEC_RAW_ADDRESS_HIGH] = nec_last_data = nec_data_current_buffer;
             // Buffers reset
             nec_buffer_reset(1);
             
-            // DATA VALID CHECK
-            if (nec_last_address_high != nec_last_address_low) {
-              nec_state_reset(); 
-            }
           }
         break;
           
         case NEC_COMMAND_LOW:
           
-          nec_process_data(0);
+          nec_process_data();
           if (nec_data_current_bit >= NEC_DATA_BIT) {
             nec_state = NEC_COMMAND_HIGH;
-            nec_last_command_low = nec_last_data = nec_data_current_buffer;
+            nec_raw_data[NEC_RAW_COMMAND_LOW] = nec_last_data = nec_data_current_buffer;
             // Buffers reset
             nec_buffer_reset(1);
           }
@@ -222,23 +253,60 @@ NEC_IRQHandler
           
         case NEC_COMMAND_HIGH:
           
-          nec_process_data(1);
+          nec_process_data();
           if (nec_data_current_bit >= NEC_DATA_BIT) {
-            nec_state = NEC_REPEAT;
-            nec_last_command_high = nec_last_data = nec_data_current_buffer;
+            nec_state = NEC_REPEAT_START;
+            nec_raw_data[NEC_RAW_COMMAND_HIGH] = nec_last_data = nec_data_current_buffer;
             // Buffers reset
             nec_buffer_reset(1);
             
             // DATA VALID CHECK
-            if (nec_last_command_high != nec_last_command_low) {
+            if ((nec_raw_data[NEC_RAW_ADDRESS_LOW] & NEC_DATA_MAX) == (~nec_raw_data[NEC_RAW_ADDRESS_HIGH] & NEC_DATA_MAX)  \
+              && (nec_raw_data[NEC_RAW_COMMAND_LOW] & NEC_DATA_MAX) == (~nec_raw_data[NEC_RAW_COMMAND_HIGH] & NEC_DATA_MAX)) {
+              // Successful data
+              nec_set_msg(&current_msg, nec_raw_data[NEC_RAW_ADDRESS_LOW], nec_raw_data[NEC_RAW_COMMAND_LOW]);
+              nec_set_msg(&last_msg, nec_raw_data[NEC_RAW_ADDRESS_LOW], nec_raw_data[NEC_RAW_COMMAND_LOW]); 
+              buzzer_control_note(1, 100, (MUSIC_NOTE_LETTER) (nec_raw_data[NEC_RAW_COMMAND_LOW] % 12 + 1), 6);
+            } else {
+              // Invalid data
               nec_state_reset(); 
             }
+            
+            
           }
         break;
           
-        case NEC_REPEAT:
+        case NEC_REPEAT_START:
+          if (nec_in_range(NEC_REPEAT_START_ON_RANGE, cont_on_falling)) {
+            /*** Repeat start on detected ***/
+          } else if (nec_in_range(NEC_REPEAT_START_OFF_RANGE, cont_off_falling)) {
+            /*** Repeat start off detected ***/
+            nec_current_repeating_id = 0;
+            nec_state = NEC_REPEATING;
+          } else {
+            nec_state_reset(); 
+          }
+        break;
           
-          nec_state_reset(); 
+        case NEC_REPEATING:
+          if (nec_current_repeating_id % 2 == 0) {
+            // On pulse
+            if (nec_in_range(NEC_REPEAT_RANGE[nec_current_repeating_id], cont_on_falling)) {
+              nec_current_repeating_id = (nec_current_repeating_id + 1) % NEC_REPEAT_CYCLE;
+            } else {
+              // Repeat ends or wrong data
+              nec_state_reset();
+            }
+          } else {
+            // Off pulse
+            if (nec_in_range(NEC_REPEAT_RANGE[nec_current_repeating_id], cont_off_falling)) {
+              nec_current_repeating_id = (nec_current_repeating_id + 1) % NEC_REPEAT_CYCLE;
+            } else {
+              // Repeat ends or wrong data
+              nec_state_reset();
+            }
+          }
+        
         break;
       }
     }
@@ -257,12 +325,28 @@ u16 get_nec_cont_off_max(void)
   return cont_off_max;
 }
 
-u16 get_nec_state(void)
+NEC_STATE get_nec_state(void)
 {
   return nec_state;
 }
 
-u16 get_nec_last_data(void)
+NEC_Data_TypeDef* get_nec_raw_data(void)
+{
+  return nec_raw_data;
+}
+
+NEC_Data_TypeDef get_nec_last_data(void)
 {
   return nec_last_data;
 }
+
+NEC_Msg get_nec_last_msg(void)
+{
+  return last_msg;
+}
+
+NEC_Msg get_nec_current_msg(void)
+{
+    return current_msg;
+}
+

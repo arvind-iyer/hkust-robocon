@@ -8,7 +8,7 @@
 #define ULTRASONIC_TIM							TIM10
 #define ULTRASONIC_RCC							RCC_APB2Periph_TIM10
 #define ULTRASONIC_IRQn						  TIM1_UP_TIM10_IRQn
-#define ULTRASONIC_IRQHandler			  void TIM1_UP_TIM9_IRQHandler(void)
+#define ULTRASONIC_IRQHandler			  void TIM1_UP_TIM10_IRQHandler(void)
 
 #define ULTRASONIC_TRIG_GPIO        ((GPIO*) &PE0)
 #define ULTRASONIC_ECHO_GPIO        ((GPIO*) &PE1)

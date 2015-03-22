@@ -28,8 +28,11 @@ int main(void)
 	wheel_base_init();
   //ultrasonic_init();
   nec_init();
-
+  /** For debugging **/
+  uart_init(COM1, 115200);
+  uart_printf_enable(COM1);
   
+  system_start(1200);
   
 	menu_add("Your program", robocon_main);
 	menu_add("Position test", position_test);
@@ -45,9 +48,10 @@ int main(void)
 	menu_add("ASCII test", ascii_test);
 	menu_add("GPIO Pin test", gpio_pin_test);
 	menu_add("UART test", uart_test);
+  menu_add("NEC test", nec_test);
   menu_add("Ultra. test", ultra_test);
   
-	menu(6, false);
+	menu(14, true);
 	
 }
 
