@@ -1,4 +1,5 @@
 #include "interface.h"
+#include <string.h>
 
 static u16 ticks_img 	= (u16)-1;
 
@@ -25,43 +26,40 @@ void system_start(u16 duration)
 	tft_prints(1, 2, "[Robotics Team]");
 	
 	strncpy(tmp, title, tft_get_max_x_char()-2);
-	tft_prints(1, 4, "%s", tmp);
+	tft_prints(1, 3, "%s", tmp);
 	if (strlen(title) >= tft_get_max_x_char()-2) {
 		strncpy(tmp, &title[tft_get_max_x_char()-2], tft_get_max_x_char()-2);
-		tft_prints(1, 5, "%s", tmp);
+		tft_prints(1, 4, "%s", tmp);
 	}
 	
 	
 	tft_update();
 	
 	buzzer_play_song(START_UP, 120, 0);
-	
-	// Start-up battery check
-	battery_adc_update();
 
 	u16 prev_text_color = tft_get_text_color();	// Temp color change
 	
-  tft_prints(0, 8, " Level: %d.%02dV", get_voltage() / 100, get_voltage() % 100);
-  
+  tft_prints(0, 7, " Level: %d.%02dV", get_voltage() / 100, get_voltage() % 100);
+  tft_prints(0, 8, " Temp: %d.%d%cC", get_temperature() / 10, get_temperature() % 10, 248);
 	switch(battery_check()) {
 		case BATTERY_USB:
 		case BATTERY_OKAY:
 			// DO NOTHING
 			buzzer_play_song(START_UP, 120, 0);
 			tft_set_text_color(DARK_GREEN);
-			tft_prints(0, 7, " Battery OK");
+			tft_prints(0, 6, " Battery OK");
 		break;
 		case BATTERY_LOW:
 			buzzer_set_note_period(get_note_period(NOTE_E, 7));
 			tft_set_text_color(ORANGE);
 			buzzer_control(5, 100);
-			tft_prints(0, 7, " LOW BATTERY!");
+			tft_prints(0, 6, " LOW BATTERY!");
 		break;
 		case BATTERY_SUPER_LOW:
 			buzzer_set_note_period(get_note_period(NOTE_C, 7));
 			tft_set_text_color(RED);
 			buzzer_control(10, 50);
-			tft_prints(0, 7, " NO BATTERY!");
+			tft_prints(0, 6, " NO BATTERY!");
 			tft_update();
 			while(1) {
 				_delay_ms(200);
@@ -70,7 +68,7 @@ void system_start(u16 duration)
 				tft_update();
 				_delay_ms(200);
 				led_control((LED) (LED_D1 | LED_D2 | LED_D3), LED_ON); 
-				tft_prints(0, 7, " NO BATTERY!");
+				tft_prints(0, 6, " NO BATTERY!");
 				tft_update();
 			}
 		
@@ -127,21 +125,20 @@ void battery_regular_check(void)
 void draw_battery_icon(u16 batt)
 {
   
-	u8 pos = (tft_get_orientation() % 2 ? MAX_HEIGHT : MAX_WIDTH);
+	u8 pos = (tft_get_max_x_char() - 1) * CHAR_WIDTH;
 	u16 batt_color = 0, batt_boundary = 0;
 	u16 batt_w = 0;
 	if (batt > BATTERY_USB_LEVEL / 10) {
-		tft_prints(tft_get_max_x_char()-7, 0, "%2d.%d", batt/10, batt%10);
+		tft_prints(tft_get_max_x_char()-8, 0, "%2d.%d", batt/10, batt%10);
 		batt_color = batt <= 114 ? RED : (batt <= 120 ? ORANGE : GREEN);
 		batt_boundary = batt <= 114 ? RED : WHITE;
 	} else {
-		tft_prints(tft_get_max_x_char()-7, 0, " USB");
+		tft_prints(tft_get_max_x_char()-8, 0, " USB");
 		batt_color = SKY_BLUE;
 		batt_boundary = WHITE;
 		batt = 126;
 	}
 	
-	pos = (tft_get_orientation() % 2 ? MAX_HEIGHT : MAX_WIDTH);
 	/* Convert battery level (110 to 126) to the pixel range (0 to 13) */ 
 	batt_w = (batt > 126 ? 13 : batt < 110 ? 0 : (batt-110)*13/16);
 	for (u8 i = 0; i < 13; i++) {
@@ -190,8 +187,11 @@ void draw_top_bar(void)
 	
 	// Top bar - battery (top-right)
 	u8 pos = (tft_get_orientation() % 2 ? MAX_HEIGHT : MAX_WIDTH);
-	draw_battery_icon(get_voltage_avg()/10);
-
+  if (get_seconds() % 10 < 5) {
+    draw_battery_icon(get_voltage()/10);
+  } else {
+    tft_prints(tft_get_max_x_char() - 7, 0, "%d.%d%cC%c", get_temperature() / 10, get_temperature() % 10, 248, 10);
+  }
 	tft_set_bg_color(prev_bg_color);
 	tft_set_text_color(prev_text_color); 	
 }
@@ -210,7 +210,6 @@ void menu(u8 default_id, bool pre_enter)
 			ticks_img = get_ticks();
 			
 			if (ticks_img % 200 == 1) {
-				battery_adc_update();
 				if (get_seconds() % 10 == 4 && ticks_img == 1) {
 					battery_regular_check();
 				}

@@ -17,12 +17,16 @@ int main(void)
 	tft_init(2, WHITE, BLACK, RED);
 	gyro_init();
  
-	battery_adc_init();
-	can_init();
+	//battery_adc_init();
+  battery_init(); 
+  adc_init();
+	//battery_adc_init();
+  can_init();
 	can_rx_init();
   can_motor_init();
 
 	bluetooth_init();
+  mb1240_init();
   
   xbc_mb_init(XBC_BLUETOOTH_FIRST); 
 	wheel_base_init();
@@ -32,12 +36,14 @@ int main(void)
   uart_init(COM1, 115200);
   uart_printf_enable(COM1);
   
+  
   system_start(1200);
   
 	menu_add("Your program", robocon_main);
 	menu_add("Position test", position_test);
 	menu_add("Motor test", motor_test);
-	menu_add("Battery test", battery_test);
+	menu_add("ADC test", adc_test);
+  menu_add("ADC app test", adc_app_test);
 	menu_add("Bluetooth test", bluetooth_test);
 	menu_add("CAN test", can_test);
   menu_add("BT XBox test", bluetooth_xbc_test);
@@ -49,9 +55,10 @@ int main(void)
 	menu_add("GPIO Pin test", gpio_pin_test);
 	menu_add("UART test", uart_test);
   menu_add("NEC test", nec_test);
+  menu_add("MB1240 test", mb1240_test);
   menu_add("Ultra. test", ultra_test);
   
-	menu(14, true);
+	menu(16, true);
 	
 }
 

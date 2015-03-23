@@ -32,6 +32,8 @@
 #include "ultrasonic.h"
 #include "xbc_mb.h"
 #include "nec.h"
+#include "adc.h"
+#include "mb1240.h"
 
 
 #endif /* __MAIN_H */

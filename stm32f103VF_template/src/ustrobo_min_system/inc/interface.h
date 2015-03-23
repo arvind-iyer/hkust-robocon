@@ -4,7 +4,7 @@
 #include <stdbool.h>
 #include "stm32f10x.h"
 #include "approx_math.h"
-#include "battery.h"
+#include "adc_app.h"
 #include "button.h"
 #include "buzzer.h"
 #include "buzzer_song.h"

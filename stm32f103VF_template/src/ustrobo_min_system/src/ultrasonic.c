@@ -111,6 +111,7 @@ u32 ultrasonic_get_successful_count(void)
   return successful_count;
 }
 
+/*
 void EXTI1_IRQHandler(void)
 {
   if(EXTI_GetITStatus(EXTI_Line1) != RESET) {
@@ -176,4 +177,4 @@ ULTRASONIC_IRQHandler
 
 
 
-
+*/
