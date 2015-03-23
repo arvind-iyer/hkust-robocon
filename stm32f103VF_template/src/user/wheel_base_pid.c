@@ -14,8 +14,8 @@
 #define T_ERROR_THRESHOLD 400
 #define T_MOTOR_MAX_SPEED 500
 
-static int C_PR = 264;
-static int C_IN = 8;
+static int C_PR = 234;
+static int C_IN = 4;
 static int C_DE = 0;
 
 static int C_T_PR = 600;
@@ -52,7 +52,7 @@ static u8 pro_count_down = 0;
 static void decrease_der(void)
 {
 	if (der_count_down == 9) {
-		--C_T_DE;
+		--C_DE;
 		der_count_down = 0;
 	} else {
 		++der_count_down;
@@ -62,7 +62,7 @@ static void decrease_der(void)
 static void increase_der(void)
 {
 	if (der_count_up == 9) {
-		++C_T_DE;
+		++C_DE;
 		der_count_up = 0;
 	} else {
 		++der_count_up;
@@ -72,7 +72,7 @@ static void increase_der(void)
 static void decrease_int(void)
 {
 	if (int_count_down == 9) {
-		--C_T_IN;
+		--C_IN;
 		int_count_down = 0;
 	} else {
 		++int_count_down;
@@ -82,7 +82,7 @@ static void decrease_int(void)
 static void increase_int(void)
 {
 	if (int_count_up == 9) {
-		++C_T_IN;
+		++C_IN;
 		int_count_up = 0;
 	} else {
 		++int_count_up;
@@ -92,7 +92,7 @@ static void increase_int(void)
 static void decrease_prop(void)
 {
 	if (pro_count_down == 9) {
-		--C_T_PR;
+		--C_PR;
 		pro_count_down = 0;
 	} else {
 		++pro_count_down;
@@ -102,7 +102,7 @@ static void decrease_prop(void)
 static void increase_prop(void)
 {
 	if (pro_count_up == 9) {
-		++C_T_PR;
+		++C_PR;
 		pro_count_up = 0;
 	} else {
 		++pro_count_up;
@@ -170,17 +170,17 @@ int get_t_speed(void)
 
 int get_prop(void)
 {
-	return C_T_PR;
+	return C_PR;
 }
 
 int get_int(void)
 {
-	return C_T_IN;
+	return C_IN;
 }
 
 int get_der(void)
 {
-	return C_T_DE;
+	return C_DE;
 }
 
 void update_pid(s32 current_error, PID_OUTPUT* input_pid)
