@@ -7,6 +7,8 @@ void robocon_main(void)
   // Send the acceleration data
 	wheel_base_tx_acc();
 
+	buzzer_set_volume(50);
+	
 	for(;;) {
 		if (ticks_img != get_ticks()) {
 			ticks_img = get_ticks();
