@@ -409,6 +409,11 @@
           <GroupName>src</GroupName>
           <Files>
             <File>
+              <FileName>button_event.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\src\user\button_event.c</FilePath>
+            </File>
+            <File>
               <FileName>buzzer_song.c</FileName>
               <FileType>1</FileType>
               <FilePath>.\src\user\buzzer_song.c</FilePath>
@@ -464,6 +469,11 @@
               <FilePath>.\src\ustrobo_min_system\src\bluetooth.c</FilePath>
             </File>
             <File>
+              <FileName>bluetooth_xbc_mb.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\src\ustrobo_min_system\src\bluetooth_xbc_mb.c</FilePath>
+            </File>
+            <File>
               <FileName>button.c</FileName>
               <FileType>1</FileType>
               <FilePath>.\src\ustrobo_min_system\src\button.c</FilePath>
@@ -482,6 +492,11 @@
               <FileName>can_protocol.c</FileName>
               <FileType>1</FileType>
               <FilePath>.\src\ustrobo_min_system\src\can_protocol.c</FilePath>
+            </File>
+            <File>
+              <FileName>can_xbc_mb.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\src\ustrobo_min_system\src\can_xbc_mb.c</FilePath>
             </File>
             <File>
               <FileName>crc.c</FileName>
