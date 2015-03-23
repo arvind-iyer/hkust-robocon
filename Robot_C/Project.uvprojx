@@ -441,7 +441,7 @@
             <File>
               <FileName>special_char_handler.c</FileName>
               <FileType>1</FileType>
-              <FilePath>..\special_char_handler.c</FilePath>
+              <FilePath>.\src\user\special_char_handler.c</FilePath>
             </File>
           </Files>
         </Group>

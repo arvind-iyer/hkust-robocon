@@ -39,7 +39,8 @@ int main(void)
 	menu_add("GPIO Pin test", gpio_pin_test);
 	menu_add("UART test", uart_test);
   menu_add("Ultra. test", ultra_test);
-  
+  menu_add("Sanke game", snake);
+	
 	menu(0, false);
 	
 }

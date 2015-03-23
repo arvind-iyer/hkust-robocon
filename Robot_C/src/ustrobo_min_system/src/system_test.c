@@ -1033,3 +1033,205 @@ void ultra_test(void)
   }
 }
 
+
+
+
+s16 mapSize_x=16;
+s16 mapSize_y=9;
+
+s16 gameSpeed=4;	//number of moves per second 1=default
+
+void setSpeedDiscrete()	//set game speed
+{
+	switch(gameSpeed)
+	{
+	case 2:
+		gameSpeed=4;
+		break;
+	case 4:
+		gameSpeed=6;
+		break;
+	case 6:
+		gameSpeed=2;
+		break;
+	default:
+		gameSpeed=2;
+		break;
+	}
+}
+
+void printMap(s16 snakeMap[][mapSize_x])	//print screen
+{
+	for(s16 i=0; i<mapSize_y; i++)
+		for(s16 j=0; j<mapSize_x; j++)
+			if(snakeMap[i][j]!=0)
+				tft_prints(j,i,"%c",'@');//snakeMap[i][j]);
+	//tft_prints(j,i,"%d",snakeMap[i][j]);
+}
+
+void snake_init(s16 snakeMap[][mapSize_x], s16 score, s16 x, s16 y)//initialize snake
+{
+	for(s16 i=0; i<mapSize_y; i++)
+		for(s16 j=0; j<mapSize_x; j++)
+			snakeMap[i][j]=0;
+	for(s16 i=0; i<score; i++)
+		snakeMap[y][x-i]=score-i;
+}
+
+
+/*******************Take one move********************/
+bool move(s16 snakeMap[][mapSize_x], char dir, char* lastDir, s16 *score, s16* x, s16* y, s16 *targetX, s16 *targetY)
+{
+	(*lastDir) = dir;
+	/*next location of head, depending on current direction*/
+	switch(dir)
+	{
+	case 'r':
+		(*x)++; break;
+	case 'l':
+		(*x)--; break;
+	case 'u':
+		(*y)--; break;
+	case 'd':
+		(*y)++; break;
+	}
+
+	/*defeat condition*/
+	if(*x<0 || *x>=mapSize_x)//defeat condition 1: off the map
+		return 0;
+	if(*y<0 || *y>=mapSize_y)//defeat condition 2: off the map
+		return 0;
+	if(snakeMap[*y][*x]!=0)//defeat condition 3: clash with tail
+		return 0;
+
+	/*if head of snake hits the target, score+1 and generate new target location*/
+	if (*x==*targetX && *y==*targetY)
+	{
+		(*score)++;
+		s16 randomizationSeq=get_seconds();
+		while(snakeMap[*targetY][*targetX]!=0 || *targetX==*x || *targetY==*y)		// generate new target
+		{
+			(*targetX)=(get_seconds()*randomizationSeq++)%mapSize_x;	//improperly randomize target X, consider get_seconds as seed
+			(*targetY)=(get_seconds()*randomizationSeq++)%mapSize_y; //randomize target Y
+		}
+	}
+	/*depreciate life span of all tails otherwise*/
+	else
+	{
+		for(s16 i=0; i<mapSize_y; i++)
+			for(s16 j=0; j<mapSize_x; j++)
+				if(snakeMap[i][j]>0)
+					snakeMap[i][j]-=1;
+	}
+	snakeMap[*y][*x]=*score;			// life-span for new head
+
+
+	return 1;//good to proceed with next move
+}
+
+
+
+
+
+/*******************main*****************/
+void snake(void){
+
+
+	//init_all();
+	u16 ticks_img=0;
+	s16 snakeMap[mapSize_y][mapSize_x];//snake tail life-span matrix
+	s16 score=3;	//score = number of moves until a tail is killed
+	char dir='r';	//current direction
+	char lastDir='r';	//direction last move
+	s16 head_x=5;	//head location
+	s16 head_y=5;
+	s16 targetX=8;	//target location
+	s16 targetY=7;
+	bool defeat=0;	//defeat status
+	bool paused=0;	//pause status
+	
+
+	tft_clear();		//clean LCD screen
+	tft_prints(2,4,"%s","Press 'start'");		//print on LCD screen
+	tft_update();		//refresh LCD
+	_delay_ms(200);
+	do{button_update();}
+	while(!button_pressed(BUTTON_XBC_START));// wait for user start command
+	snake_init(snakeMap, score, head_x, head_y);
+	tft_prints(2,6,"%s","Game Begins!!");		//print on LCD screen
+	tft_update();		//refresh LCD
+	_delay_ms(1000);
+
+
+/****************** Main Loop ****************/
+    while(1){
+
+    	/****************** execute moves, synchronized by tick *****************/
+		if (ticks_img == get_ticks())
+			continue;
+		ticks_img=get_ticks();
+
+		if (ticks%20==0)
+		{
+			button_update();
+		}
+		if(!paused && ticks%(1000/gameSpeed)==0)	// execute every (1/gameSpeed) seconds
+		{
+			tft_clear();
+			tft_prints(targetX,targetY,"%c",'x');//print target
+			if(!defeat && move(snakeMap, dir, &lastDir, &score, &head_x, &head_y, &targetX, &targetY))
+				printMap(snakeMap);		//if permitted to play on, print out next move
+			else					// defeat screen otherwise
+			{
+				defeat=1;
+				tft_prints(4,4,"%s","YOU LOST!");
+				tft_prints(4,5,"%s%d","Score= ",score);
+				if (button_pressed(BUTTON_XBC_START))
+					snake();	//restart the game
+				if (button_pressed(BUTTON_XBC_START))
+					break; //escape
+			}
+			//tft_prints(0,9,"%d%s%d%s%d%s%d",head_x," ",head_y," ",snakeMap[head_y][head_x]," ",score);
+			tft_update();
+		}
+		else if(paused && ticks%500==0)		// if game is paused, do not execute next move
+		{
+			tft_clear();
+			tft_prints(4,4,"%s","PAUSED");
+			tft_prints(2,5,"%s","Press 'start'");
+			tft_update();
+		}
+
+    	/* Get xbox or GPIO joystick input*/
+    	if (lastDir!='u' && (button_pressed(BUTTON_XBC_S) || xbc_get_joy(XBC_JOY_LY)<-(XBC_JOY_SCALE*0.8)))//LY
+    		dir='d';
+    	if (lastDir!='d' && (button_pressed(BUTTON_XBC_N) || xbc_get_joy(XBC_JOY_LY)>(XBC_JOY_SCALE*0.8)))
+    		dir='u';
+    	if (lastDir!='r' && (button_pressed(BUTTON_XBC_W) || xbc_get_joy(XBC_JOY_LX)<-(XBC_JOY_SCALE*0.8)))//LX
+    		dir='l';
+    	if (lastDir!='l' && (button_pressed(BUTTON_XBC_E) || xbc_get_joy(XBC_JOY_LX)>(XBC_JOY_SCALE*0.8)))
+    		dir='r';
+    	/* Change game speed*/
+    	if (button_pressed(BUTTON_XBC_RB))
+    	{
+    		setSpeedDiscrete();
+    		while(button_pressed(BUTTON_XBC_RB))
+    			if(get_ticks()%50==0)
+    				button_update();
+    	}
+    	/* Pause the game*/
+    	if (button_pressed(BUTTON_XBC_START))
+		{
+    		paused=!paused;
+			while(button_pressed(BUTTON_XBC_START))
+				if(get_ticks()%50==0)
+					button_update();
+			_delay_ms(200);
+		}
+
+
+
+
+    }
+
+}
