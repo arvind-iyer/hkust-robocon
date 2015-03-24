@@ -213,12 +213,12 @@ void wheel_base_update(void)
     */
   if( (!wheel_base_pid_flag && (get_full_ticks() - wheel_base_joystick_vel_last_update > BLUETOOTH_WHEEL_BASE_TIMEOUT) && (get_full_ticks() - wheel_base_bluetooth_vel_last_update > BLUETOOTH_WHEEL_BASE_TIMEOUT)))
 		wheel_base_set_vel(0,0,0);	//if no joystick_control, no bluetooth_input, stop_motor
-	if ((wheel_base_pid_flag || !is_turning ) && !(Abs(xbc_get_joy(XBC_JOY_LX)) > 0 || Abs(xbc_get_joy(XBC_JOY_LY)) > 0))	// if auto positioning is enabled, start auto_motor_positioning
+	/*if ((wheel_base_pid_flag || !is_turning ) && !(Abs(xbc_get_joy(XBC_JOY_LX)) > 0 || Abs(xbc_get_joy(XBC_JOY_LY)) > 0))	// if auto positioning is enabled, start auto_motor_positioning
 	{
 		if(!(Abs(xbc_get_joy(XBC_JOY_LX)) > 0 || Abs(xbc_get_joy(XBC_JOY_LY)) > 0))
 			wheel_base_set_target_pos((POSITION){get_pos()->x, get_pos()->y, wheel_base_get_target_pos().angle});
 		wheel_base_pid_loop();
-	}
+	}*/
 //	if(!is_turning)
 //		pid_maintain_angle();
 	

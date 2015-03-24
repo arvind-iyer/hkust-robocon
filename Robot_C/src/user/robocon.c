@@ -21,7 +21,7 @@ static bool key_trigger_enable = true;
 static bool servo_released = false;
 static bool use_xbc_input = false;
 
-
+/*
 
 void wheel_base_joystick_control(void)
 {
@@ -75,7 +75,7 @@ bool get_xbc_input_allowed()
 {
 	return use_xbc_input;
 }
-
+*/
 void robot_c_controls()
 {
 	if(!xbc_get_connection())
@@ -94,32 +94,14 @@ void robot_c_controls()
 	* 
 	*/
 	//Analog Movement
-	//if(Abs(xbc_get_joy(XBC_JOY_LX)) > 0 || Abs(xbc_get_joy(XBC_JOY_LY)) > 0)
-		//X-Y Control Simultaneously
-		set_xbc_input_allowed(true);
-		wheel_base_set_vel(xbc_get_joy(XBC_JOY_LX), xbc_get_joy(XBC_JOY_LY), 0 );
-	
-	if(Abs(xbc_get_joy(XBC_JOY_LX)) > 0 || Abs(xbc_get_joy(XBC_JOY_LY)) > 0)
-			is_it_moving(1);
-	else
-	{
-		wheel_base_set_target_pos((POSITION){get_pos()->x,get_pos()->y,get_pos()->angle}); 
-		is_it_moving(0);
-	}
-	//Angle Rotation
-	if(xbc_get_joy(XBC_JOY_LT) > 0 || xbc_get_joy(XBC_JOY_RT) > 0)
-			is_it_turning(1);
-	else
-		is_it_turning(0);
-	
-	
+	wheel_base_set_vel(xbc_get_joy(XBC_JOY_LX), xbc_get_joy(XBC_JOY_LY), 0 );
 	//Rotate CCW
 	if(xbc_get_joy(XBC_JOY_LT) > 0)
-		wheel_base_set_vel(wheel_base_get_vel().x, wheel_base_get_vel().y, -xbc_get_joy(XBC_JOY_LT)/5);
+		wheel_base_set_vel(xbc_get_joy(XBC_JOY_LX), xbc_get_joy(XBC_JOY_LY), -xbc_get_joy(XBC_JOY_LT)/5);
 	
 	 //Rotate CW
 	if(xbc_get_joy(XBC_JOY_RT) > 0)
-		wheel_base_set_vel(wheel_base_get_vel().x, wheel_base_get_vel().y, xbc_get_joy(XBC_JOY_RT)/5);
+		wheel_base_set_vel(xbc_get_joy(XBC_JOY_LX), xbc_get_joy(XBC_JOY_LY), xbc_get_joy(XBC_JOY_RT)/5);
 	
 	
 	//Digital Movement
@@ -151,9 +133,9 @@ void robot_c_controls()
 	
 	
 	//RB and LB
-	if(button_pressed(BUTTON_XBC_LB))
+	if(button_released(BUTTON_XBC_LB))
 		wheel_base_set_speed_mode(wheel_base_get_speed_mode() - 1);
-	else if(button_pressed(BUTTON_XBC_RB))
+	else if(button_released(BUTTON_XBC_RB))
 		wheel_base_set_speed_mode(wheel_base_get_speed_mode() + 1);
 	
 }
@@ -410,7 +392,7 @@ void robocon_main(void)
 			}
 			
 			if (ticks_img % 50 == 5) {
-				wheel_base_joystick_control();
+				//wheel_base_joystick_control();
 				if (button_pressed(BUTTON_1) > 10 || button_pressed(BUTTON_2) > 10) {
 					/** Stop the wheel base before return **/
 					return; 

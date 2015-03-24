@@ -33,6 +33,6 @@
 
 
 void robocon_main(void);
-bool get_xbc_input_allowed(void);
-void set_xbc_input_allowed(bool);
+//bool get_xbc_input_allowed(void);
+//void set_xbc_input_allowed(bool);
 #endif	/* __ROBOCON_H */
