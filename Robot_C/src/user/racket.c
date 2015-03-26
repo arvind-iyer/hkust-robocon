@@ -121,7 +121,7 @@ void racket_update(void)
 	if (ROBOT=='C' && !gpio_read_input(LASER_GPIO) && racket_laser_not_alligned)
 	{
 		racket_laser_not_alligned=0;
-	//	racket_hit();
+		racket_hit();
 		serve_enabled = 0;
 		racket_last_laser_trigger_time=get_full_ticks();
 

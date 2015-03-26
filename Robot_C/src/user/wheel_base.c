@@ -34,8 +34,10 @@ static void wheel_base_bluetooth_decode(u8 id, u8 length, u8* data)
 				s8	x_vel = (s8)data[0],
 						y_vel = (s8)data[1],
 						w_vel = (s8)data[2];
+				
 				is_turning = (w_vel != 0);
 				is_moving = (x_vel!=0) || (y_vel!=0);
+				
 				wheel_base_set_target_pos((POSITION){get_pos()->x, get_pos()->y,get_pos()->angle});
 				
 				s8 data_range[2] = {-100, 100};
@@ -211,14 +213,19 @@ void wheel_base_update(void)
     * TODO2: If there is not any Bluetooth RX data after BLUETOOTH_WHEEL_BASE_TIMEOUT, stop the motors
   
     */
-  if( (!wheel_base_pid_flag && (get_full_ticks() - wheel_base_joystick_vel_last_update > BLUETOOTH_WHEEL_BASE_TIMEOUT) && (get_full_ticks() - wheel_base_bluetooth_vel_last_update > BLUETOOTH_WHEEL_BASE_TIMEOUT)))
-		wheel_base_set_vel(0,0,0);	//if no joystick_control, no bluetooth_input, stop_motor
-	/*if ((wheel_base_pid_flag || !is_turning ) && !(Abs(xbc_get_joy(XBC_JOY_LX)) > 0 || Abs(xbc_get_joy(XBC_JOY_LY)) > 0))	// if auto positioning is enabled, start auto_motor_positioning
+	if(!(xbc_get_joy(XBC_JOY_LX) == 0 && xbc_get_joy(XBC_JOY_LY) == 0))
 	{
-		if(!(Abs(xbc_get_joy(XBC_JOY_LX)) > 0 || Abs(xbc_get_joy(XBC_JOY_LY)) > 0))
-			wheel_base_set_target_pos((POSITION){get_pos()->x, get_pos()->y, wheel_base_get_target_pos().angle});
+		wheel_base_pid_off();
+		wheel_base_set_target_pos((POSITION){get_pos()->x, get_pos()->y, get_pos()->angle});
+	}
+	
+  if( 0 && (!wheel_base_pid_flag && (get_full_ticks() - wheel_base_joystick_vel_last_update > BLUETOOTH_WHEEL_BASE_TIMEOUT) && (get_full_ticks() - wheel_base_bluetooth_vel_last_update > BLUETOOTH_WHEEL_BASE_TIMEOUT)))
+		wheel_base_set_vel(0,0,0);	//if no joystick_control, no bluetooth_input, stop_motor
+	if ((wheel_base_pid_flag || !is_moving) && !is_turning)	// if auto positioning is enabled, start auto_motor_positioning
+	{
+		
 		wheel_base_pid_loop();
-	}*/
+	}
 //	if(!is_turning)
 //		pid_maintain_angle();
 	

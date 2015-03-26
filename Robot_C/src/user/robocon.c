@@ -94,14 +94,33 @@ void robot_c_controls()
 	* 
 	*/
 	//Analog Movement
-	wheel_base_set_vel(xbc_get_joy(XBC_JOY_LX), xbc_get_joy(XBC_JOY_LY), 0 );
-	//Rotate CCW
-	if(xbc_get_joy(XBC_JOY_LT) > 0)
-		wheel_base_set_vel(xbc_get_joy(XBC_JOY_LX), xbc_get_joy(XBC_JOY_LY), -xbc_get_joy(XBC_JOY_LT)/5);
+	wheel_base_set_vel(xbc_get_joy(XBC_JOY_LX), xbc_get_joy(XBC_JOY_LY), (xbc_get_joy(XBC_JOY_RT)-xbc_get_joy(XBC_JOY_LT))/5 );
 	
-	 //Rotate CW
-	if(xbc_get_joy(XBC_JOY_RT) > 0)
-		wheel_base_set_vel(xbc_get_joy(XBC_JOY_LX), xbc_get_joy(XBC_JOY_LY), xbc_get_joy(XBC_JOY_RT)/5);
+	if(xbc_get_joy(XBC_JOY_LX) == 0 && xbc_get_joy(XBC_JOY_LY) == 0)
+	{
+				wheel_base_set_target_pos((POSITION){get_pos()->x, get_pos()->y, wheel_base_get_target_pos().angle});
+		wheel_base_pid_on();
+		is_it_moving(0);
+	}
+	else
+	{
+		wheel_base_pid_off();
+		is_it_moving(1);
+		wheel_base_set_target_pos((POSITION){get_pos()->x, get_pos()->y, get_pos()->angle});
+	}
+	
+	
+	if(xbc_get_joy(XBC_JOY_RT) == 0 && xbc_get_joy(XBC_JOY_LT) == 0)
+	{
+		wheel_base_pid_on();
+		is_it_turning(0);
+	}
+	else
+	{
+		wheel_base_pid_off();
+		is_it_turning(1);
+		wheel_base_set_target_pos((POSITION){get_pos()->x, get_pos()->y, get_pos()->angle});
+	}
 	
 	
 	//Digital Movement
@@ -133,11 +152,14 @@ void robot_c_controls()
 	
 	
 	//RB and LB
-	if(button_released(BUTTON_XBC_LB))
+		if(button_released(BUTTON_XBC_LB) > 15)
+	{
 		wheel_base_set_speed_mode(wheel_base_get_speed_mode() - 1);
-	else if(button_released(BUTTON_XBC_RB))
+	}
+	else if(button_released(BUTTON_XBC_RB) >  15)
+	{
 		wheel_base_set_speed_mode(wheel_base_get_speed_mode() + 1);
-	
+	}	
 }
 void robot_d_controls()
 {
@@ -415,8 +437,11 @@ void robocon_main(void)
           s[0] = '\\';
         }
 				
+				u8 connect = xbc_get_connection() == XBC_DISCONNECTED ? 0 : 1;
+					 
         tft_prints(0, 6, "Char: %s (%d) %c", s, wheel_base_bluetooth_get_last_char(), special_char_handler_bt_get_last_char());
-				tft_prints(0,3,"SHIT: (%d, %d)", gyro_get_shift_x(), gyro_get_shift_y());
+				//tft_prints(0,3,"SHIT: (%d, %d)", gyro_get_shift_x(), gyro_get_shift_y());
+				tft_prints(0,3,"XBC: %d", connect);
 				tft_prints(0,4,"Serve_delay: %d",racket_get_serve_delay());
 				tft_prints(0,5, "Switch = %d", gpio_read_input(&PE3));
 				//tft_prints(0,2, "x%d y%d", gyro_get_shift_x(), gyro_get_shift_y());
