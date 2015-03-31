@@ -71,13 +71,19 @@ u8 get_up_switch(void){
 
 // internal functions (special char functions)
 static void increase_racket_speed() {
-	if(racket_speed < 1800)
+	if(racket_speed < 1800 && get_full_ticks() - racket_speed_adjust_time > 80)
+	{
+		racket_speed_adjust_time = get_full_ticks();
 		racket_speed += 5;
+	}
 }
 
 static void decrease_racket_speed() {
-	if(racket_speed > 0)
-			racket_speed -= 5;
+	if(racket_speed > 0 && get_full_ticks() - racket_speed_adjust_time > 80)
+	{
+		racket_speed_adjust_time = get_full_ticks();
+		racket_speed -= 5;
+	}
 }
 
 static void increase_racket_delay() {
@@ -96,29 +102,17 @@ static void decrease_racket_delay() {
 	}
 }
 
-static void motor_spin(void) {
-	motor_set_vel(MOTOR5, -1000, OPEN_LOOP);
-}
-
-static void motor_emergency_stop(void) {
-	racket_emergency_stop = true;
-}
-
-static void disable_motor_emergency_stop(void) {
-	racket_emergency_stop = false;
-}
-
-static void open_pneumatic(void)
+void open_pneumatic(void)
 {
 	GPIO_ResetBits(GPIOE, GPIO_Pin_15);
 }
 
-static void close_pneumatic(void)
+void close_pneumatic(void)
 {
 	GPIO_SetBits(GPIOE, GPIO_Pin_15);
 }
 
-static void serving (void){
+void serving(void){
 	// check if pneumatic is closed
 	if (GPIO_ReadInputDataBit(GPIOE, GPIO_Pin_15)) {
 		open_pneumatic();
@@ -127,6 +121,7 @@ static void serving (void){
 	}
 }
 
+/*
 static void up_racket_cmd(void)
 {
 	if (up_calibrated) {
@@ -142,8 +137,9 @@ static void up_racket_calibrate (void){
 	up_calibrated = false;
 	up_switch_hit = 0;
 }
+*/
 
-static void racket_calibrate(void)			//calibrate to 1, run before start
+void racket_calibrate(void)			//calibrate to 1, run before start
 {
 	calibrate_mode_on = true;
 	prev_encoder_value = 0;
@@ -273,6 +269,7 @@ void racket_update(void)    //determine whether the motor should run
 				prev_encoder_value = get_encoder_value(MOTOR5);
 			} else if (!current_encoder_value) {
 				current_encoder_value = get_encoder_value(MOTOR5);
+
 			}
 		} else if (switch_stat && racket_calibration_mode == 1) {
 			++switch_hit;
@@ -306,6 +303,7 @@ void racket_update(void)    //determine whether the motor should run
 			motor_lock(MOTOR5);
 			current_speed = 0;
 			serving_started_time = 0;
+			racket_calibration_mode = 1;
 		}
 	}
 	// regular mode

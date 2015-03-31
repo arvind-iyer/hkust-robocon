@@ -16,6 +16,13 @@ void racket_init(void);
 void racket_update(void);
 void up_racket_update(void);
 
+// functions for xbox
+void open_pneumatic(void);
+void close_pneumatic(void);
+void serving(void);
+void racket_calibrate(void);
+
+
 u8 get_switch(void);
 s32 get_calibrated(void);
 s32 get_current(void);

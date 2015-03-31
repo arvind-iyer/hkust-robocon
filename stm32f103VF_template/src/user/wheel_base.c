@@ -1,6 +1,8 @@
 #include "wheel_base.h"
 #include "wheel_base_pid.h"
 #include "special_char_handler.h"
+#include "xbc_mb.h"
+#include "xbc_button.h"
 
 static WHEEL_BASE_VEL wheel_base_vel = {0, 0, 0},
 		wheel_base_vel_prev = {-1, -1, -1};
@@ -12,11 +14,11 @@ static const u8 WHEEL_BASE_PID_MANUAL_SPEED = 10;
 		
 static int wheel_base_acc = 300;
 
-static u32 wheel_base_last_can_tx = 0;
+// static u32 wheel_base_last_can_tx = 0;
 		
 static u8 wheel_base_pid_flag = 0;
 static POSITION target_pos = {0, 0, 0};
-static PID wheel_base_pid = {0, 0, 0};
+//static PID wheel_base_pid = {0, 0, 0};
 
 /**
 	* @brief Handler for the bluetooth RX with id 0x4?
@@ -106,7 +108,7 @@ void wheel_base_init(void)
 	register_special_char_function(' ', stop_all_motors);
 	wheel_base_vel.x = wheel_base_vel.y = wheel_base_vel.w = 0;
 	wheel_base_bluetooth_vel_last_update = 0;
-	wheel_base_last_can_tx = 0;
+//	wheel_base_last_can_tx = 0;
 	wheel_base_tx_acc();
 }
 
@@ -209,6 +211,15 @@ static s32 wheel_base_vel_update(s32 current_vel, s32 target_vel, s32 wheel_base
 	}
 }
 
+void wheel_base_set_xbox_vel(void)
+{
+	int x_vel = xbc_get_joy(XBC_JOY_LX) / 10;
+	int y_vel = xbc_get_joy(XBC_JOY_LY) / 10;
+	int w_vel = (xbc_get_joy(XBC_JOY_RT) - xbc_get_joy(XBC_JOY_LT)) * 100 / 255;
+	u16 speed_ratio = SPEED_MODES[wheel_base_speed_mode];
+	wheel_base_set_vel(x_vel * speed_ratio / 100, y_vel * speed_ratio / 100, w_vel * speed_ratio / 100);
+}
+
 /**
 	* @brief Update the wheel base speed through CAN transmission. (TO BE CALLED REGULARLY)
 	* @param None.
@@ -223,6 +234,13 @@ void wheel_base_update(void)
     */
 	if ((get_full_ticks() - wheel_base_bluetooth_vel_last_update) > BLUETOOTH_WHEEL_BASE_TIMEOUT && (wheel_base_get_pid_flag() != 1 || (wheel_base_get_pid_flag() && get_pid_stat()))) {
 		wheel_base_set_vel(0, 0, 0);
+	}
+	
+	if (xbc_get_connection() != XBC_DISCONNECTED && (wheel_base_get_pid_flag() != 1 ||
+		(wheel_base_get_pid_flag() == 1 && (get_full_ticks() - xbc_get_received_nonzero_speed_timer()) < BLUETOOTH_WHEEL_BASE_TIMEOUT)))
+	{
+		// xbox is connected, set target velocity based on it
+		wheel_base_set_xbox_vel();
 	}
 	
 	// fake acceleration
@@ -285,12 +303,15 @@ void wheel_base_tx_position(void)
 	* @param PID to be set
 	* @retval None.
 	*/
+
+/*
 void wheel_base_set_pid(PID pid)
 {
 	wheel_base_pid.Kp = pid.Kp;
 	wheel_base_pid.Ki = pid.Ki;
 	wheel_base_pid.Kd = pid.Kd;
 }
+*/
 
 POSITION wheel_base_get_target_pos(void)
 {
@@ -317,10 +338,10 @@ u8 wheel_base_get_pid_flag(void)
 	return wheel_base_pid_flag;
 }
 
-void wheel_base_override_set_vel(s32 x, s32 y)
+void wheel_base_override_set_vel(s32 x, s32 y, s32 w)
 {
 	u16 speed_ratio = SPEED_MODES[wheel_base_speed_mode]; 
-	wheel_base_set_vel(x * speed_ratio / 100, y * speed_ratio / 100, 0);
+	wheel_base_set_vel(x * speed_ratio / 100, y * speed_ratio / 100, w * speed_ratio / 100);
 	wheel_base_bluetooth_vel_last_update = get_full_ticks();
 }
 

@@ -14,6 +14,7 @@ void robocon_main(void)
 			if (ticks_img % 10 == 0) {
 				// Every 10 ms (100 Hz)
 				bluetooth_update();
+				xbc_button_handler();
         wheel_base_pid_update();
 				wheel_base_update();
 				racket_update();
@@ -45,16 +46,16 @@ void robocon_main(void)
 					break; 
 				}
 				if (button_pressed(BUTTON_JS2_UP)) {
-					wheel_base_override_set_vel(0, 100);
+					wheel_base_override_set_vel(0, 30, 0);
 				}
 				if (button_pressed(BUTTON_JS2_DOWN)) {
-					wheel_base_override_set_vel(0, -100);
+					wheel_base_override_set_vel(0, -30, 0);
 				}
 				if (button_pressed(BUTTON_JS2_LEFT)) {
-					wheel_base_override_set_vel(-100, 0);
+					wheel_base_override_set_vel(-30, 0, 0);
 				}
 				if (button_pressed(BUTTON_JS2_RIGHT)) {
-					wheel_base_override_set_vel(100, 0);
+					wheel_base_override_set_vel(30, 0, 0);
 				}
 				if (button_pressed(BUTTON_JS2_CENTER) == 1) {
 					wheel_base_override_change_speed();

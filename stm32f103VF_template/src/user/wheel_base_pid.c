@@ -1,6 +1,7 @@
 #include "wheel_base_pid.h"
 #include "special_char_handler.h"
 #include "stdbool.h"
+#include "xbc_button.h"
 
 #define STEADY_STATE_ERROR_THRESHOLD 10
 #define T_STEADY_STATE_ERROR_THRESHOLD 5
@@ -15,7 +16,7 @@
 #define T_MOTOR_MAX_SPEED 500
 
 static int C_PR = 234;
-static int C_IN = 4;
+static int C_IN = 1;
 static int C_DE = 0;
 
 static int C_T_PR = 600;
@@ -116,22 +117,28 @@ static void reset_gyro(void)
 	wheel_base_set_target_pos(target_pos);
 }
 
-static void set_starting_pos(void)
+void set_starting_pos(void)
 {
 	gyro_pos_set(0, 4700, 0);
 	POSITION target_pos = {0, 4700, 0};
 	wheel_base_set_target_pos(target_pos);
 }
 
-static void set_serving_pos(void)
+void set_serving_pos(void)
 {
 	POSITION target_pos = {343, 4293, 0};
 	wheel_base_set_target_pos(target_pos);
 }
 
-static void set_returning_pos(void)
+void set_returning_pos(void)
 {
 	POSITION target_pos = {-1373, 2404, 0};
+	wheel_base_set_target_pos(target_pos);
+}
+
+void set_after_serve_pos(void)
+{
+	POSITION target_pos = {1000, 500, 0};
 	wheel_base_set_target_pos(target_pos);
 }
 
@@ -220,7 +227,8 @@ void wheel_base_pid_update(void)
 	if (wheel_base_get_pid_flag() == 1) {
 		
 		// do not calculate PID if adjusting manually after PID is reached
-		if (pid_locked && (get_full_ticks() - wheel_base_get_last_manual_timer()) < BLUETOOTH_WHEEL_BASE_TIMEOUT + 100) {
+		if ((get_full_ticks() - wheel_base_get_last_manual_timer()) < BLUETOOTH_WHEEL_BASE_TIMEOUT + 200 ||
+			(get_full_ticks() - xbc_get_received_nonzero_speed_timer()) < BLUETOOTH_WHEEL_BASE_TIMEOUT + 200) {
 			wheel_base_set_target_pos(*get_pos());
 			reset_pid();
 			return;

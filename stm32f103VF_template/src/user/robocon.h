@@ -29,6 +29,7 @@
 #include "wheel_base_pid.h"
 #include "special_char_handler.h"
 #include "racket_control.h"
+#include "xbc_button.h"
 
 void robocon_main(void);
 #endif	/* __ROBOCON_H */

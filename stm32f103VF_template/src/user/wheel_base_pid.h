@@ -6,6 +6,14 @@
 
 void wheel_base_pid_init(void);
 void wheel_base_pid_update(void);
+
+// functions for xbox
+void set_starting_pos(void);
+void set_serving_pos(void);
+void set_returning_pos(void);
+void set_after_serve_pos(void);
+
+// getters
 int get_x_speed(void);
 int get_y_speed(void);
 int get_t_speed(void);

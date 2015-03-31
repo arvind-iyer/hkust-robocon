@@ -68,7 +68,7 @@ void wheel_base_update(void);
 void wheel_base_tx_position(void);
 
 
-void wheel_base_set_pid(PID pid);
+// void wheel_base_set_pid(PID pid);
 POSITION wheel_base_get_target_pos(void);
 void wheel_base_set_target_pos(POSITION pos);
 void wheel_base_pid_on(void);
@@ -78,7 +78,7 @@ u32 wheel_base_get_last_manual_timer(void);
 
 // For debugging purpose only
 void wheel_base_override_change_speed(void);
-void wheel_base_override_set_vel(s32 x, s32 y);
+void wheel_base_override_set_vel(s32 x, s32 y, s32 w);
 
 
 #endif	/* __WHEEL_BASE_H */
