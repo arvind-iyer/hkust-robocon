@@ -70,28 +70,22 @@ void robocon_main(void)
 				WHEEL_BASE_VEL vel = wheel_base_get_vel();
 				tft_clear();
 				draw_top_bar();
+				tft_prints(0, 1, "1_%d,%d,%d,", get_feedback(0,0),get_feedback(0,1),get_feedback(0,2));
+				tft_prints(0, 2, "2_%d,%d,%d", get_feedback(1,0),get_feedback(1,1),get_feedback(1,2));
+				tft_prints(0, 3, "YT_%d,%d,%d", get_feedback(2,0),get_feedback(2,1),get_feedback(2,2));
+				tft_prints(0, 4, "GT_%d,%d,%d", get_feedback(3,0),get_feedback(3,1),get_feedback(3,2));
+				tft_prints(0, 5, "WT_%d,%d,%d", get_feedback(4,0),get_feedback(4,1),get_feedback(4,2));
+				tft_prints(0, 6, "6_%d,%d,%d", get_feedback(5,0),get_feedback(5,1),get_feedback(5,2));
+				tft_prints(0, 7, "COL_%c,%c,%c,%c" ,get_color(1),get_color(2),get_color(3),get_color(4));
+				tft_prints(0, 8, "COL_%c,%c,%c,%c,%c", get_color(5),get_color(6),get_color(7),get_color(8),get_color(9));
+				tft_prints(0, 9, "COL_%c,%c,%c,%c,%c", get_color(10),get_color(11),get_color(12),get_color(13),get_color(14));
+//				tft_prints(0, 7, "COL_%c,%c,%c,%c,%c", get_color_val(0),get_color_val(1),get_color(2),get_color(3),get_color(4));
+//				tft_prints(0, 8, "COL_%c,%c,%c,%c,%c", get_color_val(5),get_color_val(6),get_color(7),get_color(8),get_color(9));
+//				tft_prints(0, 9, "COL_%c,%c,%c,%c,%c", get_color_val(10),get_color_val(11),get_color(12),get_color(13),get_color(14));
 
-//				tft_prints(0, 1, "V:(%3d,%3d,%3d)", vel.x, vel.y, vel.w);
-				tft_prints(0, 1, "1_%d,2_%d,3_%d", get_sensor_feedback_0(),get_sensor_feedback_1(),get_sensor_feedback_2());
-				tft_prints(0, 2, "4_%d,5_%d,6_%d", get_sensor_feedback_3(),get_sensor_feedback_4(),get_sensor_feedback_5());
-				
-				tft_prints(0, 3, "R_%d, G_%d", get_sensor_feedback_6(),get_sensor_feedback_7());
-				tft_prints(0, 4, "B_%d", get_sensor_feedback_8());
-				tft_prints(0, 5, "R_%d,  G_%d", get_sensor_feedback_9(),get_sensor_feedback_10());
-				tft_prints(0, 6, "B_%d", get_sensor_feedback_11());
-				
-				
-        //tft_prints(0, 6, "Char: %s (%d)", s, special_char_handler_bt_get_last_char());
-        //tft_prints(0, 7, "Switch hit: %d", did_receive_command());
-				//tft_prints(0, 8, "switch: %d",get_switch());
-				//tft_prints(0, 7, "left: %d", get_left_mode());
-				//tft_prints(0, 8, "right: %d", get_right_mode());
-				//tft_prints(0, 9, "motor: %d",get_motor_mode());
 			
-//				tft_prints(0, 6, "%d %d %d %d %d", get_s1(), get_s2(), get_b1(), get_b2(), get_b3() );
-//				tft_prints(0, 8, "pivot:%d", get_pivot_speed() );
-//				tft_prints(0, 9, "hs: %d", get_high_speed() );
 
+				
 				tft_update();
 				NVIC_EnableIRQ(EXTI15_10_IRQn);
 			}

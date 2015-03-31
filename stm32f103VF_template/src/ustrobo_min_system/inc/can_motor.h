@@ -24,10 +24,28 @@
 #define CAN_ENCODER_FEEDBACK					0x22
 
 /***  SENSOR  ***/
-#define LIGHTSENSOR_ENABLE 0x13
-#define LIGHTSENSOR_DISABLE 0x12
+
+#define LIGHT_SENSOR_0 		0x13
+#define LIGHT_SENSOR_1 		0x12
 #define LIGHT_SENSOR_2		0x14
 #define LIGHT_SENSOR_3		0x15
+#define LIGHT_SENSOR_4		0x16
+#define LIGHT_SENSOR_5		0x17
+#define LIGHT_SENSOR_6		0x18
+#define LIGHT_SENSOR_7		0x19
+#define LIGHT_SENSOR_8		0x1A
+#define LIGHT_SENSOR_9		0x1B
+#define LIGHT_SENSOR_10		0x1C
+#define LIGHT_SENSOR_11		0x1D
+#define LIGHT_SENSOR_12		0x1E
+#define LIGHT_SENSOR_13		0x1F
+#define LIGHT_SENSOR_14		0x20
+#define LIGHT_SENSOR_15		0x21
+#define COLOR_1 0x31
+#define COLOR_2 0x32
+#define COLOR_3 0x33
+
+
 
 
 
@@ -65,22 +83,8 @@ void motor_lock(MOTOR_ID motor_id);
 static void can_sensor_feedback_decoding(CanRxMsg msg);
 void can_sensor_init(void);
 
-u8 get_sensor_feedback_0 (void);
-u8 get_sensor_feedback_1 (void);
-u8 get_sensor_feedback_2 (void);
-u8 get_sensor_feedback_3 (void);
-u8 get_sensor_feedback_4 (void);
-u8 get_sensor_feedback_5 (void);
-u8 get_sensor_feedback_6 (void);
-u8 get_sensor_feedback_7 (void);
-u8 get_sensor_feedback_8 (void);
-u8 get_sensor_feedback_9 (void);
-u8 get_sensor_feedback_10 (void);
-u8 get_sensor_feedback_11 (void);
-u8 get_sensor_feedback_12 (void);
-u8 get_sensor_feedback_13 (void);
-u8 get_sensor_feedback_14 (void);
-u8 get_sensor_feedback_15 (void);
+u16 get_feedback (u8 i, u8 j);
+char get_color (u8 i);
 
 
 /*** RX ***/

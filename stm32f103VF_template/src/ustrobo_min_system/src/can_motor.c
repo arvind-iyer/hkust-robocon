@@ -2,7 +2,9 @@
 
 #define get_can_motor_id(motor_id)	(CAN_MOTOR_BASE + (u8)motor_id)
 static s32 can_motor_encoder_value[CAN_MOTOR_COUNT] = {0};
-static u16 feedback[16]={0};
+static u16 feedback[16][3]={0};
+static u8 color[16]={0};
+
  
 /**
   * @brief The private (static) function for decoding CAN message
@@ -147,97 +149,199 @@ void can_sensor_init(void){
 
 static void can_sensor_feedback_decoding(CanRxMsg msg){
 	switch (msg.Data[0]) {
-		case LIGHTSENSOR_ENABLE:
+		case LIGHT_SENSOR_0:
 			if (msg.DLC == 7) {
 				// Range check 
-				feedback[0] = msg.Data [1];
-				feedback[1] = msg.Data [2];
-				feedback[2] = msg.Data [3];
-				feedback[3] = msg.Data [4];
-				feedback[4] = msg.Data [5];
-				feedback[5] = msg.Data [6];
+				feedback[0][0] = (u16)n_bytes_to_one(&msg.Data[1], 2);
+				feedback[0][1] = (u16)n_bytes_to_one(&msg.Data[3], 2);
+				feedback[0][2] = (u16)n_bytes_to_one(&msg.Data[5], 2);
 			}
 		break;
-		case LIGHTSENSOR_DISABLE:
+		case LIGHT_SENSOR_1:
 			if (msg.DLC == 7) {
 				// Range check 
-				feedback[6] = (u16)n_bytes_to_one(&msg.Data[1], 2);
-				feedback[7] = (u16) n_bytes_to_one(&msg.Data[3], 2);
-				feedback[8] = (u16)n_bytes_to_one(&msg.Data[5], 2);
+				feedback[1][0] = (u16)n_bytes_to_one(&msg.Data[1], 2);
+				feedback[1][1] = (u16)n_bytes_to_one(&msg.Data[3], 2);
+				feedback[1][2] = (u16)n_bytes_to_one(&msg.Data[5], 2);
 			}
 		break;
 		case LIGHT_SENSOR_2:
 			if (msg.DLC == 7) {
 				// Range check 
-				feedback[9] = (u16)n_bytes_to_one(&msg.Data[1], 2);
-				feedback[10] = (u16)n_bytes_to_one(&msg.Data[3], 2);
-				feedback[11] = (u16)n_bytes_to_one(&msg.Data[5], 2);
+				feedback[2][0] = (u16)n_bytes_to_one(&msg.Data[1], 2);
+				feedback[2][1] = (u16)n_bytes_to_one(&msg.Data[3], 2);
+				feedback[2][2] = (u16)n_bytes_to_one(&msg.Data[5], 2);
 			}
 		break;
+			
 		case LIGHT_SENSOR_3:
+			if (msg.DLC == 7) {
+				// Range check 
+				feedback[3][0] = (u16)n_bytes_to_one(&msg.Data[1], 2);
+				feedback[3][1] = (u16)n_bytes_to_one(&msg.Data[3], 2);
+				feedback[3][2] = (u16)n_bytes_to_one(&msg.Data[5], 2);
+			}
+		break;
+			
+		case LIGHT_SENSOR_4:
+			if (msg.DLC == 7) {
+				// Range check 
+				feedback[4][0] = (u16)n_bytes_to_one(&msg.Data[1], 2);
+				feedback[4][1] = (u16)n_bytes_to_one(&msg.Data[3], 2);
+				feedback[4][2] = (u16)n_bytes_to_one(&msg.Data[5], 2);
+			}
+		break;
+		
+		case LIGHT_SENSOR_5:
+			if (msg.DLC == 7) {
+				// Range check 
+				feedback[5][0] = (u16)n_bytes_to_one(&msg.Data[1], 2);
+				feedback[5][1] = (u16)n_bytes_to_one(&msg.Data[3], 2);
+				feedback[5][2] = (u16)n_bytes_to_one(&msg.Data[5], 2);
+			}
+		break;
+			
+		case LIGHT_SENSOR_6:
+			if (msg.DLC == 7) {
+				// Range check 
+				feedback[6][0] = (u16)n_bytes_to_one(&msg.Data[1], 2);
+				feedback[6][1] = (u16)n_bytes_to_one(&msg.Data[3], 2);
+				feedback[6][2] = (u16)n_bytes_to_one(&msg.Data[5], 2);
+			}
+		break;
+			
+		case LIGHT_SENSOR_7:
+			if (msg.DLC == 7) {
+				// Range check 
+				feedback[7][0] = (u16)n_bytes_to_one(&msg.Data[1], 2);
+				feedback[7][1] = (u16)n_bytes_to_one(&msg.Data[3], 2);
+				feedback[7][2] = (u16)n_bytes_to_one(&msg.Data[5], 2);
+			}
+		break;
+			
+		case LIGHT_SENSOR_8:
+			if (msg.DLC == 7) {
+				// Range check 
+				feedback[8][0] = (u16)n_bytes_to_one(&msg.Data[1], 2);
+				feedback[8][1] = (u16)n_bytes_to_one(&msg.Data[3], 2);
+				feedback[8][2] = (u16)n_bytes_to_one(&msg.Data[5], 2);
+			}
+		break;
+			
+		case LIGHT_SENSOR_9:
+			if (msg.DLC == 7) {
+				// Range check 
+				feedback[9][0] = (u16)n_bytes_to_one(&msg.Data[1], 2);
+				feedback[9][1] = (u16)n_bytes_to_one(&msg.Data[3], 2);
+				feedback[9][2] = (u16)n_bytes_to_one(&msg.Data[5], 2);
+			}
+		break;
+				case LIGHT_SENSOR_10:
+			if (msg.DLC == 7) {
+				// Range check 
+				feedback[10][0] = (u16)n_bytes_to_one(&msg.Data[1], 2);
+				feedback[10][1] = (u16)n_bytes_to_one(&msg.Data[3], 2);
+				feedback[10][2] = (u16)n_bytes_to_one(&msg.Data[5], 2);
+			}
+		break;
+	case LIGHT_SENSOR_11:
+			if (msg.DLC == 7) {
+				// Range check 
+				feedback[11][0] = (u16)n_bytes_to_one(&msg.Data[1], 2);
+				feedback[11][1] = (u16)n_bytes_to_one(&msg.Data[3], 2);
+				feedback[11][2] = (u16)n_bytes_to_one(&msg.Data[5], 2);
+			}
+		break;
+	case LIGHT_SENSOR_12:
+			if (msg.DLC == 7) {
+				// Range check 
+				feedback[12][0] = (u16)n_bytes_to_one(&msg.Data[1], 2);
+				feedback[12][1] = (u16)n_bytes_to_one(&msg.Data[3], 2);
+				feedback[12][2] = (u16)n_bytes_to_one(&msg.Data[5], 2);
+			}
+		break;
+	case LIGHT_SENSOR_13:
+			if (msg.DLC == 7) {
+				// Range check 
+				feedback[13][0] = (u16)n_bytes_to_one(&msg.Data[1], 2);
+				feedback[13][1] = (u16)n_bytes_to_one(&msg.Data[3], 2);
+				feedback[13][2] = (u16)n_bytes_to_one(&msg.Data[5], 2);
+			}
+		break;
+	case LIGHT_SENSOR_14:
+			if (msg.DLC == 7) {
+				// Range check 
+				feedback[14][0] = (u16)n_bytes_to_one(&msg.Data[1], 2);
+				feedback[14][1] = (u16)n_bytes_to_one(&msg.Data[3], 2);
+				feedback[8][2] = (u16)n_bytes_to_one(&msg.Data[5], 2);
+			}
+		break;
+		case LIGHT_SENSOR_15:
+			if (msg.DLC == 7) {
+				// Range check 
+				feedback[15][0] = (u16)n_bytes_to_one(&msg.Data[1], 2);
+				feedback[15][1] = (u16)n_bytes_to_one(&msg.Data[3], 2);
+				feedback[15][2] = (u16)n_bytes_to_one(&msg.Data[5], 2);
+			}
+		break;
+		case COLOR_1:
+			if (msg.DLC == 7) {
+				// Range check 
+				color[1]=msg.Data[1];
+				color[2]=msg.Data[2];
+				color[3]=msg.Data[3];				
+				color[4]=msg.Data[4];
+				color[5]=msg.Data[5];
+				color[6]=msg.Data[6];
+			}
+		break;
+		case COLOR_2:
+			if (msg.DLC == 7) {
+				// Range check 
+				color[7]=msg.Data[1];
+				color[8]=msg.Data[2];
+				color[9]=msg.Data[3];				
+				color[10]=msg.Data[4];
+				color[11]=msg.Data[5];
+				color[12]=msg.Data[6];
+			}
+		break;
+		case COLOR_3:
 			if (msg.DLC == 4) {
 				// Range check 
-				feedback[12] = (u16)n_bytes_to_one(&msg.Data[1], 2);
-				feedback[13] = msg.Data [3];
-				
+				color[13]=msg.Data[1];
+				color[14]=msg.Data[2];
+				color[15]=msg.Data[3];				
 			}
 		break;
+
+
 	}
 }
 
-	
-
-u8 get_sensor_feedback_0 (void){
-	return feedback[0] ;
-}
-u8 get_sensor_feedback_1 (void){
-	return feedback[1] ;
-}
-u8 get_sensor_feedback_2 (void){
-	return feedback[2] ;
+u16 get_feedback (u8 i, u8 j){
+	return feedback[i][j];
 }
 
-u8 get_sensor_feedback_3 (void){
-	return feedback[3] ;
+char get_color (u8 i){
+	if(color[i]==1){
+		return 'G';
+	}
+	else if (color[i]==0){
+		return 'R';
+	}
+	else if (color[i]==2){
+		return 'B';
+	}
+	else if (color[i]==4){
+		return 'Y';
+	}
+	else if (color[i]==5){
+		return 'W';		
+	}else{
+		return 'N';
+	}
 }
-
-u8 get_sensor_feedback_4 (void){
-	return feedback[4] ;
-}
-u8 get_sensor_feedback_5 (void){
-	return feedback[5] ;
-}
-u8 get_sensor_feedback_6 (void){
-	return feedback[6] ;
-}
-u8 get_sensor_feedback_7 (void){
-	return feedback[7] ;
-}
-u8 get_sensor_feedback_8 (void){
-	return feedback[8] ;
-}
-u8 get_sensor_feedback_9 (void){
-	return feedback[9] ;
-}
-u8 get_sensor_feedback_10 (void){
-	return feedback[10] ;
-}
-u8 get_sensor_feedback_11 (void){
-	return feedback[11] ;
-}
-u8 get_sensor_feedback_12 (void){
-	return feedback[12] ;
-}
-u8 get_sensor_feedback_13 (void){
-	return feedback[13] ;
-}
-u8 get_sensor_feedback_14 (void){
-	return feedback[14] ;
-}
-u8 get_sensor_feedback_15 (void){
-	return feedback[15] ;
-}
-
 
 
 
