@@ -16,7 +16,7 @@
 #define T_MOTOR_MAX_SPEED 500
 
 static int C_PR = 234;
-static int C_IN = 1;
+static int C_IN = 0;
 static int C_DE = 0;
 
 static int C_T_PR = 600;
@@ -110,6 +110,7 @@ static void increase_prop(void)
 	}
 }
 
+// reset gyro to 0,0
 static void reset_gyro(void)
 {
 	gyro_pos_set(0, 0, 0);
@@ -117,6 +118,7 @@ static void reset_gyro(void)
 	wheel_base_set_target_pos(target_pos);
 }
 
+// calibrate gyro to the T shaped point on front side of game field
 void set_starting_pos(void)
 {
 	gyro_pos_set(0, 4700, 0);
@@ -124,18 +126,21 @@ void set_starting_pos(void)
 	wheel_base_set_target_pos(target_pos);
 }
 
+// function to set PID directly to serving position
 void set_serving_pos(void)
 {
 	POSITION target_pos = {343, 4293, 0};
 	wheel_base_set_target_pos(target_pos);
 }
 
+// returning pos is the position to return the ball on the non-yellow zone side of the field
 void set_returning_pos(void)
 {
 	POSITION target_pos = {-1373, 2404, 0};
 	wheel_base_set_target_pos(target_pos);
 }
 
+// function to move back after serve
 void set_after_serve_pos(void)
 {
 	POSITION target_pos = {1000, 500, 0};

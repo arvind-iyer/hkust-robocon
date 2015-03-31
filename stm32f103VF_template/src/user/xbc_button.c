@@ -12,6 +12,8 @@ static u32 last_increased_speed = 0;
 
 static u32 xbc_last_received_nonzero_speed_timer = 0;
 
+// handler for all xbox buttons
+
 void xbc_button_handler(void)
 {
 	if (xbc_get_joy(XBC_JOY_LX) || xbc_get_joy(XBC_JOY_LY) || xbc_get_joy(XBC_JOY_LT) || xbc_get_joy(XBC_JOY_RT))
@@ -94,6 +96,8 @@ void xbc_button_handler(void)
 		last_decreased_speed = get_full_ticks();
 	}
 }
+
+// function to get last non-zero speed received
 
 u32 xbc_get_received_nonzero_speed_timer(void)
 {

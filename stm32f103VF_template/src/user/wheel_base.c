@@ -163,19 +163,23 @@ void wheel_base_set_vel(s32 x, s32 y, s32 w)
 }
 
 /**
-	* @brief Get current wheel base velocity
+	* @brief Get target wheel base velocity
 	* @param None.
-	* @retval Current wheel base velocity.
+	* @retval target wheel base velocity.
 	*/
 WHEEL_BASE_VEL wheel_base_get_vel(void)
 {
 	return wheel_base_vel;
 }
 
+// get current speed
+
 WHEEL_BASE_VEL wheel_base_get_prev_vel(void)
 {
 	return wheel_base_vel_prev;
 }
+
+// get when the last manual command was received
 
 u32 wheel_base_get_last_manual_timer(void)
 {
@@ -211,6 +215,8 @@ static s32 wheel_base_vel_update(s32 current_vel, s32 target_vel, s32 wheel_base
 	}
 }
 
+// function to set speed using xbox buttons directly
+
 void wheel_base_set_xbox_vel(void)
 {
 	int x_vel = xbc_get_joy(XBC_JOY_LX) / 10;
@@ -232,10 +238,13 @@ void wheel_base_update(void)
     * TODO2: If there is not any Bluetooth RX data after BLUETOOTH_WHEEL_BASE_TIMEOUT, stop the motors
   
     */
+	
+	// detect when timeout is reached to stop motors if no pid
 	if ((get_full_ticks() - wheel_base_bluetooth_vel_last_update) > BLUETOOTH_WHEEL_BASE_TIMEOUT && (wheel_base_get_pid_flag() != 1 || (wheel_base_get_pid_flag() && get_pid_stat()))) {
 		wheel_base_set_vel(0, 0, 0);
 	}
 	
+	// detect when timeout is reached to stop motors for xbox when PID is off
 	if (xbc_get_connection() != XBC_DISCONNECTED && (wheel_base_get_pid_flag() != 1 ||
 		(wheel_base_get_pid_flag() == 1 && (get_full_ticks() - xbc_get_received_nonzero_speed_timer()) < BLUETOOTH_WHEEL_BASE_TIMEOUT)))
 	{

@@ -22,23 +22,7 @@ static u32 racket_speed_adjust_time = 0;
 static u16 racket_delay = 238;    //tested best result
 static u32 racket_delay_adjust_time = 0;
 
-//added for upper rackets
-static bool up_calibrate_mode_on = false;
-static bool up_calibrated = false;
-static s32 up_prev_encoder_value = 0;
-static s32 up_current_encoder_value = 0;
-static s32 up_target_encoder_value = 0;
-static s32 up_turn_encoder_value = 0;
-static bool up_switch_stat;
-static u8 up_switch_hit = 0;
-static u32 up_current_speed = 0;
-static u16 up_racket_speed = 1800;
-static s32 up_switch_encoder_value = 0;
-
 static bool racket_emergency_stop = false;
-
-static bool up_switch_state;
-static s32 up_switch_interrupt_trigger_time = 0;
 
 // Getters
 u16 get_racket_speed() {
@@ -102,6 +86,8 @@ static void decrease_racket_delay() {
 	}
 }
 
+// exposed functions for xbc_button class
+
 void open_pneumatic(void)
 {
 	GPIO_ResetBits(GPIOE, GPIO_Pin_15);
@@ -113,7 +99,7 @@ void close_pneumatic(void)
 }
 
 void serving(void){
-	// check if pneumatic is closed
+	// check if pneumatic is closed before serving
 	if (GPIO_ReadInputDataBit(GPIOE, GPIO_Pin_15)) {
 		open_pneumatic();
 		serving_started = true;
@@ -121,24 +107,8 @@ void serving(void){
 	}
 }
 
-/*
-static void up_racket_cmd(void)
-{
-	if (up_calibrated) {
-		up_target_encoder_value = up_switch_encoder_value + up_turn_encoder_value + 300;
-	}
-}
-
-static void up_racket_calibrate (void){
-	up_calibrate_mode_on = true;
-	up_prev_encoder_value = 0;
-	up_current_encoder_value = 0;
-	up_turn_encoder_value = 0;
-	up_calibrated = false;
-	up_switch_hit = 0;
-}
-*/
-
+// calibrate the racket
+// will automatically turn on fast calibrate once completed
 void racket_calibrate(void)			//calibrate to 1, run before start
 {
 	calibrate_mode_on = true;
@@ -191,7 +161,6 @@ void racket_init(void)
 	register_special_char_function(',', decrease_racket_delay); // <
 	
 	switch_stat = GPIO_ReadInputDataBit(GPIOE, GPIO_Pin_7);
-	up_switch_stat = GPIO_ReadInputDataBit(GPIOD, GPIO_Pin_11);
 
 	// GPIO configuration
 	GPIO_InitTypeDef GPIO_InitStructure;
@@ -205,7 +174,7 @@ void racket_init(void)
   GPIO_InitStructure.GPIO_Pin = GPIO_Pin_7;
   GPIO_Init(GPIOE, &GPIO_InitStructure);
 	
-	//switch_upper_racket init
+	// init external gpio for  
 	GPIO_InitStructure.GPIO_Mode = GPIO_Mode_IPU;
   GPIO_InitStructure.GPIO_Speed = GPIO_Speed_50MHz;
   GPIO_InitStructure.GPIO_Pin = GPIO_Pin_11;
@@ -239,21 +208,13 @@ void racket_init(void)
 	close_pneumatic();
 }
 
+// IRQ handler for GPIOE 10 to 15
 void EXTI15_10_IRQHandler(void)
 {
+	// check status of GPIOE 11
 	if (EXTI_GetITStatus(EXTI_Line11) != RESET) {
-		// Debounced edge trigger
-		if (GPIO_ReadInputDataBit(GPIOD, GPIO_Pin_11) != up_switch_state && get_full_ticks() - up_switch_interrupt_trigger_time > SWITCH_TIMEOUT) {
-			up_switch_interrupt_trigger_time = get_full_ticks();
-			up_switch_state = GPIO_ReadInputDataBit(GPIOD, GPIO_Pin_11);
-			// Only when switch is being turned on
-			if (up_switch_state) {
-				up_switch_encoder_value = get_encoder_value(MOTOR6);
-			}
-			// Only when switch is being turned off
-			else {
-			}
-		}
+		// add pneumatic code here?
+		
 	  EXTI_ClearITPendingBit(EXTI_Line11);
 	}
 }
@@ -337,46 +298,8 @@ void racket_update(void)    //determine whether the motor should run
 
 // added for upper rackets
 
-void up_racket_update(void)    //determine whether the motor should run
+void up_racket_update(void)
 {
-	if(GPIO_ReadInputDataBit(GPIOD, GPIO_Pin_11) != up_switch_stat) {
-		up_switch_stat = GPIO_ReadInputDataBit(GPIOD, GPIO_Pin_11);
-		if (up_switch_stat) {
-			++up_switch_hit;
-			if (!up_prev_encoder_value) {
-				up_prev_encoder_value = get_encoder_value(MOTOR6);
-			} else if (!up_current_encoder_value) {
-				up_current_encoder_value = get_encoder_value(MOTOR6);
-			}
-		}
-	}
-	// calibration mode
-	if (up_calibrate_mode_on) {
-		if (up_switch_hit < 2) {
-			up_calibrated = false;
-			motor_set_vel(MOTOR6, -150, OPEN_LOOP);
-			up_current_speed = 150;
-		} else {
-			up_calibrate_mode_on = false;
-			up_calibrated = true;
-			up_turn_encoder_value = up_current_encoder_value - up_prev_encoder_value;
-			up_target_encoder_value = up_current_encoder_value;
-		}
-	}
-	// regular mode
-	else if (up_calibrated) {
-		if (get_encoder_value(MOTOR6) >= up_target_encoder_value) {
-			up_current_encoder_value = get_encoder_value(MOTOR6);
-			motor_lock(MOTOR6);
-			up_current_speed = 0;
-		} else if (get_encoder_value(MOTOR6) <= up_target_encoder_value - up_turn_encoder_value / 2){
-			motor_set_vel(MOTOR6, -up_racket_speed, OPEN_LOOP);
-			up_current_speed = up_racket_speed;
-		} else {
-			s32 vel_error = (up_target_encoder_value - get_encoder_value(MOTOR6))* up_racket_speed  / up_turn_encoder_value + 200;
-			motor_set_vel(MOTOR6, -vel_error, OPEN_LOOP);
-			up_current_speed = vel_error;
-		}
-	}
+
 }
 
