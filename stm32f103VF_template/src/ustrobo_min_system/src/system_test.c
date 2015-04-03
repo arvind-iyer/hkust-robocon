@@ -977,6 +977,12 @@ void uart_test(void)
 				}        
       }
       
+			if (ticks_img == 0) {
+				uart_tx((COM_TypeDef)tft_ui_get_val(&uart_rx_port),
+					"Hello world! \r\nThis is a test of transmitting long message......\r\n");
+				
+			}
+				
       if (ticks_img % 50 == 6) {
         tft_clear();
 				draw_top_bar();
@@ -989,11 +995,17 @@ void uart_test(void)
         tft_prints(8, 4, "UART%d", tft_ui_get_val(&uart_rx_port) + 1);
 				tft_prints(0, 5, "Rx data:");
         tft_prints(11, 5, "%c ", received_data[tft_ui_get_val(&uart_rx_port)]);
+				const USART_DEQUE* deque = uart_get_queue((COM_TypeDef)tft_ui_get_val(&uart_rx_port));
+				
+				tft_prints(0, 6, "Q:%3d-%3d", deque->head, deque->tail);
+				tft_prints(0, 7, "Size: %d", uart_tx_queue_size((COM_TypeDef)tft_ui_get_val(&uart_rx_port))); 
 				if (ticks_img < 500) {
-					tft_prints(0, 7, "Click to send");
+					tft_prints(0, 8, "Click to send");
 				}
         tft_ui_update(&tft_ui, ticks_img % 500 < 25);
 				tft_update();
+				
+				
       }
     }
   }

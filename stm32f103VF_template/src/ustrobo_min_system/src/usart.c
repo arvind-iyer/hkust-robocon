@@ -51,6 +51,7 @@ void uart_init(COM_TypeDef COMx, u32 baudrate)
 	GPIO_Init(usart->RX_PORT, &GPIO_InitStructure);
 
 	/* USART configuration */
+	USART_DeInit(usart->USART);
 	USART_InitStructure.USART_BaudRate = baudrate;
 	USART_InitStructure.USART_WordLength = USART_WordLength_8b;
 	USART_InitStructure.USART_StopBits = USART_StopBits_1;
@@ -69,9 +70,9 @@ void uart_init(COM_TypeDef COMx, u32 baudrate)
 	NVIC_InitStructure.NVIC_IRQChannelCmd = ENABLE;
 	NVIC_Init(&NVIC_InitStructure);
 
-	/* Enables the USART receive interrupt */
+	/* Initialize the USART receive interrupt */
 	USART_ITConfig(usart->USART,USART_IT_RXNE,DISABLE);	
-	
+	USART_ITConfig(usart->USART,USART_IT_TXE,DISABLE);	
 	
 	/* Initialize the deque structure */
 	(usart->deque).head = 0;
@@ -95,7 +96,7 @@ void uart_rx_init(COM_TypeDef COMx, void (*handler)(u8 rx_data))
 {
 	/* Enables the USART receive interrupt */
 	USART_TYPE* usart = &USART_DEF[COMx];
-	USART_ITConfig(usart->USART,USART_IT_RXNE,ENABLE);	
+	USART_ITConfig(usart->USART, USART_IT_RXNE, ENABLE);	
 	usart->rx_handler = handler;
 }
 
@@ -132,24 +133,20 @@ u16 uart_tx_queue_size(COM_TypeDef COMx)
 	*/
 u8 uart_tx_enqueue(COM_TypeDef COMx, uc8 data){
 	USART_TYPE* usart = &USART_DEF[COMx];
-	USART_DEQUE* deque_cur= &(usart->deque);
+	USART_DEQUE* deque = &(usart->deque);
 
 	u8 queue_full=0;
-	if(USART_GetFlagStatus(usart->USART, USART_FLAG_TC) != RESET){
-		USART_ClearFlag(usart->USART, USART_FLAG_TC);
-		USART_SendData(usart->USART ,data);
-	}
-	else{
-		if ((deque_cur->tail+1)%deque_cur->length ==deque_cur->head ){
-			queue_full=1;
-		}
-		else{
-			deque_cur->queue[deque_cur->tail]=data;
-			deque_cur->tail = (deque_cur->tail + 1) % deque_cur->length;
-			queue_full=0;
+ {
+		if ((deque->tail+1) % deque->length == deque->head){
+			queue_full = 1;
+		} else {
+			deque->queue[deque->tail] = data;
+			deque->tail = (deque->tail + 1) % deque->length;
+			queue_full = 0;
+			//USART_ITConfig(usart->USART, USART_IT_TXE, ENABLE);	
 		}
 	}
-	uart_tx_dequeue(COMx);
+	//uart_tx_dequeue(COMx);
 	return !queue_full;
 }
 
@@ -163,29 +160,37 @@ u16 uart_tx_dequeue(COM_TypeDef COMx)
 	USART_TYPE* usart = &USART_DEF[COMx];
 	USART_DEQUE* deque = &(usart->deque);
 	/* If USART TX is available  */
-	if(USART_GetFlagStatus(USART_DEF[COMx].USART, USART_FLAG_TXE)==SET){
-		USART_ClearFlag(usart->USART, USART_FLAG_TXE);
+	if(USART_GetFlagStatus(USART_DEF[COMx].USART, USART_FLAG_TXE) != RESET){
+		//USART_ClearFlag(usart->USART, USART_FLAG_TXE);
 		if(!uart_tx_queue_empty(COMx)){  // Non-empty deque
 			USART_SendData(usart->USART, deque->queue[deque->head]);
-			deque->head = (deque->head + 1) % uart_tx_queue_size(COMx);
+			deque->head = (deque->head + 1) % deque->length;
+			USART_ITConfig(usart->USART,USART_IT_TXE,DISABLE);	
+			if (uart_tx_queue_empty(COMx)) {
+				buzzer_control(1, 10);
+				USART_ClearITPendingBit(usart->USART, USART_IT_TXE); 
+				USART_ITConfig(usart->USART,USART_IT_TXE,DISABLE);	
+			}
 			return 1;
-		}else{
-		return 0;
+		} else {
+			//USART_ClearITPendingBit(usart->USART, USART_IT_TXE);  
+			USART_ITConfig(usart->USART,USART_IT_TXE,DISABLE);	
+			return 0;
 		}
-	}else{
-	return 0;
+	} else {
+		return 0;
 	}
 }
 
-void uart_tx_byte(COM_TypeDef COMx, uc8 data)
+void uart_tx_byte(COM_TypeDef COMx, char data)
 {
-	//uart_tx_enqueue(COMx, data);
-  while (USART_GetFlagStatus(USART_DEF[COMx].USART, USART_FLAG_TXE) == RESET);
-  USART_SendData(USART_DEF[COMx].USART, data);
+	uart_tx_enqueue(COMx, data);
+  //while (USART_GetFlagStatus(USART_DEF[COMx].USART, USART_FLAG_TXE) == RESET);
+  //USART_SendData(USART_DEF[COMx].USART, data);
 }
 
 
-void uart_tx(COM_TypeDef COMx, uc8 * tx_buf, ...)
+void uart_tx(COM_TypeDef COMx, const char * tx_buf, ...)
 {
 	va_list arglist;
 	u8 buf[40], *fp;
@@ -198,26 +203,25 @@ void uart_tx(COM_TypeDef COMx, uc8 * tx_buf, ...)
 		uart_tx_byte(COMx,*fp++);
 }
 
-
-u16 uart_tx_queue_head(COM_TypeDef COMx){
-	USART_DEQUE* deque = &USART_DEF[COMx].deque;
-	return deque->head;
-}
-u16 uart_tx_queue_tail(COM_TypeDef COMx){
-	USART_DEQUE* deque = &USART_DEF[COMx].deque;
-	return deque->tail;
+const USART_DEQUE* uart_get_queue(COM_TypeDef COMx)
+{
+	return &(USART_DEF[COMx].deque);
 }
 
 
 
 void USART_Tx_IRQHandler(COM_TypeDef COMx) 
 {
+	
 	USART_TYPE* usartx = &USART_DEF[COMx];
 	USART_TypeDef* const usart = usartx->USART;
+	buzzer_control(1,10);
 	if (USART_GetITStatus(usart, USART_IT_TXE) != RESET)
 	{
 		USART_ClearITPendingBit(usart, USART_IT_TXE);
-		uart_tx_dequeue(COMx);
+		USART_ClearFlag(usart, USART_IT_TXE);
+		
+		//uart_tx_dequeue(COMx);
 	}
 }
 
@@ -234,23 +238,28 @@ void USART_Rx_IRQHandler(COM_TypeDef COMx) {
 
 void USART1_IRQHandler(void) {
 	USART_Rx_IRQHandler(COM1);
+	USART_Tx_IRQHandler(COM1);
 }
 
 void USART2_IRQHandler(void) {
 	USART_Rx_IRQHandler(COM2);
+	USART_Tx_IRQHandler(COM2);
 }
 
 void USART3_IRQHandler(void) {
 	USART_Rx_IRQHandler(COM3);
+	USART_Tx_IRQHandler(COM3);
 }
 
 /*** Caution: 4 and 5 MUST be UART rather than USART ***/
 void UART4_IRQHandler(void) {
 	USART_Rx_IRQHandler(COM4);
+	USART_Tx_IRQHandler(COM4);
 }
 
 void UART5_IRQHandler(void) {
 	USART_Rx_IRQHandler(COM5);
+	USART_Tx_IRQHandler(COM5);
 }
 
 /**

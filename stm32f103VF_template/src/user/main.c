@@ -28,7 +28,7 @@ int main(void)
   xbc_mb_init(XBC_BLUETOOTH_FIRST); 
 	wheel_base_init();
   //ultrasonic_init();
-  nec_init();
+  //nec_init();
   /** For debugging **/
   uart_init(COM1, 115200);
   uart_printf_enable(COM1);
@@ -55,7 +55,7 @@ int main(void)
   menu_add("MB1240 test", mb1240_test);
   menu_add("Ultra. test", ultra_test);
   
-	menu(16, false);
+	menu(14, false);
 	
 }
 
