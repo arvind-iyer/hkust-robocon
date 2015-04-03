@@ -3,6 +3,16 @@
 #include <stdarg.h>
 #include "buzzer.h"
 
+#ifdef __GNUC__
+/* With GCC/RAISONANCE, small printf (option LD Linker->Libraries->Small printf
+   set to 'Yes') calls __io_putchar() */
+#define PUTCHAR_PROTOTYPE int __io_putchar(int ch)
+#else
+#define PUTCHAR_PROTOTYPE int fputc(int ch, FILE *f)
+#endif /* __GNUC__ */
+
+static COM_TypeDef printf_COMx = COM_NULL;
+
 // Backward compatible extern variable
 USART_TypeDef* COM_USART[COMn] = {USART1, USART2, USART3, UART4, UART5}; 
 u8 USART_QUEUE[COMn][USART_DEQUE_SIZE] = {{0}};
@@ -60,7 +70,8 @@ void uart_init(COM_TypeDef COMx, u32 baudrate)
 	NVIC_Init(&NVIC_InitStructure);
 
 	/* Enables the USART receive interrupt */
-	USART_ITConfig(usart->USART,USART_IT_RXNE,ENABLE);	
+	USART_ITConfig(usart->USART,USART_IT_RXNE,DISABLE);	
+	
 	
 	/* Initialize the deque structure */
 	(usart->deque).head = 0;
@@ -70,7 +81,15 @@ void uart_init(COM_TypeDef COMx, u32 baudrate)
 	
 }
 
+void uart_printf_enable(COM_TypeDef COMx) 
+{
+  printf_COMx = COMx;
+}
 
+void uart_printf_disable(void)
+{
+  printf_COMx = COM_NULL;
+}
 
 void uart_rx_init(COM_TypeDef COMx, void (*handler)(u8 rx_data))
 {
@@ -190,11 +209,6 @@ u16 uart_tx_queue_tail(COM_TypeDef COMx){
 }
 
 
-u16 uart_tx_queue_cur_length(COM_TypeDef COMx){
-	USART_DEQUE* deque = &USART_DEF[COMx].deque;
-	return deque->tail - deque->head ;
-}
-
 
 void USART_Tx_IRQHandler(COM_TypeDef COMx) 
 {
@@ -238,4 +252,18 @@ void UART4_IRQHandler(void) {
 void UART5_IRQHandler(void) {
 	USART_Rx_IRQHandler(COM5);
 }
+
+/**
+  * @brief  Binding of function Printf
+  * @param  None
+  * @retval None
+  */
+PUTCHAR_PROTOTYPE
+{
+	if (printf_COMx != COM_NULL)  {
+    uart_tx_byte(printf_COMx, ch);
+  }
+  return ch;
+}
+
 

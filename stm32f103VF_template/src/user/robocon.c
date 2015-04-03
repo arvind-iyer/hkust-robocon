@@ -25,11 +25,6 @@ void robocon_main(void)
 				racket_update();
 			}
 			
-			if (ticks_img % 250 == 1) {
-				// Every 250 ms (4 Hz)
-				battery_adc_update();
-			}
-			
 			
 			if (get_seconds() % 10 == 2 && ticks_img == 2) {
 				// Every 10 seconds (0.1 Hz)

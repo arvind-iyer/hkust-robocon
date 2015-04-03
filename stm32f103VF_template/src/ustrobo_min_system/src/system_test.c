@@ -1,23 +1,18 @@
 #include "system_test.h"
+#include <string.h>
 
 static u16 ticks_img 	= (u16)-1;
 static u8 received_data[5] = {0};
 
 
 
-void battery_test(void)
+void adc_test(void)
 {
 	while (true) {
 		if (ticks_img != get_ticks()) {
 			ticks_img = get_ticks();
 			
-			if (ticks_img % 50 == 0) {
-				battery_adc_update();
-			}
-			
-      if (ticks_img % 20 == 1) {
-          //xbc_update();
-      }
+
       
 			if (ticks_img % 50 == 3) {
 				button_update();
@@ -29,14 +24,57 @@ void battery_test(void)
 			if (ticks_img % 50 == 6) {
 				tft_clear();
 				draw_top_bar();
-				tft_prints(0, 1, "BATTERY TEST");
-				tft_prints(0, 2, "ADC: %d", get_battery_adc());
+				tft_prints(0, 1, "[ADC TEST]");
+        tft_prints(0, 2, "ADC(1,2,3):");
+        tft_prints(0, 3, "(%4d,%4d,%4d)", ADC1->DR, ADC2->DR, ADC3->DR);
+        
+        u8 x = 1, y = 4;
+        for (u8 i = 0; i < ADC_CHANNEL_COUNT; ++i) {
+          tft_prints(x, y, "%d", get_adc_value(i));
+          ++y;
+          if (y >= tft_get_max_y_char()) {
+            y = 4;
+            x += 5;
+          }
+        }
+				/*
+        tft_prints(0, 2, "ADC: %d", get_battery_adc());
 				tft_prints(0, 3, "V: %d", get_voltage());
 				tft_prints(0, 4, "V avg: %d", get_voltage_avg());
+        */
 				tft_update();
 			}
 		}
 	}
+}
+
+void adc_app_test(void)
+{
+	while (true) {
+		if (ticks_img != get_ticks()) {
+			ticks_img = get_ticks();
+			
+			if (ticks_img % 50 == 3) {
+				button_update();
+				if (return_listener()) {
+					return; 
+				}
+			}
+			
+			if (ticks_img % 50 == 6) {
+				tft_clear();
+				draw_top_bar();
+				tft_prints(0, 1, "[ADC APP TEST]");
+        tft_prints(0, 2, "Battery:");
+        tft_prints(0, 3, " ADC: %d", get_adc_value(BATTERY_ADC_CHANNEL));
+        tft_prints(0, 4, " Val: %d", get_voltage());
+        tft_prints(0, 5, "Temperature:");
+        tft_prints(0, 6, " ADC: %d", get_adc_value(ADC_Channel_TempSensor));
+        tft_prints(0, 7, " Val: %d", get_temperature());
+				tft_update();
+			}
+		}
+	}  
 }
 
 void bluetooth_test(void)
@@ -45,9 +83,6 @@ void bluetooth_test(void)
 		if (ticks_img != get_ticks()) {
 			ticks_img = get_ticks();
 			
-			if (ticks_img % 50 == 0) {
-				battery_adc_update();
-			}
       
       if (ticks_img % 20 == 1) {
         //xbc_update();
@@ -82,10 +117,6 @@ void ascii_test(void)
 	while (true) {
 		if (ticks_img != get_ticks()) {
 			ticks_img = get_ticks();
-			
-			if (ticks_img % 50 == 0) {
-         battery_adc_update();
-			}
 			
       if (ticks_img % 20 == 1) {
         //xbc_update();
@@ -180,10 +211,6 @@ void motor_test(void)
 		if (ticks_img != get_ticks()) {
 			ticks_img = get_ticks();
 			
-			if (ticks_img % 50 == 0) {
-				battery_adc_update();
-			}
-			
       if (ticks_img % 20 == 1) {
         //xbc_update();
       }
@@ -260,10 +287,6 @@ void position_test(void)
 		if (ticks_img != get_ticks()) {
 			ticks_img = get_ticks();
 			
-			if (ticks_img % 50 == 0) {
-				battery_adc_update();
-			}
-			
       if (ticks_img % 20 == 1) {
         //xbc_update();
       }
@@ -316,10 +339,6 @@ void button_test(void)
 	while (1) {
 		if (ticks_img != get_ticks()) {
 			ticks_img = get_ticks();
-			
-			if (ticks_img % 50 == 0) {
-				battery_adc_update();
-			}
       
       if (ticks_img % 20 == 1) {
         //xbc_update();
@@ -424,11 +443,7 @@ void buzzer_test(void)
 	while (true) {
 		if (ticks_img != get_ticks()) {			
 			ticks_img = get_ticks();			
-						
-			if (ticks_img % 50 == 0) {
-				battery_adc_update();
-			}
-			
+
       if (ticks_img % 20 == 1) {
         //xbc_update();
       }
@@ -549,9 +564,6 @@ void can_test(void)
   while (true) {
     if (ticks_img != get_ticks()) {
       ticks_img = get_ticks();
-      if (ticks_img % 50 == 0) {
-        battery_adc_update();
-      }
       
       if (ticks_img % 20 == 1) {
           //xbc_update();
@@ -625,9 +637,7 @@ void can_xbc_test(void)
 	while (true) {
 		if (ticks_img != get_ticks()) {
 			ticks_img = get_ticks();
-			if (ticks_img % 50 == 0) {
-				battery_adc_update();
-			}
+      
       if (ticks_img % 20 == 1) {
         //xbc_update();
       }
@@ -666,9 +676,7 @@ void xbc_test(void)
 	while (true) {
 		if (ticks_img != get_ticks()) {
 			ticks_img = get_ticks();
-			if (ticks_img % 50 == 0) {
-				battery_adc_update();
-			}
+      
       if (ticks_img % 20 == 1) {
         //xbc_update();
       }
@@ -722,7 +730,6 @@ void bluetooth_xbc_test(void)
 		if (ticks_img != get_ticks()) {
 			ticks_img = get_ticks();
 			if (ticks_img % 50 == 0) {
-				battery_adc_update();
         bluetooth_update();
 			}
       if (ticks_img % 20 == 1) {
@@ -938,9 +945,6 @@ void uart_test(void)
   while (true) {
     if (ticks_img != get_ticks()) {
       ticks_img = get_ticks();
-      if (ticks_img % 50 == 0) {
-        battery_adc_update();
-      }
       
       if (ticks_img % 20 == 1) {
         //xbc_update();
@@ -995,6 +999,42 @@ void uart_test(void)
   }
 }
 
+void mb1240_test(void)
+{
+
+  while (true) {
+    if (ticks_img != get_ticks()) {
+      ticks_img = get_ticks();
+      
+      if (ticks_img % 20 == 0) {
+        //xbc_update();
+      }
+      
+      if (ticks_img % 50 == 3) {
+        button_update();
+        if (return_listener()) {
+          return;
+        }
+      }
+      
+      if (ticks_img % 50 == 6) {
+        tft_clear();
+        draw_top_bar();
+        tft_prints(0, 1, "MB1240 TEST");
+        tft_prints(0, 2, "GPIO: %d", gpio_read_input(MB1240_GPIO));
+        tft_prints(0, 3, "Current: %d", mb1240_get_length());
+        tft_prints(0, 4, "Val: %d cm", mb1240_get_last_length());
+        tft_prints(0, 5, "Rate: %d / s", mb1240_get_rate());
+
+        tft_update();
+        
+        
+      }
+    }
+  }
+}
+
+
 void ultra_test(void)
 {
   //u16 distance_history[tft_width-2] = {0};
@@ -1002,9 +1042,6 @@ void ultra_test(void)
   while (true) {
     if (ticks_img != get_ticks()) {
       ticks_img = get_ticks();
-      if (ticks_img % 50 == 0) {
-        battery_adc_update();
-      }
       
       if (ticks_img % 20 == 0) {
         //xbc_update();
@@ -1025,6 +1062,54 @@ void ultra_test(void)
         tft_prints(0, 3, "Pulse: %d", get_pulse_width());
         tft_prints(0, 4, "Distance: %d", get_distance());        
         tft_prints(0, 5, "Avg.: %d", ultrasonic_get_distance_avg());
+        tft_update();
+        
+        
+      }
+    }
+  }
+}
+
+
+void nec_test(void)
+{
+  //u16 distance_history[tft_width-2] = {0};
+
+  while (true) {
+    led_control(LED_D2, (LED_STATE) !gpio_read_input(&PC6));
+    if (ticks_img != get_ticks()) {
+      ticks_img = get_ticks();
+
+      
+      if (ticks_img % 20 == 0) {
+        //xbc_update();
+      }
+      
+      if (ticks_img % 50 == 3) {
+        button_update();
+        if (return_listener()) {
+          return;
+        }
+      }
+      
+      if (ticks_img % 50 == 6) {
+        tft_clear();
+        draw_top_bar();
+        tft_prints(0, 1, "NEC TEST");
+        tft_prints(0, 2, "on_max: %d", get_nec_cont_on_max());
+        tft_prints(0, 3, "off_max: %d", get_nec_cont_off_max());
+        tft_prints(0, 4, "state:%d", get_nec_state());
+        tft_prints(0, 5, "last_data:%X", get_nec_last_data());
+        NEC_Data_TypeDef* raw_data = get_nec_raw_data();
+        
+        
+        tft_prints(0, 6, "{%02X,%02X} {%02X,%02X}", raw_data[0], raw_data[1], raw_data[2], raw_data[3]);
+        
+        NEC_Msg last_msg = get_nec_last_msg();
+        NEC_Msg current_msg = get_nec_current_msg();
+        
+        tft_prints(0, 7, "Last:    %02X %02X", last_msg.address, last_msg.command);
+        tft_prints(0, 8, "Current: %02X %02X", current_msg.address, current_msg.command);
         tft_update();
         
         

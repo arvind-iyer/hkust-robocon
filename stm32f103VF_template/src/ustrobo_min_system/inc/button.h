@@ -8,6 +8,35 @@
 #include "tft.h"
 #include "xbc_mb.h"
 
+#ifdef MAINBOARD_V4
+
+/*****/
+#define BUTTON_DOWN_LISTENER()    (button_pressed(BUTTON_JS_DOWN) == 1 || button_pressed(BUTTON_XBC_S) == 1 || button_hold(BUTTON_XBC_S, 10, 3))
+#define BUTTON_UP_LISTENER()      (button_pressed(BUTTON_JS_UP) == 1 || button_pressed(BUTTON_XBC_N) == 1 || button_hold(BUTTON_XBC_N, 10, 3))
+#define BUTTON_LEFT_LISTENER()    (button_pressed(BUTTON_JS_LEFT) == 1 || button_pressed(BUTTON_XBC_W) == 1 || button_hold(BUTTON_XBC_W, 10, 1))
+#define BUTTON_RIGHT_LISTENER()   (button_pressed(BUTTON_JS_RIGHT) == 1 || button_pressed(BUTTON_XBC_E) == 1 || button_hold(BUTTON_XBC_E, 10, 1))
+#define BUTTON_ENTER_LISTENER()   (button_pressed(BUTTON_2) == 1 || button_pressed(BUTTON_XBC_START) == 1)
+#define BUTTON_RETURN_LISTENER()   (button_pressed(BUTTON_1) == 5  || button_pressed(BUTTON_XBC_BACK) == 5)
+
+/****/
+
+#define BUTTON_JS_UP_GPIO				((GPIO*) &PD0)
+#define BUTTON_JS_LEFT_GPIO			((GPIO*) &PD1)
+#define BUTTON_JS_DOWN_GPIO			((GPIO*) &PB8)
+#define BUTTON_JS_RIGHT_GPIO		((GPIO*) &PD3)
+#define BUTTON_JS_CENTER_GPIO		((GPIO*) &PD4)
+
+#define	BUTTON_1_GPIO							((GPIO*) &PB6)
+#define	BUTTON_2_GPIO							((GPIO*) &PB7)
+
+#define BUTTON_RELEASED_LIMIT			20    /*!< Reset the button release time after the limit */
+
+#define	BUTTON_COUNT							7    /*!< Number of buttons (exclude XBOX) */
+#define XBC_BUTTON_START_ID       7
+#define XBC_BUTTON_COUNTS         20
+
+#else 
+
 /*****/
 #define BUTTON_DOWN_LISTENER()    (button_pressed(BUTTON_JS2_DOWN) == 1 || button_hold(BUTTON_JS2_DOWN, 10, 3) || button_pressed(BUTTON_XBC_S) == 1 || button_hold(BUTTON_XBC_S, 10, 3))
 #define BUTTON_UP_LISTENER()      (button_pressed(BUTTON_JS2_UP) == 1 || button_hold(BUTTON_JS2_UP, 10, 3) || button_pressed(BUTTON_XBC_N) == 1 || button_hold(BUTTON_XBC_N, 10, 3))
@@ -40,10 +69,18 @@
 #define XBC_BUTTON_START_ID       12
 #define XBC_BUTTON_COUNTS         20
 
+#endif
 
 
 
 typedef enum {
+#ifdef MAINBOARD_V4
+	BUTTON_JS_UP 				= 0,
+	BUTTON_JS_LEFT			= 1,
+	BUTTON_JS_DOWN			= 2,
+	BUTTON_JS_RIGHT			= 3,
+	BUTTON_JS_CENTER 		= 4, 
+#else
 	BUTTON_JS1_UP 			= 0,
 	BUTTON_JS1_LEFT			= 1,
 	BUTTON_JS1_DOWN			= 2,
@@ -54,8 +91,9 @@ typedef enum {
 	BUTTON_JS2_DOWN			= 7,
 	BUTTON_JS2_RIGHT		= 8,
 	BUTTON_JS2_CENTER		= 9,
-	BUTTON_1						= 10,
-	BUTTON_2						= 11,
+#endif
+	BUTTON_1,
+	BUTTON_2,
  
   BUTTON_XBC_N		    = XBC_BUTTON_START_ID,
   BUTTON_XBC_S,
