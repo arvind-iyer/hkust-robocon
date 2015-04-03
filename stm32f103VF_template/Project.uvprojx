@@ -363,7 +363,7 @@
             <useXO>0</useXO>
             <VariousControls>
               <MiscControls></MiscControls>
-              <Define>USE_STDPERIPH_DRIVER, STM32F10X_XL, USE_STM3210B_EVAL</Define>
+              <Define>USE_STDPERIPH_DRIVER, STM32F10X_XL, USE_STM3210B_EVAL, MAINBOARD_V4</Define>
               <Undefine></Undefine>
               <IncludePath>.\src;.\src\stm32f10x_std\inc;.\src\ustrobo_min_system\inc;.\src\user</IncludePath>
             </VariousControls>

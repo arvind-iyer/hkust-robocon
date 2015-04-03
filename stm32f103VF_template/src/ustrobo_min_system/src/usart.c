@@ -70,7 +70,8 @@ void uart_init(COM_TypeDef COMx, u32 baudrate)
 	NVIC_Init(&NVIC_InitStructure);
 
 	/* Enables the USART receive interrupt */
-	USART_ITConfig(usart->USART,USART_IT_RXNE,ENABLE);	
+	USART_ITConfig(usart->USART,USART_IT_RXNE,DISABLE);	
+	
 	
 	/* Initialize the deque structure */
 	(usart->deque).head = 0;
@@ -207,11 +208,6 @@ u16 uart_tx_queue_tail(COM_TypeDef COMx){
 	return deque->tail;
 }
 
-
-u16 uart_tx_queue_cur_length(COM_TypeDef COMx){
-	USART_DEQUE* deque = &USART_DEF[COMx].deque;
-	return deque->tail - deque->head ;
-}
 
 
 void USART_Tx_IRQHandler(COM_TypeDef COMx) 

@@ -16,18 +16,15 @@ int main(void)
 	led_init();
 	tft_init(2, WHITE, BLACK, RED);
 	gyro_init();
- 
-	//battery_adc_init();
+
   battery_init(); 
   adc_init();
-	//battery_adc_init();
   can_init();
 	can_rx_init();
   can_motor_init();
-
+	
 	bluetooth_init();
-  mb1240_init();
-  
+  //mb1240_init();
   xbc_mb_init(XBC_BLUETOOTH_FIRST); 
 	wheel_base_init();
   //ultrasonic_init();
@@ -58,7 +55,7 @@ int main(void)
   menu_add("MB1240 test", mb1240_test);
   menu_add("Ultra. test", ultra_test);
   
-	menu(16, true);
+	menu(16, false);
 	
 }
 

@@ -3,10 +3,17 @@
   * STM32F103VG Mainboard Library
   * Maintained by Kenneth Au
   * Version: (Robocon 2015) Version 1.6
-  * Last update: 20th March, 2015
+  * Last update: 3rd April, 2015
  ******************************************************************************
   */
  
+/** Version 2.0 (3rd April, 2015) **/
+- Library for new mainboard (#define MAINBOARD_V4)
+	- ADC implemented with DMA
+	- Buttons (for new mainboard)
+	- Interface change (for easier distinguish)
+	- Library for NEC, MB1240
+	
 /** Version 1.6 (20th March, 2015) **/
 - XBox library FULL
 	- XBox with CAN

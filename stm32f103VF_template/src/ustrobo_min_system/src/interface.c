@@ -15,7 +15,7 @@ static MENU_ITEM menu_list[MENU_LIST_MAX];
 	*/
 void system_start(u16 duration)
 {
-  const char* title = "Robocon 2015  Min System 1.6";
+  const char* title = "Robocon 2015  Min System 2.0";
   
 	led_control((LED) (LED_D1 | LED_D2 | LED_D3), LED_ON);
 	tft_clear();
@@ -176,7 +176,7 @@ void draw_top_bar(void)
 	u16 prev_bg_color = tft_get_bg_color();
 	u16 prev_text_color = tft_get_text_color();
 	// Top bar - time
-	tft_set_bg_color(BLUE2);
+	tft_set_bg_color(PURPLE);
 	tft_set_text_color(WHITE);
 	tft_clear_line(0);
 	tft_prints(0,0," %02d %02d", get_seconds() / 60, get_seconds() % 60);
@@ -187,13 +187,24 @@ void draw_top_bar(void)
 	
 	// Top bar - battery (top-right)
 	u8 pos = (tft_get_orientation() % 2 ? MAX_HEIGHT : MAX_WIDTH);
+	static u8 adc_val_update = 0;
+	static u16 temp_voltage;
+	static u16 temp_battery;
+	
+	if (adc_val_update % 100 == 0) {
+		temp_voltage = get_voltage();
+		temp_battery = get_temperature();
+	}
+	
   if (get_seconds() % 10 < 5) {
-    draw_battery_icon(get_voltage()/10);
+		
+    draw_battery_icon(temp_voltage/10);
   } else {
-    tft_prints(tft_get_max_x_char() - 7, 0, "%d.%d%cC%c", get_temperature() / 10, get_temperature() % 10, 248, 10);
+    tft_prints(tft_get_max_x_char() - 7, 0, "%2d.%d%cC%c", temp_battery / 10, temp_battery % 10, 248, 10);
   }
 	tft_set_bg_color(prev_bg_color);
 	tft_set_text_color(prev_text_color); 	
+	++adc_val_update;
 }
 
 /**
@@ -293,7 +304,7 @@ void menu(u8 default_id, bool pre_enter)
 				
 				// Bottom bar - page number
 				tft_set_text_color(WHITE);
-				tft_set_bg_color(BLUE2);
+				tft_set_bg_color(PURPLE);
 				tft_clear_line(tft_get_max_y_char()-1);
 				tft_prints(1, tft_get_max_y_char()-1, "%d/%d", current_page + 1, page_count + 1);
 				
