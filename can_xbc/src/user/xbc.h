@@ -32,6 +32,7 @@ void xbc_rx_init(void);
 u8 get_xbc_data(u8 i);
 void xbc_tx_data(void);
 void xbc_loop(void);
+u8 xbc_rx_get_connection(void);
 u8 xbc_rx_lcd_update(void);
 u32 xbc_get_last_rx_time_ms(void);
 

@@ -13,16 +13,16 @@ u8 old_pid = 0;
 u8 tmp = 0;
 u16 usb_conf_cnt = 100;
 u16 check_err_exist = 0;
-u8 xbc_command_led1[] = {0x03,0x01,0x03,0x02}; //06: first led; 07: second led
-u8 xbc_command_led2[] = {0x03,0x01,0x03,0x03}; //06: first led; 07: second led
-u8 xbc_command_led3[] = {0x03,0x01,0x03,0x04}; //06: first led; 07: second led
-u8 xbc_command_led4[] = {0x03,0x01,0x03,0x05}; //06: first led; 07: second led
+u8 xbc_command_led1[] = {0x03,0x01,0x03,0x06}; //06: first led; 07: second led
+u8 xbc_command_led2[] = {0x03,0x01,0x03,0x07}; //06: first led; 07: second led
+u8 xbc_command_led3[] = {0x03,0x01,0x03,0x08}; //06: first led; 07: second led
+u8 xbc_command_led4[] = {0x03,0x01,0x03,0x09}; //06: first led; 07: second led
 u8 xbc_command_rumble[] = {0x06, 0x00, 0x06, 0x00, 0xff, 0x00, 0xff};
 u8 xbc_command_rumble2[] = {0x08,0x00,0x08,0x00,0xff,0xff,0x00,0x00,0x00}; //
 u8 set_xbc_flag = 1;
 u8 get_state_xbc= 0;
 u8 array_s = 8;
-u8 xbc_id = 3;
+u8 xbc_id = 2;
 u8 usb_get_state(void)
 {
   return _state;

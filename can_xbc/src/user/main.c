@@ -19,7 +19,7 @@ int main(void)
 	ticks_init();
 	buzzer_init();
 	//button_init();
-	//led_init();
+	led_init();
   usb_init();
   usb_start_run();
 	tft_init(0, BLACK, WHITE, YELLOW);
@@ -30,7 +30,8 @@ int main(void)
   
 	//buzzer_play_song(START_UP, 120, 0);
   buzzer_control_note(1, 300, NOTE_G, 4);
-  
+  //led_control(LED_D1, LED_ON);
+  //led_control(LED_D2, LED_ON);
   
   
   bool connection = false;
@@ -48,6 +49,7 @@ int main(void)
         //usb_start_run();
       }
       if (!usb_connected()) {
+				led_control(LED_D1, LED_OFF);
         // Faster loop if USB not connected
         if (connection) {connection = false;}
         usb_main_loop();
@@ -55,6 +57,7 @@ int main(void)
           buzzer_control_note(2, 100, NOTE_Fs, 3);
         }
       } else {
+				led_control(LED_D1, LED_ON);
         if (!connection) {
           connection = true;
           buzzer_play_song(CONNECTED_SOUND, 120, 0);
@@ -64,7 +67,8 @@ int main(void)
           usb_main_loop(); 
         }
       }
-        
+      
+			led_control(LED_D2, xbc_rx_get_connection() ? LED_ON : LED_OFF);
       if (ticks_img % 10 == 2) {
         xbc_loop();
         xbc_tx_data();
@@ -82,7 +86,7 @@ int main(void)
         
         if (!usb_connection || !xbc_rx_lcd_update_predicate) { 
           tft_prints(0, 0, "[XBOX Controller]");
-          tft_prints(0, 1, "Time: %d.%02d", get_seconds(), get_ticks() / 100);
+          tft_prints(0, 1, "Time: %d.%02d", get_seconds(), get_ticks() / 10);
           tft_prints(0, 2, "USB state: ");
           u16 tmp_color = tft_get_text_color();
           tft_set_text_color((usb_get_state() < 6) ? RED : ((usb_get_state() < 9) ? YELLOW : GREEN));

@@ -161,9 +161,14 @@ void xbc_loop(void)
   }
 }
 
+u8 xbc_rx_get_connection(void)
+{
+	return xbc_lcd_data_rx_time_ms != CAN_XBC_LCD_UPDATE_TRIVIAL_TIME && (get_full_ticks() - xbc_lcd_data_rx_time_ms <= CAN_XBC_LCD_IDLE_TIME_MS);
+}
+
 u8 xbc_rx_lcd_update(void)
 {
-  if (xbc_lcd_data_rx_time_ms != CAN_XBC_LCD_UPDATE_TRIVIAL_TIME && (get_full_ticks() - xbc_lcd_data_rx_time_ms <= CAN_XBC_LCD_IDLE_TIME_MS)) {
+  if (xbc_rx_get_connection()) {
     for (u8 y = 0; y < CHAR_MAX_Y_VERTICAL; ++y) {
       for (u8 x = 0; x < CHAR_MAX_X_VERTICAL; ++x) {
         XBC_LCD_DATA* data = &xbc_lcd_data[x][y];

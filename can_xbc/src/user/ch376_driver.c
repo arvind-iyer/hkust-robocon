@@ -231,7 +231,7 @@ void ch376_set_parallel_mod(void){
 
 void ch376_hardware_init(void) {
 		
-	gpio_but_init();
+	//gpio_but_init();
 	gpio_ctl_init();
 	gpio_data_out_init();	
 	ch376_set_parallel_mod();

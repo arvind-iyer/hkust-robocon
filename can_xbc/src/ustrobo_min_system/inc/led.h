@@ -8,14 +8,12 @@
 
 
 
-#define	LED_D1_GPIO				((GPIO*) &PC1)
-#define	LED_D2_GPIO				((GPIO*) &PC2)
-#define	LED_D3_GPIO				((GPIO*) &PC3)
+#define	LED_D1_GPIO				((GPIO*) &PC12)
+#define	LED_D2_GPIO				((GPIO*) &PD2)
 
 typedef enum {
 	LED_D1 = 1 << 1,	// 1 (001)
 	LED_D2 = 1 << 2,	// 2 (010)
-	LED_D3 = 1 << 3		// 4 (100)
 } LED;
 	
 typedef enum {
