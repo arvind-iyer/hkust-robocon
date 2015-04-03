@@ -448,6 +448,11 @@
               <FileType>1</FileType>
               <FilePath>.\src\user\racket_control.c</FilePath>
             </File>
+            <File>
+              <FileName>mb1240.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\src\user\mb1240.c</FilePath>
+            </File>
           </Files>
         </Group>
         <Group>
@@ -457,11 +462,6 @@
               <FileName>approx_math.c</FileName>
               <FileType>1</FileType>
               <FilePath>.\src\ustrobo_min_system\src\approx_math.c</FilePath>
-            </File>
-            <File>
-              <FileName>battery.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>.\src\ustrobo_min_system\src\battery.c</FilePath>
             </File>
             <File>
               <FileName>bluetooth.c</FileName>
@@ -572,6 +572,26 @@
               <FileName>xbc_mb.c</FileName>
               <FileType>1</FileType>
               <FilePath>.\src\ustrobo_min_system\src\xbc_mb.c</FilePath>
+            </File>
+            <File>
+              <FileName>adc.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\src\ustrobo_min_system\src\adc.c</FilePath>
+            </File>
+            <File>
+              <FileName>adc_app.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\src\ustrobo_min_system\src\adc_app.c</FilePath>
+            </File>
+            <File>
+              <FileName>nec.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\src\ustrobo_min_system\src\nec.c</FilePath>
+            </File>
+            <File>
+              <FileName>nec_remote.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\src\ustrobo_min_system\src\nec_remote.c</FilePath>
             </File>
           </Files>
         </Group>
