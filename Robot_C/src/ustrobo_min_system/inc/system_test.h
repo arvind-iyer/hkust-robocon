@@ -8,7 +8,6 @@
 
 /*** Essential ***/
 #include "ticks.h"
-#include "battery.h"
 #include "delay.h"
 
 #include "buzzer.h"
@@ -31,13 +30,15 @@
 #include "wheel_base.h"
 #include "ultrasonic.h"
 #include "bluetooth_xbc_mb.h"
-#include "xbc_mb.h"
-
+#include "nec.h"
+#include "adc.h"
+#include "mb1240.h"
 
 void bluetooth_test(void);
 void ascii_test(void);
 void motor_test(void);
-void battery_test(void);
+void adc_test(void);
+void adc_app_test(void);
 void position_test(void);
 void button_test(void);
 void buzzer_test(void);
@@ -47,7 +48,8 @@ void xbc_test(void);
 void bluetooth_xbc_test(void);
 void gpio_pin_test(void);
 void uart_test(void);
+void mb1240_test(void);
 void ultra_test(void);
-void snake(void);
+void nec_test(void);
  
 #endif /* __SYSTEM_TEST_H */

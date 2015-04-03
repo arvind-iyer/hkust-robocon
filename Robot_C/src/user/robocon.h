@@ -7,7 +7,6 @@
 
 /*** Essential ***/
 #include "ticks.h"
-#include "battery.h"
 #include "delay.h"
 
 #include "buzzer.h"
