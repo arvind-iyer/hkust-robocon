@@ -18,7 +18,7 @@ void log(char* pstr, s32 val)
 	
 }
 
-void log_update()
+void log_update(void)
 {
 	for (s32 i=0; i<log_space; ++i)
 	{

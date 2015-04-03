@@ -17,7 +17,7 @@
 #include "button.h"
 #include "encoder.h"
   //'C' or 'D'
-#define ROBOT 'C'
+#define ROBOT 'D'
 
 
 

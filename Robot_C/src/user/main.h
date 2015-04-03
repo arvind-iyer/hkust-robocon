@@ -9,14 +9,12 @@
 
 /*** Essential ***/
 #include "ticks.h"
-#include "battery.h"
 #include "delay.h"
 
 #include "buzzer.h"
 #include "led.h"
 #include "tft.h"
 #include "interface.h"
-#include "xbc_mb.h"
 #include "button.h"
 #include "encoder.h"
 #include "system_test.h"
@@ -31,9 +29,10 @@
 #include "robocon.h"
 #include "wheel_base.h"
 #include "ultrasonic.h"
-#include "special_char_handler.h"
-#include "racket.h"
 #include "xbc_mb.h"
+#include "nec.h"
+#include "adc.h"
+#include "mb1240.h"
 
 
 #endif /* __MAIN_H */

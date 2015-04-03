@@ -8,61 +8,6 @@ static bool key_trigger_enable = true;
 static bool servo_released = false;
 static bool use_xbc_input = false;
 
-/*
-
-void wheel_base_joystick_control(void)
-{
-	//wheel_base_set_vel(0,0,0);
-	if (button_pressed(BUTTON_JS2_LEFT))
-	{
-		wheel_base_joyStickCommandFlag_on();
-		wheel_base_set_vel(-wheel_base_get_joystick_speed(),0,0);
-		//commandReceivedFlag=1;
-	}
-	if (button_pressed(BUTTON_JS2_RIGHT))
-	{
-		wheel_base_joyStickCommandFlag_on();
-		wheel_base_set_vel(wheel_base_get_joystick_speed(),0,0);
-	}
-	if (button_pressed(BUTTON_JS2_UP))
-	{
-		wheel_base_joyStickCommandFlag_on();
-		wheel_base_set_vel(0,wheel_base_get_joystick_speed(),0);
-	}
-	if (button_pressed(BUTTON_JS2_DOWN))
-	{
-		wheel_base_joyStickCommandFlag_on();
-		wheel_base_set_vel(0,-wheel_base_get_joystick_speed(),0);
-	}
-	if (button_pressed(BUTTON_JS1_RIGHT))
-	{
-		wheel_base_joyStickCommandFlag_on();
-		wheel_base_set_vel(0,0,wheel_base_get_joystick_speed());
-	}
-	if (button_pressed(BUTTON_JS1_LEFT))
-	{
-		wheel_base_joyStickCommandFlag_on();
-		wheel_base_set_vel(0,0,-wheel_base_get_joystick_speed());
-	}
-	if (button_pressed(BUTTON_JS1_CENTER)==1)
-	{
-		wheel_base_decrease_joystick_speed();
-	}
-	if (button_pressed(BUTTON_JS2_CENTER)==1)
-	{
-		wheel_base_increase_joystick_speed();
-	}
-}
-
-void set_xbc_input_allowed(bool set)
-{
-	use_xbc_input = set;
-}
-bool get_xbc_input_allowed()
-{
-	return use_xbc_input;
-}
-*/
 
 void robot_c_function_controls();
 void robot_d_function_controls();
@@ -298,6 +243,12 @@ static void handle_bluetooth_input(void)
 	}
 	
 }
+
+
+
+
+
+
 
 void robocon_main(void)
 {

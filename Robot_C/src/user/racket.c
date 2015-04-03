@@ -164,7 +164,7 @@ void racket_update(void)
 		racket_calibrate();
 	}
 	
-	if(/*racket_laser_not_alligned &&*/ !hit_in_progress && (button_pressed(RACKET_SWITCH) || button_pressed(ROTATE_SWITCH)) )		// if any of the mechanical switch is pressed, lock the motor.
+	if(/*racket_laser_not_alligned &&*/ !hit_in_progress /*&& (button_pressed(RACKET_SWITCH) || button_pressed(ROTATE_SWITCH))*/ )		// if any of the mechanical switch is pressed, lock the motor.
 	{
 			is_locked = 1;
 			motor_lock(RACKET);
@@ -183,7 +183,7 @@ void racket_stop(void)
 
 void racket_calibrate(void)
 {
-	if (/*!is_locked && */!button_pressed(ROTATE_SWITCH))
+	if (0/*!is_locked && *//*!button_pressed(ROTATE_SWITCH)*/)
 	{
 		motor_set_vel(RACKET, RACKET_CAL_VEL, CLOSE_LOOP);	//racket calibrate function takes a direct control over the motor
 		racket_hit_disable();
@@ -200,7 +200,7 @@ void racket_hit(void)
 {
 	if(ROBOT == 'D')
 	{	
-		if(button_pressed(ROTATE_SWITCH))//pe3
+		/*if(button_pressed(ROTATE_SWITCH))//pe3
 		{
 			init_encoder_reading =  get_encoder_value(RACKET);
 			racket_hit_initiated();
@@ -211,7 +211,7 @@ void racket_hit(void)
 		{
 			racket_calibrate();
 			
-		}	
+		}	*/
 	}
 	else if (!is_pneu_extended)
 	{

@@ -219,8 +219,8 @@ void wheel_base_update(void)
 		wheel_base_set_target_pos((POSITION){get_pos()->x, get_pos()->y, get_pos()->angle});
 	}
 	
-  if( 0 && (!wheel_base_pid_flag && (get_full_ticks() - wheel_base_joystick_vel_last_update > BLUETOOTH_WHEEL_BASE_TIMEOUT) && (get_full_ticks() - wheel_base_bluetooth_vel_last_update > BLUETOOTH_WHEEL_BASE_TIMEOUT)))
-		wheel_base_set_vel(0,0,0);	//if no joystick_control, no bluetooth_input, stop_motor
+  //if( 0 && (!wheel_base_pid_flag && (get_full_ticks() - wheel_base_joystick_vel_last_update > BLUETOOTH_WHEEL_BASE_TIMEOUT) && (get_full_ticks() - wheel_base_bluetooth_vel_last_update > BLUETOOTH_WHEEL_BASE_TIMEOUT)))
+	//	wheel_base_set_vel(0,0,0);	//if no joystick_control, no bluetooth_input, stop_motor
 	if ((wheel_base_pid_flag || !is_moving) && !is_turning)	// if auto positioning is enabled, start auto_motor_positioning
 	{
 		

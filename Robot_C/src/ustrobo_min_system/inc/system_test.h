@@ -51,5 +51,6 @@ void uart_test(void);
 void mb1240_test(void);
 void ultra_test(void);
 void nec_test(void);
+void snake(void);
  
 #endif /* __SYSTEM_TEST_H */
