@@ -7,7 +7,7 @@ s32 valList[log_space];// = {1,2,3,4,5,6,};
 
 void log(char* pstr, s32 val)
 {
-	//free(strList[4]);	// ???
+	//free(strList[log_space-1]);	// ???
 	for (s32 i=log_space-1; i>=1; --i)
 	{
 		strList[i] = strList[i-1];

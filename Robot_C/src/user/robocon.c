@@ -1,18 +1,5 @@
 #include "robocon.h"
 //#include "log.h"
-/*
-Important note on changes needed in Robot C and Robot D
-
-Wheel ID should be changed in wheel_base.h
-
-
-
-
-Details are written in the file
-*/
-
-
-
 
 //system values
 static u16 ticks_img 	= (u16)-1;
@@ -394,7 +381,7 @@ void robocon_main(void)
 			if (get_seconds() % 10 == 2 && ticks_img == 2) {
 				// Every 10 seconds (0.1 Hz)
 				battery_regular_check();
-				log("Bat Chk",get_seconds());
+				log("Bat Chk",get_seconds());	// example of log
 			}
 
       if (ticks_img % 100 == 3) {
