@@ -30,7 +30,7 @@ static u8 high_racket_status = 0;
 static s32 high_speed = 1200;
 
 static bool auto_move_mode_flag = 0;
-static bool sensor_sound_on = 0;
+static bool sensor_sound_on = 1;
 
 void increase_high_speed(void) {
 	if(high_speed<1799) high_speed += 1;
@@ -66,6 +66,9 @@ void auto_move_mode_on(void) {
 void auto_move_mode_off(void) {
 	auto_move_mode_flag = 0;
 }
+void auto_move_mode_switch(void) {
+	auto_move_mode_flag = !auto_move_mode_flag;
+}
 
 void sensor_sound_switch(void) {
 	sensor_sound_on = !sensor_sound_on;
@@ -78,10 +81,17 @@ void sensor_init(void) {
 	
 	GPIO_InitTypeDef GPIO_InitStructure;
 	
+	GPIO_InitStructure.GPIO_Mode = GPIO_Mode_Out_PP;
+	GPIO_InitStructure.GPIO_Speed = GPIO_Speed_50MHz;
+	GPIO_InitStructure.GPIO_Pin = S0_Power;
+	GPIO_Init(GPIOE, &GPIO_InitStructure);
+	GPIO_WriteBit(GPIOE, S0_Power, 0);
+	
 	GPIO_InitStructure.GPIO_Mode = GPIO_Mode_IPD;
 	GPIO_InitStructure.GPIO_Speed = GPIO_Speed_50MHz;
-	GPIO_InitStructure.GPIO_Pin = S1_Pin | S2_Pin | S3_Pin;
+	GPIO_InitStructure.GPIO_Pin = S0_Pin;
 	GPIO_Init(GPIOE, &GPIO_InitStructure);
+
 }
 
 void racket_init(void) {
@@ -103,8 +113,8 @@ void racket_init(void) {
 }
 
 void sensor_update(void) {
-	if ( GPIO_ReadInputDataBit(GPIOE, S1_Pin) || GPIO_ReadInputDataBit(GPIOE, S2_Pin) || GPIO_ReadInputDataBit(GPIOE, S3_Pin) )
-	{
+	//if ( GPIO_ReadInputDataBit(GPIOE, S1_Pin) || GPIO_ReadInputDataBit(GPIOE, S2_Pin) || GPIO_ReadInputDataBit(GPIOE, S3_Pin) )
+	if (GPIO_ReadInputDataBit(GPIOE, S0_Pin)==1) {
 		if (sensor_sound_on == 1) {
 			SUCCESSFUL_MUSIC;
 		}

@@ -8,6 +8,8 @@
 #include "stdbool.h"
 
 // Sensor GPIO Pin
+#define S0_Pin  GPIO_Pin_8  // GPIOE
+#define S0_Power GPIO_Pin_0
 #define S1_Pin	GPIO_Pin_5	// GPIOE
 #define S2_Pin	GPIO_Pin_6	// GPIOE
 #define S3_Pin  GPIO_Pin_7	// GPIOE
@@ -42,6 +44,8 @@ void high_racket_update(void);
 void racket_received_command(void);
 bool did_receive_command(void);
 void racket_update(void);
+
+void auto_move_mode_switch(void);
 
 bool get_s1(void);
 bool get_s2(void);

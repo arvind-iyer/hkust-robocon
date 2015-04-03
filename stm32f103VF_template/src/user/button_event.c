@@ -1,6 +1,7 @@
 #include "button_event.h"
 
 bool speed_button_released_before = false;
+bool home_pressed_before = false;
 
 void button_event_wheel_base_set_vel(s32 x, s32 y, s32 w) {
 	wheel_base_set_vel(x, y, w);
@@ -46,6 +47,19 @@ void button_event_update(void)
 		button_event_wheel_base_set_vel(-diagonal_speed, diagonal_speed, angle_speed);
 	} else if ( angle_speed != 0 ) {
 		button_event_wheel_base_set_vel(0, 0, angle_speed);
+	}
+	
+	if (button_pressed(BUTTON_XBC_XBOX)) {
+		if (home_pressed_before == false) {
+			auto_move_mode_switch();
+			home_pressed_before = true;
+		}
+	} else {
+		home_pressed_before = false;
+	}
+	
+	if (xbc_get_joy(XBC_JOY_RY)<0 && xbc_get_joy(XBC_JOY_RX)==0) {
+		low_racket_standby();
 	}
 	
 	// Speed mode adjustment
@@ -101,6 +115,6 @@ void button_event_update(void)
 		low_racket_move();
 	if ( button_pressed(BUTTON_XBC_Y) || button_pressed(BUTTON_XBC_B) || button_pressed(BUTTON_XBC_X) )
 		high_racket_move();
-	if ( button_pressed(BUTTON_XBC_XBOX) )
+	if ( button_pressed(BUTTON_XBC_R_JOY) )
 		high_racket_startup();
 }
