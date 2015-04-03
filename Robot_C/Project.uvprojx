@@ -443,6 +443,11 @@
               <FileType>1</FileType>
               <FilePath>.\src\user\special_char_handler.c</FilePath>
             </File>
+            <File>
+              <FileName>log.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\src\user\log.c</FilePath>
+            </File>
           </Files>
         </Group>
         <Group>

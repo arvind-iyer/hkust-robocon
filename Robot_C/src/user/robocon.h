@@ -29,6 +29,7 @@
 #include "wheel_base.h"
 #include "racket.h"
 #include "xbc_mb.h"
+#include "log.h"
 
 
 
