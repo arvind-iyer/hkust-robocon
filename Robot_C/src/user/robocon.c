@@ -63,10 +63,13 @@ bool get_xbc_input_allowed()
 	return use_xbc_input;
 }
 */
-void robot_c_controls()
+
+void robot_c_function_controls();
+void robot_d_function_controls();
+bool robot_xbc_controls()
 {
 	if(!xbc_get_connection())
-		return;
+		return false;
 	
 	//Update Button Data
 	button_update();
@@ -85,7 +88,7 @@ void robot_c_controls()
 	
 	if(xbc_get_joy(XBC_JOY_LX) == 0 && xbc_get_joy(XBC_JOY_LY) == 0)
 	{
-				wheel_base_set_target_pos((POSITION){get_pos()->x, get_pos()->y, wheel_base_get_target_pos().angle});
+		wheel_base_set_target_pos((POSITION){get_pos()->x, get_pos()->y, wheel_base_get_target_pos().angle});
 		wheel_base_pid_on();
 		is_it_moving(0);
 	}
@@ -133,9 +136,10 @@ void robot_c_controls()
 	
 	//Function Keys 
 	
-	//Racket Hit
-	if(button_pressed(BUTTON_XBC_A))
-		racket_hit();
+	if (ROBOT=='C')
+		robot_c_function_controls();
+	if (ROBOT=='D')
+		robot_d_function_controls();
 	
 	
 	//RB and LB
@@ -147,55 +151,21 @@ void robot_c_controls()
 	{
 		wheel_base_set_speed_mode(wheel_base_get_speed_mode() + 1);
 	}	
+	
+	return true;
 }
-void robot_d_controls()
+
+void robot_c_function_controls()
 {
-	button_update();
+	//Racket Hit
+	if(button_pressed(BUTTON_XBC_A))
+		racket_hit();
 	
-	if(!xbc_get_connection())
-		return;
 	
-	/*
-	* Left Analog - Move
-	* LT - CCW Turning(Analog)
-	* RT - CW Turning(Analog)
-	* A - Racket Hit
-	* RB - Increase Movement Speed
-	* LB - Decrease Movement Speed
-	* B - Serve
-	* X - Calibrate Racket
-	* Y - Toggle Sensor Activation
-	* 
-	*/
-	//Analog Movement
-	if(Abs(xbc_get_joy(XBC_JOY_LX)) > 0 || Abs(xbc_get_joy(XBC_JOY_LY)) > 0)
-	{ 
-		//X-Y Control Simultaneously
-		wheel_base_set_vel(xbc_get_joy(XBC_JOY_LX), xbc_get_joy(XBC_JOY_LY), 0 );
-	}
-	
-	//Angle Rotation
-	if(xbc_get_joy(XBC_JOY_LT) > 0)
-	{//Rotate CW
-		wheel_base_set_vel(wheel_base_get_vel().x, wheel_base_get_vel().y, -xbc_get_joy(XBC_JOY_LT)/5);
-	}
-	else if(xbc_get_joy(XBC_JOY_RT) > 0)
-	{ //Rotate CCW
-		wheel_base_set_vel(wheel_base_get_vel().x, wheel_base_get_vel().y, xbc_get_joy(XBC_JOY_RT)/5);
-	}
-	
-	//Digital Movement
-	if(button_pressed(BUTTON_XBC_N))//Move forward
-		wheel_base_set_vel(0, wheel_base_get_speed_mode() * 10, 0 );
-	else if(button_pressed(BUTTON_XBC_S))//Move Backwards
-		wheel_base_set_vel(0, -1 * wheel_base_get_speed_mode() * 10, 0);
-	else if(button_pressed(BUTTON_XBC_E))//Move Right
-		wheel_base_set_vel(wheel_base_get_speed_mode() * 10, 0, 0);
-	else if(button_pressed(BUTTON_XBC_W))//Move Left
-		wheel_base_set_vel(-1 * wheel_base_get_speed_mode() * 10, 0, 0);
-	
-	//Function Keys 
-	
+}
+
+void robot_d_function_controls()
+{
 	//Racket Hit
 	if(button_pressed(BUTTON_XBC_A))
 		racket_hit();
@@ -205,25 +175,14 @@ void robot_d_controls()
 	else if(button_pressed(BUTTON_XBC_X))//Not essential
 		racket_calibrate();
 	
-	
-	//RB and LB
-	if(button_pressed(BUTTON_XBC_LB))
-		wheel_base_set_speed_mode(wheel_base_get_speed_mode() - 1);
-	else if(button_pressed(BUTTON_XBC_RB))
-		wheel_base_set_speed_mode(wheel_base_get_speed_mode() + 1);
-	
 }
 
 
 static void handle_bluetooth_input(void)
 {
-	if(ROBOT == 'C')
+	if (!robot_xbc_controls() && key_trigger_enable && !bluetooth_is_key_release())
 	{
-		robot_c_controls();
-	}
-	else if (key_trigger_enable && !bluetooth_is_key_release())
-	{
-		set_xbc_input_allowed(false);
+		//set_xbc_input_allowed(false);
 		last_sent_OS_time = get_full_ticks();
 		key_trigger_enable = false;
 		//wheel_base_pid_off();
@@ -260,10 +219,10 @@ static void handle_bluetooth_input(void)
 				
 				break;
 			case 'b':
-				set_xbc_input_allowed(true);
+				//set_xbc_input_allowed(true);
 				break;
 			case 'v':
-				set_xbc_input_allowed(false);
+				//set_xbc_input_allowed(false);
 				break;
 			
 			case 'p':
