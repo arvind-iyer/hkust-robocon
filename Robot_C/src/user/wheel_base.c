@@ -8,7 +8,7 @@ static u32 wheel_base_bluetooth_vel_last_update = 0;
 static char wheel_base_bluetooth_last_char = 0;
 static u32 wheel_base_bluetooth_char_last_update = 0;
 static u32 wheel_base_last_can_tx = 0;
-static u32 wheel_base_joystick_vel_last_update=1;
+//static u32 wheel_base_joystick_vel_last_update=1;
 static u8 wheel_base_joystick_speed=30;	//0% to 100%
 static u8 is_turning = 0, is_moving = 0;
 static u8 wheel_base_pid_flag = 0;
@@ -219,8 +219,8 @@ void wheel_base_update(void)
 		wheel_base_set_target_pos((POSITION){get_pos()->x, get_pos()->y, get_pos()->angle});
 	}
 	
-  //if( 0 && (!wheel_base_pid_flag && (get_full_ticks() - wheel_base_joystick_vel_last_update > BLUETOOTH_WHEEL_BASE_TIMEOUT) && (get_full_ticks() - wheel_base_bluetooth_vel_last_update > BLUETOOTH_WHEEL_BASE_TIMEOUT)))
-	//	wheel_base_set_vel(0,0,0);	//if no joystick_control, no bluetooth_input, stop_motor
+  if( !xbc_get_connection() && (!wheel_base_pid_flag && (get_full_ticks() - wheel_base_bluetooth_vel_last_update > BLUETOOTH_WHEEL_BASE_TIMEOUT)))
+		wheel_base_set_vel(0,0,0);	//if no joystick_control, no bluetooth_input, stop_motor
 	if ((wheel_base_pid_flag || !is_moving) && !is_turning)	// if auto positioning is enabled, start auto_motor_positioning
 	{
 		
@@ -295,11 +295,6 @@ void wheel_base_pid_off(void)
 u8 wheel_base_get_pid_flag(void)
 {
 	return wheel_base_pid_flag;
-}
-
-void wheel_base_joyStickCommandFlag_on(void)
-{
-	wheel_base_joystick_vel_last_update=get_full_ticks();
 }
 
 void wheel_base_increase_joystick_speed(void)

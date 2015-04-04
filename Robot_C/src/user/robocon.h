@@ -34,6 +34,7 @@
 #include "bluetooth.h"
 #include "wheel_base.h"
 #include "racket.h"
+#include "serve.h"
 #include "xbc_mb.h"
 #include "log.h"
 

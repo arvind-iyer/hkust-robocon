@@ -448,6 +448,11 @@
               <FileType>1</FileType>
               <FilePath>.\src\user\log.c</FilePath>
             </File>
+            <File>
+              <FileName>serve.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\src\user\serve.c</FilePath>
+            </File>
           </Files>
         </Group>
         <Group>

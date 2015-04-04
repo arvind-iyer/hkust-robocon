@@ -116,9 +116,9 @@ void robot_d_function_controls()
 		racket_hit();
 	//Calibrate
 	else if(button_pressed(BUTTON_XBC_B))
-		racket_start_serve();
+		serve_start();
 	else if(button_pressed(BUTTON_XBC_X))//Not essential
-		racket_calibrate();
+		serve_calibrate();
 	
 }
 
@@ -138,16 +138,16 @@ static void handle_bluetooth_input(void)
 			break;
 			case 'l':
 				if(ROBOT == 'D')
-				racket_calibrate();
+					serve_calibrate();
 			break;
 			case 'o':
 				if(ROBOT == 'D')
-				motor_lock(RACKET);
+					motor_lock(RACKET);
 			break;
 			case 'y'://The kewl LASER SERVE
 				if(ROBOT == 'D'){
 				//is_laser_serve_enabled(1);
-				toggle_servo();
+					toggle_serve_pneu();
 				}
 				else
 				{
@@ -159,52 +159,30 @@ static void handle_bluetooth_input(void)
 			case 'u'://Normal Serve
 				if(ROBOT == 'D'){
 				//is_laser_serve_enabled(0);
-				racket_start_serve();
+					serve_start();
 				}
 				
-				break;
-			case 'b':
-				//set_xbc_input_allowed(true);
-				break;
-			case 'v':
-				//set_xbc_input_allowed(false);
 				break;
 			
 			case 'p':
 				if(ROBOT == 'D')
-				racket_stop();
+				serve_free();
 				key_trigger_enable = true;
 			break;
 			case '=':
 				//For both robots
-				racket_change_hit_vel(2);
+				serve_change_vel(2);
 				key_trigger_enable = true;
 				break;
 			case '-':
-				racket_change_hit_vel(-2);
+				serve_change_vel(-2);
 				key_trigger_enable = true;
 				break;
-			//Increase and decreaase laser hit delay
-			case '_':
-				if(ROBOT == 'D'){
-					racket_change_laser_hit_delay(-1);
-					key_trigger_enable = true;
-				}
-				else
-				{
-					
-				}
-				break;
-			case '+':
-				racket_change_laser_hit_delay(+1);
-				key_trigger_enable = true;
-				break;
-				
 			case '.':
-				racket_change_serve_delay(+5);
+				serve_change_delay(+5);
 				break;
 			case ',':
-				racket_change_serve_delay(-5);
+				serve_change_delay(-5);
 				break;
 			case '[':		//only temporary
 				plus_x();
@@ -257,7 +235,7 @@ void robocon_main(void)
   // Send the acceleration data
 	wheel_base_tx_acc();
 	//racket_init();
-	racket_stop();
+	serve_free();
 	gpio_init(&PE9, GPIO_Speed_10MHz, GPIO_Mode_Out_PP, 1);		// pneu matic GPIO
 	gpio_init(&PE5, GPIO_Speed_10MHz, GPIO_Mode_Out_PP, 1);		//laser sensor GPIO OUT
 	gpio_init(&PE6, GPIO_Speed_50MHz, GPIO_Mode_Out_PP, 1);		// laser sensor GPIO OUT 2
@@ -340,13 +318,13 @@ void robocon_main(void)
         tft_prints(0, 6, "Char: %s (%d) %c", s, wheel_base_bluetooth_get_last_char(), special_char_handler_bt_get_last_char());
 				//tft_prints(0,3,"SHIT: (%d, %d)", gyro_get_shift_x(), gyro_get_shift_y());
 				tft_prints(0,3,"XBC: %d", connect);
-				tft_prints(0,4,"Serve_delay: %d",racket_get_serve_delay());
+				tft_prints(0,4,"Serve_delay: %d",serve_get_delay());
 				//tft_prints(0,5, "Switch = %d", gpio_read_input(&PE3));
 				//tft_prints(0,2, "x%d y%d", gyro_get_shift_x(), gyro_get_shift_y());
 				//tft_prints(0,7, "LASER%d %d", gpio_read_input(LASER_GPIO),racket_get_laser_hit_delay);
 				//tft_prints(0,8,"Encoder: %d", get_encoder_value(RACKET));
 				//tft_prints(0,7,"init: %d", get_init_enc());
-				tft_prints(0,5,"Racket: %d", racket_get_vel());
+				tft_prints(0,5,"Racket: %d", serve_get_vel());
 				//tft_prints(0,3,"stop enc = %d",racket_get_last_stop_encoder_value());
 				log_update();
 				tft_update();
