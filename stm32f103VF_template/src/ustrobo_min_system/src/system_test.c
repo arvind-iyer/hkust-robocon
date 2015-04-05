@@ -1011,6 +1011,7 @@ void uart_test(void)
   }
 }
 
+#ifdef	__MB_1240_H
 void mb1240_test(void)
 {
 
@@ -1045,7 +1046,7 @@ void mb1240_test(void)
     }
   }
 }
-
+#endif
 
 void ultra_test(void)
 {
@@ -1066,15 +1067,29 @@ void ultra_test(void)
         }
       }
       
+			for (u8 i = 0; i < US_DEVICE_COUNT; ++i) {
+				if (us_get_distance(i) > 10 && us_get_distance(i) < 800) {
+					buzzer_set_note_period(get_note_period(NOTE_C, 8) + us_get_distance(i));
+					buzzer_control(3, 100);
+				}
+			}
+				
       if (ticks_img % 50 == 6) {
         tft_clear();
         draw_top_bar();
         tft_prints(0, 1, "ULTRA. TEST");
-        tft_prints(0, 2, " %5d/%5d ", ultrasonic_get_successful_count(), ultrasonic_get_count());
-        tft_prints(0, 3, "Pulse: %d", get_pulse_width());
-        tft_prints(0, 4, "Distance: %d", get_distance());        
-        tft_prints(0, 5, "Avg.: %d", ultrasonic_get_distance_avg());
+        tft_prints(0, 2, " %5d ", us_get_pulse_raw(0));
+				tft_prints(0, 3, "Current: %d", us_get_current_us());
+				tft_prints(0, 4, " Stt Pulse Dist", us_get_state(0));
+				
+				for (u8 i = 0; i < US_DEVICE_COUNT; ++i) {
+					tft_prints(0, i + 5, "[%d]%3d %4d %4d", i, us_get_state(i), us_get_pulse(i), us_get_distance(i));
+				}
+				
+				//tft_prints(0, 6, "Speed: %d Hz", us_get_speed(0));
+        //tft_prints(0, 5, "Avg.: %d", ultrasonic_get_distance_avg());
         tft_update();
+				
         
         
       }
