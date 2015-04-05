@@ -213,14 +213,17 @@ void wheel_base_update(void)
     * TODO2: If there is not any Bluetooth RX data after BLUETOOTH_WHEEL_BASE_TIMEOUT, stop the motors
   
     */
-	if(!(xbc_get_joy(XBC_JOY_LX) == 0 && xbc_get_joy(XBC_JOY_LY) == 0))
+	//stop motor if XBC values are 0 and no current bluetooth input
+  if(!is_turning && (xbc_get_joy(XBC_JOY_LX) == 0 && xbc_get_joy(XBC_JOY_LY) == 0) && (get_full_ticks() - wheel_base_bluetooth_vel_last_update > BLUETOOTH_WHEEL_BASE_TIMEOUT))
+	{
+		wheel_base_set_vel(0,0,0);
+	}
+	else//if(!(xbc_get_joy(XBC_JOY_LX) == 0 && xbc_get_joy(XBC_JOY_LY) == 0))
 	{
 		wheel_base_pid_off();
 		wheel_base_set_target_pos((POSITION){get_pos()->x, get_pos()->y, get_pos()->angle});
 	}
 	
-  if( !xbc_get_connection() && (!wheel_base_pid_flag && (get_full_ticks() - wheel_base_bluetooth_vel_last_update > BLUETOOTH_WHEEL_BASE_TIMEOUT)))
-		wheel_base_set_vel(0,0,0);	//if no joystick_control, no bluetooth_input, stop_motor
 	if ((wheel_base_pid_flag || !is_moving) && !is_turning)	// if auto positioning is enabled, start auto_motor_positioning
 	{
 		

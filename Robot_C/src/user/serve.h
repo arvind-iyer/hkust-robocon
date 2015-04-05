@@ -12,11 +12,12 @@
 #include "gpio.h"
 #include "robocon.h"
 
+#define SERVE_SWITCH &PE11
 #define RACKET MOTOR5
-#define SERVE_PNEU_GPIO &PE7
+#define SERVE_PNEU_GPIO &PD9
 
 
-#define ENCODER_THRESHOLD 	12500
+#define ENCODER_THRESHOLD 	-12000
 
 
 void serve_update();

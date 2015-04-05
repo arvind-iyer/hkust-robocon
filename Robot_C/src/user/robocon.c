@@ -31,7 +31,7 @@ bool robot_xbc_controls()
 	//Analog Movement
 	wheel_base_set_vel(xbc_get_joy(XBC_JOY_LX), xbc_get_joy(XBC_JOY_LY), (xbc_get_joy(XBC_JOY_RT)-xbc_get_joy(XBC_JOY_LT))/5 );
 	
-	if(xbc_get_joy(XBC_JOY_LX) == 0 && xbc_get_joy(XBC_JOY_LY) == 0)
+	/*if(xbc_get_joy(XBC_JOY_LX) == 0 && xbc_get_joy(XBC_JOY_LY) == 0)
 	{
 		wheel_base_set_target_pos((POSITION){get_pos()->x, get_pos()->y, wheel_base_get_target_pos().angle});
 		wheel_base_pid_on();
@@ -42,17 +42,17 @@ bool robot_xbc_controls()
 		wheel_base_pid_off();
 		is_it_moving(1);
 		wheel_base_set_target_pos((POSITION){get_pos()->x, get_pos()->y, get_pos()->angle});
-	}
+	}*/
 	
 	
 	if(xbc_get_joy(XBC_JOY_RT) == 0 && xbc_get_joy(XBC_JOY_LT) == 0)
 	{
-		wheel_base_pid_on();
+		//wheel_base_pid_on();
 		is_it_turning(0);
 	}
 	else
 	{
-		wheel_base_pid_off();
+		//wheel_base_pid_off();
 		is_it_turning(1);
 		wheel_base_set_target_pos((POSITION){get_pos()->x, get_pos()->y, get_pos()->angle});
 	}
@@ -88,7 +88,7 @@ bool robot_xbc_controls()
 	
 	
 	//RB and LB
-		if(button_released(BUTTON_XBC_LB) > 15)
+	/*if(button_released(BUTTON_XBC_LB) > 15)
 	{
 		wheel_base_set_speed_mode(wheel_base_get_speed_mode() - 1);
 	}
@@ -96,7 +96,7 @@ bool robot_xbc_controls()
 	{
 		wheel_base_set_speed_mode(wheel_base_get_speed_mode() + 1);
 	}	
-	
+	*/
 	return true;
 }
 
@@ -119,13 +119,29 @@ void robot_d_function_controls()
 		serve_start();
 	else if(button_pressed(BUTTON_XBC_X))//Not essential
 		serve_calibrate();
+	// change serve varibales
 	
+	if (button_pressed(BUTTON_XBC_LB) && button_pressed(BUTTON_XBC_Y))
+		serve_change_delay(-1);
+	else if (button_pressed(BUTTON_XBC_RB) && button_pressed(BUTTON_XBC_Y))
+		serve_change_delay(1);
+	else if (button_pressed(BUTTON_XBC_LB))
+		serve_change_vel(-2);
+	else if (button_pressed(BUTTON_XBC_RB))
+		serve_change_vel(2);
+	
+	if (button_pressed(BUTTON_XBC_START))
+		serve_free();
+	
+	if (xbc_get_joy(XBC_JOY_RY)!=0)
+		toggle_serve_pneu();
 }
 
 
 static void handle_bluetooth_input(void)
 {
-	if (!robot_xbc_controls() && key_trigger_enable && !bluetooth_is_key_release())
+	robot_xbc_controls();
+	if (/*!robot_xbc_controls() && */key_trigger_enable && !bluetooth_is_key_release())
 	{
 		//set_xbc_input_allowed(false);
 		last_sent_OS_time = get_full_ticks();
@@ -148,12 +164,6 @@ static void handle_bluetooth_input(void)
 				if(ROBOT == 'D'){
 				//is_laser_serve_enabled(1);
 					toggle_serve_pneu();
-				}
-				else
-				{
-					//Do pneu serve
-					//current_pneumatic = !current_pneumatic;
-					//racket_pneumatic_set(current_pneumatic);
 				}
 				break;
 			case 'u'://Normal Serve
@@ -236,14 +246,20 @@ void robocon_main(void)
 	wheel_base_tx_acc();
 	//racket_init();
 	serve_free();
+	gpio_init(&PD10,  GPIO_Speed_10MHz, GPIO_Mode_Out_PP, 1);		// pneumatric GPIO Robot D, GEN2
+	gpio_init(&PD9,  GPIO_Speed_10MHz, GPIO_Mode_Out_PP, 1);		// Serve pneumatric GPIO Robot D, GEN2
 	gpio_init(&PE9, GPIO_Speed_10MHz, GPIO_Mode_Out_PP, 1);		// pneu matic GPIO
-	gpio_init(&PE5, GPIO_Speed_10MHz, GPIO_Mode_Out_PP, 1);		//laser sensor GPIO OUT
-	gpio_init(&PE6, GPIO_Speed_50MHz, GPIO_Mode_Out_PP, 1);		// laser sensor GPIO OUT 2
+	
 	gpio_init(&PE8, GPIO_Speed_10MHz, GPIO_Mode_Out_PP, 1);		//pneumatic GPIO 2
+	
+	gpio_init(&PE11, GPIO_Speed_10MHz, GPIO_Mode_IPU, 1);	// Mechanical switch ROBOT D Gen2
 	//gpio_init(&);
 	//gpio_init(&PE7, GPIO_Speed_50MHz, GPIO_Mode_IPU, 0);		// laser sensor GPIO IN
-	gpio_write(&PE5, 0);		//write 1 to Laser sensor
-	gpio_write(&PE6, 0);		//write 1 to Laser sensor 2
+	
+	//gpio_init(&PE5, GPIO_Speed_10MHz, GPIO_Mode_Out_PP, 1);		//laser sensor GPIO OUT
+	//gpio_init(&PE6, GPIO_Speed_50MHz, GPIO_Mode_Out_PP, 1);		// laser sensor GPIO OUT 2
+	//gpio_write(&PE5, 0);		//write 1 to Laser sensor
+	//gpio_write(&PE6, 0);		//write 1 to Laser sensor 2
 	//register_special_char_function('m',print);
 	while (1) {
 		if (ticks_img != get_ticks()) {
@@ -256,7 +272,9 @@ void robocon_main(void)
  
         button_update();
 				// Every 10 ms (100 Hz)
-        
+         if (return_listener()) {
+          return;
+        }
 			}
 			
 				racket_update();
@@ -269,7 +287,6 @@ void robocon_main(void)
 			if (get_seconds() % 10 == 2 && ticks_img == 2) {
 				// Every 10 seconds (0.1 Hz)
 				battery_regular_check();
-				log("Bat Chk",get_seconds());	// example of log
 			}
 
       if (ticks_img % 100 == 3) {
@@ -291,11 +308,12 @@ void robocon_main(void)
 			
 			if (ticks_img % 50 == 5) {
 				//wheel_base_joystick_control();
-				if (button_pressed(BUTTON_1) > 10 || button_pressed(BUTTON_2) > 10) {
+				if (button_pressed(BUTTON_1) > 10 || button_pressed(BUTTON_2) > 10 || button_pressed(BUTTON_XBC_BACK) > 10) {
 					/** Stop the wheel base before return **/
 					return; 
 				}
 			}
+			
 			
 			if (ticks_img % 50 == 7) {
 				// Every 50 ms (20 Hz)
@@ -306,7 +324,8 @@ void robocon_main(void)
 				draw_top_bar();
 
 				tft_prints(0, 1, "V:(%3d,%3d,%3d)", vel.x, vel.y, vel.w);
-				tft_prints(0, 2, "Speed: %d", wheel_base_get_speed_mode());				char s[3] = {wheel_base_bluetooth_get_last_char(), '\0'};
+				//tft_prints(0, 2, "Speed: %d", wheel_base_get_speed_mode());
+				char s[3] = {wheel_base_bluetooth_get_last_char(), '\0'};
         if (s[0] == '[' || s[0] == ']') {
           // Replace "[" and "]" as "\[" and "\]"
           s[1] = s[0];
@@ -315,14 +334,14 @@ void robocon_main(void)
 				
 				u8 connect = xbc_get_connection() == XBC_DISCONNECTED ? 0 : 1;
 					 
-        tft_prints(0, 6, "Char: %s (%d) %c", s, wheel_base_bluetooth_get_last_char(), special_char_handler_bt_get_last_char());
+        //tft_prints(0, 6, "Char: %s (%d) %c", s, wheel_base_bluetooth_get_last_char(), special_char_handler_bt_get_last_char());
 				//tft_prints(0,3,"SHIT: (%d, %d)", gyro_get_shift_x(), gyro_get_shift_y());
-				tft_prints(0,3,"XBC: %d", connect);
-				tft_prints(0,4,"Serve_delay: %d",serve_get_delay());
-				//tft_prints(0,5, "Switch = %d", gpio_read_input(&PE3));
+				//tft_prints(0,3,"XBC: %d", connect);
+				tft_prints(0,3,"Serve_delay: %d",serve_get_delay());
+				tft_prints(0,4, "Switch = %d", gpio_read_input(&PE11));
 				//tft_prints(0,2, "x%d y%d", gyro_get_shift_x(), gyro_get_shift_y());
 				//tft_prints(0,7, "LASER%d %d", gpio_read_input(LASER_GPIO),racket_get_laser_hit_delay);
-				//tft_prints(0,8,"Encoder: %d", get_encoder_value(RACKET));
+				tft_prints(0,2,"Encoder: %d", get_encoder_value(RACKET));
 				//tft_prints(0,7,"init: %d", get_init_enc());
 				tft_prints(0,5,"Racket: %d", serve_get_vel());
 				//tft_prints(0,3,"stop enc = %d",racket_get_last_stop_encoder_value());

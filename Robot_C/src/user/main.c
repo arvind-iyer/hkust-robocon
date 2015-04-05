@@ -34,6 +34,7 @@ int main(void)
   uart_printf_enable(COM1);
   
   
+
   system_start(1200);
   
 	menu_add("Your program", robocon_main);
@@ -56,7 +57,7 @@ int main(void)
   menu_add("Ultra. test", ultra_test);
 	menu_add("Snake", snake);
   
-	menu(16, false);
+	menu(0, false);
 	
 }
 

@@ -36,7 +36,7 @@
 //#define KEY_HIT_RACKET 'k'
 
 #define LASER_GPIO &PE7
-#define PNEU_GPIO &PE9
+#define PNEU_GPIO ROBOT=='C'?&PE9:&PD10
 #define PNEU_GPIO_DOWN &PE8
 
 //void racket_init(void);
