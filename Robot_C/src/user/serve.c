@@ -6,7 +6,7 @@ static s32 SERVE_CAL_VEL = -200 ;
 static s32 SERVE_HIT_VEL = 300;			//can be changed by controller
 static u32 SERVE_DELAY = 510;			// can be changed by controller
 
-static s32 init_encoder_reading = 8000;
+static s32 init_encoder_reading = 8000;	// will be kept updating according to the switch
 
 // timer and encoder variables
 static u32 serve_start_time=0;
@@ -14,11 +14,14 @@ static u32 serve_hit_start_time = 0;
 static u32 serve_calibrate_start_time = 0;
 
 
-// flags and triggers
+//States : stationary motor
 bool serve_hit_queued=0;		// que for serve, and wait for delay
+bool calibrated=0;		// true if calibrated already
+
+//States : moving motor
 bool hitting=0;		// true if it is hitting
 bool calibrate_in_process = 0;			// true if it is calibrating
-bool calibrated=0;		// true if calibrated already
+
 
 // other trigger values
 bool init_encoder_is_set=0;	// first calibration is done.
@@ -28,6 +31,7 @@ bool is_released=0;	// pneumatic for serve
 
 // private functions
 
+// locks motor immediately
 void racket_lock()
 {
 	hitting=0;
@@ -75,8 +79,9 @@ void serve_update(void)
 		else
 			log("enc stops cal",1);
 	}
-	// DUMMY CODE : PRINT OUT LOG ERROR MESSAGE IF MOTOR IS MOVING WITH FLAGS DOWN
 	
+	
+	// DUMMY CODE : PRINT OUT LOG ERROR MESSAGE IF MOTOR IS MOVING WITH FLAGS DOWN
 	if (!hitting && !calibrated && (gpio_read_input(SERVE_SWITCH) || (init_encoder_is_set && get_encoder_value(RACKET)>init_encoder_reading-2000 )))
 	{
 		log("CAL ERROR",gpio_read_input(SERVE_SWITCH));
@@ -96,8 +101,6 @@ void serve_update(void)
 
 void serve_free(void)
 {
-	//is_locked = 0;
-	//racket_hit_disable();
 	calibrated=0;
 	motor_set_vel(RACKET, 0, OPEN_LOOP);
 }
@@ -130,8 +133,6 @@ void toggle_serve_pneu(void)
 	gpio_write(SERVE_PNEU_GPIO, is_released);
 	is_released=!is_released;
 	log((is_released?"ball release! ":"hold ball"),0);
-	//servo_control(SERVO4, (is_servo_release ? 900 : 1500));
-	//is_servo_release = !is_servo_release;
 }
 
 void serve_hit(void)
@@ -145,8 +146,6 @@ void serve_hit(void)
 		serve_hit_queued=0;
 		motor_set_vel(RACKET, SERVE_HIT_VEL, OPEN_LOOP);	//racket calibrate function takes a direct control over the motor
 		serve_hit_start_time = get_full_ticks();
-		
-		//log ("serve hit!!",1);
 	}
 	
 }

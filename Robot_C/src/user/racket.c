@@ -6,18 +6,10 @@
 
 // flags
 static bool is_pneu_extended = 1; 			// true if pneumatic piston is extended
-//triggers
-//static u8 serve_enabled=0;					// flag is raised and waits for timer to trigger racket_hit()
-//static u8 racket_laser_not_alligned = 1;		// true if the robot detects error in laser allignment
-//static u8 racket_laser_trigger_enabled = (ROBOT=='C'? 0: 1);		// flag is raised and waits for timer to trigger racket_hit()
+static bool is_pneu_2_extended = 1;		// FOR ROBOT C
 
-
-// timer and encoder variables
-
-//static u32 racket_last_laser_trigger_time=0;
-//static u32 racket_laser_trigger_interval=1000;
 static u32 racket_pneu_start_time = 0;
-
+static u32 racket_pneu_2_start_time = 0;
 
 
 
@@ -27,24 +19,37 @@ static u32 racket_pneu_start_time = 0;
 
 void racket_pneumatic_set(bool data)		// 
 {
-	gpio_write(PNEU_GPIO, !data);
-	gpio_write(PNEU_GPIO_DOWN, !data);
+	if (ROBOT=='C')
+	{
+		gpio_write(PNEU_GPIO, !data);
+	}
+	else
+	{
+		gpio_write(PNEU_GPIO, data);
+		
+	}
 	log("pneu",is_pneu_extended);
 }
 
 
+void racket_pneumatic_2_set(bool data)	// for robot C
+{
+	gpio_write(PNEU_GPIO_DOWN, !data);
+	log("pneu2",is_pneu_2_extended);
+}
+
 //Called ever 10ms to check and update racket data and redirect to starting and stopping racket at required points
 void racket_update(void)
 {
-	/*if (ROBOT=='C' && gpio_read_input(LASER_GPIO))
-	{
-		racket_hit();
-	}*/
-	if(is_pneu_extended && (get_full_ticks() > racket_pneu_start_time + 2000/*RACKET_SERVE_DELAY*/))
+	if(is_pneu_extended && (get_full_ticks() > racket_pneu_start_time + 1000/*RACKET_SERVE_DELAY*/))
 	{
 		is_pneu_extended = 0;
 		racket_pneumatic_set(is_pneu_extended);
-		log("pneu",is_pneu_extended);
+	}
+	if (ROBOT=='C' && is_pneu_2_extended && (get_full_ticks() > racket_pneu_2_start_time + 1000))
+	{
+		is_pneu_2_extended = 0;
+		racket_pneumatic_2_set(is_pneu_2_extended);
 	}
 	
 	if (ROBOT=='D')
@@ -84,5 +89,15 @@ void racket_hit(void)
 	}
 	
 }
-
+void racket_down_hit(void)
+{
+	if (!is_pneu_2_extended)
+	{
+		is_pneu_2_extended = 1;
+		racket_pneumatic_2_set(is_pneu_2_extended);
+		racket_pneu_2_start_time = get_full_ticks();
+		
+	}
+	
+}
 

@@ -9,6 +9,9 @@ static bool servo_released = false;
 static bool use_xbc_input = false;
 
 
+
+
+bool serve_pneu_button_enabled=1;
 void robot_c_function_controls();
 void robot_d_function_controls();
 bool robot_xbc_controls()
@@ -103,9 +106,10 @@ bool robot_xbc_controls()
 void robot_c_function_controls()
 {
 	//Racket Hit
-	if(button_pressed(BUTTON_XBC_A))
+	if(button_pressed(BUTTON_XBC_Y))
 		racket_hit();
-	
+	if(button_pressed(BUTTON_XBC_A))
+		racket_down_hit();
 	
 }
 
@@ -131,10 +135,18 @@ void robot_d_function_controls()
 		serve_change_vel(2);
 	
 	if (button_pressed(BUTTON_XBC_START))
+	{
 		serve_free();
-	
-	if (xbc_get_joy(XBC_JOY_RY)!=0)
+	}
+	if (serve_pneu_button_enabled && gpio_read_input(&PE5))
+	{
+		serve_pneu_button_enabled=0;
 		toggle_serve_pneu();
+	}
+	if (!gpio_read_input(&PE5))
+	{
+		serve_pneu_button_enabled=1;
+	}
 }
 
 
@@ -151,6 +163,10 @@ static void handle_bluetooth_input(void)
 		{
 			case 'k':
 				racket_hit();
+			break;
+			case 'j':
+				if (ROBOT=='C')
+					racket_down_hit();
 			break;
 			case 'l':
 				if(ROBOT == 'D')
@@ -253,6 +269,7 @@ void robocon_main(void)
 	gpio_init(&PE8, GPIO_Speed_10MHz, GPIO_Mode_Out_PP, 1);		//pneumatic GPIO 2
 	
 	gpio_init(&PE11, GPIO_Speed_10MHz, GPIO_Mode_IPU, 1);	// Mechanical switch ROBOT D Gen2
+	gpio_init(&PE5, GPIO_Speed_10MHz, GPIO_Mode_IPU, 1);	// Shuttlecock Holder button for ROBOT D Gen2
 	//gpio_init(&);
 	//gpio_init(&PE7, GPIO_Speed_50MHz, GPIO_Mode_IPU, 0);		// laser sensor GPIO IN
 	
@@ -261,6 +278,14 @@ void robocon_main(void)
 	//gpio_write(&PE5, 0);		//write 1 to Laser sensor
 	//gpio_write(&PE6, 0);		//write 1 to Laser sensor 2
 	//register_special_char_function('m',print);
+	
+	
+	toggle_serve_pneu();
+	racket_pneumatic_set(0);
+	racket_pneumatic_2_set(0);
+	
+	log("XBC=",xbc_get_connection());
+	
 	while (1) {
 		if (ticks_img != get_ticks()) {
 			ticks_img = get_ticks();
@@ -338,7 +363,7 @@ void robocon_main(void)
 				//tft_prints(0,3,"SHIT: (%d, %d)", gyro_get_shift_x(), gyro_get_shift_y());
 				//tft_prints(0,3,"XBC: %d", connect);
 				tft_prints(0,3,"Serve_delay: %d",serve_get_delay());
-				tft_prints(0,4, "Switch = %d", gpio_read_input(&PE11));
+				tft_prints(0,4, "Switch = %d", gpio_read_input(&PE5));
 				//tft_prints(0,2, "x%d y%d", gyro_get_shift_x(), gyro_get_shift_y());
 				//tft_prints(0,7, "LASER%d %d", gpio_read_input(LASER_GPIO),racket_get_laser_hit_delay);
 				tft_prints(0,2,"Encoder: %d", get_encoder_value(RACKET));

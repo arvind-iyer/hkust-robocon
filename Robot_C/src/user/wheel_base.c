@@ -213,8 +213,9 @@ void wheel_base_update(void)
     * TODO2: If there is not any Bluetooth RX data after BLUETOOTH_WHEEL_BASE_TIMEOUT, stop the motors
   
     */
+	
 	//stop motor if XBC values are 0 and no current bluetooth input
-  if(!is_turning && (xbc_get_joy(XBC_JOY_LX) == 0 && xbc_get_joy(XBC_JOY_LY) == 0) && (get_full_ticks() - wheel_base_bluetooth_vel_last_update > BLUETOOTH_WHEEL_BASE_TIMEOUT))
+  if(xbc_get_joy(XBC_JOY_RT) == 0 && xbc_get_joy(XBC_JOY_LT) == 0 && (xbc_get_joy(XBC_JOY_LX) == 0 && xbc_get_joy(XBC_JOY_LY) == 0) && (get_full_ticks() - wheel_base_bluetooth_vel_last_update > BLUETOOTH_WHEEL_BASE_TIMEOUT))
 	{
 		wheel_base_set_vel(0,0,0);
 	}
@@ -224,13 +225,15 @@ void wheel_base_update(void)
 		wheel_base_set_target_pos((POSITION){get_pos()->x, get_pos()->y, get_pos()->angle});
 	}
 	
+	
+	// NOTE : I kinda re-built wheelbase controls because control became troublesome if both XBC and bluetooth are connected.
+	
+	// TODO : request by John, lets see if we can make robot to go straight by using PID.
 	if ((wheel_base_pid_flag || !is_moving) && !is_turning)	// if auto positioning is enabled, start auto_motor_positioning
 	{
 		
-		wheel_base_pid_loop();
+		//wheel_base_pid_loop();
 	}
-//	if(!is_turning)
-//		pid_maintain_angle();
 	
 	motor_set_vel(MOTOR_BOTTOM_RIGHT,	WHEEL_BASE_XY_VEL_RATIO * (wheel_base_vel.x + wheel_base_vel.y) / 1000 + WHEEL_BASE_W_VEL_RATIO * wheel_base_vel.w / 1000, wheel_base_close_loop_flag);
 	motor_set_vel(MOTOR_BOTTOM_LEFT,	WHEEL_BASE_XY_VEL_RATIO * (wheel_base_vel.x - wheel_base_vel.y) / 1000 + WHEEL_BASE_W_VEL_RATIO * wheel_base_vel.w / 1000, wheel_base_close_loop_flag);

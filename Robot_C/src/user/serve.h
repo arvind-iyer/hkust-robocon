@@ -38,6 +38,4 @@ void serve_change_vel(s16);
 s32 serve_get_vel(void);
 void serve_change_delay(s16);
 u32 serve_get_delay(void);
-//s32 get_init_enc(void);
-//s32 serve_get_last_stop_encoder_value(void);
 #endif
