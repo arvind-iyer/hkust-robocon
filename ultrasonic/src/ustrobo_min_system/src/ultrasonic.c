@@ -2,7 +2,7 @@
 #include "ticks.h"
 #include "can_protocol.h"
 
-static US_TypeDef us_devices[US_DEVICE_COUNT] = {
+static US_TypeDef us_devices[] = {
 	{
 		.trig_gpio = &PE0,
 		.echo_gpio = &PE1
@@ -12,7 +12,23 @@ static US_TypeDef us_devices[US_DEVICE_COUNT] = {
 	}, {
 		.trig_gpio = &PE4,
 		.echo_gpio = &PE5
+	}, {
+		.trig_gpio = &PE6,
+		.echo_gpio = &PE7
+	}, {
+		.trig_gpio = &PE8,
+		.echo_gpio = &PE9
+	}, {
+		.trig_gpio = &PE10,
+		.echo_gpio = &PE11
+	}, {
+		.trig_gpio = &PE12,
+		.echo_gpio = &PE13
+	}, {
+		.trig_gpio = &PE14,
+		.echo_gpio = &PE15
 	}
+	
 };
 
 
