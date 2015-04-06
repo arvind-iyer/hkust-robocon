@@ -88,7 +88,8 @@ void robocon_main(void)
 				tft_prints(0, 7, "T:(%3d,%3d,%3d)", get_prop(), get_int(), get_der());
 				tft_prints(0, 8, "VP(%3d,%3d,%3d)", vel_prev.x / 100, vel_prev.y / 100, vel_prev.w / 100);
 				tft_prints(0, 9, "D: %3d, S: %4d", get_racket_delay(), get_racket_speed());
-				//tft_prints(0, 9, "PID locked: %d", get_pid_stat());
+//				tft_prints(0, 9, "PID locked: %d", get_pid_stat());
+
 				tft_update();
 			}
 		}

@@ -77,7 +77,8 @@ void servo_init(void){
 
 /**
   * @brief  Controlling the PWM for servos
-  * @param  servo_id: Port of Motor to be used (MOTOR1, MOTOR2, MOTOR3, MOTOR4)
+
+* @param  servo_id: Port of Motor to be used (MOTOR1, MOTOR2, MOTOR3, MOTOR4)
   * @param  val: Value from 0 to 1000
   * @retval None
   */

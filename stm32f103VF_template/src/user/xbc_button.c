@@ -21,9 +21,9 @@ void xbc_button_handler(void)
 		xbc_last_received_nonzero_speed_timer = get_full_ticks();
 	}
 	
-	if (button_pressed(BUTTON_XBC_X))
+	if (button_pressed(BUTTON_XBC_Y))
 	{
-		open_pneumatic();
+		upper_hit();
 	}
 	
 	if (button_pressed(BUTTON_XBC_B))
@@ -31,24 +31,14 @@ void xbc_button_handler(void)
 		close_pneumatic();
 	}
 	
-	if (button_pressed(BUTTON_XBC_A))
+	if (button_pressed(BUTTON_XBC_X))
 	{
 		serving();
 	}
 	
-	if (button_pressed(BUTTON_XBC_Y))
+	if (button_pressed(BUTTON_XBC_A))
 	{
 		racket_calibrate();
-	}
-	
-	if (button_pressed(BUTTON_XBC_LB))
-	{
-		wheel_base_pid_on();
-	}
-	
-	if (button_pressed(BUTTON_XBC_RB))
-	{
-		wheel_base_pid_off();
 	}
 	
 	if (button_pressed(BUTTON_XBC_N))

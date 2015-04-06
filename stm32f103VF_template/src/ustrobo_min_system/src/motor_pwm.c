@@ -77,7 +77,8 @@ void motor_control(u8 motor_id , s16 ccr_val) {	            // input the motor_i
 		TIM_SetCompare1(MOTOR_TIM, ccr_val );      				  // Compare1 is for channel 1 
 	else if (motor_id == MOTOR2 )
 		TIM_SetCompare2(MOTOR_TIM, ccr_val );					  // Compare2 is for channel 2 
-	else if ( motor_id == MOTOR3 )
+	else if ( motor_id == MOTOR3
+		)
 		TIM_SetCompare3(MOTOR_TIM, ccr_val );					  // Compare3 is for channel 3 
 	else if ( motor_id == MOTOR4 )
 		TIM_SetCompare4(MOTOR_TIM, ccr_val );				 	 // Compare4 is for channel 4 

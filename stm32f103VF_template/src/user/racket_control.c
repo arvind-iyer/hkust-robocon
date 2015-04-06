@@ -9,6 +9,7 @@ static s32 target_encoder_value = 0;
 static s32 turn_encoder_value = 0;
 static bool serving_started = false;
 static u32 serving_started_time = 0;
+static u32 hitting_started_time = 0;
 static bool switch_stat;
 static u8 switch_hit = 0;
 
@@ -16,13 +17,17 @@ static u8 racket_calibration_mode = 0; // 0 - slow, 1 - fast
 
 static u32 current_speed = 0;
 
-static u16 racket_speed = 1600;		//tested best result
+static u16 racket_speed = 1780;		//tested best result
 static u32 racket_speed_adjust_time = 0;
 
-static u16 racket_delay = 238;    //tested best result
+static u16 racket_delay = 321;    //tested best result
 static u32 racket_delay_adjust_time = 0;
 
+static u16 upper_delay  = 500;
+
 static bool racket_emergency_stop = false;
+
+static bool hitting_mode_on = false;
 
 // Getters
 u16 get_racket_speed() {
@@ -151,7 +156,11 @@ void racket_init(void)
 	register_special_char_function('l', serving);
 	register_special_char_function('n', set_fast_calibrate_mode);
 	register_special_char_function('m', set_slow_calibrate_mode);
-//	register_special_char_function('k', up_racket_cmd);
+	register_special_char_function('k', upper_hit);
+	register_special_char_function('j', open_upper_pneumatic);
+	register_special_char_function('h', close_upper_pneumatic);
+
+
 //	register_special_char_function(';', up_racket_calibrate);
 	
 	
@@ -182,7 +191,8 @@ void racket_init(void)
 	
 	//interrupt for upper racket
 	GPIO_EXTILineConfig(GPIO_PortSourceGPIOD,GPIO_PinSource11);
-	
+
+
 	// EXTI configuration
 	EXTI_InitTypeDef EXTI_InitStructure;
 	EXTI_InitStructure.EXTI_Line = EXTI_Line11;
@@ -204,20 +214,26 @@ void racket_init(void)
   GPIO_InitStructure.GPIO_Speed = GPIO_Speed_50MHz;
   GPIO_InitStructure.GPIO_Pin = GPIO_Pin_15;
 	GPIO_Init(GPIOE, &GPIO_InitStructure);
+	
+	GPIO_InitStructure.GPIO_Mode = GPIO_Mode_Out_PP;
+  GPIO_InitStructure.GPIO_Speed = GPIO_Speed_50MHz;
+  GPIO_InitStructure.GPIO_Pin = GPIO_Pin_11;
+	GPIO_Init(GPIOE, &GPIO_InitStructure);
 
 	close_pneumatic();
+	close_upper_pneumatic();
+
 }
 
 // IRQ handler for GPIOE 10 to 15
-void EXTI15_10_IRQHandler(void)
-{
-	// check status of GPIOE 11
-	if (EXTI_GetITStatus(EXTI_Line11) != RESET) {
-		// add pneumatic code here?
-		
-	  EXTI_ClearITPendingBit(EXTI_Line11);
-	}
-}
+//void EXTI15_10_IRQHandler(void)
+//{
+//	// check status of GPIOE 11
+//	if (EXTI_GetITStatus(EXTI_Line11) != RESET) {
+//		// add pneumatic code here?	
+//	  EXTI_ClearITPendingBit(EXTI_Line11);
+//	}
+//}
 
 void racket_update(void)    //determine whether the motor should run
 {
@@ -227,6 +243,7 @@ void racket_update(void)    //determine whether the motor should run
 		if (switch_stat && racket_calibration_mode == 0) {
 			++switch_hit;
 			if (!prev_encoder_value) {
+
 				prev_encoder_value = get_encoder_value(MOTOR5);
 			} else if (!current_encoder_value) {
 				current_encoder_value = get_encoder_value(MOTOR5);
@@ -287,6 +304,7 @@ void racket_update(void)    //determine whether the motor should run
 		if (get_full_ticks() - serving_started_time > racket_delay){
 			racket_received_command();
 			serving_started = false;
+			close_pneumatic();
 		}
 	}
 	
@@ -297,9 +315,27 @@ void racket_update(void)    //determine whether the motor should run
 }
 
 // added for upper rackets
+void upper_hit(void){
+		hitting_mode_on = true;
+		hitting_started_time = get_full_ticks();
+}
+void open_upper_pneumatic(void)
+{
+	GPIO_ResetBits(GPIOE, GPIO_Pin_11);
+}
+
+void close_upper_pneumatic(void)
+{
+	GPIO_SetBits(GPIOE, GPIO_Pin_11);
+}
 
 void up_racket_update(void)
 {
-
+	if(hitting_mode_on == true){
+		open_upper_pneumatic();
+	}
+	if (get_full_ticks() - hitting_started_time > upper_delay){
+		hitting_mode_on = false;
+		close_upper_pneumatic();
+	}
 }
-
