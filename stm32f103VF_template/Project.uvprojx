@@ -147,7 +147,7 @@
             <RestoreSysVw>1</RestoreSysVw>
           </Target>
           <RunDebugAfterBuild>0</RunDebugAfterBuild>
-          <TargetSelection>1</TargetSelection>
+          <TargetSelection>11</TargetSelection>
           <SimDlls>
             <CpuDll></CpuDll>
             <CpuDllArguments></CpuDllArguments>
@@ -161,20 +161,20 @@
             <PeripheralDll></PeripheralDll>
             <PeripheralDllArguments></PeripheralDllArguments>
             <InitializationFile></InitializationFile>
-            <Driver>BIN\UL2CM3.DLL</Driver>
+            <Driver>STLink\ST-LINKIII-KEIL_SWO.dll</Driver>
           </TargetDlls>
         </DebugOption>
         <Utilities>
           <Flash1>
-            <UseTargetDll>0</UseTargetDll>
-            <UseExternalTool>1</UseExternalTool>
+            <UseTargetDll>1</UseTargetDll>
+            <UseExternalTool>0</UseExternalTool>
             <RunIndependent>1</RunIndependent>
             <UpdateFlashBeforeDebugging>1</UpdateFlashBeforeDebugging>
             <Capability>1</Capability>
-            <DriverSelection>4099</DriverSelection>
+            <DriverSelection>4103</DriverSelection>
           </Flash1>
           <bUseTDR>0</bUseTDR>
-          <Flash2>Segger\JL2CM3.dll</Flash2>
+          <Flash2>STLink\ST-LINKIII-KEIL_SWO.dll</Flash2>
           <Flash3>"flash.bat" (.\output\@h.hex 26 256000 STM32F1_XL-density_768K)</Flash3>
           <Flash4></Flash4>
           <pFcarmOut></pFcarmOut>
@@ -549,11 +549,6 @@
               <FilePath>.\src\ustrobo_min_system\src\ticks.c</FilePath>
             </File>
             <File>
-              <FileName>ultrasonic.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>.\src\ustrobo_min_system\src\ultrasonic.c</FilePath>
-            </File>
-            <File>
               <FileName>usart.c</FileName>
               <FileType>1</FileType>
               <FilePath>.\src\ustrobo_min_system\src\usart.c</FilePath>
@@ -572,6 +567,11 @@
               <FileName>can_xbc_mb.c</FileName>
               <FileType>1</FileType>
               <FilePath>.\src\ustrobo_min_system\src\can_xbc_mb.c</FilePath>
+            </File>
+            <File>
+              <FileName>ultrasonic_mb.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\src\ustrobo_min_system\src\ultrasonic_mb.c</FilePath>
             </File>
           </Files>
         </Group>

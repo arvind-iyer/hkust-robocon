@@ -995,7 +995,7 @@ void uart_test(void)
   }
 }
 
-void ultra_test(void)
+void us_mb_test(void)
 {
   //u16 distance_history[tft_width-2] = {0};
 
@@ -1021,13 +1021,10 @@ void ultra_test(void)
         tft_clear();
         draw_top_bar();
         tft_prints(0, 1, "ULTRA. TEST");
-        tft_prints(0, 2, " %5d/%5d ", ultrasonic_get_successful_count(), ultrasonic_get_count());
-        tft_prints(0, 3, "Pulse: %d", get_pulse_width());
-        tft_prints(0, 4, "Distance: %d", get_distance());        
-        tft_prints(0, 5, "Avg.: %d", ultrasonic_get_distance_avg());
+        for (u8 i = 0; i < US_DEVICE_COUNT; ++i) {
+					tft_prints(0, 2 + i, "[%d] %d", i, us_get_distance(i));
+				}
         tft_update();
-        
-        
       }
     }
   }

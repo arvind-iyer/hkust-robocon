@@ -329,6 +329,34 @@ void close_upper_pneumatic(void)
 	GPIO_SetBits(GPIOE, GPIO_Pin_11);
 }
 
+void up_racket_sensor_check(void)
+{
+	static u16 sensor_full_ticks = 0;
+	static u8 previous_detection = 0;
+	if (sensor_full_ticks) {
+		if (get_full_ticks() - sensor_full_ticks > UPPER_RACKET_SENSE_DELAY) {
+			upper_hit();
+			buzzer_control(5, 50);
+			sensor_full_ticks = 0;
+		}
+		return;
+	}
+	
+	
+	u8 tmp_detection = 0;
+	// If any sensors sense 
+	for (u8 id = 0; id < US_DEVICE_COUNT; ++id) {
+		if (us_get_distance(id) >= 20 && us_get_distance(id) <= 600) {
+			tmp_detection = 1;
+		}
+	}
+	
+	if (previous_detection == 0 && tmp_detection == 1 && !hitting_mode_on) {
+		sensor_full_ticks = get_full_ticks();
+	}
+	previous_detection = tmp_detection;
+}
+
 void up_racket_update(void)
 {
 	if(hitting_mode_on == true){

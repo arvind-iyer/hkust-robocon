@@ -6,14 +6,17 @@
 #include "ticks.h"
 #include "special_char_handler.h"
 #include "stdbool.h"
+#include "ultrasonic_mb.h"
 
 #define	SWITCH_TIMEOUT					15
 #define	PNEUMATIC_OPEN_DELAY	  10
 #define MOTOR_OPEN_DELAY        10
 #define ENCODER_THRESHOLD				10000
 
+#define UPPER_RACKET_SENSE_DELAY		150
 void racket_init(void);
 void racket_update(void);
+void up_racket_sensor_check(void);
 void up_racket_update(void);
 
 // functions for xbox

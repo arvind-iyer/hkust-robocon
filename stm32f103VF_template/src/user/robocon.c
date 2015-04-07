@@ -10,6 +10,9 @@ void robocon_main(void)
 	while (1) {
 		if (ticks_img != get_ticks()) {
 			ticks_img = get_ticks();
+		
+			// 1000 Hz
+			up_racket_sensor_check();
 			
 			if (ticks_img % 10 == 0) {
 				// Every 10 ms (100 Hz)

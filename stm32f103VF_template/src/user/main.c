@@ -23,7 +23,7 @@ int main(void)
 	bluetooth_init();
 	wheel_base_init();
 	wheel_base_pid_init();
-  ultrasonic_init();
+  us_mb_init();
 	special_char_handler_init();
 	racket_init();
   xbc_mb_init(XBC_BLUETOOTH_FIRST);
@@ -41,7 +41,7 @@ int main(void)
 	menu_add("ASCII test", ascii_test);
 	menu_add("GPIO Pin test", gpio_pin_test);
 	menu_add("UART test", uart_test);
-  menu_add("Ultra. test", ultra_test);
+  menu_add("Ultra. test", us_mb_test);
   
 	menu(0, false);
 	
