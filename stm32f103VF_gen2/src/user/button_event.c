@@ -51,7 +51,6 @@ void button_event_update(void)
 	
 	if (button_pressed(BUTTON_XBC_XBOX)) {
 		if (home_pressed_before == false) {
-			auto_move_mode_switch();
 			home_pressed_before = true;
 		}
 	} else {
@@ -115,6 +114,4 @@ void button_event_update(void)
 		low_racket_move();
 	if ( button_pressed(BUTTON_XBC_Y) || button_pressed(BUTTON_XBC_B) || button_pressed(BUTTON_XBC_X) )
 		high_racket_move();
-	if ( button_pressed(BUTTON_XBC_R_JOY) )
-		high_racket_startup();
 }

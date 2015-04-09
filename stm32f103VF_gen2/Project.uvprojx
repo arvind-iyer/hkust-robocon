@@ -147,7 +147,7 @@
             <RestoreSysVw>1</RestoreSysVw>
           </Target>
           <RunDebugAfterBuild>0</RunDebugAfterBuild>
-          <TargetSelection>1</TargetSelection>
+          <TargetSelection>11</TargetSelection>
           <SimDlls>
             <CpuDll></CpuDll>
             <CpuDllArguments></CpuDllArguments>
@@ -161,21 +161,21 @@
             <PeripheralDll></PeripheralDll>
             <PeripheralDllArguments></PeripheralDllArguments>
             <InitializationFile></InitializationFile>
-            <Driver>BIN\UL2CM3.DLL</Driver>
+            <Driver>STLink\ST-LINKIII-KEIL_SWO.dll</Driver>
           </TargetDlls>
         </DebugOption>
         <Utilities>
           <Flash1>
-            <UseTargetDll>0</UseTargetDll>
-            <UseExternalTool>1</UseExternalTool>
+            <UseTargetDll>1</UseTargetDll>
+            <UseExternalTool>0</UseExternalTool>
             <RunIndependent>1</RunIndependent>
-            <UpdateFlashBeforeDebugging>0</UpdateFlashBeforeDebugging>
+            <UpdateFlashBeforeDebugging>1</UpdateFlashBeforeDebugging>
             <Capability>1</Capability>
-            <DriverSelection>4099</DriverSelection>
+            <DriverSelection>4103</DriverSelection>
           </Flash1>
           <bUseTDR>0</bUseTDR>
-          <Flash2>Segger\JL2CM3.dll</Flash2>
-          <Flash3>"flash.bat" (.\output\@h.hex 26 256000 STM32F1_XL-density_768K)</Flash3>
+          <Flash2>STLink\ST-LINKIII-KEIL_SWO.dll</Flash2>
+          <Flash3>"flash.bat" (.\output\@h.hex 30 256000 STM32F1_XL-density_768K)</Flash3>
           <Flash4></Flash4>
           <pFcarmOut></pFcarmOut>
           <pFcarmGrp></pFcarmGrp>
@@ -363,7 +363,7 @@
             <useXO>0</useXO>
             <VariousControls>
               <MiscControls></MiscControls>
-              <Define>USE_STDPERIPH_DRIVER, STM32F10X_XL, USE_STM3210B_EVAL</Define>
+              <Define>USE_STDPERIPH_DRIVER, STM32F10X_XL, USE_STM3210B_EVAL, MAINBOARD_V4</Define>
               <Undefine></Undefine>
               <IncludePath>.\src;.\src\stm32f10x_std\inc;.\src\ustrobo_min_system\inc;.\src\user</IncludePath>
             </VariousControls>
@@ -409,11 +409,6 @@
           <GroupName>src</GroupName>
           <Files>
             <File>
-              <FileName>button_event.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>.\src\user\button_event.c</FilePath>
-            </File>
-            <File>
               <FileName>buzzer_song.c</FileName>
               <FileType>1</FileType>
               <FilePath>.\src\user\buzzer_song.c</FilePath>
@@ -439,9 +434,14 @@
               <FilePath>.\src\user\wheel_base_pid.c</FilePath>
             </File>
             <File>
-              <FileName>special_char_handler.c</FileName>
+              <FileName>mb1240.c</FileName>
               <FileType>1</FileType>
-              <FilePath>.\src\user\special_char_handler.c</FilePath>
+              <FilePath>.\src\user\mb1240.c</FilePath>
+            </File>
+            <File>
+              <FileName>button_event.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\src\user\button_event.c</FilePath>
             </File>
             <File>
               <FileName>racket_control.c</FileName>
@@ -449,9 +449,9 @@
               <FilePath>.\src\user\racket_control.c</FilePath>
             </File>
             <File>
-              <FileName>mb1240.c</FileName>
+              <FileName>special_char_handler.c</FileName>
               <FileType>1</FileType>
-              <FilePath>.\src\user\mb1240.c</FilePath>
+              <FilePath>.\src\user\special_char_handler.c</FilePath>
             </File>
           </Files>
         </Group>
@@ -464,14 +464,14 @@
               <FilePath>.\src\ustrobo_min_system\src\approx_math.c</FilePath>
             </File>
             <File>
-              <FileName>bluetooth.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>.\src\ustrobo_min_system\src\bluetooth.c</FilePath>
-            </File>
-            <File>
               <FileName>bluetooth_xbc_mb.c</FileName>
               <FileType>1</FileType>
               <FilePath>.\src\ustrobo_min_system\src\bluetooth_xbc_mb.c</FilePath>
+            </File>
+            <File>
+              <FileName>bluetooth.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\src\ustrobo_min_system\src\bluetooth.c</FilePath>
             </File>
             <File>
               <FileName>button.c</FileName>
@@ -492,11 +492,6 @@
               <FileName>can_protocol.c</FileName>
               <FileType>1</FileType>
               <FilePath>.\src\ustrobo_min_system\src\can_protocol.c</FilePath>
-            </File>
-            <File>
-              <FileName>can_xbc_mb.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>.\src\ustrobo_min_system\src\can_xbc_mb.c</FilePath>
             </File>
             <File>
               <FileName>crc.c</FileName>
@@ -574,14 +569,9 @@
               <FilePath>.\src\ustrobo_min_system\src\xbc_mb.c</FilePath>
             </File>
             <File>
-              <FileName>adc.c</FileName>
+              <FileName>can_xbc_mb.c</FileName>
               <FileType>1</FileType>
-              <FilePath>.\src\ustrobo_min_system\src\adc.c</FilePath>
-            </File>
-            <File>
-              <FileName>adc_app.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>.\src\ustrobo_min_system\src\adc_app.c</FilePath>
+              <FilePath>.\src\ustrobo_min_system\src\can_xbc_mb.c</FilePath>
             </File>
             <File>
               <FileName>nec.c</FileName>
@@ -592,6 +582,16 @@
               <FileName>nec_remote.c</FileName>
               <FileType>1</FileType>
               <FilePath>.\src\ustrobo_min_system\src\nec_remote.c</FilePath>
+            </File>
+            <File>
+              <FileName>adc.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\src\ustrobo_min_system\src\adc.c</FilePath>
+            </File>
+            <File>
+              <FileName>adc_app.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\src\ustrobo_min_system\src\adc_app.c</FilePath>
             </File>
           </Files>
         </Group>

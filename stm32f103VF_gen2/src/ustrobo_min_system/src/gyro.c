@@ -1,7 +1,5 @@
 #include "gyro.h"
-#include "wheel_base.h"
 #include "approx_math.h"
-#include "special_char_handler.h"
 
 static POSITION gyro_pos = {0, 0, 0};
 static POSITION gyro_pos_raw = {0, 0, 0};
@@ -17,14 +15,6 @@ volatile u8 reply_flag = 0;
 
 volatile u8 gyro_available = 0;
 
-static s32 shift_x = 59;
-static s32 shift_y = -310;
-static s32 min_gyro_x = 1023;
-static s32 max_gyro_x = -1024;
-static s32 min_gyro_y = 1023;
-static s32 max_gyro_y = -1024;
-
-
 /**
   * @brief  Initialization of Gyro
   * @param  None
@@ -34,39 +24,6 @@ void gyro_init(void)
 {
 	uart_init(GYRO_UART, 115200);
 	uart_rx_init(GYRO_UART,gyro_rx_handler);
-}
-
-void reset_gyro_minmax() {
-	max_gyro_x = max_gyro_y = -1024;
-	min_gyro_x = min_gyro_y = 1023;
-}
-void eStop() {
-	wheel_base_pid_off();
-}
-
-void gyro_register_char (void){
-	register_special_char_function('X', add_shift_x );
-	register_special_char_function('x', lower_shift_x);
-	register_special_char_function('V', add_shift_y);
-	register_special_char_function('v', lower_shift_y);
-	register_special_char_function('B', reset_gyro_minmax);
-	register_special_char_function('f', eStop);
-}
-
-void add_shift_x (void){
-	shift_x++;
-}
-
-void lower_shift_x (void){
-	shift_x--;
-}
-
-void add_shift_y (void){
-	shift_y++;
-}
-
-void lower_shift_y (void){
-	shift_y--;
 }
 
 
@@ -123,8 +80,9 @@ u8 gyro_cal(void)
 	
   u16 timeout = 100;
 	while (!(reply_flag & GYRO_FLAG_CAL)) {
-		if (!(--timeout)) // Prevent infinite loop
+		if (!(--timeout)) {
 			return 0;
+    }
 	}
 	return 1;
 }
@@ -155,8 +113,9 @@ u8 gyro_pos_set(s16 x, s16 y, s16 a)
 	
   u16 timeout = 100;
 	while (!(reply_flag & GYRO_FLAG_SET_POS)) {
-		if (!(--timeout)) // Prevent infinite loop
+		if (!(--timeout)) {
 			return 0;
+    }
 	}
 
 	return 1;
@@ -233,17 +192,10 @@ void gyro_rx_handler(u8 rx_data)
               
               // Calculate the corrected position
               /** TODO: Cancel the offset, varies along the robots **/
-							gyro_pos.x = (X_FLIP*gyro_pos_raw.x*10000-SHIFT_X*10000+SHIFT_X*int_cos(gyro_pos_raw.angle)+SHIFT_Y*int_sin(gyro_pos_raw.angle))/10000;              
-							gyro_pos.y = (Y_FLIP*gyro_pos_raw.y*10000-SHIFT_Y*10000+SHIFT_Y*int_cos(gyro_pos_raw.angle)-SHIFT_X*int_sin(gyro_pos_raw.angle))/10000;
+              gyro_pos.x = X_FLIP * gyro_pos_raw.x;
+              gyro_pos.y = Y_FLIP * gyro_pos_raw.y;
               gyro_pos.angle = gyro_pos_raw.angle;
               
-							//
-							if(gyro_pos.x < min_gyro_x)	min_gyro_x = gyro_pos.x;
-							if(gyro_pos.y < min_gyro_y)	min_gyro_y = gyro_pos.y;
-							if(gyro_pos.x > max_gyro_x)	max_gyro_x = gyro_pos.x;
-							if(gyro_pos.y > max_gyro_y)	max_gyro_y = gyro_pos.y;
-							//
-							
 						} else {
 							gyro_available = 0;
 						}
@@ -258,19 +210,4 @@ void gyro_rx_handler(u8 rx_data)
 		}
 }
 
-POSITION get_position (void){
-	return gyro_pos;
-}
 
-s32 get_shift_x (void){
-	return shift_x;
-}
-
-s32 get_shift_y (void){
-	return shift_y;
-}
-
-s32 get_min_gyro_x(void) { return min_gyro_x; }
-s32 get_min_gyro_y(void) { return min_gyro_y; }
-s32 get_max_gyro_x(void) { return max_gyro_x; }
-s32 get_max_gyro_y(void) { return max_gyro_y; }

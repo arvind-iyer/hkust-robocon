@@ -8,25 +8,16 @@
 #include "stdbool.h"
 
 // Sensor GPIO Pin
-#define S0_Pin  GPIO_Pin_8  // GPIOE
-#define S0_Power GPIO_Pin_0
-#define S1_Pin	GPIO_Pin_5	// GPIOE
-#define S2_Pin	GPIO_Pin_6	// GPIOE
-#define S3_Pin  GPIO_Pin_7	// GPIOE
 
 // Button Switch Pin
-#define B1_Pin	GPIO_Pin_13	// GPIOE
-#define B2_Pin	GPIO_Pin_14 // GPIOE
-#define B3_Pin	GPIO_Pin_15 // GPIOE
+#define Switch_B1_Pin	GPIO_Pin_9	// GPIOE
+#define Switch_B2_Pin	GPIO_Pin_10 // GPIOE
 
-// The value of this definition should be either 1 or -1 only
-#define DIR_TOWARDS_B1	-1
-#define DIR_TOWARDS_B2	1
-#define LOW_RACKET_HIT_SPEED 1600
+#define LOW_RACKET_MOTOR MOTOR6
+#define LOW_RACKET_HIT_SPEED -1600
 
-// Sensor functions
-void sensor_init(void);
-void sensor_update(void);
+#define HIGH_RACKET_MOTOR MOTOR5
+#define HIGH_RACKET_HIT_SPEED -1600
 
 // All racket functions
 void racket_init(void);
@@ -38,27 +29,26 @@ void low_racket_update(void);
 
 // Higher racket functions
 void high_racket_move(void);
-void high_racket_startup(void);
 void high_racket_update(void);
 
 void racket_received_command(void);
 bool did_receive_command(void);
 void racket_update(void);
 
-void auto_move_mode_switch(void);
-
-bool get_s1(void);
-bool get_s2(void);
-bool get_b1(void);
-bool get_b2(void);
-bool get_b3(void);
-s32 get_b1e(void);
-s32 get_b2e(void);
 s32 get_low_speed(void);
 s32 get_high_speed(void);
+
+bool get_low_switch(void);
+bool get_high_switch(void);
+
+u8 get_high_mode(void);
+u8 get_low_mode(void);
 
 void add_racket_speed(void);
 void decrease_racket_speed(void);
 u16 get_racket_speed(void);
+
+s32 racket_current_time(void);
+u32 high_racket_move_time(void);
 
 #endif

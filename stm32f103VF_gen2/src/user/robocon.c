@@ -9,11 +9,9 @@ void robocon_main(void)
 
 	buzzer_set_volume(50);
 	
-	for(;;) {
+	for (; ; ) {
 		if (ticks_img != get_ticks()) {
 			ticks_img = get_ticks();
-			
-			sensor_update();
 			
 			if (ticks_img % 10 == 0) {
 				// Every 10 ms (100 Hz)
@@ -46,21 +44,6 @@ void robocon_main(void)
 					/** Stop the wheel base before return **/
 					break; 
 				}
-				if (button_pressed(BUTTON_JS2_UP)) {
-					wheel_base_override_set_vel(0, 100);
-				}
-				if (button_pressed(BUTTON_JS2_DOWN)) {
-					wheel_base_override_set_vel(0, -100);
-				}
-				if (button_pressed(BUTTON_JS2_LEFT)) {
-					wheel_base_override_set_vel(-100, 0);
-				}
-				if (button_pressed(BUTTON_JS2_RIGHT)) {
-					wheel_base_override_set_vel(100, 0);
-				}
-				if (button_pressed(BUTTON_JS2_CENTER) == 1) {
-					wheel_base_override_change_speed();
-				}
 			}
 			
 			if (ticks_img % 50 == 7) {
@@ -82,21 +65,19 @@ void robocon_main(void)
           s[1] = s[0];
           s[0] = '\\';
         }
-        //tft_prints(0, 6, "Char: %s (%d)", s, special_char_handler_bt_get_last_char());
-        //tft_prints(0, 7, "Switch hit: %d", did_receive_command());
-				//tft_prints(0, 8, "switch: %d",get_switch());
-				
-				//tft_prints(0, 7, "left: %d", get_left_mode());
-				//tft_prints(0, 8, "right: %d", get_right_mode());
-				//tft_prints(0, 9, "motor: %d",get_motor_mode());
-			
-//				tft_prints(0, 8, "pivot:%d", get_pivot_speed() );
-//				tft_prints(0, 9, "hs: %d", get_high_speed() );
-				tft_prints(0, 6, "<[%d],[%d],[%d]>", wheel_base_get_vel_prev().x, wheel_base_get_vel_prev().y, wheel_base_get_vel_prev().w );
-				//tft_prints(0, 6, "%s %s %s", get_b1()?"[B1]":"B1", get_b2()?"[B2]":"B2", get_b3()?"[B3]":"B3");
-			  tft_prints(0, 7, "[%d] [%d] [%d] [%d]", get_mvtl(), get_mvtr(), get_mvbl(), get_mvbr());
-				tft_prints(0, 8, "%d, %d, %d", get_PID_err_diff_x(),get_PID_err_diff_y (),get_PID_err_diff_w());
-				tft_prints(0, 9, "count: %d",get_change_count ());	
+				//tft_prints(0, 6, "<[%d],[%d],[%d]>", wheel_base_get_vel_prev().x, wheel_base_get_vel_prev().y, wheel_base_get_vel_prev().w );
+				tft_prints(0, 6, "%s %d %s %d",
+					get_low_switch() ? "[(LOW)]" : "(LOW)",
+					get_low_mode(),
+					get_high_switch() ? "[(HIGH)]" : "(HIGH)",
+					get_high_mode()
+				);
+			  //tft_prints(0, 7, "[%d] [%d] [%d] [%d]", get_mvtl(), get_mvtr(), get_mvbl(), get_mvbr());
+				tft_prints(0, 7, "%d, %d", get_low_speed(), get_high_speed() );
+				//tft_prints(0, 8, "%d, %d, %d", get_PID_err_diff_x(),get_PID_err_diff_y (),get_PID_err_diff_w());
+				tft_prints(0, 8, "%d %d", racket_current_time(), high_racket_move_time());
+				//tft_prints(0, 9, "count: %d",get_change_count ());	
+				tft_prints(0, 9, "%d", racket_current_time() - high_racket_move_time());
 				tft_update();
 				NVIC_EnableIRQ(EXTI15_10_IRQn);
 			}

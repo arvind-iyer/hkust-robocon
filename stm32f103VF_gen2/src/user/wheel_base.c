@@ -233,13 +233,16 @@ void wheel_base_update() {
 		MOTOR_TOP_LEFT,
 		mvtl,
 		wheel_base_close_loop_flag);
-	motor_set_vel(MOTOR_TOP_RIGHT,
+	motor_set_vel(
+		MOTOR_TOP_RIGHT,
 		mvtr,
 		wheel_base_close_loop_flag);
-	motor_set_vel(MOTOR_BOTTOM_LEFT,
+	motor_set_vel(
+		MOTOR_BOTTOM_LEFT,
 		mvbl,
 		wheel_base_close_loop_flag);
-	motor_set_vel(MOTOR_BOTTOM_RIGHT,
+	motor_set_vel(
+		MOTOR_BOTTOM_RIGHT,
 		mvbr,
 		wheel_base_close_loop_flag);
 	

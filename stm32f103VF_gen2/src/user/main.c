@@ -16,21 +16,29 @@ int main(void)
 	led_init();
 	tft_init(2, WHITE, BLACK, RED);
 	gyro_init();
-	can_init();
+
+  battery_init(); 
+  adc_init();
+  can_init();
 	can_rx_init();
   can_motor_init();
-	bluetooth_init();
-	wheel_base_init();
-  ultrasonic_init();
-	special_char_handler_init();
-	sensor_init();
-	racket_init();
-	gyro_register_char();
-  xbc_mb_init(XBC_BLUETOOTH_FIRST);
-  
-	system_start(1200);
 	
-	menu_add("Robot B prog", robocon_main);
+	bluetooth_init();
+  //mb1240_init();
+  xbc_mb_init(XBC_BLUETOOTH_FIRST); 
+	wheel_base_init();
+  //ultrasonic_init();
+  //nec_init();
+  /** For debugging **/
+  // uart_init(COM1, 115200);
+  // uart_printf_enable(COM1);
+	
+	special_char_handler_init();
+	racket_init();  
+  
+  system_start(1200);
+  
+	menu_add("Robot B Main", robocon_main);
 	menu_add("Position test", position_test);
 	menu_add("Motor test", motor_test);
 	menu_add("ADC test", adc_test);
@@ -46,8 +54,8 @@ int main(void)
 	menu_add("GPIO Pin test", gpio_pin_test);
 	menu_add("UART test", uart_test);
   menu_add("NEC test", nec_test);
-  menu_add("MB1240 test", mb1240_test);
-  menu_add("Ultra. test", ultra_test);
+  //menu_add("MB1240 test", mb1240_test);
+  //menu_add("Ultra. test", ultra_test);
   
 	menu(0, false);
 	
