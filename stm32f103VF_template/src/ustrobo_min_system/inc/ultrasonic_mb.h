@@ -5,7 +5,7 @@
 #include "can_protocol.h"
 
 #define	US_CAN_ID						0x090
-#define	US_DEVICE_COUNT			3
+#define	US_DEVICE_COUNT			4
 
 typedef struct {
 	u16 distance;

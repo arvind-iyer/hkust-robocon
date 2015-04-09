@@ -336,7 +336,7 @@ void up_racket_sensor_check(void)
 	if (sensor_full_ticks) {
 		if (get_full_ticks() - sensor_full_ticks > UPPER_RACKET_SENSE_DELAY) {
 			upper_hit();
-			buzzer_control(5, 50);
+			buzzer_control_note(5, 50, NOTE_C, 7);
 			sensor_full_ticks = 0;
 		}
 		return;
@@ -346,7 +346,7 @@ void up_racket_sensor_check(void)
 	u8 tmp_detection = 0;
 	// If any sensors sense 
 	for (u8 id = 0; id < US_DEVICE_COUNT; ++id) {
-		if (us_get_distance(id) >= 20 && us_get_distance(id) <= 800) {
+		if (us_get_distance(id) >= 50 && us_get_distance(id) <= 1000) {
 			tmp_detection = 1;
 		}
 	}
