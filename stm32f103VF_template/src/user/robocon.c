@@ -8,11 +8,11 @@ void robocon_main(void)
 	wheel_base_tx_acc();
 	
 	while (1) {
+		up_racket_sensor_check();
 		if (ticks_img != get_ticks()) {
 			ticks_img = get_ticks();
 		
-			// 1000 Hz
-			up_racket_sensor_check();
+			
 			
 			if (ticks_img % 10 == 0) {
 				// Every 10 ms (100 Hz)

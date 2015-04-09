@@ -346,7 +346,7 @@ void up_racket_sensor_check(void)
 	u8 tmp_detection = 0;
 	// If any sensors sense 
 	for (u8 id = 0; id < US_DEVICE_COUNT; ++id) {
-		if (us_get_distance(id) >= 20 && us_get_distance(id) <= 600) {
+		if (us_get_distance(id) >= 20 && us_get_distance(id) <= 800) {
 			tmp_detection = 1;
 		}
 	}
