@@ -186,14 +186,14 @@ US_IRQHandler
 					if (gpio_read_input(us_device->echo_gpio) == 1) {
 						us_device->pulse_width_tmp = 0;
 						us_device->state = US_ECHO_RAISED;
-					} else {
-						if (us_device->idle_width++ >= US_IDLE_RESET_COUNT) {
-							// Reset state if nothing received (no trigger for a long time)
-							us_device->idle_width = 0;
-							us_device->state = US_READY;
-						}
-
+					} 
+					
+					if (us_device->idle_width++ >= US_IDLE_RESET_COUNT) {
+						// Reset state if nothing received (no trigger for a long time)
+						us_device->idle_width = 0;
+						us_device->state = US_READY;
 					}
+
 				break;
 				
 				case US_ECHO_RAISED:
