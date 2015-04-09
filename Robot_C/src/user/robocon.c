@@ -12,12 +12,10 @@ static bool use_xbc_input = false;
 
 
 bool serve_pneu_button_enabled=1;
-void robot_c_function_controls();
-void robot_d_function_controls();
 bool robot_xbc_controls()
 {
-	if(!xbc_get_connection())
-		return false;
+	if(xbc_get_connection() == XBC_DISCONNECTED)
+		return false;//Xbox Controller not connected
 	
 	//Update Button Data
 	button_update();
@@ -176,7 +174,7 @@ static void handle_bluetooth_input(void)
 				if(ROBOT == 'D')
 					motor_lock(RACKET);
 			break;
-			case 'y'://The kewl LASER SERVE
+			case 'y':
 				if(ROBOT == 'D'){
 				//is_laser_serve_enabled(1);
 					toggle_serve_pneu();
