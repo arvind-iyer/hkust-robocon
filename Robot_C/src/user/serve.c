@@ -6,8 +6,7 @@ static s32 SERVE_CAL_VEL = -200 ;
 static s32 SERVE_HIT_VEL = 300;			//can be changed by controller
 static u32 SERVE_DELAY = 510;			// can be changed by controller
 
-static s32 init_encoder_reading = 8000;	// will be kept updating according to the switch. Encoder value at switch location.
-static s32 prev_encoder_reading = 8000;	// encoder reading when racket is locked.
+static s32 init_encoder_reading = 8000;	// will be kept updating according to the switch
 
 // timer and encoder variables
 static u32 serve_start_time=0;
@@ -37,7 +36,6 @@ void racket_lock()
 {
 	hitting=0;
 	calibrate_in_process=0;
-	prev_encoder_reading = get_encoder_value(RACKET);
 	motor_lock(RACKET);
 	//log("motor_lock",1);
 }
@@ -54,21 +52,14 @@ void serve_update(void)
 	}
 	
 	// while hitting, check for encoder value or time and stop.
-	if ( hitting && (get_encoder_value(RACKET) <= init_encoder_reading+ENCODER_THRESHOLD/* ||get_full_ticks()>=serve_hit_start_time+SERVE_HIT_TIMEOUT+100-(SERVE_HIT_VEL/5)*/))
+	if ( hitting && (get_encoder_value(RACKET) <= init_encoder_reading+ENCODER_THRESHOLD ||get_full_ticks()>=serve_hit_start_time+600-(SERVE_HIT_VEL/5)))
 	{
 		racket_lock();
 		// log
-		//if (get_encoder_value(RACKET) <= init_encoder_reading+ENCODER_THRESHOLD)
+		if (get_encoder_value(RACKET) <= init_encoder_reading+ENCODER_THRESHOLD)
 			log ("enc stops hit!",1);
-		//else
-		//	log("time stops hit",1);
-	}
-	if (hitting && get_encoder_value(RACKET)==prev_encoder_reading && get_full_ticks()>=serve_hit_start_time+SERVE_HIT_TIMEOUT)
-	{
-		hitting=0;
-		motor_set_vel(RACKET, 0, OPEN_LOOP);
-		serve_calibrate();
-		log("time stops hit!",0);
+		else
+			log("time stops hit",1);
 	}
 
 	
@@ -81,10 +72,10 @@ void serve_update(void)
 		
 		// temporary code. ONLY UPDATE ENCODER VALUE IF RACKET HITS SWITCH
 		if (gpio_read_input(SERVE_SWITCH))
-		{
 			init_encoder_reading = get_encoder_value(RACKET);
+		
+		if (gpio_read_input(SERVE_SWITCH))
 			log("switch stops cal",1);
-		}
 		else
 			log("enc stops cal",1);
 	}
@@ -93,16 +84,15 @@ void serve_update(void)
 	// DUMMY CODE : PRINT OUT LOG ERROR MESSAGE IF MOTOR IS MOVING WITH FLAGS DOWN
 	if (!hitting && !calibrated && (gpio_read_input(SERVE_SWITCH) || (init_encoder_is_set && get_encoder_value(RACKET)>init_encoder_reading-2000 )))
 	{
-		//log("CAL ERROR",gpio_read_input(SERVE_SWITCH));
+		log("CAL ERROR",gpio_read_input(SERVE_SWITCH));
 	}
 	
 	// if calibration doesn't stop 2 seconds, FORCE STOP CALIBRATION, and register current encoder value as init encoder value.
-	if (calibrate_in_process && serve_calibrate_start_time+1500<get_full_ticks())
+	if (calibrate_in_process && serve_calibrate_start_time+2000<get_full_ticks())
 	{
 		init_encoder_is_set=1;
 		calibrated=1;
-		//racket_lock();
-		prev_encoder_reading = get_encoder_value(RACKET);
+		racket_lock();
 		init_encoder_reading = get_encoder_value(RACKET);
 		log("time stops cal",0);
 	}
@@ -142,7 +132,7 @@ void toggle_serve_pneu(void)
 {
 	gpio_write(SERVE_PNEU_GPIO, is_released);
 	is_released=!is_released;
-	//log((is_released?"ball release! ":"hold ball"),0);
+	log((is_released?"ball release! ":"hold ball"),0);
 }
 
 void serve_hit(void)
