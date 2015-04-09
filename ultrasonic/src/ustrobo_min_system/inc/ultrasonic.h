@@ -15,10 +15,10 @@
 #define US_ECHO_PULSE_COUNT   5
 #define US_MAX_WIDTH					1000	// 3400mm
 
-#define	US_IDLE_RESET_COUNT		1000
+#define	US_IDLE_RESET_COUNT		1200		// 12 ms
 #define	US_TAKE_TURN_BREAK		100
 
-#define	US_DEVICE_COUNT				3
+#define	US_DEVICE_COUNT				8
 
 #define	US_CAN_ID							0x90
 

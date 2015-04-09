@@ -46,7 +46,7 @@ int main(void)
 				for (u8 i = 0; i < US_DEVICE_COUNT; ++i) {
 					tft_prints(0, 2 + i, "[%d] %d %4d %4d %2d", i, us_get_state(i), us_get_pulse(i), us_get_distance(i), us_get_speed(i));
 					
-					if (us_get_distance(i) > 10 && us_get_distance(i) <= 600) {
+					if (us_get_distance(i) > 10 && us_get_distance(i) <= 1000) {
 						buzzer_set_note_period(get_note_period(NOTE_C, 7) + us_get_distance(i));
 						buzzer_control(3, 100);
 					}

@@ -42,7 +42,7 @@ void us_init(US_MODE mode)
   // GPIO init
 	for (u8 i = 0; i < US_DEVICE_COUNT; ++i) {
 		gpio_init(us_devices[i].trig_gpio, GPIO_Speed_50MHz, GPIO_Mode_Out_PP, 1);
-		gpio_init(us_devices[i].echo_gpio, GPIO_Speed_50MHz, GPIO_Mode_IN_FLOATING, 1);
+		gpio_init(us_devices[i].echo_gpio, GPIO_Speed_50MHz, GPIO_Mode_IPD, 1);
 		us_devices[i].pulse_width_tmp = 0;
 		us_devices[i].pulse_width = 0;
 		us_devices[i].idle_width = 0;
@@ -191,7 +191,10 @@ US_IRQHandler
 					if (us_device->idle_width++ >= US_IDLE_RESET_COUNT) {
 						// Reset state if nothing received (no trigger for a long time)
 						us_device->idle_width = 0;
-						us_device->state = US_READY;
+						us_device->pulse_width = 0;
+						us_device->pulse_width_tmp = 0;
+						us_can_tx(i, us_get_distance(i));
+						us_device->state = US_ECHO_FALLEN;
 					}
 
 				break;
