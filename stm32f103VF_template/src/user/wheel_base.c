@@ -10,7 +10,7 @@ static const CLOSE_LOOP_FLAG wheel_base_close_loop_flag = CLOSE_LOOP;
 static u8 wheel_base_speed_mode = WHEEL_BASE_DEFAULT_SPEED_MODE;
 static u32 wheel_base_bluetooth_vel_last_update = 0;
 
-static const u8 WHEEL_BASE_PID_MANUAL_SPEED = 10;
+static const u8 WHEEL_BASE_PID_MANUAL_SPEED = 15;
 		
 static int wheel_base_acc = 300;
 

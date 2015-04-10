@@ -31,7 +31,7 @@ static const u16 SPEED_MODES[10] =	// In percentage (20 = 20%)
 
 // Initialized value
 #define WHEEL_BASE_DEFAULT_ACC								200
-#define	WHEEL_BASE_DEFAULT_SPEED_MODE					3			// from 0 to 9
+#define	WHEEL_BASE_DEFAULT_SPEED_MODE					7			// from 0 to 9
 
 // Wheel base motors acceleration (CONSTANT, to be configured upon startup)
 #define	WHEEL_BASE_BR_ACC											200		// Bottom-right wheel
