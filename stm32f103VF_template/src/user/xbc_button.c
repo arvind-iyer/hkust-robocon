@@ -61,6 +61,16 @@ void xbc_button_handler(void)
 		set_returning_pos();
 	}
 	
+	if (button_pressed(BUTTON_XBC_LB))
+	{
+		wheel_base_pid_on();
+	}
+	
+	if (button_pressed(BUTTON_XBC_RB))
+	{
+		wheel_base_pid_off();
+	}
+	
 	if (button_pressed(BUTTON_XBC_START) && (get_full_ticks() - last_increased_speed) > SPEED_CHANGE_TIMEOUT)
 	{
 		u8 speed_mode = wheel_base_get_speed_mode();

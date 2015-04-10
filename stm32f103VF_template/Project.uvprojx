@@ -448,6 +448,11 @@
               <FileType>1</FileType>
               <FilePath>.\src\user\xbc_button.c</FilePath>
             </File>
+            <File>
+              <FileName>auto_timer.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\src\user\auto_timer.c</FilePath>
+            </File>
           </Files>
         </Group>
         <Group>
