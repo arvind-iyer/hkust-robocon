@@ -43,10 +43,13 @@ void robocon_main(void)
 			}			
 			if (ticks_img % 50 == 5) {
 				button_update();
-				if (button_pressed(BUTTON_1) > 10 || button_pressed(BUTTON_2) > 10) {
-					/** Stop the wheel base before return **/
-					break; 
-				}
+				
+//			NO ESCAPE!!! HAHAHAHA!
+//				if ( button_pressed(BUTTON_1) > 10 || button_pressed(BUTTON_2) > 10) {
+//					/** Stop the wheel base before return **/
+//					break; 
+//				}
+				
 				if (button_pressed(BUTTON_JS2_UP)) {
 					wheel_base_override_set_vel(0, 30, 0);
 				}
@@ -62,7 +65,7 @@ void robocon_main(void)
 				if (button_pressed(BUTTON_JS2_CENTER) == 1) {
 					wheel_base_override_change_speed();
 				}
-				if (button_pressed(BUTTON_1) == 1) {
+				if (button_pressed(BUTTON_1) > 3 || button_pressed(BUTTON_2) > 3) {
 					auto_timer_init();
 				}
 			}
