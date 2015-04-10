@@ -5,8 +5,8 @@
 #include "can_motor.h"
 #include "ticks.h"
 #include "special_char_handler.h"
-#include "stdbool.h"
 #include "ultrasonic_mb.h"
+#include "stdbool.h"
 
 #define	SWITCH_TIMEOUT					15
 #define	PNEUMATIC_OPEN_DELAY	  10
@@ -38,9 +38,5 @@ void upper_hit(void);
 void up_racket_update(void);
 void close_upper_pneumatic(void);
 u8 get_hitting (void);
-
-
-
-
 
 #endif

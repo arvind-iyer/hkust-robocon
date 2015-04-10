@@ -30,6 +30,7 @@
 #include "special_char_handler.h"
 #include "racket_control.h"
 #include "xbc_button.h"
+#include "auto_timer.h"
 
 void robocon_main(void);
 #endif	/* __ROBOCON_H */

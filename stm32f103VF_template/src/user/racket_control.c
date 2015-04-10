@@ -1,33 +1,52 @@
 #include "racket_control.h"
 #include "delay.h"
 
+// calibrate mode static variables
 static bool calibrate_mode_on = false;
 static bool calibrated = false;
+static u8 racket_calibration_mode = 0; // 0 - slow, 1 - fast
 static s32 prev_encoder_value = 0;
 static s32 current_encoder_value = 0;
 static s32 target_encoder_value = 0;
 static s32 turn_encoder_value = 0;
+
+// serving static variables
 static bool serving_started = false;
 static u32 serving_started_time = 0;
-static u32 hitting_started_time = 0;
 static bool switch_stat;
 static u8 switch_hit = 0;
 
-static u8 racket_calibration_mode = 0; // 0 - slow, 1 - fast
-
-static u32 current_speed = 0;
+static u16 current_speed = 0;
 
 static u16 racket_speed = 1780;		//tested best result
-static u32 racket_speed_adjust_time = 0;
-
+static u16 racket_speed_adjust_time = 0;
 static u16 racket_delay = 321;    //tested best result
-static u32 racket_delay_adjust_time = 0;
+static u16 racket_delay_adjust_time = 0;
 
+// hitting static variables
+static bool hitting_mode_on = false;
+static u32 hitting_started_time = 0;
 static u16 upper_delay  = 500;
 
 static bool racket_emergency_stop = false;
 
-static bool hitting_mode_on = false;
+// defines for hitting GPIO pins
+#define HIT_RACKET_PIN_1 GPIO_Pin_10
+#define HIT_RACKET_PIN_2 GPIO_Pin_11
+#define HIT_RACKET_PIN_3 GPIO_Pin_12
+#define HIT_RACKET_PIN_4 GPIO_Pin_13
+#define HIT_RACKET_PIN_5 GPIO_Pin_14
+
+const static uint16_t HIT_RACKET_PINS[5] = 
+		{HIT_RACKET_PIN_1,
+		HIT_RACKET_PIN_2,
+		HIT_RACKET_PIN_3,
+		HIT_RACKET_PIN_4,
+		HIT_RACKET_PIN_5};
+const static u8 HIT_RACKET_NUMBER = 5;
+
+// defines for serving GPIO pins
+#define SERVE_RACKET_PIN GPIO_Pin_15
 
 // Getters
 u16 get_racket_speed() {
@@ -95,17 +114,17 @@ static void decrease_racket_delay() {
 
 void open_pneumatic(void)
 {
-	GPIO_ResetBits(GPIOE, GPIO_Pin_15);
+	GPIO_ResetBits(GPIOE, SERVE_RACKET_PIN);
 }
 
 void close_pneumatic(void)
 {
-	GPIO_SetBits(GPIOE, GPIO_Pin_15);
+	GPIO_SetBits(GPIOE, SERVE_RACKET_PIN);
 }
 
 void serving(void){
 	// check if pneumatic is closed before serving
-	if (GPIO_ReadInputDataBit(GPIOE, GPIO_Pin_15)) {
+	if (GPIO_ReadInputDataBit(GPIOE, SERVE_RACKET_PIN)) {
 		open_pneumatic();
 		serving_started = true;
 		serving_started_time = get_full_ticks();
@@ -192,7 +211,6 @@ void racket_init(void)
 	//interrupt for upper racket
 	GPIO_EXTILineConfig(GPIO_PortSourceGPIOD,GPIO_PinSource11);
 
-
 	// EXTI configuration
 	EXTI_InitTypeDef EXTI_InitStructure;
 	EXTI_InitStructure.EXTI_Line = EXTI_Line11;
@@ -209,17 +227,20 @@ void racket_init(void)
 	NVIC_InitStructure.NVIC_IRQChannelSubPriority = 1;
 	NVIC_Init(&NVIC_InitStructure);
 	
-	// pneumatic init	
+	// serving pneumatic init	
 	GPIO_InitStructure.GPIO_Mode = GPIO_Mode_Out_PP;
   GPIO_InitStructure.GPIO_Speed = GPIO_Speed_50MHz;
-  GPIO_InitStructure.GPIO_Pin = GPIO_Pin_15;
-	GPIO_Init(GPIOE, &GPIO_InitStructure);
-	
-	GPIO_InitStructure.GPIO_Mode = GPIO_Mode_Out_PP;
-  GPIO_InitStructure.GPIO_Speed = GPIO_Speed_50MHz;
-  GPIO_InitStructure.GPIO_Pin = GPIO_Pin_11;
+  GPIO_InitStructure.GPIO_Pin = SERVE_RACKET_PIN;
 	GPIO_Init(GPIOE, &GPIO_InitStructure);
 
+	// hitting pneumatic init
+	for (u8 i = 0; i < HIT_RACKET_NUMBER; ++i) {
+		GPIO_InitStructure.GPIO_Mode = GPIO_Mode_Out_PP;
+		GPIO_InitStructure.GPIO_Speed = GPIO_Speed_50MHz;
+		GPIO_InitStructure.GPIO_Pin = HIT_RACKET_PINS[i];
+		GPIO_Init(GPIOE, &GPIO_InitStructure);
+	}
+	
 	close_pneumatic();
 	close_upper_pneumatic();
 
@@ -321,12 +342,16 @@ void upper_hit(void){
 }
 void open_upper_pneumatic(void)
 {
-	GPIO_ResetBits(GPIOE, GPIO_Pin_11);
+	for (u8 i = 0; i < HIT_RACKET_NUMBER; ++i) {
+		GPIO_ResetBits(GPIOE, HIT_RACKET_PINS[i]);
+	}
 }
 
 void close_upper_pneumatic(void)
 {
-	GPIO_SetBits(GPIOE, GPIO_Pin_11);
+	for (u8 i = 0; i < HIT_RACKET_NUMBER; ++i) {
+		GPIO_SetBits(GPIOE, HIT_RACKET_PINS[i]);
+	}
 }
 
 void up_racket_sensor_check(void)

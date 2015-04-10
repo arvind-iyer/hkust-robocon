@@ -11,9 +11,7 @@ void robocon_main(void)
 		up_racket_sensor_check();
 		if (ticks_img != get_ticks()) {
 			ticks_img = get_ticks();
-		
-			
-			
+
 			if (ticks_img % 10 == 0) {
 				// Every 10 ms (100 Hz)
 				bluetooth_update();
@@ -21,7 +19,8 @@ void robocon_main(void)
         wheel_base_pid_update();
 				wheel_base_update();
 				racket_update();
-				up_racket_update();   
+				up_racket_update();
+				auto_timer_update();
 			}
 			
 			if (ticks_img % 250 == 1) {
@@ -62,6 +61,9 @@ void robocon_main(void)
 				}
 				if (button_pressed(BUTTON_JS2_CENTER) == 1) {
 					wheel_base_override_change_speed();
+				}
+				if (button_pressed(BUTTON_1) == 1) {
+					auto_timer_init();
 				}
 			}
 			
