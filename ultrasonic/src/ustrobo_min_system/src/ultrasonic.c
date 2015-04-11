@@ -213,9 +213,10 @@ void us_can_tx(u8 id, u16 distance)
 {
 	CAN_MESSAGE msg;
 	msg.id = (US_CAN_ID + id);
-	msg.length = 2;
-	msg.data[0] = (u8) ((distance >> 8) & 0xFF);
-	msg.data[1] = (u8) (distance & 0xFF);
+	msg.length = 3;
+	msg.data[0] = US_CAN_DISTANCE_CMD;
+	msg.data[1] = (u8) ((distance >> 8) & 0xFF);
+	msg.data[2] = (u8) (distance & 0xFF);
 	
 	can_tx_enqueue(msg);
 }

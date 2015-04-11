@@ -481,6 +481,11 @@
                 </FileArmAds>
               </FileOption>
             </File>
+            <File>
+              <FileName>us_proc.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\src\user\us_proc.c</FilePath>
+            </File>
           </Files>
         </Group>
         <Group>

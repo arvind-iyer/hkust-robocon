@@ -24,6 +24,7 @@
 
 #define	US_CAN_ID								0x90
 
+#define	US_CAN_DISTANCE_CMD			0x00
 
 typedef enum {
 	US_NULL								= 0,
