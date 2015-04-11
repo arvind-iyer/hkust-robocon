@@ -1082,10 +1082,7 @@ void ultra_test(void)
 				
 				tft_prints(0, 3, " Stt Pulse Dist", us_get_state(0));
 				
-				for (u8 i = 0; i < US_DEVICE_COUNT; ++i) {
-					tft_prints(0, 4 + i*2, "[%d]%3d %4d %4d", i, us_get_state(i), us_get_pulse(i), us_get_distance(i));
-					tft_prints(0, 4 + i*2 + 1, " Speed: %d", us_get_speed(i));
-				}
+
 				
 				//tft_prints(0, 6, "Speed: %d Hz", us_get_speed(0));
         //tft_prints(0, 5, "Avg.: %d", ultrasonic_get_distance_avg());

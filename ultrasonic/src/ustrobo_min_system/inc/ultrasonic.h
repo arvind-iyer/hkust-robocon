@@ -11,16 +11,18 @@
 #define US_IRQHandler			  void TIM1_UP_TIM10_IRQHandler(void)
 
 
-#define US_TRIG_PULSE         10    // 10 us
-#define US_ECHO_PULSE_COUNT   5
-#define US_MAX_WIDTH					1000	// 3400mm
+#define US_TRIG_PULSE         	6
+    // 10 us
+//#define US_ECHO_PULSE_COUNT   5
+//#define US_MAX_WIDTH					1000	// 3400mm
 
-#define	US_IDLE_RESET_COUNT		1200		// 12 ms
-#define	US_TAKE_TURN_BREAK		100
+//#define	US_IDLE_RESET_COUNT		60000		// 12 ms
+//#define	US_TAKE_TURN_BREAK		100
 
-#define	US_DEVICE_COUNT				8
+#define	US_RESET_TIME						30000	// 30ms
+#define	US_DEVICE_COUNT					8
 
-#define	US_CAN_ID							0x90
+#define	US_CAN_ID								0x90
 
 
 typedef enum {
@@ -37,11 +39,7 @@ typedef struct {
 	const GPIO* trig_gpio, *echo_gpio;
 	US_STATE state;
 	u32 pulse_width_tmp, pulse_width;
-	u32 idle_width;
-	u8 rx_complete;	// For sync
-	u16 last_sample_second;
-	u16 last_sample_count;
-	u16 sample_count;
+	volatile u16 trigger_time_us, falling_time_us;
 } US_TypeDef;
 
 typedef enum {
@@ -51,13 +49,13 @@ typedef enum {
 } US_MODE;
 
 
-void us_init(US_MODE mode);
+void us_init(void);
 US_MODE us_get_mode(void);
 US_STATE us_get_state(u8 i);
 u32 us_get_pulse_raw(u8 i);
 u32 us_get_pulse(u8 i);
 u32 us_get_distance(u8 i);
-u16 us_get_speed(u8 i);
+u8 us_get_speed(void);
 u8 us_get_current_us(void);
 
 #endif /* __US_H */
