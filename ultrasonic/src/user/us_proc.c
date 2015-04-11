@@ -13,7 +13,7 @@ static void us_can_proc_tx(u8 id, u16 in_range_time, u16 in_distance)
 {
 	CAN_MESSAGE msg;
 	msg.id = (US_CAN_ID + id);
-	msg.length = 3;
+	msg.length = 5;
 	msg.data[0] = US_CAN_PROC_CMD;
 	msg.data[1] = (u8) ((in_range_time >> 8) & 0xFF);
 	msg.data[2] = (u8) (in_range_time & 0xFF);
