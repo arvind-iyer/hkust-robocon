@@ -343,14 +343,14 @@ void upper_hit(void){
 void open_upper_pneumatic(void)
 {
 	for (u8 i = 0; i < HIT_RACKET_NUMBER; ++i) {
-		GPIO_SetBits(GPIOE, HIT_RACKET_PINS[i]);
+		GPIO_ResetBits(GPIOE, HIT_RACKET_PINS[i]);
 	}
 }
 
 void close_upper_pneumatic(void)
 {
 	for (u8 i = 0; i < HIT_RACKET_NUMBER; ++i) {
-		GPIO_ResetBits(GPIOE, HIT_RACKET_PINS[i]);
+		GPIO_SetBits(GPIOE, HIT_RACKET_PINS[i]);
 	}
 }
 

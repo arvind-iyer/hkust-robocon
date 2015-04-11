@@ -126,7 +126,7 @@ static void reset_gyro(void)
 void set_starting_pos(void)
 {
 	gyro_calibrated = gyro_pos_set(0, 4700, 0);
-	if (gyro_calibrated) {
+	if (gyro_calibrated || 1) {
 		POSITION target_pos = {0, 4700, 0};
 		wheel_base_set_target_pos(target_pos);
 	}
