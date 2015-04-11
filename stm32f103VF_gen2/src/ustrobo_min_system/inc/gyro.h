@@ -32,6 +32,9 @@
 #define	X_FLIP						1   /*** 1 or -1 **/
 #define	Y_FLIP						1   /*** 1 or -1 **/
 
+#define SHIFT_X						shift_x
+#define SHIFT_Y						shift_y
+
 extern volatile u8 gyro_available;
 
 

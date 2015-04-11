@@ -15,6 +15,9 @@ volatile u8 reply_flag = 0;
 
 volatile u8 gyro_available = 0;
 
+static s32 shift_x = 59;
+static s32 shift_y = -310;
+
 /**
   * @brief  Initialization of Gyro
   * @param  None
@@ -192,9 +195,13 @@ void gyro_rx_handler(u8 rx_data)
               
               // Calculate the corrected position
               /** TODO: Cancel the offset, varies along the robots **/
-              gyro_pos.x = X_FLIP * gyro_pos_raw.x;
-              gyro_pos.y = Y_FLIP * gyro_pos_raw.y;
+							
+              gyro_pos.x = (X_FLIP*gyro_pos_raw.x*10000-SHIFT_X*10000+SHIFT_X*int_cos(gyro_pos_raw.angle)+SHIFT_Y*int_sin(gyro_pos_raw.angle))/10000;              
+              gyro_pos.y = (Y_FLIP*gyro_pos_raw.y*10000-SHIFT_Y*10000+SHIFT_Y*int_cos(gyro_pos_raw.angle)-SHIFT_X*int_sin(gyro_pos_raw.angle))/10000;
+              // gyro_pos.x = X_FLIP * gyro_pos_raw.x;
+              // gyro_pos.y = Y_FLIP * gyro_pos_raw.y;
               gyro_pos.angle = gyro_pos_raw.angle;
+							
               
 						} else {
 							gyro_available = 0;
