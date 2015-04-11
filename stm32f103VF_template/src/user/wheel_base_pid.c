@@ -237,7 +237,8 @@ void wheel_base_pid_update(void)
 	// auto gyro calibration code
 	if (!gyro_calibrated && get_full_ticks() > GYRO_TICKS_TIMEOUT) {
 		gyro_calibrated = gyro_pos_set(0, 4700, 0);
-		if (gyro_calibrated) {
+		#warning hard_coded!
+		if (gyro_calibrated || 1) {
 			POSITION target_pos = {0, 4700, 0};
 			wheel_base_set_target_pos(target_pos);
 		}
