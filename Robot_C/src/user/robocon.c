@@ -63,16 +63,17 @@ bool robot_xbc_controls(void)
 	
 	if((dw == 0) && (xbc_get_joy(XBC_JOY_LX) == 0 && xbc_get_joy(XBC_JOY_LY) == 0))
 	{
-		wheel_base_pid_off();
-		is_it_turning(0);
+		wheel_base_pid_on();
+		wheel_base_pid_loop();
+		
 	}
 	else
 	{
-		wheel_base_pid_on();
-		wheel_base_pid_loop();
+		wheel_base_pid_off();
+		is_it_turning(0);
 		wheel_base_set_target_pos((POSITION){get_pos()->x, get_pos()->y, get_pos()->angle});
 	}
-	wheel_base_update();
+	//wheel_base_update();
 	
 	//Digital Movement
 	//Cardinals
