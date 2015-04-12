@@ -125,8 +125,9 @@ static void reset_gyro(void)
 // calibrate gyro to the T shaped point on front side of game field
 void set_starting_pos(void)
 {
-	gyro_calibrated = gyro_pos_set(0, 4700, 0);
-	if (gyro_calibrated || 1) {
+	#warning hard_coded!
+	gyro_calibrated = gyro_pos_set(0, 4700, 0) || 1;
+	if (gyro_calibrated) {
 		POSITION target_pos = {0, 4700, 0};
 		wheel_base_set_target_pos(target_pos);
 	}
@@ -236,9 +237,10 @@ void wheel_base_pid_update(void)
 	
 	// auto gyro calibration code
 	if (!gyro_calibrated && get_full_ticks() > GYRO_TICKS_TIMEOUT) {
-		gyro_calibrated = gyro_pos_set(0, 4700, 0);
 		#warning hard_coded!
-		if (gyro_calibrated || 1) {
+		gyro_calibrated = gyro_pos_set(0, 4700, 0) || 1; 
+		
+		if (gyro_calibrated) {
 			POSITION target_pos = {0, 4700, 0};
 			wheel_base_set_target_pos(target_pos);
 		}

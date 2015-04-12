@@ -26,7 +26,8 @@ static u16 racket_delay_adjust_time = 0;
 // hitting static variables
 static bool hitting_mode_on = false;
 static u32 hitting_started_time = 0;
-static u16 upper_delay  = 500;
+static u16 upper_delay = 0;	// Delay (upper_delay) ms to hit when the upper_hit_delay is called
+static const u16 UPPER_HOLD_DELAY  = 500;
 
 static bool racket_emergency_stop = false;
 
@@ -335,11 +336,24 @@ void racket_update(void)    //determine whether the motor should run
 	}
 }
 
+/**
+	* @brief Hit the upper racket after 'delay' ms
+	* @param The delay time (in millisecond)
+	*/
+void upper_hit_delay(u16 delay)
+{
+	hitting_mode_on = delay == 0 ? true : false;
+	hitting_started_time = get_full_ticks();
+	upper_delay = delay;
+	
+}
+
 // added for upper rackets
 void upper_hit(void){
-		hitting_mode_on = true;
-		hitting_started_time = get_full_ticks();
+	upper_hit_delay(0);
 }
+
+
 void open_upper_pneumatic(void)
 {
 	for (u8 i = 0; i < HIT_RACKET_NUMBER; ++i) {
@@ -356,17 +370,7 @@ void close_upper_pneumatic(void)
 
 void up_racket_sensor_check(void)
 {
-	static u16 sensor_full_ticks = 0;
 	static u8 previous_detection = 0;
-	if (sensor_full_ticks) {
-		if (get_full_ticks() - sensor_full_ticks > UPPER_RACKET_SENSE_DELAY) {
-			upper_hit();
-			buzzer_control_note(5, 50, NOTE_C, 7);
-			sensor_full_ticks = 0;
-		}
-		return;
-	}
-	
 	
 	u8 tmp_detection = 0;
 	// If any sensors sense 
@@ -377,18 +381,25 @@ void up_racket_sensor_check(void)
 	}
 	
 	if (previous_detection == 0 && tmp_detection == 1 && !hitting_mode_on) {
-		sensor_full_ticks = get_full_ticks();
+		buzzer_control_note(5, 50, NOTE_C, 7);
+		upper_hit_delay(100);
 	}
 	previous_detection = tmp_detection;
 }
 
 void up_racket_update(void)
 {
+	if (hitting_mode_on == false && get_full_ticks() >= hitting_started_time + upper_delay) {
+		hitting_mode_on = true;
+	}
+	
 	if(hitting_mode_on == true){
 		open_upper_pneumatic();
 	}
-	if (get_full_ticks() - hitting_started_time > upper_delay){
+	
+	if (get_full_ticks() > hitting_started_time + UPPER_HOLD_DELAY + upper_delay){
 		hitting_mode_on = false;
+		hitting_started_time = 0;
 		close_upper_pneumatic();
 	}
 }
