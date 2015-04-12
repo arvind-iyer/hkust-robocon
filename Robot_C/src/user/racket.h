@@ -44,7 +44,7 @@
 
 void racket_update(void);
 
-void racket_down_hit();
+void racket_down_hit(void);
  void racket_hit(void);
 void racket_pneumatic_set(bool);
 void racket_pneumatic_2_set(bool);

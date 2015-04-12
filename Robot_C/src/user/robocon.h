@@ -41,9 +41,9 @@
 
 
 void robocon_main(void);
-void robot_c_function_controls();
-void robot_d_function_controls();
-bool robot_xbc_controls();
+void robot_c_function_controls(void);
+void robot_d_function_controls(void);
+bool robot_xbc_controls(void);
 //bool get_xbc_input_allowed(void);
 //void set_xbc_input_allowed(bool);
 #endif	/* __ROBOCON_H */

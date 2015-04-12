@@ -17,11 +17,11 @@
 #define SERVE_PNEU_GPIO &PD9
 
 
-#define ENCODER_THRESHOLD 	-12000
+#define ENCODER_THRESHOLD 	-10000
 
 static u32 SERVE_HIT_TIMEOUT = 300;	// maximum serve duration.
 
-void serve_update();
+void serve_update(void);
 
 // interface
 void serve_free(void);

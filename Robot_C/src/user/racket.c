@@ -52,6 +52,10 @@ void racket_update(void)
 		racket_pneumatic_2_set(is_pneu_2_extended);
 	}
 	
+	if (!gpio_read_input(LASER_GPIO))
+	{
+		//racket_hit();
+	}
 	if (ROBOT=='D')
 		serve_update();
 	/*if (ROBOT=='C' && !gpio_read_input(LASER_GPIO) && racket_laser_not_alligned)

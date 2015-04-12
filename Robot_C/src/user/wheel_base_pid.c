@@ -118,7 +118,6 @@ void wheel_base_pid_loop(void)
 	dy = shifted_dy/wheel_base_pid.Kp/Abs(shifted_dy/wheel_base_pid.Kp);
 	dy = Abs(shifted_dy/wheel_base_pid.Kp) < 12 ? dy*12 : shifted_dy/wheel_base_pid.Kp; 
 	
-	
 	dw = pid_maintain_angle();
 	wheel_base_set_vel(dx, dy , dw); 
 

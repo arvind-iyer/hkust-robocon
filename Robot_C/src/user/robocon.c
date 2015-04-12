@@ -12,7 +12,7 @@ static bool use_xbc_input = false;
 
 
 bool serve_pneu_button_enabled=1;
-bool robot_xbc_controls()
+bool robot_xbc_controls(void)
 {
 	if(xbc_get_connection() == XBC_DISCONNECTED)
 		return false;//Xbox Controller not connected
@@ -30,7 +30,6 @@ bool robot_xbc_controls()
 	* 
 	*/
 	//Analog Movement
-	wheel_base_set_vel(xbc_get_joy(XBC_JOY_LX), xbc_get_joy(XBC_JOY_LY), (xbc_get_joy(XBC_JOY_RT)-xbc_get_joy(XBC_JOY_LT))/5 );
 	
 	/*if(xbc_get_joy(XBC_JOY_LX) == 0 && xbc_get_joy(XBC_JOY_LY) == 0)
 	{
@@ -45,19 +44,35 @@ bool robot_xbc_controls()
 		wheel_base_set_target_pos((POSITION){get_pos()->x, get_pos()->y, get_pos()->angle});
 	}*/
 	
+	int dw = (xbc_get_joy(XBC_JOY_RT)-xbc_get_joy(XBC_JOY_LT))/5;
 	
-	if(xbc_get_joy(XBC_JOY_RT) == 0 && xbc_get_joy(XBC_JOY_LT) == 0)
+	if(dw == 0)
 	{
-		//wheel_base_pid_on();
+		wheel_base_pid_on();
+		dw = pid_maintain_angle();
 		is_it_turning(0);
 	}
 	else
 	{
-		//wheel_base_pid_off();
+		wheel_base_pid_on();
 		is_it_turning(1);
 		wheel_base_set_target_pos((POSITION){get_pos()->x, get_pos()->y, get_pos()->angle});
 	}
 	
+	wheel_base_set_vel(xbc_get_joy(XBC_JOY_LX), xbc_get_joy(XBC_JOY_LY), dw );
+	
+	if((dw == 0) && (xbc_get_joy(XBC_JOY_LX) == 0 && xbc_get_joy(XBC_JOY_LY) == 0))
+	{
+		wheel_base_pid_off();
+		is_it_turning(0);
+	}
+	else
+	{
+		wheel_base_pid_on();
+		wheel_base_pid_loop();
+		wheel_base_set_target_pos((POSITION){get_pos()->x, get_pos()->y, get_pos()->angle});
+	}
+	wheel_base_update();
 	
 	//Digital Movement
 	//Cardinals
@@ -101,7 +116,7 @@ bool robot_xbc_controls()
 	return true;
 }
 
-void robot_c_function_controls()
+void robot_c_function_controls(void)
 {
 	//Racket Hit
 	if(button_pressed(BUTTON_XBC_Y))
@@ -111,7 +126,7 @@ void robot_c_function_controls()
 	
 }
 
-void robot_d_function_controls()
+void robot_d_function_controls(void)
 {
 	//Racket Hit
 	if(button_pressed(BUTTON_XBC_A))
@@ -289,7 +304,7 @@ void robocon_main(void)
 			ticks_img = get_ticks();
 			
 			if (ticks_img % 10 == 0) {
-        wheel_base_update();	//wheel_base_update now also handles auto positioning system
+        //wheel_base_update();	//wheel_base_update now also handles auto positioning system
 				bluetooth_update();
         handle_bluetooth_input();
  
@@ -299,7 +314,7 @@ void robocon_main(void)
           return;
         }
 			}
-			
+				wheel_base_update();
 				racket_update();
 			if (ticks_img % 250 == 1) {
 				// Every 250 ms (4 Hz)
