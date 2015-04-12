@@ -16,10 +16,16 @@ void button_event_update(void)
 	s32 diagonal_speed = ANALOG_SPEED * 707 / 1000 * speed_ratio / 100;
 	s32 angle_speed;
 	
-	if ( button_pressed(BUTTON_XBC_LB) ) {
-		angle_speed = -axis_speed;
+	if (button_pressed(BUTTON_XBC_LB) && button_pressed(BUTTON_XBC_RB)) {
+		angle_speed = 0;
+	} else if (button_pressed(BUTTON_XBC_LB)) {
+		angle_speed = -axis_speed * 0.35;
 	} else if (button_pressed(BUTTON_XBC_RB) ) {
-		angle_speed = axis_speed;
+		angle_speed = axis_speed * 0.35;
+	} else if (xbc_get_joy(XBC_JOY_LT)!=0) {
+		angle_speed = -axis_speed * xbc_get_joy(XBC_JOY_LT) / 255;
+	} else if (xbc_get_joy(XBC_JOY_RT)!=0) {
+		angle_speed = axis_speed * xbc_get_joy(XBC_JOY_RT) / 255;
 	} else {
 		angle_speed = 0;
 	}
