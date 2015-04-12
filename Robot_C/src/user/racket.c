@@ -28,19 +28,23 @@ void racket_pneumatic_set(bool data)		//
 		gpio_write(PNEU_GPIO, data);
 		
 	}
-	log("pneu",is_pneu_extended);
+	//log("pneu",is_pneu_extended);
 }
 
 
 void racket_pneumatic_2_set(bool data)	// for robot C
 {
 	gpio_write(PNEU_GPIO_DOWN, !data);
-	log("pneu2",is_pneu_2_extended);
+	//log("pneu2",is_pneu_2_extended);
 }
 
 //Called ever 10ms to check and update racket data and redirect to starting and stopping racket at required points
 void racket_update(void)
 {
+	if (ROBOT=='D')
+		serve_update();
+	
+	
 	if(is_pneu_extended && (get_full_ticks() > racket_pneu_start_time + 1000/*RACKET_SERVE_DELAY*/))
 	{
 		is_pneu_extended = 0;
@@ -56,8 +60,7 @@ void racket_update(void)
 	{
 		//racket_hit();
 	}
-	if (ROBOT=='D')
-		serve_update();
+	
 	/*if (ROBOT=='C' && !gpio_read_input(LASER_GPIO) && racket_laser_not_alligned)
 	{
 		racket_laser_not_alligned=0;

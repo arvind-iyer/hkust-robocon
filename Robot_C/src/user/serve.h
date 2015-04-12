@@ -39,4 +39,5 @@ void serve_change_vel(s16);
 s32 serve_get_vel(void);
 void serve_change_delay(s16);
 u32 serve_get_delay(void);
+bool serve_prioritized(void);
 #endif

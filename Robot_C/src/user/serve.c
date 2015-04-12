@@ -6,7 +6,7 @@ static s32 SERVE_CAL_VEL = -200 ;
 static s32 SERVE_HIT_VEL = 300;			//can be changed by controller
 static u32 SERVE_DELAY = 510;			// can be changed by controller
 
-static s32 init_encoder_reading = 7500;	// will be kept updating according to the switch. Encoder value at switch location.
+static s32 init_encoder_reading = 8000;	// will be kept updating according to the switch. Encoder value at switch location.
 static s32 prev_encoder_reading = 8000;	// encoder reading when racket is locked.
 
 // timer and encoder variables
@@ -57,18 +57,15 @@ void serve_update(void)
 	if ( hitting && (get_encoder_value(RACKET) <= init_encoder_reading+ENCODER_THRESHOLD/* ||get_full_ticks()>=serve_hit_start_time+SERVE_HIT_TIMEOUT+100-(SERVE_HIT_VEL/5)*/))
 	{
 		racket_lock();
-		// log
-		//if (get_encoder_value(RACKET) <= init_encoder_reading+ENCODER_THRESHOLD)
-			log ("enc stops hit!",1);
-		//else
-		//	log("time stops hit",1);
+		log ("enc st hit",get_encoder_value(RACKET));
+		log ("serve time", get_full_ticks() - serve_start_time);
 	}
 	if (hitting && get_encoder_value(RACKET)==prev_encoder_reading && get_full_ticks()>=serve_hit_start_time+SERVE_HIT_TIMEOUT)
 	{
 		hitting=0;
 		motor_set_vel(RACKET, 0, OPEN_LOOP);
 		serve_calibrate();
-		log("time stops hit!",0);
+		log("*tim st hit",get_full_ticks() - serve_start_time);
 	}
 
 	
@@ -83,10 +80,10 @@ void serve_update(void)
 		if (gpio_read_input(SERVE_SWITCH))
 		{
 			init_encoder_reading = get_encoder_value(RACKET);
-			log("switch stops cal",1);
+			log("*sw st cal",get_encoder_value(RACKET));
 		}
 		else
-			log("enc stops cal",1);
+			log("enc st cal",get_encoder_value(RACKET));
 	}
 	
 	
@@ -96,7 +93,7 @@ void serve_update(void)
 		//log("CAL ERROR",gpio_read_input(SERVE_SWITCH));
 	}
 	
-	// if calibration doesn't stop 2 seconds, FORCE STOP CALIBRATION, and register current encoder value as init encoder value.
+	// if calibration doesn't stop 1.5 seconds, FORCE STOP CALIBRATION, and register current encoder value as init encoder value.
 	if (calibrate_in_process && serve_calibrate_start_time+1500<get_full_ticks())
 	{
 		init_encoder_is_set=1;
@@ -104,7 +101,7 @@ void serve_update(void)
 		//racket_lock();
 		prev_encoder_reading = get_encoder_value(RACKET);
 		init_encoder_reading = get_encoder_value(RACKET);
-		log("time stops cal",0);
+		log("*tim st cal",get_full_ticks() - serve_start_time);
 	}
 }
 
@@ -134,7 +131,6 @@ void serve_calibrate(void)
 		motor_set_vel(RACKET, SERVE_CAL_VEL, OPEN_LOOP);	//racket calibrate function takes a direct control over the motor
 		calibrate_in_process=1;
 		
-		log("cal start",1);
 	}
 }
 
@@ -181,4 +177,9 @@ s32 serve_get_vel(void)
 u32 serve_get_delay(void)
 {
 	return SERVE_DELAY;
+}
+
+bool serve_prioritized(void)
+{
+	return ROBOT=='D' && (serve_hit_queued || hitting || calibrate_in_process);
 }
