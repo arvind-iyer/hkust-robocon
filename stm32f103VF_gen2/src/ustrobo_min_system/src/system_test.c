@@ -1035,10 +1035,12 @@ void mb1240_test(void)
 }
 
 
+
 void ultra_test(void)
 {
   //u16 distance_history[tft_width-2] = {0};
-
+	
+	/*
   while (true) {
     if (ticks_img != get_ticks()) {
       ticks_img = get_ticks();
@@ -1068,6 +1070,7 @@ void ultra_test(void)
       }
     }
   }
+	*/
 }
 
 

@@ -23,6 +23,7 @@ int main(void)
 	can_rx_init();
   can_motor_init();
 	
+	us_mb_init();
 	bluetooth_init();
   //mb1240_init();
   xbc_mb_init(XBC_BLUETOOTH_FIRST); 
