@@ -58,7 +58,8 @@ void serve_update(void)
 	{
 		racket_lock();
 		log ("enc st hit",get_encoder_value(RACKET));
-		log ("serve time", get_full_ticks() - serve_start_time);
+		log ("serve delay", serve_hit_start_time - serve_start_time);
+		log ("serve time", get_full_ticks() - serve_hit_start_time);
 	}
 	if (hitting && get_encoder_value(RACKET)==prev_encoder_reading && get_full_ticks()>=serve_hit_start_time+SERVE_HIT_TIMEOUT)
 	{

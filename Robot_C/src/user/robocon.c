@@ -130,7 +130,7 @@ void robot_d_function_controls(void)
 {
 	//Racket Hit
 	if(button_pressed(BUTTON_XBC_A))
-		racket_hit();
+		racket_delayed_hit();
 	//Calibrate
 	else if(button_pressed(BUTTON_XBC_B))
 		serve_start();
@@ -321,7 +321,7 @@ void robocon_main(void)
 			}
 			
 			// Serve optimization applied wheel_base update
-			if ((serve_prioritized() && ticks_img%40==1 )|| ticks_img % 5 == 1) {
+			if (!serve_prioritized() && ticks_img % 5 == 1) {
         wheel_base_update();
 			}
 				
@@ -387,8 +387,8 @@ void robocon_main(void)
 				//tft_prints(0,3,"XBC: %d", connect);
 				tft_prints(0,3,"Serve_delay: %d",serve_get_delay());
 				//tft_prints(0,4, "Switch = %d", gpio_read_input(&PE5));
-				//tft_prints(0,4, "skipTick %d", tick_skip_count);
-				tft_prints(0,4, "Serve_prior %d", serve_prioritized());
+				tft_prints(0,4, "skipTick %d", tick_skip_count);
+				//tft_prints(0,4, "Serve_prior %d", serve_prioritized());
 				//tft_prints(0,2, "x%d y%d", gyro_get_shift_x(), gyro_get_shift_y());
 				//tft_prints(0,7, "LASER%d %d", gpio_read_input(LASER_GPIO),racket_get_laser_hit_delay);
 				tft_prints(0,2,"Encoder: %d", get_encoder_value(RACKET));
