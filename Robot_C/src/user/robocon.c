@@ -131,7 +131,7 @@ void robot_d_function_controls(void)
 {
 	//Racket Hit
 	if(button_pressed(BUTTON_XBC_A))
-		racket_delayed_hit();
+		racket_hit();
 	//Calibrate
 	else if(button_pressed(BUTTON_XBC_B))
 		serve_start();

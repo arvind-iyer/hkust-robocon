@@ -54,12 +54,12 @@ void racket_update(void)
 		log("rac delayed hit",0);
 	}
 	
-	if(is_pneu_extended && (get_full_ticks() > racket_pneu_start_time + 1000/*RACKET_SERVE_DELAY*/))
+	if(is_pneu_extended && (get_full_ticks() > racket_pneu_start_time + 500/*RACKET_SERVE_DELAY*/))
 	{
 		is_pneu_extended = 0;
 		racket_pneumatic_set(is_pneu_extended);
 	}
-	if (ROBOT=='C' && is_pneu_2_extended && (get_full_ticks() > racket_pneu_2_start_time + 1000))
+	if (ROBOT=='C' && is_pneu_2_extended && (get_full_ticks() > racket_pneu_2_start_time + 500))
 	{
 		is_pneu_2_extended = 0;
 		racket_pneumatic_2_set(is_pneu_2_extended);
