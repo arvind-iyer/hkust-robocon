@@ -64,7 +64,7 @@ bool robot_xbc_controls(void)
 	if((dw == 0) && (xbc_get_joy(XBC_JOY_LX) == 0 && xbc_get_joy(XBC_JOY_LY) == 0))
 	{
 		wheel_base_pid_on();
-		wheel_base_pid_loop();
+		wheel_base_set_vel(wheel_base_get_vel().x, wheel_base_get_vel().y, dw);
 		
 	}
 	else
