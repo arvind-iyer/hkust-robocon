@@ -16,6 +16,8 @@ static u32 serving_started_time = 0;
 static bool switch_stat;
 static u8 switch_hit = 0;
 
+static bool sensor_on = false;
+
 static u16 current_speed = 0;
 
 static u16 racket_speed = 1780;		//tested best result
@@ -144,6 +146,16 @@ void racket_calibrate(void)			//calibrate to 1, run before start
 	switch_hit = 0;
 }
 
+void enable_ultrasonic_sensor(void)
+{
+	sensor_on = true;
+}
+
+void disable_ultrasonic_sensor(void)
+{
+	sensor_on = false;
+}
+
 static void racket_received_command(void)
 {
 	if (calibrated) {
@@ -177,10 +189,9 @@ void racket_init(void)
 	register_special_char_function('k', upper_hit);
 	register_special_char_function('j', open_upper_pneumatic);
 	register_special_char_function('h', close_upper_pneumatic);
-
-
-//	register_special_char_function(';', up_racket_calibrate);
 	
+	register_special_char_function(';', enable_ultrasonic_sensor);
+	register_special_char_function('\'', disable_ultrasonic_sensor);	
 	
 	register_special_char_function('=', increase_racket_speed); // +
 	register_special_char_function('-', decrease_racket_speed); // -
@@ -368,6 +379,8 @@ void close_upper_pneumatic(void)
 	*/
 void up_racket_sensor_check(void)
 {
+	if (!sensor_on) return;
+	
 	static u8 previous_detection = 0;
 	
 	u8 tmp_detection = 0;

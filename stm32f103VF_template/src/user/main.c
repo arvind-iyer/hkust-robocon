@@ -14,7 +14,7 @@ int main(void)
 	buzzer_init();
 	button_init();
 	led_init();
-	tft_init(2, WHITE, BLACK, RED);
+	tft_init(0, WHITE, BLACK, RED);
 	gyro_init();
 	battery_adc_init();
 	can_init();

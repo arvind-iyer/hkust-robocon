@@ -71,30 +71,43 @@ void xbc_button_handler(void)
 		wheel_base_pid_off();
 	}
 	
-	if (button_pressed(BUTTON_XBC_START) && (get_full_ticks() - last_increased_speed) > SPEED_CHANGE_TIMEOUT)
+	if (button_pressed(BUTTON_XBC_START))
 	{
-		u8 speed_mode = wheel_base_get_speed_mode();
-		speed_mode = (speed_mode + 1) % 10;
-		MUSIC_NOTE speed_changed_sound[] = {{(MUSIC_NOTE_LETTER)(speed_mode + 1), 6}, NOTE_END};
-		buzzer_play_song(speed_changed_sound, 50, 0);
-		wheel_base_set_speed_mode(speed_mode);
-		last_increased_speed = get_full_ticks();
+		enable_ultrasonic_sensor();
 	}
 	
-	if (button_pressed(BUTTON_XBC_BACK) && (get_full_ticks() - last_decreased_speed) > SPEED_CHANGE_TIMEOUT)
+	if (button_pressed(BUTTON_XBC_BACK))
 	{
-		u8 speed_mode = wheel_base_get_speed_mode();
-		if (speed_mode == 0)
-		{
-			speed_mode = 9;
-		} else {
-			--speed_mode;
-		}
-		MUSIC_NOTE speed_changed_sound[] = {{(MUSIC_NOTE_LETTER)(speed_mode + 1), 6}, NOTE_END};
-		buzzer_play_song(speed_changed_sound, 50, 0);
-		wheel_base_set_speed_mode(speed_mode);
-		last_decreased_speed = get_full_ticks();
+		disable_ultrasonic_sensor();
 	}
+	
+	if (button_pressed(BUTTON_XBC_L_JOY))
+	{
+		open_pneumatic();
+	}
+	
+	if (xbc_get_joy(XBC_JOY_RX)) {
+		if (xbc_get_joy(XBC_JOY_RX) > 0 && (get_full_ticks() - last_increased_speed) > SPEED_CHANGE_TIMEOUT) {
+			u8 speed_mode = wheel_base_get_speed_mode();
+			speed_mode = (speed_mode + 1) % 10;
+			MUSIC_NOTE speed_changed_sound[] = {{(MUSIC_NOTE_LETTER)(speed_mode + 1), 6}, NOTE_END};
+			buzzer_play_song(speed_changed_sound, 50, 0);
+			wheel_base_set_speed_mode(speed_mode);
+			last_increased_speed = get_full_ticks();
+		} else if (xbc_get_joy(XBC_JOY_RX) < 0 && (get_full_ticks() - last_decreased_speed) > SPEED_CHANGE_TIMEOUT) {
+			u8 speed_mode = wheel_base_get_speed_mode();
+			if (speed_mode == 0)
+			{
+				speed_mode = 9;
+			} else {
+				--speed_mode;
+			}
+			MUSIC_NOTE speed_changed_sound[] = {{(MUSIC_NOTE_LETTER)(speed_mode + 1), 6}, NOTE_END};
+			buzzer_play_song(speed_changed_sound, 50, 0);
+			wheel_base_set_speed_mode(speed_mode);
+			last_decreased_speed = get_full_ticks();
+		}
+	}		
 }
 
 // function to get last non-zero speed received

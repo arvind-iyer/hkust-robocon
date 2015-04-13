@@ -24,6 +24,7 @@ static void auto_timer_init()
 	set_starting_pos();
 	calibrate = false;
 	timer_enabled = true;
+	disable_ultrasonic_sensor();
 }
 
 static void auto_timer_update()
@@ -31,8 +32,9 @@ static void auto_timer_update()
 	// do not update timer if not enabled
 	if (!timer_enabled) { return; }
 	// config
+	buzzer_control_note(5, 50, NOTE_C, 7);
+	
 	if (get_full_ticks() - timer_ticks < TIMER_BEGIN_TIME) {
-		buzzer_control_note(5, 50, NOTE_C, 7);
 	} else if (get_full_ticks() - timer_ticks < PID_OFF_TIME) {
 		if (!calibrate) {
 			racket_calibrate();

@@ -40,6 +40,9 @@ void upper_hit(void);
 void upper_hit_delay(u16 delay);
 void up_racket_update(void);
 
+void enable_ultrasonic_sensor(void);
+void disable_ultrasonic_sensor(void);
+
 void open_upper_pneumatic(void);
 void close_upper_pneumatic(void);
 u8 get_hitting (void);
