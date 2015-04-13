@@ -336,8 +336,10 @@ UINT __cdecl xbox_write_thread(LPVOID app_ptr)
 						AfxGetApp()->GetMainWnd()->PostMessage(UWM_PRINT_OUTPUT_FROM_WRITE, 0, (LPARAM)new std::basic_string<TCHAR>(string_to_write.str()));
 					}
 				}
-				if (serial && *serial) {
+				if (serial && (*serial) && (*serial)->is_connected()) {
 					(*serial)->write(RobotMCtrl().xbox_keys_part1(xbc_digital, lt, rt, lx, ly));
+				}
+				if (serial && (*serial) && (*serial)->is_connected()) {
 					(*serial)->write(RobotMCtrl().xbox_keys_part2(rx, ry));
 				}
 			}
