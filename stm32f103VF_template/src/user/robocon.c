@@ -20,7 +20,7 @@ void robocon_main(void)
 				wheel_base_update();
 				racket_update();
 				up_racket_update();
-				auto_timer_update();
+				robot_timer.update();
 			}
 			
 			if (ticks_img % 250 == 1) {
@@ -66,7 +66,7 @@ void robocon_main(void)
 					wheel_base_override_change_speed();
 				}
 				if (button_pressed(BUTTON_1) > 3 || button_pressed(BUTTON_2) > 3) {
-					auto_timer_init();
+					robot_timer.start();
 				}
 			}
 			

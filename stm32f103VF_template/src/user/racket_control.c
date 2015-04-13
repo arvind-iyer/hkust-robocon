@@ -28,8 +28,6 @@ static bool hitting_mode_on = false;
 static u32 hitting_started_time = 0;
 static u16 upper_delay  = 500;
 
-static bool racket_emergency_stop = false;
-
 // defines for hitting GPIO pins
 #define HIT_RACKET_PIN_1 GPIO_Pin_10
 #define HIT_RACKET_PIN_2 GPIO_Pin_11
@@ -209,7 +207,7 @@ void racket_init(void)
   GPIO_Init(GPIOD, &GPIO_InitStructure);
 	
 	//interrupt for upper racket
-	GPIO_EXTILineConfig(GPIO_PortSourceGPIOD,GPIO_PinSource11);
+	GPIO_EXTILineConfig(GPIO_PortSourceGPIOD, GPIO_PinSource11);
 
 	// EXTI configuration
 	EXTI_InitTypeDef EXTI_InitStructure;
@@ -328,11 +326,6 @@ void racket_update(void)    //determine whether the motor should run
 			close_pneumatic();
 		}
 	}
-	
-	// emergency stop override
-	if (racket_emergency_stop) {
-		motor_lock(MOTOR5);
-	}
 }
 
 // added for upper rackets
@@ -340,6 +333,7 @@ void upper_hit(void){
 		hitting_mode_on = true;
 		hitting_started_time = get_full_ticks();
 }
+
 void open_upper_pneumatic(void)
 {
 	for (u8 i = 0; i < HIT_RACKET_NUMBER; ++i) {
