@@ -35,7 +35,9 @@ s32 get_prev(void);
 u16 get_racket_speed(void);
 u16 get_racket_delay(void);
 u8 get_up_switch(void);
+
 void upper_hit(void);
+void upper_hit_delay(u16 delay);
 void up_racket_update(void);
 
 void open_upper_pneumatic(void);
