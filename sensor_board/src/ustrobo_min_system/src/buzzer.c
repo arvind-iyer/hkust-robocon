@@ -31,7 +31,7 @@ static u16 buzzer_time_ms = 0;		                  /*!< The time left (in millise
 static u8 buzzer_count = 0;                         /*!< Storing the buzzer buzzing count for buzzer_control */
 
 /* Note frequency related */
-static u8 buzzer_volume = 33;	                	    /*!< Volume percentage for the buzzer, 0 - 100 (101 for full buzz) */
+static u8 buzzer_volume = 10;	                	    /*!< Volume percentage for the buzzer, 0 - 100 (101 for full buzz) */
 static u16 buzzer_note_period = 1;                  /*!< The current buzzer musical note period (in microsecond) */
 // Musical note period (1/freq) of the 0th octave in macroseconds (us), array to be completed through buzzer_init
 static u16 NOTE0_PERIOD[13] = {0};
@@ -66,24 +66,31 @@ void buzzer_init(void)
   TIM_TimeBaseInitTypeDef  TIM_TimeBaseStructure;                 // TimeBase is for timer setting   > refer to P. 344 of library
   TIM_OCInitTypeDef  TIM_OCInitStructure;                         // OC is for channel setting within a timer  > refer to P. 342 of library
 
-  RCC_APB1PeriphClockCmd(BUZZER_TIM_RCC, ENABLE);
+  RCC_APB2PeriphClockCmd(BUZZER_TIM_RCC, ENABLE);
   RCC_APB2PeriphClockCmd(RCC_APB2Periph_AFIO, ENABLE);
 
   TIM_TimeBaseStructure.TIM_CounterMode = TIM_CounterMode_Up;    // counter will count up (from 0 to FFFF)
   TIM_TimeBaseStructure.TIM_ClockDivision = TIM_CKD_DIV2;        //timer clock = dead-time and sampling clock 	
   TIM_TimeBaseStructure.TIM_Prescaler = SystemCoreClock / BUZZER_COUNT_PER_SECOND - 1;                         // 1MHz
   TIM_TimeBaseStructure.TIM_Period = buzzer_note_period;	                    
- 
+  TIM_TimeBaseStructure.TIM_RepetitionCounter = 0;
+  
   TIM_TimeBaseInit(BUZZER_TIM, &TIM_TimeBaseStructure);           // this part feeds the parameter we set above
   TIM_OCInitStructure.TIM_OCPolarity = TIM_OCPolarity_High;       //set "high" to be effective output
+  TIM_OCInitStructure.TIM_OCNPolarity = TIM_OCPolarity_High; 
   TIM_OCInitStructure.TIM_OCMode = TIM_OCMode_PWM1;	              //produce output when counter < CCR
   TIM_OCInitStructure.TIM_Pulse = buzzer_volume;
+  TIM_OCInitStructure.TIM_OCIdleState = TIM_OCIdleState_Reset;
+  TIM_OCInitStructure.TIM_OCNIdleState = TIM_OCNIdleState_Reset;
   TIM_OCInitStructure.TIM_OutputState = TIM_OutputState_Enable;
-      
+  TIM_OCInitStructure.TIM_OutputNState = TIM_OutputState_Disable;
+  
   TIM_ARRPreloadConfig(BUZZER_TIM, ENABLE);
   TIM_Cmd(BUZZER_TIM, ENABLE);	
+  TIM_CtrlPWMOutputs(BUZZER_TIM, ENABLE);
 
   BUZZER_TIM_OC_INIT(BUZZER_TIM, &TIM_OCInitStructure);
+	
   
 	buzzer_off();
 }
@@ -234,6 +241,13 @@ u16 get_note_period(MUSIC_NOTE_LETTER note, u8 octave)
 	}
 	
 	return note_period;
+}
+
+
+void buzzer_control_note(u8 count, u16 period, MUSIC_NOTE_LETTER note, u8 octave)
+{
+  buzzer_set_note_period(get_note_period(note, octave)); 
+  buzzer_control(count, period); 
 }
 
 /**

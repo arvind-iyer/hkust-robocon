@@ -1,27 +1,61 @@
-#ifndef __ULTRASONIC_H
-#define __ULTRASONIC_H
+#ifndef __US_H
+#define __US_H
 
 #include "stm32f10x_tim.h"
 #include "stm32f10x_exti.h"
 #include "gpio.h"
 
-#define ULTRASONIC_TIM							TIM10
-#define ULTRASONIC_RCC							RCC_APB2Periph_TIM10
-#define ULTRASONIC_IRQn						  TIM1_UP_TIM10_IRQn
-#define ULTRASONIC_IRQHandler			  void TIM1_UP_TIM10_IRQHandler(void)
+#define US_TIM							TIM3
+#define US_RCC							RCC_APB1Periph_TIM3
+#define US_IRQn						  TIM3_IRQn
+#define US_IRQHandler			  void TIM3_IRQHandler(void)
 
-#define ULTRASONIC_TRIG_GPIO        ((GPIO*) &PE0)
-#define ULTRASONIC_ECHO_GPIO        ((GPIO*) &PE1)
+#define	US_DEVICE_COUNT					9
+#define US_TRIG_PULSE         	6
 
-#define ULTRASONIC_TRIG_PULSE         10    // 10 us
-#define ULTRASONIC_ECHO_PULSE_COUNT   5
+// 10 us
+//#define US_ECHO_PULSE_COUNT   5
+//#define US_MAX_WIDTH					1000	// 3400mm
 
-void ultrasonic_init(void);
-u32 get_pulse_width(void);
-u32 get_distance(void);
-u32 ultrasonic_get_distance_avg(void);
-u32 ultrasonic_get_count(void);
-u32 ultrasonic_get_successful_count(void);
+//#define	US_IDLE_RESET_COUNT		60000		// 12 ms
+//#define	US_TAKE_TURN_BREAK		100
+
+#define	US_RESET_TIME						40000	// 40ms
 
 
-#endif /* __ULTRASONIC_H */
+#define	US_CAN_ID								0x200
+
+#define	US_CAN_DISTANCE_CMD			0x00
+
+typedef enum {
+	US_NULL								= 0,
+	US_READY							= 1,
+	US_TRIGGER 						= 2,
+	US_WAITING_FOR_ECHO		= 3,
+	US_ECHO_RAISED				= 4,
+	US_ECHO_FALLEN				= 5
+	
+} US_STATE;
+
+typedef struct {
+	const GPIO* trig_gpio, *echo_gpio;
+	US_STATE state;
+	u32 pulse_width_tmp, pulse_width;
+	volatile u16 trigger_time_us, falling_time_us;
+} US_TypeDef;
+
+typedef enum {
+	US_INDEPENDENT,
+	US_SYNC,
+	US_TAKE_TURN
+} US_MODE;
+
+
+void us_init(void);
+u32 us_get_pulse_raw(u8 i);
+u32 us_get_pulse(u8 i);
+u32 us_get_distance(u8 i);
+u8 us_get_speed(void);
+u8 us_get_current_us(void);
+
+#endif /* __US_H */

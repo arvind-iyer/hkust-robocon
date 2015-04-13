@@ -1,4 +1,5 @@
 #include "interface.h"
+#include <string.h>
 
 static u16 ticks_img 	= (u16)-1;
 
@@ -14,7 +15,7 @@ static MENU_ITEM menu_list[MENU_LIST_MAX];
 	*/
 void system_start(u16 duration)
 {
-  const char* title = "Robocon 2015  Min System 1.4";
+  const char* title = "Robocon 2015  Min System 2.0";
   
 	led_control((LED) (LED_D1 | LED_D2 | LED_D3), LED_ON);
 	tft_clear();
@@ -25,43 +26,40 @@ void system_start(u16 duration)
 	tft_prints(1, 2, "[Robotics Team]");
 	
 	strncpy(tmp, title, tft_get_max_x_char()-2);
-	tft_prints(1, 4, "%s", tmp);
+	tft_prints(1, 3, "%s", tmp);
 	if (strlen(title) >= tft_get_max_x_char()-2) {
 		strncpy(tmp, &title[tft_get_max_x_char()-2], tft_get_max_x_char()-2);
-		tft_prints(1, 5, "%s", tmp);
+		tft_prints(1, 4, "%s", tmp);
 	}
 	
 	
 	tft_update();
 	
 	buzzer_play_song(START_UP, 120, 0);
-	
-	// Start-up battery check
-	battery_adc_update();
 
 	u16 prev_text_color = tft_get_text_color();	// Temp color change
 	
-  tft_prints(0, 8, " Level: %d.%02dV", get_voltage() / 100, get_voltage() % 100);
-  
+  tft_prints(0, 7, " Level: %d.%02dV", get_voltage() / 100, get_voltage() % 100);
+  tft_prints(0, 8, " Temp: %d.%d%cC", get_temperature() / 10, get_temperature() % 10, 248);
 	switch(battery_check()) {
 		case BATTERY_USB:
 		case BATTERY_OKAY:
 			// DO NOTHING
 			buzzer_play_song(START_UP, 120, 0);
 			tft_set_text_color(DARK_GREEN);
-			tft_prints(0, 7, " Battery OK");
+			tft_prints(0, 6, " Battery OK");
 		break;
 		case BATTERY_LOW:
 			buzzer_set_note_period(get_note_period(NOTE_E, 7));
 			tft_set_text_color(ORANGE);
 			buzzer_control(5, 100);
-			tft_prints(0, 7, " LOW BATTERY!");
+			tft_prints(0, 6, " LOW BATTERY!");
 		break;
 		case BATTERY_SUPER_LOW:
 			buzzer_set_note_period(get_note_period(NOTE_C, 7));
 			tft_set_text_color(RED);
 			buzzer_control(10, 50);
-			tft_prints(0, 7, " NO BATTERY!");
+			tft_prints(0, 6, " NO BATTERY!");
 			tft_update();
 			while(1) {
 				_delay_ms(200);
@@ -70,7 +68,7 @@ void system_start(u16 duration)
 				tft_update();
 				_delay_ms(200);
 				led_control((LED) (LED_D1 | LED_D2 | LED_D3), LED_ON); 
-				tft_prints(0, 7, " NO BATTERY!");
+				tft_prints(0, 6, " NO BATTERY!");
 				tft_update();
 			}
 		
@@ -84,7 +82,7 @@ void system_start(u16 duration)
   for (u16 i = 0; i < duration / 4; ++i) {
     _delay_ms(4);
     button_update();
-    if (button_pressed(BUTTON_JS2_CENTER) == 1) {
+    if (BUTTON_ENTER_LISTENER()) {
       break; 
     }
   }
@@ -124,23 +122,23 @@ void battery_regular_check(void)
 	* @param batt: The battery level in voltage times 10 (122 for 12.2V)
 	* @retval None
 	*/
-static void draw_battery_icon(u16 batt)
+void draw_battery_icon(u16 batt)
 {
-	u8 pos = (tft_get_orientation() % 2 ? MAX_HEIGHT : MAX_WIDTH);
+  
+	u8 pos = (tft_get_max_x_char() - 1) * CHAR_WIDTH;
 	u16 batt_color = 0, batt_boundary = 0;
 	u16 batt_w = 0;
 	if (batt > BATTERY_USB_LEVEL / 10) {
-		tft_prints(tft_get_max_x_char()-7, 0, "%2d.%d", batt/10, batt%10);
+		tft_prints(tft_get_max_x_char()-8, 0, "%2d.%d", batt/10, batt%10);
 		batt_color = batt <= 114 ? RED : (batt <= 120 ? ORANGE : GREEN);
 		batt_boundary = batt <= 114 ? RED : WHITE;
 	} else {
-		tft_prints(tft_get_max_x_char()-7, 0, " USB");
+		tft_prints(tft_get_max_x_char()-8, 0, " USB");
 		batt_color = SKY_BLUE;
 		batt_boundary = WHITE;
 		batt = 126;
 	}
 	
-	pos = (tft_get_orientation() % 2 ? MAX_HEIGHT : MAX_WIDTH);
 	/* Convert battery level (110 to 126) to the pixel range (0 to 13) */ 
 	batt_w = (batt > 126 ? 13 : batt < 110 ? 0 : (batt-110)*13/16);
 	for (u8 i = 0; i < 13; i++) {
@@ -165,6 +163,7 @@ static void draw_battery_icon(u16 batt)
 		tft_put_pixel(pos-4, 5+i, batt_boundary);
 		tft_put_pixel(pos-3, 5+i, batt_boundary);
 	}
+  
 }
 
 /**
@@ -177,7 +176,7 @@ void draw_top_bar(void)
 	u16 prev_bg_color = tft_get_bg_color();
 	u16 prev_text_color = tft_get_text_color();
 	// Top bar - time
-	tft_set_bg_color(BLUE2);
+	tft_set_bg_color(PURPLE);
 	tft_set_text_color(WHITE);
 	tft_clear_line(0);
 	tft_prints(0,0," %02d %02d", get_seconds() / 60, get_seconds() % 60);
@@ -188,10 +187,24 @@ void draw_top_bar(void)
 	
 	// Top bar - battery (top-right)
 	u8 pos = (tft_get_orientation() % 2 ? MAX_HEIGHT : MAX_WIDTH);
-	draw_battery_icon(get_voltage_avg()/10);
-
+	static u8 adc_val_update = 0;
+	static u16 temp_voltage;
+	static u16 temp_battery;
+	
+	if (adc_val_update % 100 == 0) {
+		temp_voltage = get_voltage();
+		temp_battery = get_temperature();
+	}
+	
+  if (get_seconds() % 10 < 5) {
+		
+    draw_battery_icon(temp_voltage/10);
+  } else {
+    tft_prints(tft_get_max_x_char() - 7, 0, "%2d.%d%cC%c", temp_battery / 10, temp_battery % 10, 248, 10);
+  }
 	tft_set_bg_color(prev_bg_color);
 	tft_set_text_color(prev_text_color); 	
+	++adc_val_update;
 }
 
 /**
@@ -208,30 +221,24 @@ void menu(u8 default_id, bool pre_enter)
 			ticks_img = get_ticks();
 			
 			if (ticks_img % 200 == 1) {
-				battery_adc_update();
 				if (get_seconds() % 10 == 4 && ticks_img == 1) {
 					battery_regular_check();
 				}
 			}
 
-      if (ticks_img % 20 == 3) {
-        xbc_update();
-      }
-			if (ticks_img % 50 == 5) {
+			if (ticks_img % 50 == 2) {
 				// Check button input
 				button_update();
-        
+							
 				/** Menu item shift **/
-				if (button_pressed(BUTTON_JS2_DOWN) == 1 || button_hold(BUTTON_JS2_DOWN, 12, 3)
-          || button_pressed(BUTTON_XBC_DOWN) == 1 || button_hold(BUTTON_XBC_DOWN, 12, 3)) {
+				if (BUTTON_DOWN_LISTENER()) {
 					// Go down the list
 					if (menu_selected < menu_count - 1) {
 						++menu_selected; 
 					} else {
 						menu_selected = 0;
 					}
-				} else if (button_pressed(BUTTON_JS2_UP) == 1 || button_hold(BUTTON_JS2_UP, 12, 3)
-          || button_pressed(BUTTON_XBC_UP) == 1 || button_hold(BUTTON_XBC_UP, 12, 3)) {
+				} else if (BUTTON_UP_LISTENER()) {
 					if (menu_selected > 0) {
 						--menu_selected;
 					} else {
@@ -240,7 +247,7 @@ void menu(u8 default_id, bool pre_enter)
 				}
 				
 				/** Enter menu **/
-				if (button_pressed(BUTTON_JS2_CENTER) == 1 || button_pressed(BUTTON_XBC_START) == 1 || pre_enter) {
+				if (BUTTON_ENTER_LISTENER() || pre_enter) {
 					if (menu_list[menu_selected].fx == 0) {
 						// NULL FUNCTION
 						buzzer_play_song(FAIL_SOUND, 120, 100);
@@ -297,7 +304,7 @@ void menu(u8 default_id, bool pre_enter)
 				
 				// Bottom bar - page number
 				tft_set_text_color(WHITE);
-				tft_set_bg_color(BLUE2);
+				tft_set_bg_color(PURPLE);
 				tft_clear_line(tft_get_max_y_char()-1);
 				tft_prints(1, tft_get_max_y_char()-1, "%d/%d", current_page + 1, page_count + 1);
 				
@@ -305,6 +312,7 @@ void menu(u8 default_id, bool pre_enter)
 				tft_set_bg_color(prev_bg_color);
 				tft_set_text_color(prev_text_color);
 				tft_update();
+   
 			}
 		}
 	}
@@ -324,16 +332,6 @@ void menu_add(const char* title, void (*fx)(void))
 		++menu_count;
 	}
 	
-}
-
-/***
-  * @brief Return button trigger listen
-  * @param None
-  * @retval 1 if any 'return' button is triggered
-  */
-u8 return_listener(void)
-{
-	return button_pressed(BUTTON_1) > 10 || button_pressed(BUTTON_2) > 10 || button_pressed(BUTTON_XBC_BACK) > 10;
 }
 
 /**
@@ -443,3 +441,7 @@ u32 tft_ui_get_val(const TFT_UI_ITEM* const item)
   return 0; 
 }
 
+u8 return_listener(void)
+{
+  return BUTTON_RETURN_LISTENER();
+}

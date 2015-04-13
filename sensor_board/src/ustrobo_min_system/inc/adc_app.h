@@ -1,12 +1,12 @@
-#ifndef __BATTERY_H
-#define __BATTERY_H
+#ifndef __ADC_APP_H
+#define __ADC_APP_H
 
-/*
 #include "stm32f10x.h"
-#include "stm32f10x_adc.h"
-#include <string.h>
-//#include "delay.h"
+#include "adc.h"
+#include "gpio.h"
 
+/*** BATTERY VOLTAGE ***/
+#define BATTERY_GPIO                ((GPIO*) &PC0)
 #define SAMPLE_BATTERY_VOLTAGE_1 		1200 	// Voltage of first source
 #define SAMPLE_BATTERY_ADC_1 				3620	// Value of "adc_value" for above voltage
 #define SAMPLE_BATTERY_VOLTAGE_2		1100 	// Voltage of second source
@@ -16,6 +16,14 @@
 #define	BATTERY_LOW_LEVEL						1160	// <= 11.50V will generate warning sound
 #define	BATTERY_SUPER_LOW_LEVEL			1120	// <= 11.10V will stop the program (while loop)
 
+#define BATTERY_ADC_CHANNEL         ADC_Channel_10
+
+
+/*** TEMPERATURE SENSOR ***/
+#define SAMPLE_TEMP_VAL_1             200 // x10
+#define SAMPLE_TEMP_ADC_1             1750
+#define SAMPLE_TEMP_VAL_2             800 // x10
+#define SAMPLE_TEMP_ACD_2             1450
 
 typedef enum {
 	BATTERY_OKAY,
@@ -24,15 +32,10 @@ typedef enum {
 	BATTERY_USB
 } BATTERY_CHECK_RESULT;
 
-void battery_adc_gpio_init(void);
-void battery_adc_init(void);
-void battery_adc_update(void);
-u16 get_voltage(void);
-u16 get_voltage_avg(void);
-u16 get_battery_adc(void);
-char* get_voltage_string(void);
+void battery_init(void);
+s16 get_voltage(void);
 BATTERY_CHECK_RESULT battery_check(void);
+s16 get_temperature(void);
 
-*/
 
-#endif /* __BATTERY_H */
+#endif  /** __ADC_APP_H **/

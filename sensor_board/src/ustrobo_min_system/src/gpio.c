@@ -15,6 +15,9 @@ const GPIO
 			PA10 = {GPIOA, GPIO_Pin_10},
 			PA11 = {GPIOA, GPIO_Pin_11},
 			PA12 = {GPIOA, GPIO_Pin_12},
+			PA13 = {GPIOA, GPIO_Pin_13},
+			PA14 = {GPIOA, GPIO_Pin_14},
+			PA15 = {GPIOA, GPIO_Pin_15},
 
 			/*** GPIOB ***/
 			PB0 = {GPIOB, GPIO_Pin_0},
@@ -212,4 +215,12 @@ void gpio_write(const GPIO* gpio, BitAction BitVal)
 	GPIO_WriteBit(gpio->gpio, gpio->gpio_pin, BitVal);
 }
 
-
+/**
+	* @brief Toggle GPIO
+	* @param GPIO pointer
+	* @retval None
+	*/
+void gpio_toggle(const GPIO* gpio) 
+{
+	GPIO_WriteBit(gpio->gpio, gpio->gpio_pin, (BitAction) GPIO_ReadOutputDataBit(gpio->gpio, gpio->gpio_pin));
+}
