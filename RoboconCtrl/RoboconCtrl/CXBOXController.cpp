@@ -85,10 +85,10 @@ void terminate_thread()
 UINT __cdecl xbox_write_thread(LPVOID app_ptr)
 {
 	SerialIO** serial = static_cast<SerialIO**>(app_ptr);
-	CXBOXController* controller = NULL;
+	CXBOXController* controller = nullptr;
 	// wait for xbox to be connected
 	while (running) {
-		while (controller == NULL && running)
+		while (controller == nullptr && running)
 		{
 			if (AfxGetApp() && ((CMainFrame*)AfxGetApp()->GetMainWnd()) && (((CMainFrame*)AfxGetApp()->GetMainWnd())->GetActiveView())) {
 				(((CMainFrame*)AfxGetApp()->GetMainWnd())->GetActiveView())->PostMessage(UWM_RECEIVE_XBOX, 0, 0);
@@ -96,7 +96,7 @@ UINT __cdecl xbox_write_thread(LPVOID app_ptr)
 			controller = new CXBOXController(1);
 			if (!controller->is_connected()) {
 				delete controller;
-				controller = NULL;
+				controller = nullptr;
 			}
 			else {
 				break;
@@ -104,7 +104,7 @@ UINT __cdecl xbox_write_thread(LPVOID app_ptr)
 			controller = new CXBOXController(2);
 			if (!controller->is_connected()) {
 				delete controller;
-				controller = NULL;
+				controller = nullptr;
 			}
 			else {
 				break;
@@ -112,7 +112,7 @@ UINT __cdecl xbox_write_thread(LPVOID app_ptr)
 			controller = new CXBOXController(3);
 			if (!controller->is_connected()) {
 				delete controller;
-				controller = NULL;
+				controller = nullptr;
 			}
 			else {
 				break;
@@ -120,7 +120,7 @@ UINT __cdecl xbox_write_thread(LPVOID app_ptr)
 			controller = new CXBOXController(4);
 			if (!controller->is_connected()) {
 				delete controller;
-				controller = NULL;
+				controller = nullptr;
 			}
 			else {
 				break;
@@ -133,7 +133,7 @@ UINT __cdecl xbox_write_thread(LPVOID app_ptr)
 			if (AfxGetApp() && ((CMainFrame*)AfxGetApp()->GetMainWnd()) && (((CMainFrame*)AfxGetApp()->GetMainWnd())->GetActiveView())) {
 				(((CMainFrame*)AfxGetApp()->GetMainWnd())->GetActiveView())->PostMessage(UWM_RECEIVE_XBOX, 0, 1);
 			}
-			if (*serial != NULL && running) {
+			if (serial != nullptr && *serial != nullptr && running) {
 
 				XINPUT_GAMEPAD x = controller->GetState().Gamepad;
 
@@ -336,8 +336,10 @@ UINT __cdecl xbox_write_thread(LPVOID app_ptr)
 						AfxGetApp()->GetMainWnd()->PostMessage(UWM_PRINT_OUTPUT_FROM_WRITE, 0, (LPARAM)new std::basic_string<TCHAR>(string_to_write.str()));
 					}
 				}
-				(*serial)->write(RobotMCtrl().xbox_keys_part1(xbc_digital, lt, rt, lx, ly));
-				(*serial)->write(RobotMCtrl().xbox_keys_part2(rx, ry));
+				if (serial && *serial) {
+					(*serial)->write(RobotMCtrl().xbox_keys_part1(xbc_digital, lt, rt, lx, ly));
+					(*serial)->write(RobotMCtrl().xbox_keys_part2(rx, ry));
+				}
 			}
 			Sleep(10);
 		}
