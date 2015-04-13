@@ -255,6 +255,9 @@ void racket_init(void)
 //	}
 //}
 
+/**
+	* @brief Updates all internal logic of serving rackets
+	*/
 void racket_update(void)    //determine whether the motor should run
 {
 	// update encoder values when switch is hit
@@ -360,6 +363,9 @@ void close_upper_pneumatic(void)
 	}
 }
 
+/**
+	* @brief Checks if sensors detect the ball
+	*/
 void up_racket_sensor_check(void)
 {
 	static u8 previous_detection = 0;
@@ -379,6 +385,9 @@ void up_racket_sensor_check(void)
 	previous_detection = tmp_detection;
 }
 
+/**
+	* @brief Updates all internal logic of upper rackets
+	*/
 void up_racket_update(void)
 {
 	if (hitting_mode_on == false && get_full_ticks() >= hitting_started_time + upper_delay) {
