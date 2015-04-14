@@ -45,16 +45,16 @@ bool robot_xbc_controls(void)
 	}*/
 	
 	int dw = (xbc_get_joy(XBC_JOY_RT)-xbc_get_joy(XBC_JOY_LT))/5;
-	
+	wheel_base_pid_off();
 	if(dw == 0)
 	{
-		wheel_base_pid_on();
+		//wheel_base_pid_on();
 		dw = pid_maintain_angle();
 		is_it_turning(0);
 	}
-	else
+	else if(dw != 0)
 	{
-		wheel_base_pid_on();
+		//wheel_base_pid_off();
 		is_it_turning(1);
 		wheel_base_set_target_pos((POSITION){get_pos()->x, get_pos()->y, get_pos()->angle});
 	}
@@ -63,13 +63,13 @@ bool robot_xbc_controls(void)
 	
 	if((dw == 0) && (xbc_get_joy(XBC_JOY_LX) == 0 && xbc_get_joy(XBC_JOY_LY) == 0))
 	{
-		wheel_base_pid_on();
+		//wheel_base_pid_on();
 		wheel_base_set_vel(wheel_base_get_vel().x, wheel_base_get_vel().y, dw);
 		
 	}
 	else
 	{
-		wheel_base_pid_off();
+		//wheel_base_pid_off();
 		is_it_turning(0);
 		wheel_base_set_target_pos((POSITION){get_pos()->x, get_pos()->y, get_pos()->angle});
 	}

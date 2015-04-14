@@ -36,8 +36,8 @@
 //#define KEY_HIT_RACKET 'k'
 
 #define LASER_GPIO &PE7
-#define PNEU_GPIO ROBOT=='C'?&PE9:&PD10
-#define PNEU_GPIO_DOWN &PE8
+#define PNEU_GPIO ROBOT=='C'?&PB9:&PD10
+#define PNEU_GPIO_DOWN &PD9
 
 static u16 RACKET_HIT_DELAY_TIME = 100;
 //void racket_init(void);

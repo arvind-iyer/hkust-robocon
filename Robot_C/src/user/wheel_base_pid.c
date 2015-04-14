@@ -28,7 +28,7 @@ s32 pid_maintain_angle(void)
 	
 	s32 dw = target.angle - get_pos()->angle;
 	s32 w = 0; 
-	if( (get_pos()->angle !=  target.angle))
+	if( (curr_pos.angle !=  target.angle))
 	{
 		if((dw<= 1800 && dw >= 0) || (-dw > 1800))
 		{
@@ -58,8 +58,9 @@ s32 pid_maintain_angle(void)
 	
 	w = Abs(w) < 26? w*26/Abs(w) : w;
 	w = Abs(w) > 70 ? w*70/Abs(w) : w;
+	wheel_base_set_vel(curr_vel.x, curr_vel.y, w);
+
 	return w;
-	//wheel_base_set_vel(curr_vel.x, curr_vel.y, w);
 }
 
 
