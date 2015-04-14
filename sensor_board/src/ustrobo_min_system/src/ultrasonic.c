@@ -189,12 +189,12 @@ void us_init(void)
   EXTI_Init(&EXTI_InitStructure);
 	
 	// S9: PB7
-  GPIO_EXTILineConfig(GPIO_PortSourceGPIOB, GPIO_PinSource7);
-  EXTI_InitStructure.EXTI_Line = EXTI_Line7;
-  EXTI_InitStructure.EXTI_Mode = EXTI_Mode_Interrupt;
-  EXTI_InitStructure.EXTI_Trigger = EXTI_Trigger_Rising_Falling;
-  EXTI_InitStructure.EXTI_LineCmd = ENABLE;
-  EXTI_Init(&EXTI_InitStructure);
+//  GPIO_EXTILineConfig(GPIO_PortSourceGPIOB, GPIO_PinSource7);
+//  EXTI_InitStructure.EXTI_Line = EXTI_Line7;
+//  EXTI_InitStructure.EXTI_Mode = EXTI_Mode_Interrupt;
+//  EXTI_InitStructure.EXTI_Trigger = EXTI_Trigger_Rising_Falling;
+//  EXTI_InitStructure.EXTI_LineCmd = ENABLE;
+//  EXTI_Init(&EXTI_InitStructure);
 	
   NVIC_InitStructure.NVIC_IRQChannelPreemptionPriority = 2;
 	NVIC_InitStructure.NVIC_IRQChannelSubPriority = 2;

@@ -8,7 +8,7 @@
 #include "buzzer.h"
 #include "led.h"
 #include "usart.h"
-
+#include "can_protocol.h"
 
 #define NEC_TIM							TIM3
 #define NEC_RCC							RCC_APB1Periph_TIM3
@@ -17,9 +17,11 @@
 
 
 #define NEC_FREQUENCY       38000
-#define NEC_GPIO            ((GPIO*) &PC6)
+#define NEC_GPIO            ((GPIO*) &PA4)
 #define NEC_DATA_BIT        8
 #define NEC_DATA_MAX        0xFF   /** For 8 bit **/
+
+#define	NEC_CAN_ID					0x220
 
 typedef u8 NEC_Data_TypeDef;
 
@@ -73,4 +75,6 @@ NEC_Data_TypeDef get_nec_last_data(void);
 NEC_Msg get_nec_last_msg(void);
 NEC_Msg get_nec_current_msg(void);
   
+void nec_can_tx(void);
+
 #endif  /* __NEC_H */

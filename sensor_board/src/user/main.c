@@ -34,9 +34,10 @@ int main(void)
 	//wheel_base_init();
   us_init();
 	us_proc_init();
-  //nec_init();
+  nec_init();
   /** For debugging **/
-	//uart_init(COM2, 115200);
+	uart_init(COM1, 115200);
+	uart_printf_enable(COM1);
 	//uart_tx(COM2, "Init...");
 	buzzer_play_song(START_UP, 120, 0);
 	
@@ -47,10 +48,11 @@ int main(void)
 	while(1) {
 		if (ticks_img != get_ticks()) {
 			ticks_img = get_ticks();
-			if (ticks_img % 5 == 3) {
+			if (ticks_img % 5 == 2) {
 				us_proc_update();
 			}
 			
+			led_control(LED_D1, (LED_STATE) !gpio_read_input(NEC_GPIO));
 
 			if (ticks_img % 10 == 0) {
 				for (u8 i = 0; i < US_DEVICE_COUNT; ++i) {
@@ -59,6 +61,10 @@ int main(void)
 						buzzer_control(2, 100);
 					}
 				}
+			}
+			
+			if (ticks_img % 50 == 4) {
+				nec_can_tx();
 			}
 
 		}

@@ -50,11 +50,11 @@ static const NEC_RANGE
   NEC_DATA_ZERO_OFF_RANGE = {5, 25},
   
   NEC_REPEAT_START_ON_RANGE = {10, 35},
-  NEC_REPEAT_START_OFF_RANGE = {1300, 1500};
+  NEC_REPEAT_START_OFF_RANGE = {1200, 1600};
 
 static const NEC_RANGE NEC_REPEAT_RANGE[NEC_REPEAT_CYCLE] = {
   /* + */ {285, 315}, /* - */ {60, 80},
-  /* + */ {10, 35},   /* - */ {3330, 3380}
+  /* + */ {10, 35},   /* - */ {3200, 3400}
 };  
 
 
@@ -66,7 +66,7 @@ static u8 nec_in_range(NEC_RANGE range, u16 val)
 
 void nec_init(void)
 {
-  gpio_init(NEC_GPIO, GPIO_Speed_2MHz, GPIO_Mode_IPD, 1);
+  gpio_init(NEC_GPIO, GPIO_Speed_2MHz, GPIO_Mode_IN_FLOATING, 1);
   
   
 	NVIC_InitTypeDef NVIC_InitStructure;
@@ -349,4 +349,17 @@ NEC_Msg get_nec_current_msg(void)
 {
     return current_msg;
 }
+
+void nec_can_tx(void)
+{
+	CAN_MESSAGE msg;
+	
+	msg.length = 3;
+	msg.id = NEC_CAN_ID;
+	msg.data[0] = (u8) get_nec_state();
+	msg.data[1] = current_msg.address;
+	msg.data[2] = current_msg.command;
+	can_tx_enqueue(msg); 
+}
+
 
