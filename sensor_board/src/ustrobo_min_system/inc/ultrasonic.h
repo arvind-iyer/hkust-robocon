@@ -5,12 +5,12 @@
 #include "stm32f10x_exti.h"
 #include "gpio.h"
 
-#define US_TIM							TIM3
-#define US_RCC							RCC_APB1Periph_TIM3
-#define US_IRQn						  TIM3_IRQn
-#define US_IRQHandler			  void TIM3_IRQHandler(void)
+#define US_TIM							TIM4
+#define US_RCC							RCC_APB1Periph_TIM4
+#define US_IRQn						  TIM4_IRQn
+#define US_IRQHandler			  void TIM4_IRQHandler(void)
 
-#define	US_DEVICE_COUNT					9
+#define	US_DEVICE_COUNT					15
 #define US_TRIG_PULSE         	6
 
 // 10 us
@@ -41,6 +41,7 @@ typedef struct {
 	const GPIO* trig_gpio, *echo_gpio;
 	US_STATE state;
 	u32 pulse_width_tmp, pulse_width;
+	u8 echo_gpio_state;
 	volatile u16 trigger_time_us, falling_time_us;
 } US_TypeDef;
 

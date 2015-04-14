@@ -29,28 +29,28 @@ static US_TypeDef us_devices[] = {
 		.echo_gpio = &PC12
 	}, {	// S7
 		.trig_gpio = &PD2,
-		.echo_gpio = &PB3
+		.echo_gpio = &PB3		// JTDO
 	}, {	// S8
 		.trig_gpio = &PB4,
 		.echo_gpio = &PB5
 	}, {	// S9
 		.trig_gpio = &PB6,
-		.echo_gpio = &PB7
+		.echo_gpio = &PB7		/* X PC7 */
 	}, {	// S10
 		.trig_gpio = &PB8,
-		.echo_gpio = &PB9
+		.echo_gpio = &PB9		/* X PC9 */
 	}, {	// S11
 		.trig_gpio = &PC0,
 		.echo_gpio = &PC1
 	}, {	// S12
 		.trig_gpio = &PA2,
-		.echo_gpio = &PA3
+		.echo_gpio = &PA3		/* X PB3 */
 	}, {	// S13
 		.trig_gpio = &PA0,
-		.echo_gpio = &PA1
+		.echo_gpio = &PA1		/* X PC1 */
 	}, {	// S14
 		.trig_gpio = &PC2,
-		.echo_gpio = &PC3
+		.echo_gpio = &PC3		/* X PC3 */
 	}
 	
 };
@@ -63,7 +63,7 @@ void us_init(void)
 {
 	if (US_DEVICE_COUNT == 0) {return;}
 	// GPIO init
-	GPIO_PinRemapConfig(GPIO_Remap_SWJ_Disable, ENABLE); 
+	GPIO_PinRemapConfig(GPIO_Remap_SWJ_JTAGDisable, ENABLE); 
 	
 	for (u8 i = 0; i < US_DEVICE_COUNT; ++i) {
 		gpio_init(us_devices[i].trig_gpio, GPIO_Speed_50MHz, GPIO_Mode_Out_PP, 1);
@@ -188,6 +188,13 @@ void us_init(void)
   EXTI_InitStructure.EXTI_LineCmd = ENABLE;
   EXTI_Init(&EXTI_InitStructure);
 	
+	// S9: PB7
+  GPIO_EXTILineConfig(GPIO_PortSourceGPIOB, GPIO_PinSource7);
+  EXTI_InitStructure.EXTI_Line = EXTI_Line7;
+  EXTI_InitStructure.EXTI_Mode = EXTI_Mode_Interrupt;
+  EXTI_InitStructure.EXTI_Trigger = EXTI_Trigger_Rising_Falling;
+  EXTI_InitStructure.EXTI_LineCmd = ENABLE;
+  EXTI_Init(&EXTI_InitStructure);
 	
   NVIC_InitStructure.NVIC_IRQChannelPreemptionPriority = 2;
 	NVIC_InitStructure.NVIC_IRQChannelSubPriority = 2;
@@ -209,7 +216,20 @@ void us_init(void)
 	NVIC_InitStructure.NVIC_IRQChannel = EXTI3_IRQn;
 	NVIC_Init(&NVIC_InitStructure);
 	
-  
+	// S11: PC1
+  GPIO_EXTILineConfig(GPIO_PortSourceGPIOC, GPIO_PinSource1);
+  EXTI_InitStructure.EXTI_Line = EXTI_Line1;
+  EXTI_InitStructure.EXTI_Mode = EXTI_Mode_Interrupt;
+  EXTI_InitStructure.EXTI_Trigger = EXTI_Trigger_Rising_Falling;
+  EXTI_InitStructure.EXTI_LineCmd = ENABLE;
+  EXTI_Init(&EXTI_InitStructure);
+
+  NVIC_InitStructure.NVIC_IRQChannelPreemptionPriority = 2;
+	NVIC_InitStructure.NVIC_IRQChannelSubPriority = 2;
+	NVIC_InitStructure.NVIC_IRQChannelCmd = ENABLE;
+	NVIC_InitStructure.NVIC_IRQChannel = EXTI1_IRQn;
+	NVIC_Init(&NVIC_InitStructure);
+	
 	NVIC_InitStructure.NVIC_IRQChannelPreemptionPriority = 0;
 	NVIC_InitStructure.NVIC_IRQChannelSubPriority = 0;
 	NVIC_InitStructure.NVIC_IRQChannelCmd = ENABLE;
@@ -276,9 +296,15 @@ void us_echo_interrupt(u8 i)
 {
 	u16 counter = TIM_GetCounter(US_TIM); 
 	u8 signal = gpio_read_input(us_devices[i].echo_gpio);
-	if (signal) {
+	if (us_devices[i].echo_gpio_state == signal) {
+		// Not toggling (not fulfulling EXTI)
+		return;
+	}
+	us_devices[i].echo_gpio_state = signal;
+	
+	if (signal && us_devices[i].trigger_time_us == 0) {
 		us_devices[i].trigger_time_us = counter;
-	} else {
+	} else if (!signal && us_devices[i].trigger_time_us > 0) {
 		us_devices[i].falling_time_us = counter;
 		if (us_devices[i].trigger_time_us == 0) {
 			us_devices[i].pulse_width = 0;
@@ -319,7 +345,7 @@ void EXTI15_10_IRQHandler(void)
 	
 }
 
-// S3: PC9, S4: PC7, S8: PB5
+// S3: PC9, S4: PC7, S8: PB5, S9: PB7
 void EXTI9_5_IRQHandler(void) 
 {
   if(EXTI_GetITStatus(EXTI_Line9) != RESET) {
@@ -330,6 +356,7 @@ void EXTI9_5_IRQHandler(void)
   if(EXTI_GetITStatus(EXTI_Line7) != RESET) {
 		EXTI_ClearITPendingBit(EXTI_Line7);
 		us_echo_interrupt(4);
+		//us_echo_interrupt(9);
   }
 	
   if(EXTI_GetITStatus(EXTI_Line5) != RESET) {
@@ -346,9 +373,16 @@ void EXTI3_IRQHandler(void)
 		EXTI_ClearITPendingBit(EXTI_Line3);
 		us_echo_interrupt(7); 
   }
-
 }
 
+// S11: PC1
+void EXTI1_IRQHandler(void) 
+{
+  if(EXTI_GetITStatus(EXTI_Line1) != RESET) {
+		EXTI_ClearITPendingBit(EXTI_Line1);
+		us_echo_interrupt(11); 
+  }
+}
 
 US_IRQHandler
 {
@@ -358,6 +392,9 @@ US_IRQHandler
 		for (u8 i = 0; i < US_DEVICE_COUNT; ++i) {
 			us_can_tx(i, us_get_distance(i));
 			us_trigger(i);
+			// Reset
+			us_devices[i].echo_gpio_state = gpio_read_input(us_devices[i].echo_gpio);
+			us_devices[i].pulse_width = 0;
 		}
     if (last_sample_second != get_seconds()) {
 				last_sample_second = get_seconds(); 

@@ -10,10 +10,10 @@
 #include "usart.h"
 
 
-#define NEC_TIM							TIM4
-#define NEC_RCC							RCC_APB1Periph_TIM4
-#define NEC_IRQn            TIM4_IRQn
-#define NEC_IRQHandler      void TIM4_IRQHandler(void)
+#define NEC_TIM							TIM3
+#define NEC_RCC							RCC_APB1Periph_TIM3
+#define NEC_IRQn            TIM3_IRQn
+#define NEC_IRQHandler      void TIM3_IRQHandler(void)
 
 
 #define NEC_FREQUENCY       38000
