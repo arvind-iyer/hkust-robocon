@@ -15,7 +15,7 @@
 #include "led.h"
 #include "tft.h"
 #include "interface.h"
-#include "xbc_mb.h"
+#include "can_xbc_mb.h"
 #include "button.h"
 #include "encoder.h"
 
@@ -29,19 +29,27 @@
 #include "bluetooth.h"
 #include "robocon.h"
 #include "wheel_base.h"
-#include "ultrasonic.h"
+#include "ultrasonic_mb.h"
+#include "bluetooth_xbc_mb.h"
+#include "nec_mb.h"
+#include "adc.h"
 
 void bluetooth_test(void);
 void ascii_test(void);
 void motor_test(void);
-void battery_test(void);
+void adc_test(void);
+void adc_app_test(void);
 void position_test(void);
 void button_test(void);
 void buzzer_test(void);
 void can_test(void);
+void can_xbc_test(void);
 void xbc_test(void);
+void bluetooth_xbc_test(void);
 void gpio_pin_test(void);
 void uart_test(void);
-void ultra_test(void);
+void mb1240_test(void);
+void us_mb_test(void);
+void nec_mb_test(void);
  
 #endif /* __SYSTEM_TEST_H */

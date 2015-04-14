@@ -549,11 +549,6 @@
               <FilePath>.\src\ustrobo_min_system\src\ticks.c</FilePath>
             </File>
             <File>
-              <FileName>ultrasonic.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>.\src\ustrobo_min_system\src\ultrasonic.c</FilePath>
-            </File>
-            <File>
               <FileName>usart.c</FileName>
               <FileType>1</FileType>
               <FilePath>.\src\ustrobo_min_system\src\usart.c</FilePath>
@@ -597,6 +592,16 @@
               <FileName>nec_remote.c</FileName>
               <FileType>1</FileType>
               <FilePath>.\src\ustrobo_min_system\src\nec_remote.c</FilePath>
+            </File>
+            <File>
+              <FileName>nec_mb.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\src\ustrobo_min_system\src\nec_mb.c</FilePath>
+            </File>
+            <File>
+              <FileName>ultrasonic_mb.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\src\ustrobo_min_system\src\ultrasonic_mb.c</FilePath>
             </File>
           </Files>
         </Group>

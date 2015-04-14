@@ -35,7 +35,7 @@
 #define DARK_GREY			(RGB888TO565(0x555555))
 #define GREY					(RGB888TO565(0xAAAAAA))
 #define RED						(RGB888TO565(0xFF0000))
-#define ORANGE				(RGB888TO565(0xFF9900))
+#define ORANGE				(RGB888TO565(0xFF7700))
 #define YELLOW				(RGB888TO565(0xFFFF00))
 #define GREEN					(RGB888TO565(0x00FF00))
 #define	DARK_GREEN		(RGB888TO565(0x00CC00))
@@ -43,7 +43,7 @@
 #define	BLUE2					(RGB888TO565(0x202060))
 #define	SKY_BLUE			(RGB888TO565(0x11CFFF))
 #define CYAN					(RGB888TO565(0x8888FF))
-#define PURPLE				(RGB888TO565(0x00AAAA))
+#define PURPLE				(RGB888TO565(0x660066))
 
 
 
@@ -105,5 +105,6 @@ void tft_fill_color(u16 color);
 u8 tft_char_is_changed(u8 x, u8 y);
 void tft_prints(u8 x, u8 y, const char * pstr, ...);
 void tft_update(void);
+void tft_update_trigger(void (*fx)(void));
 
 #endif		/* __LCD_RED_H */

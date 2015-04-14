@@ -225,19 +225,19 @@ static void handle_bluetooth_input(void)
 				serve_change_delay(-5);
 				break;
 			case '[':		//only temporary
-				plus_x();
+				//plus_x();
 				key_trigger_enable = true;
 				break;
 			case ']':		// only temporary
-				minus_x();
+				//minus_x();
 				key_trigger_enable = true;
 				break;
 			case '{':		//only temporary
-				plus_y();
+				//plus_y();
 				key_trigger_enable = true;
 				break;
 			case '}':		// only temporary
-				minus_y();
+				//minus_y();
 				key_trigger_enable = true;
 				break;
 			
