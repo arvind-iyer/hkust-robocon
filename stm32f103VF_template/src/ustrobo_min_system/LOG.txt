@@ -2,11 +2,16 @@
   ******************************************************************************
   * STM32F103VG Mainboard Library
   * Maintained by Kenneth Au
-  * Version: (Robocon 2015) Version 1.6
-  * Last update: 3rd April, 2015
+  * Version: (Robocon 2015) Version 3.0
+  * Last update: 14th April, 2015
  ******************************************************************************
   */
- 
+
+/** Version 3.0 (14th April, 2015) **/
+- Library for Mainboard Version 4.2
+- Ultrasonic sensor board (CAN)
+- Orange interface
+
 /** Version 2.0 (3rd April, 2015) **/
 - Library for new mainboard (#define MAINBOARD_V4)
 	- ADC implemented with DMA

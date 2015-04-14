@@ -72,7 +72,7 @@ void uart_init(COM_TypeDef COMx, u32 baudrate)
 
 	/* Initialize the USART receive interrupt */
 	USART_ITConfig(usart->USART,USART_IT_RXNE,DISABLE);	
-	USART_ITConfig(usart->USART,USART_IT_TXE,DISABLE);	
+	//USART_ITConfig(usart->USART,USART_IT_TXE,DISABLE);	
 	
 	/* Initialize the deque structure */
 	(usart->deque).head = 0;
@@ -184,9 +184,9 @@ u16 uart_tx_dequeue(COM_TypeDef COMx)
 
 void uart_tx_byte(COM_TypeDef COMx, char data)
 {
-	uart_tx_enqueue(COMx, data);
-  //while (USART_GetFlagStatus(USART_DEF[COMx].USART, USART_FLAG_TXE) == RESET);
-  //USART_SendData(USART_DEF[COMx].USART, data);
+	//uart_tx_enqueue(COMx, data);
+  while (USART_GetFlagStatus(USART_DEF[COMx].USART, USART_FLAG_TXE) == RESET);
+  USART_SendData(USART_DEF[COMx].USART, data);
 }
 
 

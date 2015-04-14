@@ -29,7 +29,7 @@
 #include "bluetooth.h"
 #include "robocon.h"
 #include "wheel_base.h"
-#include "ultrasonic.h"
+#include "ultrasonic_mb.h" 
 #include "xbc_mb.h"
 #include "nec.h"
 #include "adc.h"

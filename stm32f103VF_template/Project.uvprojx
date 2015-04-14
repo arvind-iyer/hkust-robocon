@@ -363,7 +363,7 @@
             <useXO>0</useXO>
             <VariousControls>
               <MiscControls></MiscControls>
-              <Define>USE_STDPERIPH_DRIVER, STM32F10X_XL, USE_STM3210B_EVAL</Define>
+              <Define>USE_STDPERIPH_DRIVER, STM32F10X_XL, USE_STM3210B_EVAL, MAINBOARD_V4</Define>
               <Undefine></Undefine>
               <IncludePath>.\src;.\src\stm32f10x_std\inc;.\src\ustrobo_min_system\inc;.\src\user</IncludePath>
             </VariousControls>
@@ -582,11 +582,6 @@
               <FilePath>.\src\ustrobo_min_system\src\ticks.c</FilePath>
             </File>
             <File>
-              <FileName>ultrasonic.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>.\src\ustrobo_min_system\src\ultrasonic.c</FilePath>
-            </File>
-            <File>
               <FileName>usart.c</FileName>
               <FileType>1</FileType>
               <FilePath>.\src\ustrobo_min_system\src\usart.c</FilePath>
@@ -620,6 +615,11 @@
               <FileName>adc_app.c</FileName>
               <FileType>1</FileType>
               <FilePath>.\src\ustrobo_min_system\src\adc_app.c</FilePath>
+            </File>
+            <File>
+              <FileName>ultrasonic_mb.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\src\ustrobo_min_system\src\ultrasonic_mb.c</FilePath>
             </File>
           </Files>
         </Group>

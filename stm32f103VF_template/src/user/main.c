@@ -28,7 +28,7 @@ int main(void)
   //mb1240_init();
   xbc_mb_init(XBC_BLUETOOTH_FIRST); 
 	wheel_base_init();
-  us_init(US_SYNC);
+  us_mb_init();
   //nec_init();
   /** For debugging **/
   //uart_init(COM1, 115200);
@@ -54,7 +54,7 @@ int main(void)
 	menu_add("UART test", uart_test);
   menu_add("NEC test", nec_test);
   //menu_add("MB1240 test", mb1240_test);
-  menu_add("Ultra. test", ultra_test);
+  menu_add("Ultra. test", us_mb_test);
   
 	menu(16, true);
 	

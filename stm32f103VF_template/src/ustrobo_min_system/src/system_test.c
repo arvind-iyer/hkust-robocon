@@ -976,12 +976,7 @@ void uart_test(void)
 					tft_ui_listener(&tft_ui, tft_ui_event_select);
 				}        
       }
-      
-			if (ticks_img == 0) {
-				uart_tx((COM_TypeDef)tft_ui_get_val(&uart_rx_port),
-					"Hello world! \r\nThis is a test of transmitting long message......\r\n");
-				
-			}
+			
 				
       if (ticks_img % 50 == 6) {
         tft_clear();
@@ -1048,17 +1043,13 @@ void mb1240_test(void)
 }
 #endif
 
-void ultra_test(void)
+void us_mb_test(void)
 {
   //u16 distance_history[tft_width-2] = {0};
 
   while (true) {
     if (ticks_img != get_ticks()) {
       ticks_img = get_ticks();
-      
-      if (ticks_img % 20 == 0) {
-        //xbc_update();
-      }
       
       if (ticks_img % 50 == 3) {
         button_update();
@@ -1067,32 +1058,15 @@ void ultra_test(void)
         }
       }
       
-			for (u8 i = 0; i < US_DEVICE_COUNT; ++i) {
-				if (us_get_distance(i) > 10 && us_get_distance(i) < 800) {
-					buzzer_set_note_period(get_note_period(NOTE_C, 8) + us_get_distance(i));
-					buzzer_control(3, 100);
-				}
-			}
-				
       if (ticks_img % 50 == 6) {
         tft_clear();
         draw_top_bar();
         tft_prints(0, 1, "ULTRA. TEST");
-				tft_prints(0, 2, "Mode: %s", us_get_mode() == US_TAKE_TURN ? "TAKE TURN" : us_get_mode() == US_SYNC ? "SYNC" : "Normal");
-				
-				tft_prints(0, 3, " Stt Pulse Dist", us_get_state(0));
-				
-				for (u8 i = 0; i < US_DEVICE_COUNT; ++i) {
-					tft_prints(0, 4 + i*2, "[%d]%3d %4d %4d", i, us_get_state(i), us_get_pulse(i), us_get_distance(i));
-					tft_prints(0, 4 + i*2 + 1, " Speed: %d", us_get_speed(i));
+        for (u8 i = 0, x = 0, y = 2; i < US_DEVICE_COUNT; ++i, ++y) {
+					if (y >= 10) {y = 2; x += 6;}
+					tft_prints(x, y, "%d", us_get_distance(i));
 				}
-				
-				//tft_prints(0, 6, "Speed: %d Hz", us_get_speed(0));
-        //tft_prints(0, 5, "Avg.: %d", ultrasonic_get_distance_avg());
         tft_update();
-				
-        
-        
       }
     }
   }
