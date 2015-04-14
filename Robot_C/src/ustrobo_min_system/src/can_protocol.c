@@ -377,7 +377,7 @@ u8 one_to_n_bytes(s32 num, u8 n)
 	*/
 s32 n_bytes_to_one(u8* array, u8 n)
 {
-	if (n == 0) {return 0;} 
-	return (n == 1) ? (array[0] & 0xFF) : ((array[0] & 0xFF) + (n_bytes_to_one(&array[1], n-1) << 8));
+	assert_param(n >= 1 && n <= 4);
+	return (n == 0) ? (array[0] & 0xFF) : ((array[0] & 0xFF) + (n_bytes_to_one(&array[1], n-1) << 8));
 }
 

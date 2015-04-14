@@ -212,12 +212,4 @@ void gpio_write(const GPIO* gpio, BitAction BitVal)
 	GPIO_WriteBit(gpio->gpio, gpio->gpio_pin, BitVal);
 }
 
-/**
-	* @brief Toggle GPIO
-	* @param GPIO pointer
-	* @retval None
-	*/
-void gpio_toggle(const GPIO* gpio) 
-{
-	GPIO_WriteBit(gpio->gpio, gpio->gpio_pin, (BitAction) GPIO_ReadOutputDataBit(gpio->gpio, gpio->gpio_pin));
-}
+

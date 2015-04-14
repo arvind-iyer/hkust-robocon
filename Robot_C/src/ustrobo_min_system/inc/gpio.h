@@ -22,6 +22,5 @@ void gpio_rcc_init(const GPIO* gpio);
 u8 gpio_read_input(const GPIO* gpio);
 u8 gpio_read_output(const GPIO* gpio);
 void gpio_write(const GPIO* gpio, BitAction BitVal);
-void gpio_toggle(const GPIO* gpio);
 
 #endif /* __GPIO_H */

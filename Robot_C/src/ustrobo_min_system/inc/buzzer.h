@@ -63,7 +63,7 @@ typedef struct {
 void buzzer_set_note_period(u16 p);
 void buzzer_set_volume(u8 vol);	// 0 - 100 (0: muted, 100: full)
 u16 get_note_period(MUSIC_NOTE_LETTER note, u8 octave);
-void buzzer_control_note(u8 count, u16 period, MUSIC_NOTE_LETTER note, u8 octave);
+
 
 void buzzer_play_song(const MUSIC_NOTE* song, u16 note_length, u16 note_break);
 void buzzer_stop_song(void);

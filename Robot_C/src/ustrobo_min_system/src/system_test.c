@@ -1,19 +1,23 @@
 #include "system_test.h"
-#include <string.h>
 
 static u16 ticks_img 	= (u16)-1;
 static u8 received_data[5] = {0};
 
+static u8 return_listener(void)
+{
+	return button_pressed(BUTTON_1) > 10 || button_pressed(BUTTON_2) > 10;
+}
 
-
-void adc_test(void)
+void battery_test(void)
 {
 	while (true) {
 		if (ticks_img != get_ticks()) {
 			ticks_img = get_ticks();
 			
-
-      
+			if (ticks_img % 50 == 0) {
+				battery_adc_update();
+			}
+			
 			if (ticks_img % 50 == 3) {
 				button_update();
 				if (return_listener()) {
@@ -24,57 +28,14 @@ void adc_test(void)
 			if (ticks_img % 50 == 6) {
 				tft_clear();
 				draw_top_bar();
-				tft_prints(0, 1, "[ADC TEST]");
-        tft_prints(0, 2, "ADC(1,2,3):");
-        tft_prints(0, 3, "(%4d,%4d,%4d)", ADC1->DR, ADC2->DR, ADC3->DR);
-        
-        u8 x = 1, y = 4;
-        for (u8 i = 0; i < ADC_CHANNEL_COUNT; ++i) {
-          tft_prints(x, y, "%d", get_adc_value(i));
-          ++y;
-          if (y >= tft_get_max_y_char()) {
-            y = 4;
-            x += 5;
-          }
-        }
-				/*
-        tft_prints(0, 2, "ADC: %d", get_battery_adc());
+				tft_prints(0, 1, "BATTERY TEST");
+				tft_prints(0, 2, "ADC: %d", get_battery_adc());
 				tft_prints(0, 3, "V: %d", get_voltage());
 				tft_prints(0, 4, "V avg: %d", get_voltage_avg());
-        */
 				tft_update();
 			}
 		}
 	}
-}
-
-void adc_app_test(void)
-{
-	while (true) {
-		if (ticks_img != get_ticks()) {
-			ticks_img = get_ticks();
-			
-			if (ticks_img % 50 == 3) {
-				button_update();
-				if (return_listener()) {
-					return; 
-				}
-			}
-			
-			if (ticks_img % 50 == 6) {
-				tft_clear();
-				draw_top_bar();
-				tft_prints(0, 1, "[ADC APP TEST]");
-        tft_prints(0, 2, "Battery:");
-        tft_prints(0, 3, " ADC: %d", get_adc_value(BATTERY_ADC_CHANNEL));
-        tft_prints(0, 4, " Val: %d", get_voltage());
-        tft_prints(0, 5, "Temperature:");
-        tft_prints(0, 6, " ADC: %d", get_adc_value(ADC_Channel_TempSensor));
-        tft_prints(0, 7, " Val: %d", get_temperature());
-				tft_update();
-			}
-		}
-	}  
 }
 
 void bluetooth_test(void)
@@ -83,10 +44,9 @@ void bluetooth_test(void)
 		if (ticks_img != get_ticks()) {
 			ticks_img = get_ticks();
 			
-      
-      if (ticks_img % 20 == 1) {
-        //xbc_update();
-      }
+			if (ticks_img % 50 == 0) {
+				battery_adc_update();
+			}
 			
 			if (ticks_img % 50 == 3) {
 				button_update();
@@ -118,10 +78,10 @@ void ascii_test(void)
 		if (ticks_img != get_ticks()) {
 			ticks_img = get_ticks();
 			
-      if (ticks_img % 20 == 1) {
-        //xbc_update();
-      }
-      
+			if (ticks_img % 50 == 0) {
+				battery_adc_update();
+			}
+			
 			if (ticks_img % 50 == 3) {
 				button_update();
 				if (return_listener()) {
@@ -135,7 +95,7 @@ void ascii_test(void)
 				
 				static u8 char_start = STARTING_ASCII;
 				
-				if (BUTTON_UP_LISTENER() || BUTTON_DOWN_LISTENER()) {
+				if (button_pressed(BUTTON_JS2_DOWN) == 1 || button_pressed(BUTTON_JS2_UP) == 1) {
 					char_start = (char_start == STARTING_ASCII) ? STARTING_ASCII + tft_get_max_x_char() * (tft_get_max_y_char() - 2) : STARTING_ASCII;
 					CLICK_MUSIC;
 				}
@@ -211,10 +171,10 @@ void motor_test(void)
 		if (ticks_img != get_ticks()) {
 			ticks_img = get_ticks();
 			
-      if (ticks_img % 20 == 1) {
-        //xbc_update();
-      }
-      
+			if (ticks_img % 50 == 0) {
+				battery_adc_update();
+			}
+			
 			if (ticks_img % 50 == 3) {
 				button_update();
 				if (return_listener()) {
@@ -225,25 +185,24 @@ void motor_test(void)
 				// Not allow to move in test mode
 				if (!tft_ui_get_val(&motor_test_flag)) {
 					// Line switcher
-					if (BUTTON_UP_LISTENER()) {				
+					if (button_pressed(BUTTON_JS2_UP) == 1) {				
 						tft_ui_listener(&tft_ui, tft_ui_event_up);
 					}
 					
-
-					if (BUTTON_DOWN_LISTENER()) {
+					if (button_pressed(BUTTON_JS2_DOWN) == 1) {
 						tft_ui_listener(&tft_ui, tft_ui_event_down);
 					}
 				}
 				
-				if (BUTTON_LEFT_LISTENER()) {
+				if (button_pressed(BUTTON_JS2_LEFT) == 1 || button_hold(BUTTON_JS2_LEFT, 10, 1)) {
 					tft_ui_listener(&tft_ui, tft_ui_event_left);
 				}
 				
-				if (BUTTON_RIGHT_LISTENER()) {
+				if (button_pressed(BUTTON_JS2_RIGHT) == 1 || button_hold(BUTTON_JS2_RIGHT, 10, 1)) {
 					tft_ui_listener(&tft_ui, tft_ui_event_right);
 				}
 				
-				if (BUTTON_ENTER_LISTENER()) {
+				if (button_pressed(BUTTON_JS2_CENTER) == 1) {
 					tft_ui_listener(&tft_ui, tft_ui_event_select);
 				}
 
@@ -281,39 +240,24 @@ void motor_test(void)
 
 void position_test(void)
 {
-  u8 line = 0;
-  
 	while (true) {
 		if (ticks_img != get_ticks()) {
 			ticks_img = get_ticks();
 			
-      if (ticks_img % 20 == 1) {
-        //xbc_update();
-      }
-      
+			if (ticks_img % 50 == 0) {
+				battery_adc_update();
+			}
+			
 			if (ticks_img % 50 == 3) {
 				button_update();
 				if (return_listener()) {
 					return; 
 				}
 				
-				if (BUTTON_ENTER_LISTENER()) {
-          if (line == 0) {
-            gyro_cal();
-            CLICK_MUSIC;
-          } else {
-            if (gyro_pos_set(0, 0, 0)) {
-              CLICK_MUSIC;
-            } else {
-              FAIL_MUSIC;
-            }
-          }
-					
+				if (button_pressed(BUTTON_JS2_CENTER) == 1) {
+					gyro_cal();
+					CLICK_MUSIC;
 				}
-        
-        if (BUTTON_UP_LISTENER() || BUTTON_DOWN_LISTENER()) {
-          line ^= 1;
-        }
 			}
 			
 			if (ticks_img % 50 == 6) {
@@ -325,8 +269,7 @@ void position_test(void)
 				tft_prints(0, 4, " Y:%4d(%4d)", get_pos()->y, get_pos_raw()->y);
 				tft_prints(0, 5, " A:%4d(%4d)", get_pos()->angle, get_pos_raw()->angle);
 				tft_prints(0, 6, " Avail: %d", gyro_available);
-				tft_prints(0, 8, " (%c) Calibrate", ticks_img < 500 && !line ? BLACK_BLOCK_ASCII : ' ');
-        tft_prints(0, 9, " (%c) Set zero", ticks_img < 500 && line ? BLACK_BLOCK_ASCII : ' ');
+				tft_prints(0, 8, " (%c) Calibrate", ticks_img < 500 ? BLACK_BLOCK_ASCII : ' ');
 				
 				tft_update();
 			}
@@ -339,11 +282,11 @@ void button_test(void)
 	while (1) {
 		if (ticks_img != get_ticks()) {
 			ticks_img = get_ticks();
-      
-      if (ticks_img % 20 == 1) {
-        //xbc_update();
-      }
-
+			
+			if (ticks_img % 50 == 0) {
+				battery_adc_update();
+			}
+			
 			if (ticks_img % 50 == 3) {
 				button_update();
 				if (return_listener()) {
@@ -355,17 +298,12 @@ void button_test(void)
 				tft_clear();
 				draw_top_bar();
 				tft_prints(0, 1, "BUTTON TEST");
-				for (u8 i = 0, x = 0, y = 2; i < BUTTON_COUNT + XBC_BUTTON_COUNTS; ++i) {
-          if (button_released((BUTTON) i)) {
-            tft_prints(x, y, "[%d]", button_released((BUTTON) i));
-          }  else {
-            tft_prints(x, y, "%d", button_pressed((BUTTON) i));
-          }
-					
+				for (u8 i = 0, x = 0, y = 2; i < BUTTON_COUNT; ++i) {
+					tft_prints(x, y, "%d:%d(%d)", i, button_pressed((BUTTON) i), button_released((BUTTON) i));
 					if (y < tft_get_max_y_char() - 1) {
 						++y;
 					} else {
-						x += 4;
+						x += 7;
 						y = 2;
 					}
 				}
@@ -443,11 +381,11 @@ void buzzer_test(void)
 	while (true) {
 		if (ticks_img != get_ticks()) {			
 			ticks_img = get_ticks();			
-
-      if (ticks_img % 20 == 1) {
-        //xbc_update();
-      }
-      
+						
+			if (ticks_img % 50 == 0) {
+				battery_adc_update();
+			}
+			
 			if (ticks_img % 50 == 3) {
 				button_update();
 				if (return_listener()) {
@@ -457,15 +395,15 @@ void buzzer_test(void)
 				}
 				
 				// Line switcher
-				if (BUTTON_UP_LISTENER()) {
+				if (button_pressed(BUTTON_JS2_UP) == 1 || button_hold(BUTTON_JS2_UP, 10, 2)) {
 					tft_ui_listener(&tft_ui, tft_ui_event_up);
 				}
 				
-				if (BUTTON_DOWN_LISTENER()) {
+				if (button_pressed(BUTTON_JS2_DOWN) == 1 || button_hold(BUTTON_JS2_DOWN, 10, 2)) {
 					tft_ui_listener(&tft_ui, tft_ui_event_down);
 				}
 
-				if (BUTTON_LEFT_LISTENER()) {
+				if (button_pressed(BUTTON_JS2_LEFT) == 1 || button_hold(BUTTON_JS2_LEFT, 10, 2)) {
 					tft_ui_listener(&tft_ui, tft_ui_event_left);
           if (tft_ui_get_val(&note_pitch) == NOTE_REST) {
             note_pitch.ui_item.list.selected_int = NOTE_B;
@@ -477,7 +415,7 @@ void buzzer_test(void)
           }
 				}
 				
-				if (BUTTON_RIGHT_LISTENER()) {
+				if (button_pressed(BUTTON_JS2_RIGHT) == 1 || button_hold(BUTTON_JS2_RIGHT, 10, 2)) {
 					tft_ui_listener(&tft_ui, tft_ui_event_right);
           if (tft_ui_get_val(&note_pitch) == NOTE_REST) {
             note_pitch.ui_item.list.selected_int = NOTE_C;
@@ -489,7 +427,7 @@ void buzzer_test(void)
           }
         }
 				
-				if (BUTTON_ENTER_LISTENER()) {
+				if (button_pressed(BUTTON_JS2_CENTER) == 1) {
 					tft_ui_listener(&tft_ui, tft_ui_event_select);
 				}
 			}
@@ -564,34 +502,32 @@ void can_test(void)
   while (true) {
     if (ticks_img != get_ticks()) {
       ticks_img = get_ticks();
-      
-      if (ticks_img % 20 == 1) {
-          //xbc_update();
+      if (ticks_img % 50 == 0) {
+        battery_adc_update();
       }
-      
       if (ticks_img % 50 == 3) {
         button_update();
         if (return_listener()) {
           return;
         }
         // Line switcher
-        if (BUTTON_UP_LISTENER()) {				
+        if (button_pressed(BUTTON_JS2_UP) == 1) {				
           tft_ui_listener(&tft_ui, tft_ui_event_up);
         }
         
-        if (BUTTON_DOWN_LISTENER()) {
+        if (button_pressed(BUTTON_JS2_DOWN) == 1) {
           tft_ui_listener(&tft_ui, tft_ui_event_down);
         }
         // Line
-        if (BUTTON_LEFT_LISTENER()) {
+        if (button_pressed(BUTTON_JS2_LEFT) == 1 || button_hold(BUTTON_JS2_LEFT, 10, 2)) {
 					tft_ui_listener(&tft_ui, tft_ui_event_left);
 				}
 				
-				if (BUTTON_RIGHT_LISTENER()) {
+				if (button_pressed(BUTTON_JS2_RIGHT) == 1 || button_hold(BUTTON_JS2_RIGHT, 10, 2)) {
 					tft_ui_listener(&tft_ui, tft_ui_event_right);
 				}
 				
-				if (BUTTON_ENTER_LISTENER()) {
+				if (button_pressed(BUTTON_JS2_CENTER) == 1) {
 					tft_ui_listener(&tft_ui, tft_ui_event_select);
 				}
       }
@@ -632,137 +568,166 @@ void can_test(void)
   }
 }
 
-void can_xbc_test(void)
-{
-	while (true) {
-		if (ticks_img != get_ticks()) {
-			ticks_img = get_ticks();
-      
-      if (ticks_img % 20 == 1) {
-        //xbc_update();
-      }
-			if (ticks_img % 20 == 3) {
-				button_update();
-				if (return_listener()) {
-					return; 
-				}
-			}
-			
-      
-			if (ticks_img % 50 == 6){
-				tft_clear();
-
-        
-				draw_top_bar();
-				tft_prints(0,1,"CAN XBOX TEST"); 
-        tft_prints(0,2,"Connection: %d", can_xbc_get_connection());
-        tft_prints(0,3,"Buttons:0x%04X", can_xbc_get_digital());
-				tft_prints(0,4,"LT:%3ld(%5d)",can_xbc_get_joy(XBC_JOY_LT),can_xbc_get_joy_raw(XBC_JOY_LT));
-        tft_prints(0,5,"RT:%3ld(%5d)",can_xbc_get_joy(XBC_JOY_RT),can_xbc_get_joy_raw(XBC_JOY_RT));
-				tft_prints(0,6,"LX:%5ld(%5d)",can_xbc_get_joy(XBC_JOY_LX),can_xbc_get_joy_raw(XBC_JOY_LX));
-				tft_prints(0,7,"LY:%5ld(%5d)",can_xbc_get_joy(XBC_JOY_LY),can_xbc_get_joy_raw(XBC_JOY_LY));
-				tft_prints(0,8,"RX:%5ld(%5d)",can_xbc_get_joy(XBC_JOY_RX),can_xbc_get_joy_raw(XBC_JOY_RX));
-				tft_prints(0,9,"RY:%5ld(%5d)",can_xbc_get_joy(XBC_JOY_RY),can_xbc_get_joy_raw(XBC_JOY_RY));
-				//tft_prints(0,9,"press cnt:%3d",press_times); //normally press once count up 1
-				tft_update();
-			}
-		}
-	}
-}
-
-
 void xbc_test(void)
 {
-	while (true) {
-		if (ticks_img != get_ticks()) {
-			ticks_img = get_ticks();
-      
-      if (ticks_img % 20 == 1) {
-        //xbc_update();
-      }
-			if (ticks_img % 20 == 3) {
-				button_update();
-				if (return_listener()) {
-					return; 
-				}
-			}
-			
-      
-			if (ticks_img % 50 == 6){
-				tft_clear();
-
-        
-				draw_top_bar();
-				tft_prints(0,1,"XBOX TEST"); 
-        char tmp_string[10] = "";
-        switch (xbc_get_connection()) {
-          case XBC_CAN_CONNECTED:
-            strcpy(tmp_string, "CAN");
-          break;
-          
-          case XBC_BLUETOOTH_CONNECTED:
-            strcpy(tmp_string, "BT");
-          break;
-            
-          default:
-            strcpy(tmp_string, "[NONE]");
-          break;
-        }
-        tft_prints(0,2,"Connection: %s", tmp_string);
-        tft_prints(0,3,"Buttons:0x%04X", xbc_get_digital());
-				tft_prints(0,4,"LT:%3ld(%5d)",xbc_get_joy(XBC_JOY_LT),xbc_get_joy_raw(XBC_JOY_LT));
-        tft_prints(0,5,"RT:%3ld(%5d)",xbc_get_joy(XBC_JOY_RT),xbc_get_joy_raw(XBC_JOY_RT));
-				tft_prints(0,6,"LX:%5ld(%5d)",xbc_get_joy(XBC_JOY_LX),xbc_get_joy_raw(XBC_JOY_LX));
-				tft_prints(0,7,"LY:%5ld(%5d)",xbc_get_joy(XBC_JOY_LY),xbc_get_joy_raw(XBC_JOY_LY));
-				tft_prints(0,8,"RX:%5ld(%5d)",xbc_get_joy(XBC_JOY_RX),xbc_get_joy_raw(XBC_JOY_RX));
-				tft_prints(0,9,"RY:%5ld(%5d)",xbc_get_joy(XBC_JOY_RY),xbc_get_joy_raw(XBC_JOY_RY));
-				//tft_prints(0,9,"press cnt:%3d",press_times); //normally press once count up 1
-				tft_update();
-			}
-		}
-	}
-}
-
-
-void bluetooth_xbc_test(void)
-{
+	u8	pressed_cnt = 0;
+	u16 press_times = 0;
+	u32 pre_xbc_press = 0;
+  u32 curr_button = XBC_START;
+  char* curr_stage_msg = "";
 	while (true) {
 		if (ticks_img != get_ticks()) {
 			ticks_img = get_ticks();
 			if (ticks_img % 50 == 0) {
-        bluetooth_update();
+				battery_adc_update();
 			}
-      if (ticks_img % 20 == 1) {
-        //xbc_update();
-      }
-			if (ticks_img % 20 == 3) {
+			if (ticks_img % 50 == 3) {
 				button_update();
 				if (return_listener()) {
 					return; 
 				}
+				// Skip or backward
+				if (button_pressed(BUTTON_1) == 1 && pressed_cnt > 0) {
+					--pressed_cnt;
+				}
+				if (button_pressed(BUTTON_2) == 1 && pressed_cnt < 19) {
+					++pressed_cnt;
+				}
 			}
 			
-      
 			if (ticks_img % 50 == 6){
+				pre_xbc_press = xbc_press;
+				xbc_update();
 				tft_clear();
+				switch (pressed_cnt) {
+					case 0:	
+						curr_stage_msg = "PRESS [START]";
+						curr_button = XBC_START;
+					break;
 
+					case 1:
+						curr_stage_msg = "PRESS [UP]";
+						curr_button =  XBC_UP;
+					break;
+
+					case 2:
+						curr_stage_msg = "PRESS [DOWN]   ";
+						curr_button =  XBC_DOWN;
+					break;
+
+					case 3:
+						curr_stage_msg = "PRESS [LEFT]   ";
+						curr_button =  XBC_LEFT;
+					break;
+
+					case 4:
+						curr_stage_msg = "PRESS [RIGHT]   ";
+						curr_button =  XBC_RIGHT;
+					break;
+
+					case 5:
+						curr_stage_msg = "PRESS [BACK]   ";
+						curr_button =  XBC_BACK;
+					break;
+
+					case 6:
+						curr_stage_msg = "PRESS [A]     ";
+						curr_button =  XBC_A;
+					break;
+
+					case 7:
+						curr_stage_msg = "PRESS [B]    ";
+						curr_button =  XBC_B;
+					break;
+
+					case 8:
+						curr_stage_msg = "PRESS [X]    ";
+						curr_button =  XBC_X;
+					break;
+
+					case 9:
+						curr_stage_msg = "PRESS [Y]     ";
+						curr_button =  XBC_Y;
+					break;
+
+					case 10:
+						curr_stage_msg = "PRESS [LB ]   ";
+						curr_button =  XBC_LB;
+					break;
+
+					case 11:
+						curr_stage_msg = "PRESS [RB ]   ";
+						curr_button =  XBC_RB;
+					break;
+
+					case 12:
+						curr_stage_msg = "PRESS [XBOX  ]   ";
+						curr_button =  XBC_XBOX;
+					break;
+
+					case 13:
+						curr_stage_msg = "[L BUTTON 1]";
+						curr_button =  L_BUT1;
+					break;
+
+					case 14:
+						curr_stage_msg = "[L BUTTON 2]";
+						curr_button =  L_BUT2;
+					break;
+
+					case 15:
+						curr_stage_msg = "[L BUTTON 3]";
+						curr_button =  L_BUT3;
+					break;
+
+					case 16:
+						curr_stage_msg = "[R BUTTON 1]";
+						curr_button =  R_BUT1;
+					break;
+
+					case 17:
+						curr_stage_msg = "[R BUTTON 2]";
+						curr_button =  R_BUT2;
+					break;
+
+					case 18:
+						curr_stage_msg = "[R BUTTON 3]";
+						curr_button =  R_BUT3;
+					break;
+
+					case 19:
+						curr_stage_msg = "press [BACK] exit";
+						tft_prints(0,3,"KEY TEST OK");
+						if (xbc_press & XBC_BACK) {
+							return;
+						}
+          break;
+				}
+
+        if (xbc_press & curr_button) {
+          ++pressed_cnt;
+          SUCCESSFUL_MUSIC;
+        }
+        
+				if (xbc_press != pre_xbc_press && xbc_press != 0) {
+					++press_times;
+				}
         
 				draw_top_bar();
-				tft_prints(0,1,"BT XBOX TEST"); 
-        tft_prints(0,2,"Connection: %d", bluetooth_xbc_get_connection());
-        tft_prints(0,3,"Buttons:0x%04X",bluetooth_xbc_get_digital()); 
-				tft_prints(0,4,"LT:%3ld(%5d)",bluetooth_xbc_get_joy(XBC_JOY_LT),bluetooth_xbc_get_joy_raw(XBC_JOY_LT));
-        tft_prints(0,5,"RT:%3ld(%5d)",bluetooth_xbc_get_joy(XBC_JOY_RT),bluetooth_xbc_get_joy_raw(XBC_JOY_RT));
-				tft_prints(0,6,"LX:%5ld(%5d)",bluetooth_xbc_get_joy(XBC_JOY_LX),bluetooth_xbc_get_joy_raw(XBC_JOY_LX));
-				tft_prints(0,7,"LY:%5ld(%5d)",bluetooth_xbc_get_joy(XBC_JOY_LY),bluetooth_xbc_get_joy_raw(XBC_JOY_LY));
-				tft_prints(0,8,"RX:%5ld(%5d)",bluetooth_xbc_get_joy(XBC_JOY_RX),bluetooth_xbc_get_joy_raw(XBC_JOY_RX));
-				tft_prints(0,9,"RY:%5ld(%5d)",bluetooth_xbc_get_joy(XBC_JOY_RY),bluetooth_xbc_get_joy_raw(XBC_JOY_RY));
-				//tft_prints(0,9,"press cnt:%3d",press_times); //normally press once count up 1
+				tft_prints(0,1,"XBOX TEST");
+        tft_prints(0,2,curr_stage_msg);
+				tft_prints(0,4,"LT:%3ld RT:%3ld",xbc_joy[XBC_LT],xbc_joy[XBC_RT]);
+				tft_prints(0,5,"LX:%5ld",xbc_joy[XBC_LX]);
+				tft_prints(0,6,"LY:%5ld",xbc_joy[XBC_LY]);
+				tft_prints(0,7,"RX:%5ld",xbc_joy[XBC_RX]);
+				tft_prints(0,8,"RY:%5ld",xbc_joy[XBC_RY]);
+				tft_prints(0,9,"press cnt:%3d",press_times); //normally press once count up 1
 				tft_update();
 			}
 		}
 	}
 }
+
 
 /**
 	* @brief 	  Pin test for GPIOE only (will have other later)
@@ -793,10 +758,6 @@ void gpio_pin_test(void)
 	while (!return_listener()) {
 		if (ticks_img != get_ticks()) {
 			ticks_img = get_ticks();
-      if (ticks_img % 20 == 1) {
-       //xbc_update();  
-      }
-      
 			if (ticks_img % 50 == 3) {
 				button_update();
 				if (button_pressed(BUTTON_1) == 1 && pin_no > 0) {
@@ -808,7 +769,7 @@ void gpio_pin_test(void)
 						curr_test_pin >>= 1;
 					}
 				}
-				if ((BUTTON_ENTER_LISTENER() && test_done) && last_input == initial_input) {
+				if ((button_pressed(BUTTON_JS2_CENTER) == 1 && test_done) && last_input == initial_input) {
 					return;
 				}
 				
@@ -945,9 +906,8 @@ void uart_test(void)
   while (true) {
     if (ticks_img != get_ticks()) {
       ticks_img = get_ticks();
-      
-      if (ticks_img % 20 == 1) {
-        //xbc_update();
+      if (ticks_img % 50 == 0) {
+        battery_adc_update();
       }
       
       if (ticks_img % 50 == 3) {
@@ -956,23 +916,23 @@ void uart_test(void)
           return;
         }
         
-        if (BUTTON_UP_LISTENER()) {				
+        if (button_pressed(BUTTON_JS2_UP) == 1) {				
           tft_ui_listener(&tft_ui, tft_ui_event_up);
         }
         
-        if (BUTTON_DOWN_LISTENER()) {
+        if (button_pressed(BUTTON_JS2_DOWN) == 1) {
           tft_ui_listener(&tft_ui, tft_ui_event_down);
         }
         
-        if (BUTTON_LEFT_LISTENER()) {
+        if (button_pressed(BUTTON_JS2_LEFT) == 1 || button_hold(BUTTON_JS2_LEFT, 10, 2)) {
 					tft_ui_listener(&tft_ui, tft_ui_event_left);
 				}
 				
-				if (BUTTON_RIGHT_LISTENER()) {
+				if (button_pressed(BUTTON_JS2_RIGHT) == 1 || button_hold(BUTTON_JS2_RIGHT, 10, 2)) {
 					tft_ui_listener(&tft_ui, tft_ui_event_right);
 				}
 				
-				if (BUTTON_ENTER_LISTENER()) {
+				if (button_pressed(BUTTON_JS2_CENTER) == 1) {
 					tft_ui_listener(&tft_ui, tft_ui_event_select);
 				}        
       }
@@ -999,42 +959,6 @@ void uart_test(void)
   }
 }
 
-void mb1240_test(void)
-{
-
-  while (true) {
-    if (ticks_img != get_ticks()) {
-      ticks_img = get_ticks();
-      
-      if (ticks_img % 20 == 0) {
-        //xbc_update();
-      }
-      
-      if (ticks_img % 50 == 3) {
-        button_update();
-        if (return_listener()) {
-          return;
-        }
-      }
-      
-      if (ticks_img % 50 == 6) {
-        tft_clear();
-        draw_top_bar();
-        tft_prints(0, 1, "MB1240 TEST");
-        tft_prints(0, 2, "GPIO: %d", gpio_read_input(MB1240_GPIO));
-        tft_prints(0, 3, "Current: %d", mb1240_get_length());
-        tft_prints(0, 4, "Val: %d cm", mb1240_get_last_length());
-        tft_prints(0, 5, "Rate: %d / s", mb1240_get_rate());
-
-        tft_update();
-        
-        
-      }
-    }
-  }
-}
-
-
 void ultra_test(void)
 {
   //u16 distance_history[tft_width-2] = {0};
@@ -1042,9 +966,8 @@ void ultra_test(void)
   while (true) {
     if (ticks_img != get_ticks()) {
       ticks_img = get_ticks();
-      
-      if (ticks_img % 20 == 0) {
-        //xbc_update();
+      if (ticks_img % 50 == 0) {
+        battery_adc_update();
       }
       
       if (ticks_img % 50 == 3) {
@@ -1070,250 +993,3 @@ void ultra_test(void)
   }
 }
 
-
-void nec_test(void)
-{
-  //u16 distance_history[tft_width-2] = {0};
-
-  while (true) {
-    led_control(LED_D2, (LED_STATE) !gpio_read_input(&PC6));
-    if (ticks_img != get_ticks()) {
-      ticks_img = get_ticks();
-
-      
-      if (ticks_img % 20 == 0) {
-        //xbc_update();
-      }
-      
-      if (ticks_img % 50 == 3) {
-        button_update();
-        if (return_listener()) {
-          return;
-        }
-      }
-      
-      if (ticks_img % 50 == 6) {
-        tft_clear();
-        draw_top_bar();
-        tft_prints(0, 1, "NEC TEST");
-        tft_prints(0, 2, "on_max: %d", get_nec_cont_on_max());
-        tft_prints(0, 3, "off_max: %d", get_nec_cont_off_max());
-        tft_prints(0, 4, "state:%d", get_nec_state());
-        tft_prints(0, 5, "last_data:%X", get_nec_last_data());
-        NEC_Data_TypeDef* raw_data = get_nec_raw_data();
-        
-        
-        tft_prints(0, 6, "{%02X,%02X} {%02X,%02X}", raw_data[0], raw_data[1], raw_data[2], raw_data[3]);
-        
-        NEC_Msg last_msg = get_nec_last_msg();
-        NEC_Msg current_msg = get_nec_current_msg();
-        
-        tft_prints(0, 7, "Last:    %02X %02X", last_msg.address, last_msg.command);
-        tft_prints(0, 8, "Current: %02X %02X", current_msg.address, current_msg.command);
-        tft_update();
-        
-        
-      }
-    }
-  }
-}
-
-
-s16 mapSize_x=16;
-s16 mapSize_y=9;
-
-s16 gameSpeed=4;	//number of moves per second 1=default
-
-void setSpeedDiscrete()	//set game speed
-{
-	switch(gameSpeed)
-	{
-	case 2:
-		gameSpeed=4;
-		break;
-	case 4:
-		gameSpeed=6;
-		break;
-	case 6:
-		gameSpeed=2;
-		break;
-	default:
-		gameSpeed=2;
-		break;
-	}
-}
-
-void printMap(s16 snakeMap[][mapSize_x])	//print screen
-{
-	for(s16 i=0; i<mapSize_y; i++)
-		for(s16 j=0; j<mapSize_x; j++)
-			if(snakeMap[i][j]!=0)
-				tft_prints(j,i,"%c",'@');//snakeMap[i][j]);
-	//tft_prints(j,i,"%d",snakeMap[i][j]);
-}
-
-void snake_init(s16 snakeMap[][mapSize_x], s16 score, s16 x, s16 y)//initialize snake
-{
-	for(s16 i=0; i<mapSize_y; i++)
-		for(s16 j=0; j<mapSize_x; j++)
-			snakeMap[i][j]=0;
-	for(s16 i=0; i<score; i++)
-		snakeMap[y][x-i]=score-i;
-}
-
-
-bool move(s16 snakeMap[][mapSize_x], char dir, char* lastDir, s16 *score, s16* x, s16* y, s16 *targetX, s16 *targetY)
-{
-	(*lastDir) = dir;
-	//
-	switch(dir)
-	{
-	case 'r':
-		(*x)++; break;
-	case 'l':
-		(*x)--; break;
-	case 'u':
-		(*y)--; break;
-	case 'd':
-		(*y)++; break;
-	}
-
-	//defeat condition
-	if(*x<0 || *x>=mapSize_x)//defeat condition 1: off the map
-		return 0;
-	if(*y<0 || *y>=mapSize_y)//defeat condition 2: off the map
-		return 0;
-	if(snakeMap[*y][*x]!=0)//defeat condition 3: clash with tail
-		return 0;
-
-	//if head of snake hits the target, score+1 and generate new target location
-	if (*x==*targetX && *y==*targetY)
-	{
-		(*score)++;
-		s16 randomizationSeq=get_seconds();
-		while(snakeMap[*targetY][*targetX]!=0 || *targetX==*x || *targetY==*y)		// generate new target
-		{
-			(*targetX)=(get_seconds()*randomizationSeq++)%mapSize_x;	//improperly randomize target X, consider get_seconds as seed
-			(*targetY)=(get_seconds()*randomizationSeq++)%mapSize_y; //randomize target Y
-		}
-	}
-	//depreciate life span of all tails otherwise
-	else
-	{
-		for(s16 i=0; i<mapSize_y; i++)
-			for(s16 j=0; j<mapSize_x; j++)
-				if(snakeMap[i][j]>0)
-					snakeMap[i][j]-=1;
-	}
-	snakeMap[*y][*x]=*score;			// life-span for new head
-
-
-	return 1;//good to proceed with next move
-}
-
-
-
-
-
-// main
-void snake(void){
-
-
-	//init_all();
-	u16 ticks_img=0;
-	s16 snakeMap[mapSize_y][mapSize_x];//snake tail life-span matrix
-	s16 score=3;	//score = number of moves until a tail is killed
-	char dir='r';	//current direction
-	char lastDir='r';	//direction last move
-	s16 head_x=5;	//head location
-	s16 head_y=5;
-	s16 targetX=8;	//target location
-	s16 targetY=7;
-	bool defeat=0;	//defeat status
-	bool paused=0;	//pause status
-	
-
-	tft_clear();		//clean LCD screen
-	tft_prints(2,4,"%s","Press 'start'");		//print on LCD screen
-	tft_update();		//refresh LCD
-	_delay_ms(200);
-	do{button_update();}
-	while(!button_pressed(BUTTON_XBC_START));// wait for user start command
-	snake_init(snakeMap, score, head_x, head_y);
-	tft_prints(2,6,"%s","Game Begins!!");		//print on LCD screen
-	tft_update();		//refresh LCD
-	_delay_ms(1000);
-
-
-// Main Loop
-    while(1){
-
-    	// execute moves, synchronized by tick
-		if (ticks_img == get_ticks())
-			continue;
-		ticks_img=get_ticks();
-
-		if (ticks%20==0)
-		{
-			button_update();
-		}
-		if(!paused && ticks%(1000/gameSpeed)==0)	// execute every (1/gameSpeed) seconds
-		{
-			tft_clear();
-			tft_prints(targetX,targetY,"%c",'x');//print target
-			if(!defeat && move(snakeMap, dir, &lastDir, &score, &head_x, &head_y, &targetX, &targetY))
-				printMap(snakeMap);		//if permitted to play on, print out next move
-			else					// defeat screen otherwise
-			{
-				defeat=1;
-				tft_prints(4,4,"%s","YOU LOST!");
-				tft_prints(4,5,"%s%d","Score= ",score);
-				if (button_pressed(BUTTON_XBC_START))
-					snake();	//restart the game
-				if (button_pressed(BUTTON_XBC_START))
-					break; //escape
-			}
-			//tft_prints(0,9,"%d%s%d%s%d%s%d",head_x," ",head_y," ",snakeMap[head_y][head_x]," ",score);
-			tft_update();
-		}
-		else if(paused && ticks%500==0)		// if game is paused, do not execute next move
-		{
-			tft_clear();
-			tft_prints(4,4,"%s","PAUSED");
-			tft_prints(2,5,"%s","Press 'start'");
-			tft_update();
-		}
-
-    	// Get xbox or GPIO joystick input
-    	if (lastDir!='u' && (button_pressed(BUTTON_XBC_S) || xbc_get_joy(XBC_JOY_LY)<-(XBC_JOY_SCALE*0.8)))//LY
-    		dir='d';
-    	if (lastDir!='d' && (button_pressed(BUTTON_XBC_N) || xbc_get_joy(XBC_JOY_LY)>(XBC_JOY_SCALE*0.8)))
-    		dir='u';
-    	if (lastDir!='r' && (button_pressed(BUTTON_XBC_W) || xbc_get_joy(XBC_JOY_LX)<-(XBC_JOY_SCALE*0.8)))//LX
-    		dir='l';
-    	if (lastDir!='l' && (button_pressed(BUTTON_XBC_E) || xbc_get_joy(XBC_JOY_LX)>(XBC_JOY_SCALE*0.8)))
-    		dir='r';
-    	// Change game speed
-    	if (button_pressed(BUTTON_XBC_RB))
-    	{
-    		setSpeedDiscrete();
-    		while(button_pressed(BUTTON_XBC_RB))
-    			if(get_ticks()%50==0)
-    				button_update();
-    	}
-    	// Pause the game
-    	if (button_pressed(BUTTON_XBC_START))
-		{
-    		paused=!paused;
-			while(button_pressed(BUTTON_XBC_START))
-				if(get_ticks()%50==0)
-					button_update();
-			_delay_ms(200);
-		}
-
-
-
-
-    }
-
-}
