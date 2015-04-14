@@ -21,7 +21,15 @@
   
 #include "button.h"
 
+
 static const GPIO* buttons[BUTTON_COUNT] = { 
+#ifdef MAINBOARD_V4
+	BUTTON_JS_UP_GPIO,
+	BUTTON_JS_LEFT_GPIO,
+	BUTTON_JS_DOWN_GPIO,
+	BUTTON_JS_RIGHT_GPIO,
+	BUTTON_JS_CENTER_GPIO,
+#else
 	BUTTON_JS1_UP_GPIO,
 	BUTTON_JS1_LEFT_GPIO,
 	BUTTON_JS1_DOWN_GPIO,
@@ -32,6 +40,7 @@ static const GPIO* buttons[BUTTON_COUNT] = {
 	BUTTON_JS2_DOWN_GPIO,
 	BUTTON_JS2_RIGHT_GPIO,
 	BUTTON_JS2_CENTER_GPIO,
+#endif
 	BUTTON_1_GPIO,
 	BUTTON_2_GPIO
 };
@@ -130,6 +139,13 @@ void button_update(void)
   */
 static BUTTON rotate_js_button(BUTTON b) {
 	u8 o = tft_get_orientation();
+	
+	
+	#ifdef MAINBOARD_V4
+	if (b <= 3) {
+		b = (BUTTON) ((b + 4 - o) % 4);
+	}
+	#else
 	if (b <= 3) {
 		b = (BUTTON) ((b + 4 - o + 1) % 4);
 	}
@@ -139,6 +155,7 @@ static BUTTON rotate_js_button(BUTTON b) {
 		b = (BUTTON) ((b + 4 - o + 1) % 4);
 		b += 5;
 	}
+	#endif
 	
 	return b;
 }
