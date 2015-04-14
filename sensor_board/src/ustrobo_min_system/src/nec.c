@@ -66,7 +66,7 @@ static u8 nec_in_range(NEC_RANGE range, u16 val)
 
 void nec_init(void)
 {
-  gpio_init(NEC_GPIO, GPIO_Speed_2MHz, GPIO_Mode_IN_FLOATING, 1);
+  gpio_init(NEC_GPIO, GPIO_Speed_50MHz, GPIO_Mode_IN_FLOATING, 1);
   
   
 	NVIC_InitTypeDef NVIC_InitStructure;
@@ -356,7 +356,7 @@ void nec_can_tx(void)
 	
 	msg.length = 3;
 	msg.id = NEC_CAN_ID;
-	msg.data[0] = (u8) get_nec_state();
+	msg.data[0] = 0x00;
 	msg.data[1] = current_msg.address;
 	msg.data[2] = current_msg.command;
 	can_tx_enqueue(msg); 

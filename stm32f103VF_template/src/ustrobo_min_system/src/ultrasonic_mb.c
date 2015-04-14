@@ -27,6 +27,9 @@ static void us_mb_decoding(CanRxMsg msg)
 }
 
 
+/**
+	* @brief Ultrasonic initialization (on mainboard)
+	*/
 void us_mb_init(void)
 {
 	can_rx_add_filter(US_CAN_ID, CAN_RX_MASK_DIGIT_0_F, us_mb_decoding);
@@ -36,6 +39,11 @@ void us_mb_init(void)
 }
 
 
+/**
+	* @brief Get the detected distance of the ultrasonic sensor
+	* @param id: ID of the ultrasonic sensor (0 to US_DEVICE_COUNT)
+	* @retval The detected distance of the ultrasonic sensor in millimeter (mm)
+	*/
 u16 us_get_distance(u8 id)
 {
 	if (id >= US_DEVICE_COUNT) {return 0;}

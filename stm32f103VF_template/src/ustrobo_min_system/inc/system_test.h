@@ -31,9 +31,8 @@
 #include "wheel_base.h"
 #include "ultrasonic_mb.h"
 #include "bluetooth_xbc_mb.h"
-#include "nec.h"
+#include "nec_mb.h"
 #include "adc.h"
-#include "mb1240.h"
 
 void bluetooth_test(void);
 void ascii_test(void);
@@ -51,6 +50,6 @@ void gpio_pin_test(void);
 void uart_test(void);
 void mb1240_test(void);
 void us_mb_test(void);
-void nec_test(void);
+void nec_mb_test(void);
  
 #endif /* __SYSTEM_TEST_H */

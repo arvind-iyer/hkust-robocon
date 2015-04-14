@@ -29,7 +29,7 @@ int main(void)
   xbc_mb_init(XBC_BLUETOOTH_FIRST); 
 	wheel_base_init();
   us_mb_init();
-  //nec_init();
+  nec_mb_init();
   /** For debugging **/
   //uart_init(COM1, 115200);
   //uart_printf_enable(COM1);
@@ -52,7 +52,7 @@ int main(void)
 	menu_add("ASCII test", ascii_test);
 	menu_add("GPIO Pin test", gpio_pin_test);
 	menu_add("UART test", uart_test);
-  menu_add("NEC test", nec_test);
+  menu_add("NEC test", nec_mb_test);
   //menu_add("MB1240 test", mb1240_test);
   menu_add("Ultra. test", us_mb_test);
   

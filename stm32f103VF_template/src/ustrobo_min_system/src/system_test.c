@@ -1073,7 +1073,7 @@ void us_mb_test(void)
 }
 
 
-void nec_test(void)
+void nec_mb_test(void)
 {
   //u16 distance_history[tft_width-2] = {0};
 
@@ -1098,20 +1098,9 @@ void nec_test(void)
         tft_clear();
         draw_top_bar();
         tft_prints(0, 1, "NEC TEST");
-        tft_prints(0, 2, "on_max: %d", get_nec_cont_on_max());
-        tft_prints(0, 3, "off_max: %d", get_nec_cont_off_max());
-        tft_prints(0, 4, "state:%d", get_nec_state());
-        tft_prints(0, 5, "last_data:%X", get_nec_last_data());
-        NEC_Data_TypeDef* raw_data = get_nec_raw_data();
-        
-        
-        tft_prints(0, 6, "{%02X,%02X} {%02X,%02X}", raw_data[0], raw_data[1], raw_data[2], raw_data[3]);
-        
-        NEC_Msg last_msg = get_nec_last_msg();
-        NEC_Msg current_msg = get_nec_current_msg();
-        
-        tft_prints(0, 7, "Last:    %02X %02X", last_msg.address, last_msg.command);
-        tft_prints(0, 8, "Current: %02X %02X", current_msg.address, current_msg.command);
+        for (u8 i = 0; i < NEC_DEVICE_COUNT; ++i) {
+					tft_prints(0, i + 2, "%d {0x%02X,0x%02X}", i, nec_get_msg(i)->address, nec_get_msg(i)->command);
+				}
         tft_update();
         
         

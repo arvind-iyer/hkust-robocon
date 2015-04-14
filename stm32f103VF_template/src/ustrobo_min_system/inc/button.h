@@ -16,7 +16,7 @@
 #define BUTTON_LEFT_LISTENER()    (button_pressed(BUTTON_JS_LEFT) == 1 || button_hold(BUTTON_JS_LEFT, 10, 3) || button_pressed(BUTTON_XBC_W) == 1 || button_hold(BUTTON_XBC_W, 10, 1))
 #define BUTTON_RIGHT_LISTENER()   (button_pressed(BUTTON_JS_RIGHT) == 1 || button_hold(BUTTON_JS_RIGHT, 10, 3) || button_pressed(BUTTON_XBC_E) == 1 || button_hold(BUTTON_XBC_E, 10, 1))
 #define BUTTON_ENTER_LISTENER()   (button_pressed(BUTTON_JS_CENTER) == 1 || button_pressed(BUTTON_XBC_START) == 1)
-#define BUTTON_RETURN_LISTENER()   (button_pressed(BUTTON_1) == 5  || button_pressed(BUTTON_XBC_BACK) == 5)
+#define BUTTON_RETURN_LISTENER()   (button_pressed(BUTTON_1) == 5 || button_pressed(BUTTON_2) == 5 || button_pressed(BUTTON_XBC_BACK) == 5)
 
 /****/
 
