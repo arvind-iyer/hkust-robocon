@@ -286,8 +286,8 @@
       <Focus>0</Focus>
       <tvExpOptDlg>0</tvExpOptDlg>
       <bDave2>0</bDave2>
-      <PathWithFileName>.\src\user\special_char_handler.c</PathWithFileName>
-      <FilenameWithoutPath>special_char_handler.c</FilenameWithoutPath>
+      <PathWithFileName>.\src\user\racket_control.c</PathWithFileName>
+      <FilenameWithoutPath>racket_control.c</FilenameWithoutPath>
       <RteFlg>0</RteFlg>
       <bShared>0</bShared>
     </File>
@@ -299,8 +299,8 @@
       <Focus>0</Focus>
       <tvExpOptDlg>0</tvExpOptDlg>
       <bDave2>0</bDave2>
-      <PathWithFileName>.\src\user\racket_control.c</PathWithFileName>
-      <FilenameWithoutPath>racket_control.c</FilenameWithoutPath>
+      <PathWithFileName>.\src\user\special_char_handler.c</PathWithFileName>
+      <FilenameWithoutPath>special_char_handler.c</FilenameWithoutPath>
       <RteFlg>0</RteFlg>
       <bShared>0</bShared>
     </File>

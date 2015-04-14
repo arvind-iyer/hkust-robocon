@@ -13,13 +13,18 @@ void robocon_main(void)
 			ticks_img = get_ticks();
 			
 			up_racket_sensor_check();
+			
+			if (ticks_img % 5 == 2) {
+				// Every 5 ms (200 Hz)
+				racket_update();
+			}
+			
 			if (ticks_img % 10 == 0) {
 				// Every 10 ms (100 Hz)
 				bluetooth_update();
 				xbc_button_handler();
         wheel_base_pid_update();
 				wheel_base_update();
-				racket_update();
 				up_racket_update();
 				robot_timer.update();
 			}
@@ -45,11 +50,10 @@ void robocon_main(void)
 			if (ticks_img % 50 == 5) {
 				button_update();
 				
-//			NO ESCAPE!!! HAHAHAHA!
-//				if ( button_pressed(BUTTON_1) > 10 || button_pressed(BUTTON_2) > 10) {
+				if ( button_pressed(BUTTON_1) > 10 || button_pressed(BUTTON_2) > 10) {
 //					/** Stop the wheel base before return **/
-//					break; 
-//				}
+					break; 
+				}
 				
 				if (button_pressed(BUTTON_JS2_UP)) {
 					wheel_base_override_set_vel(0, 30, 0);
@@ -66,7 +70,7 @@ void robocon_main(void)
 				if (button_pressed(BUTTON_JS2_CENTER) == 1) {
 					wheel_base_override_change_speed();
 				}
-				if (button_pressed(BUTTON_1) > 3 || button_pressed(BUTTON_2) > 3) {
+				if (button_pressed(BUTTON_JS1_CENTER) > 10) {
 					robot_timer.start();
 				}
 			}
@@ -96,7 +100,7 @@ void robocon_main(void)
 				//tft_prints(0, 8, "switch: %d",get_switch());
 				tft_prints(0, 7, "T:(%3d,%3d,%3d)", get_prop(), get_int(), get_der());
 				tft_prints(0, 8, "VP(%3d,%3d,%3d)", vel_prev.x / 100, vel_prev.y / 100, vel_prev.w / 100);
-				tft_prints(0, 9, "D: %3d, S: %4d", get_racket_delay(), get_racket_speed());
+				tft_prints(0, 9, "D: %3d, T: %4d", get_racket_delay(), get_current_speed());
 //				tft_prints(0, 9, "PID locked: %d", get_pid_stat());
 
 				tft_update();

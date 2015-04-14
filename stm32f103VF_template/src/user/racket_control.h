@@ -30,11 +30,13 @@ void racket_calibrate(void);
 
 u8 get_switch(void);
 s32 get_calibrated(void);
-s32 get_current(void);
-s32 get_prev(void);
+s32 get_current_speed(void);
+s32 get_turn_encoder_value(void);
+s32 get_prev_encoder_value(void);
 u16 get_racket_speed(void);
 u16 get_racket_delay(void);
 u8 get_up_switch(void);
+u8 get_switch_trigger_number(void);
 
 void upper_hit(void);
 void upper_hit_delay(u16 delay);
@@ -45,6 +47,6 @@ void disable_ultrasonic_sensor(void);
 
 void open_upper_pneumatic(void);
 void close_upper_pneumatic(void);
-u8 get_hitting (void);
+u8 get_hitting(void);
 
 #endif

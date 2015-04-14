@@ -81,11 +81,6 @@ void xbc_button_handler(void)
 		disable_ultrasonic_sensor();
 	}
 	
-	if (button_pressed(BUTTON_XBC_L_JOY))
-	{
-		open_pneumatic();
-	}
-	
 	if (xbc_get_joy(XBC_JOY_RX)) {
 		if (xbc_get_joy(XBC_JOY_RX) > 0 && (get_full_ticks() - last_increased_speed) > SPEED_CHANGE_TIMEOUT) {
 			u8 speed_mode = wheel_base_get_speed_mode();

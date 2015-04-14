@@ -136,7 +136,7 @@ void set_starting_pos(void)
 // function to set PID directly to serving position
 void set_serving_pos(void)
 {
-	POSITION target_pos = {343, 4293, 3500};
+	POSITION target_pos = {343, 4293, 0};
 	wheel_base_set_target_pos(target_pos);
 }
 
