@@ -124,6 +124,14 @@ void robot_c_function_controls(void)
 		racket_hit();
 	if(button_pressed(BUTTON_XBC_A))
 		racket_down_hit();
+	if(button_pressed(BUTTON_XBC_RB))
+		plus_x();
+	if(button_pressed(BUTTON_XBC_LB))
+		minus_x();
+	if(button_pressed(BUTTON_XBC_X))
+		plus_y();
+	if(button_pressed(BUTTON_XBC_Y))
+		minus_y();
 	
 }
 
@@ -389,9 +397,9 @@ void robocon_main(void)
 				u8 connect = xbc_get_connection() == XBC_DISCONNECTED ? 0 : 1;
 					 
         //tft_prints(0, 6, "Char: %s (%d) %c", s, wheel_base_bluetooth_get_last_char(), special_char_handler_bt_get_last_char());
-				//tft_prints(0,3,"SHIT: (%d, %d)", gyro_get_shift_x(), gyro_get_shift_y());
+				tft_prints(0,3,"SHIT: (%d, %d)", gyro_get_shift_x(), gyro_get_shift_y());
 				//tft_prints(0,3,"XBC: %d", connect);
-				tft_prints(0,3,"Serve_delay: %d",serve_get_delay());
+				//tft_prints(0,3,"Serve_delay: %d",serve_get_delay());
 				tft_prints(0,4, "pneu= %d", gpio_read_input(&PB9));
 				//tft_prints(0,4, "skipTick %d", tick_skip_count);
 				//tft_prints(0,4, "Serve_prior %d", serve_prioritized());
