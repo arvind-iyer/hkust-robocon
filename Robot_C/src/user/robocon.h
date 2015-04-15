@@ -20,11 +20,6 @@
 #define ROBOT 'C'
 
 
-
-
-
-
-
 /*** Optional ***/
 #include "can_protocol.h"
 #include "usart.h"

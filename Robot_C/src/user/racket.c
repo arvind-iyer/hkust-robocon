@@ -22,7 +22,7 @@ static u32 racket_pneu_2_start_time = 0;
 
 void racket_pneumatic_set(bool data)		// 
 {
-	gpio_write(PNEU_GPIO, data);
+	gpio_write(&PD8, data);
 }
 
 

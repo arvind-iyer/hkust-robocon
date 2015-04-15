@@ -120,7 +120,7 @@ bool robot_xbc_controls(void)
 void robot_c_function_controls(void)
 {
 	//Racket Hit
-	if(button_pressed(BUTTON_XBC_Y))
+	if(button_pressed(BUTTON_XBC_B))
 		racket_hit();
 	if(button_pressed(BUTTON_XBC_A))
 		racket_down_hit();
