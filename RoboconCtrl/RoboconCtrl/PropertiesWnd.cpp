@@ -179,7 +179,7 @@ std::vector<std::basic_string<TCHAR>> CPropertiesWnd::GetSettings()
 	std::vector < std::basic_string<TCHAR> > string_vector;
 	// Makes sure that these properties are never empty (HACK)
 	if (((CString)m_wndPropList.GetProperty(0)->GetSubItem(0)->GetValue()).IsEmpty()) {
-		m_wndPropList.GetProperty(0)->GetSubItem(0)->SetValue(_T("COM30"));
+		m_wndPropList.GetProperty(0)->GetSubItem(0)->SetValue(_T("COM6"));
 	}
 	if (((CString)m_wndPropList.GetProperty(0)->GetSubItem(1)->GetValue()).IsEmpty()) {
 		m_wndPropList.GetProperty(0)->GetSubItem(1)->SetValue(_T("115200"));
@@ -235,7 +235,7 @@ void CPropertiesWnd::InitPropList()
 
 //	pGroup1->AddSubItem(new CMFCPropertyGridProperty(_T("3D Look"), (_variant_t) false, _T("Specifies the window's font will be non-bold and controls will have a 3D border")));
 
-	CMFCPropertyGridProperty* pProp = new CMFCPropertyGridProperty(_T("Port Number"), _T("COM30"), _T("Configure the port number of your serial port."));
+	CMFCPropertyGridProperty* pProp = new CMFCPropertyGridProperty(_T("Port Number"), _T("COM6"), _T("Configure the port number of your serial port."));
 	for (int i = 1; i < 256; i++) {
 		pProp->AddOption((_T("COM") + to_string(i)).c_str());
 	}
