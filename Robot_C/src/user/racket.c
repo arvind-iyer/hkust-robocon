@@ -22,22 +22,13 @@ static u32 racket_pneu_2_start_time = 0;
 
 void racket_pneumatic_set(bool data)		// 
 {
-	if (ROBOT=='C')
-	{
-		gpio_write(PNEU_GPIO, !data);
-	}
-	else
-	{
-		gpio_write(PNEU_GPIO, data);
-		
-	}
-	//log("pneu",is_pneu_extended);
+	gpio_write(PNEU_GPIO, data);
 }
 
 
 void racket_pneumatic_2_set(bool data)	// for robot C
 {
-	gpio_write(PNEU_GPIO_DOWN, !data);
+	gpio_write(PNEU_GPIO_DOWN, data);
 	//log("pneu2",is_pneu_2_extended);
 }
 
