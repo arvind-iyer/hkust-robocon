@@ -7,6 +7,9 @@
  ******************************************************************************
   */
 
+/** Version 3.1 (15th April, 2015) **/
+- UART bug fixed (by using the old usart library)
+
 /** Version 3.0 (14th April, 2015) **/
 - Library for Mainboard Version 4.2
 - Ultrasonic sensor board (CAN)

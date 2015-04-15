@@ -990,10 +990,7 @@ void uart_test(void)
         tft_prints(8, 4, "UART%d", tft_ui_get_val(&uart_rx_port) + 1);
 				tft_prints(0, 5, "Rx data:");
         tft_prints(11, 5, "%c ", received_data[tft_ui_get_val(&uart_rx_port)]);
-				const USART_DEQUE* deque = uart_get_queue((COM_TypeDef)tft_ui_get_val(&uart_rx_port));
-				
-				tft_prints(0, 6, "Q:%3d-%3d", deque->head, deque->tail);
-				tft_prints(0, 7, "Size: %d", uart_tx_queue_size((COM_TypeDef)tft_ui_get_val(&uart_rx_port))); 
+
 				if (ticks_img < 500) {
 					tft_prints(0, 8, "Click to send");
 				}

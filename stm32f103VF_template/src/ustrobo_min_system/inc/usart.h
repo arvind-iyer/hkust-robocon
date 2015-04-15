@@ -12,7 +12,6 @@
 
 #define	USART_DEQUE_SIZE	1000
 typedef enum {
-  COM_NULL = -1,
 	COM1 = 0,
 	COM2 = 1,
 	COM3 = 2,
@@ -78,16 +77,12 @@ static USART_TYPE USART_DEF[COMn] = {
 };
 
 void uart_init(COM_TypeDef COMx, u32 baudrate);
-void uart_printf_enable(COM_TypeDef COMx);
-void uart_printf_disable(void);
-
+void uart_interrupt(COM_TypeDef COMx);
 void uart_rx_init(COM_TypeDef COMx, void (*handler)(u8 rx_data));
 u16 uart_tx_dequeue(COM_TypeDef COMx);
-u16 uart_tx_queue_size(COM_TypeDef COMx);
 u8 uart_tx_enqueue(COM_TypeDef COMx, u8 byte);
-void uart_tx_byte(COM_TypeDef COMx, char data);
-void uart_tx(COM_TypeDef COM, const char * tx_buf, ...);
-const USART_DEQUE* uart_get_queue(COM_TypeDef COMx);
+void uart_tx_byte(COM_TypeDef COMx, uc8 data);
+void uart_tx(COM_TypeDef COM, uc8 * tx_buf, ...);
 
 
 #endif /* __USART_H */
