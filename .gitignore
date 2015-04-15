@@ -49,10 +49,18 @@
 *.__i
 
 # Visual Studio Project Ignorable Files
+*.idb
+*.ilk
+*.ipch
+*.lastbuildstate
 *.opensdf
+*.pdb
+*.res
 *.sdf
 *.suo
+*.tlog
 *.vcxproj.user
+RoboconCtrl.log
 
 # Windows File
 Desktop.ini
