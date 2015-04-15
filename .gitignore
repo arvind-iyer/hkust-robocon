@@ -49,9 +49,14 @@
 *.__i
 
 # Visual Studio Project Ignorable Files
+*.opensdf
 *.sdf
 *.suo
 *.vcxproj.user
+
+# Windows File
+Desktop.ini
+Thumbs.db
 
 #Jlink log
 JLinkLog.txt
