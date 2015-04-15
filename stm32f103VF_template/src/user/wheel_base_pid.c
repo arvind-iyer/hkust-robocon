@@ -2,6 +2,7 @@
 #include "special_char_handler.h"
 #include "stdbool.h"
 #include "xbc_button.h"
+#include "racket_control.h"
 
 #define STEADY_STATE_ERROR_THRESHOLD 10
 #define T_STEADY_STATE_ERROR_THRESHOLD 5
@@ -138,6 +139,7 @@ void set_serving_pos(void)
 {
 	POSITION target_pos = {343, 4293, 0};
 	wheel_base_set_target_pos(target_pos);
+	disable_ultrasonic_sensor();
 }
 
 // returning pos is the position to return the ball on the non-yellow zone side of the field
@@ -145,12 +147,13 @@ void set_returning_pos(void)
 {
 	POSITION target_pos = {-1373, 2404, 0};
 	wheel_base_set_target_pos(target_pos);
+	enable_ultrasonic_sensor();
 }
 
 // function to move back after serve
 void set_after_serve_pos(void)
 {
-	POSITION target_pos = {1000, 500, 0};
+	POSITION target_pos = {1492, 1266, 0};
 	wheel_base_set_target_pos(target_pos);
 }
 
@@ -164,7 +167,9 @@ void wheel_base_pid_init(void)
 	register_special_char_function('b', increase_der);
 	register_special_char_function('/', reset_gyro);
 	register_special_char_function('\t', set_starting_pos);
-	register_special_char_function('x', set_serving_pos);
+	register_special_char_function('i', set_serving_pos);
+	register_special_char_function('o', set_after_serve_pos);
+	register_special_char_function('p', set_returning_pos);
 }
 
 u8 get_pid_stat(void)
@@ -250,8 +255,8 @@ void wheel_base_pid_update(void)
 	if (wheel_base_get_pid_flag() == 1 && gyro_calibrated) {
 		
 		// do not calculate PID if adjusting manually after PID is reached
-		if ((get_full_ticks() - wheel_base_get_last_manual_timer()) < BLUETOOTH_WHEEL_BASE_TIMEOUT + 200 ||
-			(get_full_ticks() - xbc_get_received_nonzero_speed_timer()) < BLUETOOTH_WHEEL_BASE_TIMEOUT + 200) {
+		if ((get_full_ticks() - wheel_base_get_last_manual_timer()) < BLUETOOTH_WHEEL_BASE_TIMEOUT + 400 ||
+			(get_full_ticks() - xbc_get_received_nonzero_speed_timer()) < BLUETOOTH_WHEEL_BASE_TIMEOUT + 400) {
 			wheel_base_set_target_pos(*get_pos());
 			reset_pid();
 			return;

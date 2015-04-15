@@ -26,9 +26,9 @@ static bool sensor_on = false;
 
 static u16 current_speed = 0;
 
-static u16 racket_speed = 1780;		//tested best result
+static u16 racket_speed = 1500;		//tested best result
 static u16 racket_speed_adjust_time = 0;
-static u16 racket_delay = 294;    //tested best result
+static u16 racket_delay = 306;    //tested best result
 static u16 racket_delay_adjust_time = 0;
 
 // hitting static variables
@@ -39,22 +39,28 @@ static const u16 UPPER_HOLD_DELAY  = 500;
 static const u16 REENABLE_RACKET_DELAY = 500;
 
 // defines for hitting GPIO pins
-#define HIT_RACKET_PIN_1 GPIO_Pin_10
-#define HIT_RACKET_PIN_2 GPIO_Pin_11
-#define HIT_RACKET_PIN_3 GPIO_Pin_12
-#define HIT_RACKET_PIN_4 GPIO_Pin_13
-#define HIT_RACKET_PIN_5 GPIO_Pin_14
+#define HIT_RACKET_PIN_1 GPIO_Pin_9
+// #define HIT_RACKET_PIN_2 GPIO_Pin_11
+// #define HIT_RACKET_PIN_3 GPIO_Pin_12
+// #define HIT_RACKET_PIN_4 GPIO_Pin_13
+// #define HIT_RACKET_PIN_5 GPIO_Pin_14
 
-const static uint16_t HIT_RACKET_PINS[5] = 
+const static u8 HIT_RACKET_NUMBER = 1;
+
+const static uint16_t HIT_RACKET_PINS[HIT_RACKET_NUMBER] = 
 		{HIT_RACKET_PIN_1,
-		HIT_RACKET_PIN_2,
-		HIT_RACKET_PIN_3,
-		HIT_RACKET_PIN_4,
-		HIT_RACKET_PIN_5};
-const static u8 HIT_RACKET_NUMBER = 5;
+//		HIT_RACKET_PIN_2,
+//		HIT_RACKET_PIN_3,
+//		HIT_RACKET_PIN_4,
+//		HIT_RACKET_PIN_5
+			};
+		
+const static u16 HIT_Y_DISTANCE = 600; // 600 millimeters
 
 // defines for serving GPIO pins
-#define SERVE_RACKET_PIN GPIO_Pin_15
+#define SERVE_RACKET_PIN GPIO_Pin_5
+		
+#define SERVE_SWITCH_PIN GPIO_Pin_11
 
 // Getters
 u16 get_racket_speed() {
@@ -86,7 +92,7 @@ s32 get_prev_encoder_value(void){
 }
 
 u8 get_up_switch(void){
-	return GPIO_ReadInputDataBit(GPIOD, GPIO_Pin_11);
+	return GPIO_ReadInputDataBit(GPIOE, SERVE_SWITCH_PIN);
 }
 
 u8 get_switch_trigger_number(void) {
@@ -194,19 +200,22 @@ static void set_slow_calibrate_mode(void)
 
 void racket_init(void)
 {
-	register_special_char_function('u', racket_received_command);
 	register_special_char_function('[', racket_calibrate);
-	register_special_char_function('o', open_pneumatic);
-	register_special_char_function('p', close_pneumatic);
-	register_special_char_function('l', serving);
-	register_special_char_function('n', set_fast_calibrate_mode);
-	register_special_char_function('m', set_slow_calibrate_mode);
-	register_special_char_function('k', upper_hit);
-	register_special_char_function('j', open_upper_pneumatic);
-	register_special_char_function('h', close_upper_pneumatic);
+	register_special_char_function('k', serving);
+	register_special_char_function('l', upper_hit);
 	
-	register_special_char_function(';', enable_ultrasonic_sensor);
-	register_special_char_function(':', disable_ultrasonic_sensor);	
+	register_special_char_function(':', enable_ultrasonic_sensor);
+	register_special_char_function(';', disable_ultrasonic_sensor);	
+	
+	register_special_char_function('j', racket_received_command);
+	
+	// debug commands
+	register_special_char_function('Y', open_pneumatic);
+	register_special_char_function('y', close_pneumatic);
+	register_special_char_function('J', open_upper_pneumatic);
+	register_special_char_function('H', close_upper_pneumatic);
+	register_special_char_function('N', set_fast_calibrate_mode);
+	register_special_char_function('M', set_slow_calibrate_mode);
 	
 	register_special_char_function('=', increase_racket_speed); // +
 	register_special_char_function('-', decrease_racket_speed); // -
@@ -221,15 +230,15 @@ void racket_init(void)
 	// switch_serving init
 	GPIO_InitStructure.GPIO_Mode = GPIO_Mode_IPU;
   GPIO_InitStructure.GPIO_Speed = GPIO_Speed_50MHz;
-  GPIO_InitStructure.GPIO_Pin = GPIO_Pin_7;
+  GPIO_InitStructure.GPIO_Pin = SERVE_SWITCH_PIN;
   GPIO_Init(GPIOE, &GPIO_InitStructure);
 	
 	//interrupt for upper racket
-	GPIO_EXTILineConfig(GPIO_PortSourceGPIOE, GPIO_PinSource7);
+	GPIO_EXTILineConfig(GPIO_PortSourceGPIOE, GPIO_PinSource12);
 
 	// EXTI configuration
 	EXTI_InitTypeDef EXTI_InitStructure;
-	EXTI_InitStructure.EXTI_Line = EXTI_Line7;
+	EXTI_InitStructure.EXTI_Line = EXTI_Line12;
 	EXTI_InitStructure.EXTI_Mode = EXTI_Mode_Interrupt;
 	EXTI_InitStructure.EXTI_Trigger = EXTI_Trigger_Rising_Falling;
 	EXTI_InitStructure.EXTI_LineCmd = ENABLE;
@@ -237,7 +246,7 @@ void racket_init(void)
 	
 	// NVIC configuration
 	NVIC_InitTypeDef NVIC_InitStructure;
-	NVIC_InitStructure.NVIC_IRQChannel = EXTI9_5_IRQn;
+	NVIC_InitStructure.NVIC_IRQChannel = EXTI15_10_IRQn;
 	NVIC_InitStructure.NVIC_IRQChannelCmd = ENABLE;
 	NVIC_InitStructure.NVIC_IRQChannelPreemptionPriority = 1;
 	NVIC_InitStructure.NVIC_IRQChannelSubPriority = 1;
@@ -254,23 +263,23 @@ void racket_init(void)
 		GPIO_InitStructure.GPIO_Mode = GPIO_Mode_Out_PP;
 		GPIO_InitStructure.GPIO_Speed = GPIO_Speed_50MHz;
 		GPIO_InitStructure.GPIO_Pin = HIT_RACKET_PINS[i];
-		GPIO_Init(GPIOE, &GPIO_InitStructure);
+		GPIO_Init(GPIOD, &GPIO_InitStructure);
 	}
 	
 	close_pneumatic();
 	close_upper_pneumatic();
 
-	switch_stat = GPIO_ReadInputDataBit(GPIOE, GPIO_Pin_7);
-	
+	switch_stat = GPIO_ReadInputDataBit(GPIOE, SERVE_SWITCH_PIN);
+	enable_ultrasonic_sensor();
 }
 
 // IRQ handler for GPIOE 7
-void EXTI9_5_IRQHandler(void)
+void EXTI15_10_IRQHandler(void)
 {
 	// check status of GPIOE 11
-	if (EXTI_GetITStatus(EXTI_Line7) != RESET) {
+	if (EXTI_GetITStatus(EXTI_Line12) != RESET) {
 		// add pneumatic code here?	
-	  EXTI_ClearITPendingBit(EXTI_Line7);
+	  EXTI_ClearITPendingBit(EXTI_Line12);
 	}
 }
 
@@ -279,10 +288,11 @@ void EXTI9_5_IRQHandler(void)
 	*/
 void racket_update(void)    //determine whether the motor should run
 {
-	
+	// calibration mode
+	if (calibrate_mode_on) {
 		// update encoder values when switch is hit
-		if(GPIO_ReadInputDataBit(GPIOE, GPIO_Pin_7) != switch_stat) {
-			switch_stat = GPIO_ReadInputDataBit(GPIOE, GPIO_Pin_7);
+		if(GPIO_ReadInputDataBit(GPIOE, SERVE_SWITCH_PIN) != switch_stat) {
+			switch_stat = GPIO_ReadInputDataBit(GPIOE, SERVE_SWITCH_PIN);
 			if (switch_stat && racket_calibration_mode == 0) {
 				++switch_hit;
 				++switch_trigger_number;
@@ -297,9 +307,6 @@ void racket_update(void)    //determine whether the motor should run
 				current_encoder_value = get_encoder_value(MOTOR5);
 			}
 		}
-	// calibration mode
-	if (calibrate_mode_on) {
-		
 		// fast calibration
 		if (racket_calibration_mode == 1) {
 			if (switch_hit < 1) {
@@ -332,18 +339,16 @@ void racket_update(void)    //determine whether the motor should run
 	}
 	// regular mode
 	else if (calibrated) {
-		if (get_encoder_value(MOTOR5) >= target_encoder_value - turn_encoder_value / 8) {
-			// motor speed at 7/8 of swing
+		if (get_encoder_value(MOTOR5) >= target_encoder_value) {
 			current_encoder_value = get_encoder_value(MOTOR5);
 			motor_lock(MOTOR5);
 			current_speed = 0;
-		} else if (get_encoder_value(MOTOR5) <= target_encoder_value - turn_encoder_value * 2 / 3){
-			// motor speed at 1/3 of swing
+		}
+		else if (get_encoder_value(MOTOR5) <= target_encoder_value - turn_encoder_value / 2){
 			motor_set_vel(MOTOR5, -racket_speed, OPEN_LOOP);
 			current_speed = racket_speed;
 		} else {
-			// motor speed at 2/3 of swing
-			s32 vel_error = /* (target_encoder_value - get_encoder_value(MOTOR5))* racket_speed  / turn_encoder_value + */ SWING_RETURN_MIN_SPEED;
+			s32 vel_error = (target_encoder_value - get_encoder_value(MOTOR5))* racket_speed  / turn_encoder_value + SWING_RETURN_MIN_SPEED;
 			motor_set_vel(MOTOR5, -vel_error, OPEN_LOOP);
 			current_speed = vel_error;
 		}
@@ -378,15 +383,34 @@ void upper_hit(void){
 void open_upper_pneumatic(void)
 {
 	for (u8 i = 0; i < HIT_RACKET_NUMBER; ++i) {
-		GPIO_ResetBits(GPIOE, HIT_RACKET_PINS[i]);
+		GPIO_SetBits(GPIOD, HIT_RACKET_PINS[i]);
 	}
 }
 
 void close_upper_pneumatic(void)
 {
 	for (u8 i = 0; i < HIT_RACKET_NUMBER; ++i) {
-		GPIO_SetBits(GPIOE, HIT_RACKET_PINS[i]);
+		GPIO_ResetBits(GPIOD, HIT_RACKET_PINS[i]);
 	}
+}
+
+typedef struct {
+	u16 first_y_distance;
+	u16 second_y_distance;
+	u16 first_sense_time;
+	u16 second_sense_time;
+} ultrasonic_distance_data;
+
+static ultrasonic_distance_data ultra_data = {0, 0, 0, 0};
+static ultrasonic_distance_data reset_ultra_data = {0, 0, 0, 0};
+
+u16 sensor_calculate_delay(void) {
+	int dy = ultra_data.second_y_distance - ultra_data.first_y_distance;
+	int dt = ultra_data.second_sense_time - ultra_data.first_sense_time;
+	// linear extrapolation
+	int change_in_y = HIT_Y_DISTANCE - ultra_data.second_y_distance;
+	int time_to_hit = change_in_y * dt / dy;
+	return time_to_hit;
 }
 
 /**
@@ -401,8 +425,9 @@ void up_racket_sensor_check(void)
 	u8 tmp_detection = 0;
 	// If any sensors sense 
 	for (u8 id = 0; id < US_DEVICE_COUNT; ++id) {
-		if (us_get_distance(id) >= 50 && us_get_distance(id) <= 1000) {
+		if (us_get_distance(id) >= 50 && us_get_distance(id) <= 1500) {
 			tmp_detection = 1;
+			// experimental delay code
 		}
 	}
 	

@@ -166,8 +166,8 @@
         </DebugOption>
         <Utilities>
           <Flash1>
-            <UseTargetDll>0</UseTargetDll>
-            <UseExternalTool>1</UseExternalTool>
+            <UseTargetDll>1</UseTargetDll>
+            <UseExternalTool>0</UseExternalTool>
             <RunIndependent>1</RunIndependent>
             <UpdateFlashBeforeDebugging>1</UpdateFlashBeforeDebugging>
             <Capability>1</Capability>
@@ -363,7 +363,7 @@
             <useXO>0</useXO>
             <VariousControls>
               <MiscControls></MiscControls>
-              <Define>USE_STDPERIPH_DRIVER, STM32F10X_XL, USE_STM3210B_EVAL</Define>
+              <Define>USE_STDPERIPH_DRIVER, STM32F10X_XL, USE_STM3210B_EVAL, MAINBOARD_V4</Define>
               <Undefine></Undefine>
               <IncludePath>.\src;.\src\stm32f10x_std\inc;.\src\ustrobo_min_system\inc;.\src\user</IncludePath>
             </VariousControls>
@@ -439,14 +439,14 @@
               <FilePath>.\src\user\racket_control.c</FilePath>
             </File>
             <File>
-              <FileName>special_char_handler.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>.\src\user\special_char_handler.c</FilePath>
-            </File>
-            <File>
               <FileName>xbc_button.c</FileName>
               <FileType>1</FileType>
               <FilePath>.\src\user\xbc_button.c</FilePath>
+            </File>
+            <File>
+              <FileName>special_char_handler.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\src\user\special_char_handler.c</FilePath>
             </File>
             <File>
               <FileName>auto_timer.c</FileName>
@@ -459,14 +459,19 @@
           <GroupName>ustrobo</GroupName>
           <Files>
             <File>
+              <FileName>adc.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\src\ustrobo_min_system\src\adc.c</FilePath>
+            </File>
+            <File>
+              <FileName>adc_app.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\src\ustrobo_min_system\src\adc_app.c</FilePath>
+            </File>
+            <File>
               <FileName>approx_math.c</FileName>
               <FileType>1</FileType>
               <FilePath>.\src\ustrobo_min_system\src\approx_math.c</FilePath>
-            </File>
-            <File>
-              <FileName>battery.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>.\src\ustrobo_min_system\src\battery.c</FilePath>
             </File>
             <File>
               <FileName>bluetooth.c</FileName>
@@ -527,6 +532,11 @@
               <FileName>led.c</FileName>
               <FileType>1</FileType>
               <FilePath>.\src\ustrobo_min_system\src\led.c</FilePath>
+            </File>
+            <File>
+              <FileName>nec_mb.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\src\ustrobo_min_system\src\nec_mb.c</FilePath>
             </File>
             <File>
               <FileName>motor_pwm.c</FileName>

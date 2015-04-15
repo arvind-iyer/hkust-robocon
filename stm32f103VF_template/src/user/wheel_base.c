@@ -335,6 +335,7 @@ void wheel_base_set_target_pos(POSITION pos)
 void wheel_base_pid_on(void)
 {
 	wheel_base_pid_flag = 1;
+	wheel_base_set_target_pos(*get_pos());
 }
 
 void wheel_base_pid_off(void)
