@@ -42,10 +42,16 @@
 *.William
 *.Kenneth Au
 *.Hp User
+*.Antony
 
 # Keil Project Incomplete Compilation
 *._ia
 *.__i
+
+# Visual Studio Project Ignorable Files
+*.sdf
+*.suo
+*.vcxproj.user
 
 #Jlink log
 JLinkLog.txt
