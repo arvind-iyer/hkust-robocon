@@ -123,6 +123,6 @@ void button_event_update(void)
 		racket_in();
 		low_racket_move();
 	}
-	if ( button_pressed(BUTTON_XBC_Y) || button_pressed(BUTTON_XBC_B) || button_pressed(BUTTON_XBC_X) )
+	if ( button_pressed(BUTTON_XBC_Y) || button_pressed(BUTTON_XBC_B) )
 		low_racket_stop();
 }
