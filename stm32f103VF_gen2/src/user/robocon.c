@@ -2,8 +2,7 @@
 
 static u16 ticks_img 	= (u16)-1;
 
-void robocon_main(void)
-{
+void robocon_main(void) {
   // Send the acceleration data
 	wheel_base_tx_acc();
 
@@ -72,12 +71,9 @@ void robocon_main(void)
 					get_high_switch() ? "[(HIGH)]" : "(HIGH)"//,
 					//get_high_mode()
 				);
-			  //tft_prints(0, 7, "[%d] [%d] [%d] [%d]", get_mvtl(), get_mvtr(), get_mvbl(), get_mvbr());
-				tft_prints(0, 7, "%d, %d", get_low_speed(), get_high_speed() );
+				tft_prints(0, 7, "%d, %d", get_low_speed() );
 				//tft_prints(0, 8, "%d, %d, %d", get_PID_err_diff_x(),get_PID_err_diff_y (),get_PID_err_diff_w());
-				tft_prints(0, 8, "%d %d", racket_current_time(), high_racket_move_time());
-				//tft_prints(0, 9, "count: %d",get_change_count ());	
-				tft_prints(0, 9, "%d", racket_current_time() - high_racket_move_time());
+				//tft_prints(0, 9, "count: %d",get_change_count ());
 				tft_update();
 				NVIC_EnableIRQ(EXTI15_10_IRQn);
 			}

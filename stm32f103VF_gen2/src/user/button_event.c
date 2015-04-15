@@ -63,10 +63,6 @@ void button_event_update(void)
 		home_pressed_before = false;
 	}
 	
-	if (xbc_get_joy(XBC_JOY_RY)<0 && xbc_get_joy(XBC_JOY_RX)==0) {
-		low_racket_standby();
-	}
-	
 	// Speed mode adjustment
 	if ( speed_button_released_before && (button_pressed(BUTTON_XBC_START) || button_pressed(BUTTON_XBC_BACK) ) ) {
 		u8 speed_mode = wheel_base_get_speed_mode();

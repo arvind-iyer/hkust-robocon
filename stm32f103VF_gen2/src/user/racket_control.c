@@ -15,13 +15,6 @@ static bool request_low_racket_move = 0;
 static u32  request_low_racket_move_time = 0;
 static bool use_high_switch = false;
 
-// Higher racket variables
-static u8   high_racket_mode = 0;
-static s32  high_racket_speed = 240;
-static bool request_high_racket_move = 0;
-static u32  request_high_racket_move_time = 0;
-
-
 void low_racket_move(void) {
 	request_low_racket_move = 1;
 	request_low_racket_move_time = get_full_ticks();
@@ -31,21 +24,10 @@ void low_racket_stop() {
 	request_low_racket_move = 0;
 }
 
-void low_racket_standby(void) {
-	low_racket_mode = 2;
-	request_low_racket_move = 1;
-	request_low_racket_move_time = get_full_ticks();
-}
-
 void sensor_init(void) {
 }
 
 void racket_init(void) {
-	register_special_char_function('/', low_racket_move);
-	register_special_char_function('.', low_racket_standby);
-
-	// register_special_char_function('m', high_racket_move);
-	
 	/* GPIO configuration */
 	RCC_APB2PeriphClockCmd(RCC_APB2Periph_GPIOE, ENABLE);
 	GPIO_InitTypeDef GPIO_InitStructure;
@@ -72,7 +54,6 @@ void racket_update(void) {
 	}
 	
 	low_racket_update();
-	//high_racket_update();
 }
 
 
@@ -95,13 +76,6 @@ void low_racket_update() {
 			request_low_racket_move = 0;
 			stop_flag = 0;
 		}
-	} else if (low_racket_mode == 2) {
-		low_racket_speed = 500;
-		if (current_time - request_low_racket_move_time > 300) {
-			low_racket_mode = 1;
-			request_low_racket_move = 0;
-			stop_flag = 0;
-		}
 	} else {
 		low_racket_speed = 240;
 		request_low_racket_move = 0;
@@ -117,9 +91,7 @@ void low_racket_update() {
 
 s32 racket_current_time(void) { return current_time; }
 u32 low_racket_move_time(void) { return request_low_racket_move_time; }
-u32 high_racket_move_time(void) { return request_high_racket_move_time; }
 s32 get_low_speed(void) { return low_racket_speed; }
-s32 get_high_speed(void) { return high_racket_speed; }
 bool get_low_switch(void) { return low_switch; }
 bool get_high_switch(void) { return high_switch; }
 u8 get_low_mode(void) { return low_racket_mode; }
