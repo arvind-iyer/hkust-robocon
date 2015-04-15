@@ -1,3 +1,9 @@
+# OSX junk
+*.DS_Store
+
+# Release
+Release/*
+!Release/*.hex
 
 *.axf
 
