@@ -66,11 +66,11 @@ void robocon_main(void)
           s[0] = '\\';
         }
 				//tft_prints(0, 6, "<[%d],[%d],[%d]>", wheel_base_get_vel_prev().x, wheel_base_get_vel_prev().y, wheel_base_get_vel_prev().w );
-				tft_prints(0, 6, "%s %d %s %d",
+				tft_prints(0, 6, "%s %d %s",
 					get_low_switch() ? "[(LOW)]" : "(LOW)",
 					get_low_mode(),
-					get_high_switch() ? "[(HIGH)]" : "(HIGH)",
-					get_high_mode()
+					get_high_switch() ? "[(HIGH)]" : "(HIGH)"//,
+					//get_high_mode()
 				);
 			  //tft_prints(0, 7, "[%d] [%d] [%d] [%d]", get_mvtl(), get_mvtr(), get_mvbl(), get_mvbr());
 				tft_prints(0, 7, "%d, %d", get_low_speed(), get_high_speed() );

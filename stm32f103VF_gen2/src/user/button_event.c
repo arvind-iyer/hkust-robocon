@@ -116,8 +116,13 @@ void button_event_update(void)
 	}
 	
 	// Rackets & sensors
-	if ( button_pressed(BUTTON_XBC_A) )
+	if ( button_pressed(BUTTON_XBC_X) ) {
+		racket_out();
 		low_racket_move();
+	} else if ( button_pressed(BUTTON_XBC_A) ) {
+		racket_in();
+		low_racket_move();
+	}
 	if ( button_pressed(BUTTON_XBC_Y) || button_pressed(BUTTON_XBC_B) || button_pressed(BUTTON_XBC_X) )
-		high_racket_move();
+		low_racket_stop();
 }
