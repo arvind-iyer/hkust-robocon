@@ -7,7 +7,6 @@
 #include "stm32f10x_exti.h"
 #include "robocon.h"
 
-
 void sensors_update(void);
 
 #endif

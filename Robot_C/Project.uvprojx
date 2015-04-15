@@ -453,6 +453,11 @@
               <FileType>1</FileType>
               <FilePath>.\src\user\serve.c</FilePath>
             </File>
+            <File>
+              <FileName>sensors.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\src\user\sensors.c</FilePath>
+            </File>
           </Files>
         </Group>
         <Group>

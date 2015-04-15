@@ -16,8 +16,9 @@
 #include "xbc_mb.h"
 #include "button.h"
 #include "encoder.h"
+#include "ultrasonic_mb.h"
   //'C' or 'D'
-#define ROBOT 'C'
+#define ROBOT 'D'
 
 
 /*** Optional ***/

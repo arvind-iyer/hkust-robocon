@@ -319,7 +319,7 @@ void robocon_main(void)
 			if (ticks_img%2 == 1)
 			{
 				if (!serve_prioritized())
-					//sensors_update();			// only update sensors when serve is not prioritized.
+					sensors_update();			// only update sensors when serve is not prioritized.
 				racket_update();
 			}
 			if (ticks_img % 10 == 0) {

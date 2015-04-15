@@ -22,14 +22,15 @@ static u32 racket_pneu_2_start_time = 0;
 
 void racket_pneumatic_set(bool data)		// 
 {
-	gpio_write(&PD8, data);
+	gpio_write(PNEU_GPIO, data);
+	log("pneu",is_pneu_extended);
 }
 
 
 void racket_pneumatic_2_set(bool data)	// for robot C
 {
 	gpio_write(PNEU_GPIO_DOWN, data);
-	//log("pneu2",is_pneu_2_extended);
+	log("pneu2",is_pneu_2_extended);
 }
 
 //Called ever 10ms to check and update racket data and redirect to starting and stopping racket at required points
