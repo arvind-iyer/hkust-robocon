@@ -1,9 +1,4 @@
-# OSX junk
-*.DS_Store
-
-# Release
-Release/*
-!Release/*.hex
+# Keil Project junk
 
 *.axf
 
@@ -15,9 +10,9 @@ Release/*
 
 *.htm
 
-*.hex
-
 *.lnp
+
+*.hex
 
 *.o
 
@@ -28,3 +23,11 @@ Release/*
 *._ia
 
 *.__i
+
+
+# OSX junk
+*.DS_Store
+
+# Release
+STM32F4/Release/*
+!STM32F4/Release/*.hex
