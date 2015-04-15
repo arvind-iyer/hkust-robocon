@@ -94,13 +94,13 @@ void racket_update(void)
 	
 }
 
-void racket_delayed_hit(void)
+void racket_delayed_hit(int delay)
 {
-	if(!is_pneu_extended)
+	if(!is_pneu_extended && !racket_delayed_hit_queued)
 	{
 		racket_delayed_hit_queued=1;
 		racket_delayed_hit_start_time=get_full_ticks();
-		
+		RACKET_HIT_DELAY_TIME = delay;
 	}
 	
 	

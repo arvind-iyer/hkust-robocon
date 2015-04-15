@@ -36,7 +36,7 @@
 //#define KEY_HIT_RACKET 'k'
 
 #define LASER_GPIO &PE7
-#define PNEU_GPIO ROBOT=='C'?&PB9:&PD10
+#define PNEU_GPIO ROBOT=='C'?&PB9:&PD9
 #define PNEU_GPIO_DOWN &PD9
 
 static u16 RACKET_HIT_DELAY_TIME = 100;
@@ -45,7 +45,7 @@ static u16 RACKET_HIT_DELAY_TIME = 100;
 
 void racket_update(void);
 
-void racket_delayed_hit(void);
+void racket_delayed_hit(int delay);
 void racket_down_hit(void);
  void racket_hit(void);
 void racket_pneumatic_set(bool);

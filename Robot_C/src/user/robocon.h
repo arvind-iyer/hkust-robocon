@@ -33,11 +33,11 @@
 #include "gyro.h"
 #include "bluetooth.h"
 #include "wheel_base.h"
+#include "sensors.h"
 #include "racket.h"
 #include "serve.h"
 #include "xbc_mb.h"
 #include "log.h"
-
 
 
 void robocon_main(void);

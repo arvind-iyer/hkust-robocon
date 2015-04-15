@@ -142,6 +142,7 @@ void robot_d_function_controls(void)
 	if (button_pressed(BUTTON_XBC_LB) && button_pressed(BUTTON_XBC_Y))
 		serve_change_delay(-1);
 	else if (button_pressed(BUTTON_XBC_RB) && button_pressed(BUTTON_XBC_Y))
+		
 		serve_change_delay(1);
 	else if (button_pressed(BUTTON_XBC_LB))
 		serve_change_vel(-2);
@@ -308,7 +309,11 @@ void robocon_main(void)
 			
 			ticks_img = get_ticks();
 			if (ticks_img%2 == 1)
+			{
+				if (!serve_prioritized())
+					sensors_update();			// only update sensors when serve is not prioritized.
 				racket_update();
+			}
 			if (ticks_img % 10 == 0) {
         //wheel_base_update();	//wheel_base_update now also handles auto positioning system
 				bluetooth_update();
