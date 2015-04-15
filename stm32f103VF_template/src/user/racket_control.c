@@ -28,7 +28,7 @@ static u16 current_speed = 0;
 
 static u16 racket_speed = 1500;		//tested best result
 static u16 racket_speed_adjust_time = 0;
-static u16 racket_delay = 306;    //tested best result
+static u16 racket_delay = 310;    //tested best result
 static u16 racket_delay_adjust_time = 0;
 
 // hitting static variables
@@ -270,7 +270,6 @@ void racket_init(void)
 	close_upper_pneumatic();
 
 	switch_stat = GPIO_ReadInputDataBit(GPIOE, SERVE_SWITCH_PIN);
-	enable_ultrasonic_sensor();
 }
 
 // IRQ handler for GPIOE 7
@@ -425,7 +424,7 @@ void up_racket_sensor_check(void)
 	u8 tmp_detection = 0;
 	// If any sensors sense 
 	for (u8 id = 0; id < US_DEVICE_COUNT; ++id) {
-		if (us_get_distance(id) >= 50 && us_get_distance(id) <= 1500) {
+		if (us_get_distance(id) >= 50 && us_get_distance(id) <= 1400) {
 			tmp_detection = 1;
 			// experimental delay code
 		}

@@ -192,8 +192,8 @@ void gyro_rx_handler(u8 rx_data)
               
               // Calculate the corrected position
               /** TODO: Cancel the offset, varies along the robots **/
-              gyro_pos.x = X_FLIP * gyro_pos_raw.x;
-              gyro_pos.y = Y_FLIP * gyro_pos_raw.y;
+              gyro_pos.x = X_FLIP * gyro_pos_raw.x - (349 * int_sin(gyro_pos_raw.angle + 1902) / 10000 + 62);
+              gyro_pos.y = Y_FLIP * gyro_pos_raw.y - (349 * int_sin(gyro_pos_raw.angle + 2800) / 10000 + 344);
               gyro_pos.angle = gyro_pos_raw.angle;
               
 						} else {

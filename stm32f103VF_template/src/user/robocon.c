@@ -66,9 +66,9 @@ void robocon_main(void)
 					wheel_base_override_change_speed();
 				}
 				*/
-				if (BUTTON_ENTER_LISTENER()) {
-					robot_timer.start();
-				}
+				//if (BUTTON_ENTER_LISTENER()) {
+				//	robot_timer.start();
+				//}
 			}
 			
 			if (ticks_img % 50 == 7) {

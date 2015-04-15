@@ -7,8 +7,11 @@
 #include "buzzer.h"
 
 const int SPEED_CHANGE_TIMEOUT = 150;
+const int PNEUMATIC_CHANGE_TIMEOUT = 300;
+
 static u32 last_decreased_speed = 0;
 static u32 last_increased_speed = 0;
+static u32 last_toggled_pneumatic = 0;
 
 static u32 xbc_last_received_nonzero_speed_timer = 0;
 
@@ -28,7 +31,16 @@ void xbc_button_handler(void)
 	
 	if (button_pressed(BUTTON_XBC_B))
 	{
-		close_pneumatic();
+		static bool pneumatic_stat = 0;
+		if ((get_full_ticks() - last_toggled_pneumatic) > PNEUMATIC_CHANGE_TIMEOUT) {
+			if (pneumatic_stat) {
+				close_pneumatic();
+			} else {
+				open_pneumatic();
+			}
+			pneumatic_stat = !pneumatic_stat;
+			last_toggled_pneumatic = get_full_ticks();
+		}
 	}
 	
 	if (button_pressed(BUTTON_XBC_X))
@@ -84,17 +96,17 @@ void xbc_button_handler(void)
 	if (xbc_get_joy(XBC_JOY_RX)) {
 		if (xbc_get_joy(XBC_JOY_RX) > 0 && (get_full_ticks() - last_increased_speed) > SPEED_CHANGE_TIMEOUT) {
 			u8 speed_mode = wheel_base_get_speed_mode();
-			speed_mode = (speed_mode + 1) % 10;
+			if (speed_mode < 9) {
+				++speed_mode;
+			}
 			MUSIC_NOTE speed_changed_sound[] = {{(MUSIC_NOTE_LETTER)(speed_mode + 1), 6}, NOTE_END};
 			buzzer_play_song(speed_changed_sound, 50, 0);
 			wheel_base_set_speed_mode(speed_mode);
 			last_increased_speed = get_full_ticks();
 		} else if (xbc_get_joy(XBC_JOY_RX) < 0 && (get_full_ticks() - last_decreased_speed) > SPEED_CHANGE_TIMEOUT) {
 			u8 speed_mode = wheel_base_get_speed_mode();
-			if (speed_mode == 0)
+			if (speed_mode > 0)
 			{
-				speed_mode = 9;
-			} else {
 				--speed_mode;
 			}
 			MUSIC_NOTE speed_changed_sound[] = {{(MUSIC_NOTE_LETTER)(speed_mode + 1), 6}, NOTE_END};

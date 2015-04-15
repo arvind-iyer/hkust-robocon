@@ -54,7 +54,7 @@ int main(void)
 	menu_add("NEC test", nec_mb_test);
 	menu_add("Ultra. test", us_mb_test);
   
-	menu(0, false);
+	menu(0, true);
 	
 }
 
