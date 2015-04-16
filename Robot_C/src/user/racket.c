@@ -36,9 +36,13 @@ void racket_pneumatic_2_set(bool data)	// for robot C
 //Called ever 10ms to check and update racket data and redirect to starting and stopping racket at required points
 void racket_update(void)
 {
+	
+	// if robot is D, calls serve update.
 	if (ROBOT=='D')
 		serve_update();
 	
+	
+	// calls racket_hit() after delay, if triggered by racket_delayed_hit();
 	if (racket_delayed_hit_queued && get_full_ticks() > racket_delayed_hit_start_time + RACKET_HIT_DELAY_TIME)
 	{
 		racket_delayed_hit_queued=0;
@@ -46,6 +50,7 @@ void racket_update(void)
 		log("rac delayed hit",0);
 	}
 	
+	// puts pneumatic racket back to its original posture after some delay.
 	if(is_pneu_extended && (get_full_ticks() > racket_pneu_start_time + 500/*RACKET_SERVE_DELAY*/))
 	{
 		is_pneu_extended = 0;

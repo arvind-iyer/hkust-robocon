@@ -8,8 +8,11 @@ static bool key_trigger_enable = true;
 static bool servo_released = false;
 static bool use_xbc_input = false;
 
+// debug purpose
 static u16 prev_ticks=-1;
+// debug purpose
 static u16 tick_skip_count=0;
+static s16 debug_purpose_process_time=0;
 
 bool serve_pneu_button_enabled=1;
 bool robot_xbc_controls(void)
@@ -293,6 +296,10 @@ void robocon_main(void)
 	
 	gpio_init(&PE11, GPIO_Speed_10MHz, GPIO_Mode_IPU, 1);	// Mechanical switch ROBOT D Gen2
 	gpio_init(&PE5, GPIO_Speed_10MHz, GPIO_Mode_IPU, 1);	// Shuttlecock Holder button for ROBOT D Gen2
+	
+	gpio_init(&PA4,GPIO_Speed_50MHz, GPIO_Mode_IPD,1);		// laser sensor
+	gpio_init(&PA6,GPIO_Speed_50MHz, GPIO_Mode_IPD,1);	// laser sensor grid 2
+	gpio_init(&PA7,GPIO_Speed_50MHz, GPIO_Mode_IPD,1);	// laser sensor grid 3
 	//gpio_init(&);
 	//gpio_init(&PE7, GPIO_Speed_50MHz, GPIO_Mode_IPU, 0);		// laser sensor GPIO IN
 	
@@ -309,6 +316,16 @@ void robocon_main(void)
 	
 	log("XBC=",xbc_get_connection());
 	
+	
+	
+	/*
+	
+	LETS TAkE A GREAT CARE ABOUT PROCESS OPTIMIZATION, ESPECIALLY WHILE SERVING.
+	
+	LOT OF TIMES IT SEEMS THAT DOING LOT OF STUFF MAKES SERVING UNRESPONSIVE.
+	
+	WE ARE STILL GETTING A LOT OF SERVING BUGS.
+	*/
 	while (1) {
 		if (ticks_img != get_ticks()) {
 			if (prev_ticks!=ticks_img-1)
@@ -326,41 +343,35 @@ void robocon_main(void)
         //wheel_base_update();	//wheel_base_update now also handles auto positioning system
 				bluetooth_update();
         handle_bluetooth_input();
- 
-        button_update();
 				// Every 10 ms (100 Hz)
          if (return_listener()) {
           return;
         }
 			}
+			#warning debug process time calculation is being carried out by HongJoon. disable
+			debug_purpose_process_time += get_ticks()-ticks_img;
 			
 			// Serve optimization applied wheel_base update
 			if (!serve_prioritized() && ticks_img % 5 == 1) {
         wheel_base_update();
 			}
-				
-				
-			if (ticks_img % 250 == 1) {
-				// Every 250 ms (4 Hz)
-				//battery_adc_update();
-			}
-			
 			
 			if (get_seconds() % 10 == 2 && ticks_img == 2) {
 				// Every 10 seconds (0.1 Hz)
 				battery_regular_check();
 			}
-
+			
+			/*
       if (ticks_img % 100 == 3) {
 				if(special_char_handler_bt_get_last_char() == 'k')
 				{
 					tft_prints(0,7, "HIT");
 					tft_update();
 				}
-      }
+      }*/
 			
-			if (ticks_img % 100 == 3) {
-				// Every 100 ms (10 Hz)
+			if (ticks_img % 200 == 3) {
+				// Every 200 ms (5 Hz)
 				wheel_base_tx_position();
 			}
 			
@@ -400,8 +411,8 @@ void robocon_main(void)
 				tft_prints(0,3,"SHIT: (%d, %d)", gyro_get_shift_x(), gyro_get_shift_y());
 				//tft_prints(0,3,"XBC: %d", connect);
 				//tft_prints(0,3,"Serve_delay: %d",serve_get_delay());
-				tft_prints(0,4, "pneu= %d", gpio_read_input(&PB9));
-				//tft_prints(0,4, "skipTick %d", tick_skip_count);
+				//tft_prints(0,4, "pneu= %d", gpio_read_input(&PB9));
+				tft_prints(0,4, "processTime %d", debug_purpose_process_time);
 				//tft_prints(0,4, "Serve_prior %d", serve_prioritized());
 				//tft_prints(0,2, "x%d y%d", gyro_get_shift_x(), gyro_get_shift_y());
 				//tft_prints(0,7, "LASER%d %d", gpio_read_input(LASER_GPIO),racket_get_laser_hit_delay);
