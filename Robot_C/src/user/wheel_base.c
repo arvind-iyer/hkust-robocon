@@ -214,10 +214,10 @@ void wheel_base_update(void)
   
     */
 	
-	motor_set_vel(MOTOR_BOTTOM_RIGHT, XY_BR_SCALE /100 * WHEEL_BASE_XY_VEL_RATIO * (wheel_base_vel.x + wheel_base_vel.y) / 1000 + WHEEL_BASE_W_VEL_RATIO * wheel_base_vel.w / 1000, wheel_base_close_loop_flag);
-	motor_set_vel(MOTOR_BOTTOM_LEFT,	XY_BL_SCALE /100 * WHEEL_BASE_XY_VEL_RATIO * (wheel_base_vel.x - wheel_base_vel.y) / 1000 + WHEEL_BASE_W_VEL_RATIO * wheel_base_vel.w / 1000, wheel_base_close_loop_flag);
-	motor_set_vel(MOTOR_TOP_LEFT,			XY_TL_SCALE /100 * WHEEL_BASE_XY_VEL_RATIO * (-wheel_base_vel.x - wheel_base_vel.y) / 1000 + WHEEL_BASE_W_VEL_RATIO * wheel_base_vel.w / 1000, wheel_base_close_loop_flag);
-	motor_set_vel(MOTOR_TOP_RIGHT,		XY_TR_SCALE /100 * WHEEL_BASE_XY_VEL_RATIO * (-wheel_base_vel.x + wheel_base_vel.y) / 1000 + WHEEL_BASE_W_VEL_RATIO * wheel_base_vel.w / 1000, wheel_base_close_loop_flag);
+	motor_set_vel(MOTOR_BOTTOM_RIGHT, XY_BR_SCALE  * (WHEEL_BASE_XY_VEL_RATIO * (wheel_base_vel.x + wheel_base_vel.y) / 1000 + WHEEL_BASE_W_VEL_RATIO * wheel_base_vel.w / 1000)/100, wheel_base_close_loop_flag);
+	motor_set_vel(MOTOR_BOTTOM_LEFT,	XY_BL_SCALE  * (WHEEL_BASE_XY_VEL_RATIO * (wheel_base_vel.x - wheel_base_vel.y) / 1000 + WHEEL_BASE_W_VEL_RATIO * wheel_base_vel.w / 1000)/100, wheel_base_close_loop_flag);
+	motor_set_vel(MOTOR_TOP_LEFT,			XY_TL_SCALE  * (WHEEL_BASE_XY_VEL_RATIO * (-wheel_base_vel.x - wheel_base_vel.y) / 1000 + WHEEL_BASE_W_VEL_RATIO * wheel_base_vel.w / 1000)/100, wheel_base_close_loop_flag);
+	motor_set_vel(MOTOR_TOP_RIGHT,		XY_TR_SCALE  * (WHEEL_BASE_XY_VEL_RATIO * (-wheel_base_vel.x + wheel_base_vel.y) / 1000 + WHEEL_BASE_W_VEL_RATIO * wheel_base_vel.w / 1000)/100, wheel_base_close_loop_flag);
 
 	wheel_base_vel_prev.x = wheel_base_vel.x;
 	wheel_base_vel_prev.y = wheel_base_vel.y;
