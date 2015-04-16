@@ -12,7 +12,7 @@ static u32 wheel_base_bluetooth_vel_last_update = 0;
 
 static const u8 WHEEL_BASE_PID_MANUAL_SPEED = 15;
 		
-static int wheel_base_acc = 300;
+static int wheel_base_acc = 125;
 
 // static u32 wheel_base_last_can_tx = 0;
 		

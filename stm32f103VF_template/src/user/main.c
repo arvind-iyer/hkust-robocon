@@ -36,6 +36,10 @@ int main(void)
 
 	system_start(1200);
 	
+	#warning UGLY HACK
+
+	while(gyro_pos_set(0, 4700, 0));
+	
 	menu_add("Robot A Prog", robocon_main);
 	menu_add("Position test", position_test);
 	menu_add("Motor test", motor_test);

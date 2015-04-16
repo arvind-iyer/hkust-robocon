@@ -137,7 +137,7 @@ void set_starting_pos(void)
 // function to set PID directly to serving position
 void set_serving_pos(void)
 {
-	POSITION target_pos = {343, 4293, 0};
+	POSITION target_pos = {617, 4108, 0};
 	wheel_base_set_target_pos(target_pos);
 	disable_ultrasonic_sensor();
 }
@@ -145,7 +145,7 @@ void set_serving_pos(void)
 // returning pos is the position to return the ball on the non-yellow zone side of the field
 void set_returning_pos(void)
 {
-	POSITION target_pos = {-1373, 2404, 0};
+	POSITION target_pos = {2016, 2351, 0};
 	wheel_base_set_target_pos(target_pos);
 	enable_ultrasonic_sensor();
 }
@@ -255,8 +255,8 @@ void wheel_base_pid_update(void)
 	if (wheel_base_get_pid_flag() == 1 && gyro_calibrated) {
 		
 		// do not calculate PID if adjusting manually after PID is reached
-		if ((get_full_ticks() - wheel_base_get_last_manual_timer()) < BLUETOOTH_WHEEL_BASE_TIMEOUT + 400 ||
-			(get_full_ticks() - xbc_get_received_nonzero_speed_timer()) < BLUETOOTH_WHEEL_BASE_TIMEOUT + 400) {
+		if ((get_full_ticks() - wheel_base_get_last_manual_timer()) < BLUETOOTH_WHEEL_BASE_TIMEOUT + 700 ||
+			(get_full_ticks() - xbc_get_received_nonzero_speed_timer()) < BLUETOOTH_WHEEL_BASE_TIMEOUT + 700) {
 			wheel_base_set_target_pos(*get_pos());
 			reset_pid();
 			return;

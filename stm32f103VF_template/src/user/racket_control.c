@@ -1,5 +1,7 @@
 #include "racket_control.h"
 #include "delay.h"
+#include "approx_math.h"
+#include "buzzer.h"
 
 // calibrate mode static variables
 static bool calibrate_mode_on = false;
@@ -10,7 +12,7 @@ static s32 current_encoder_value = 0;
 static s32 target_encoder_value = 0;
 static s32 turn_encoder_value = 0;
 static const u16 CALIBRATE_SPEED = 15;
-static const u16 SWING_RETURN_MIN_SPEED = 20;
+static const u16 SWING_RETURN_MIN_SPEED = 15;
 
 // serving static variables
 static bool serving_started = false;
@@ -25,8 +27,11 @@ static bool racket_enable = false;
 static bool sensor_on = false;
 
 static u16 current_speed = 0;
+static bool racket_hit = false;
+static u16 racket_hit_ticks = 0;
 
-static u16 racket_speed = 1500;		//tested best result
+static u16 racket_speed = 1600;		//tested best result
+static u16 close_loop_racket_speed = 60;
 static u16 racket_speed_adjust_time = 0;
 static u16 racket_delay = 310;    //tested best result
 static u16 racket_delay_adjust_time = 0;
@@ -101,7 +106,7 @@ u8 get_switch_trigger_number(void) {
 
 // internal functions (special char functions)
 static void increase_racket_speed() {
-	if(racket_speed < 1800 && get_full_ticks() - racket_speed_adjust_time > 80)
+	if(racket_speed < 1800 && get_full_ticks() - racket_speed_adjust_time > 200)
 	{
 		racket_speed_adjust_time = get_full_ticks();
 		racket_speed += 5;
@@ -109,7 +114,7 @@ static void increase_racket_speed() {
 }
 
 static void decrease_racket_speed() {
-	if(racket_speed > 0 && get_full_ticks() - racket_speed_adjust_time > 80)
+	if(racket_speed > 0 && get_full_ticks() - racket_speed_adjust_time > 200)
 	{
 		racket_speed_adjust_time = get_full_ticks();
 		racket_speed -= 5;
@@ -117,14 +122,14 @@ static void decrease_racket_speed() {
 }
 
 static void increase_racket_delay() {
-	if(get_full_ticks() - racket_delay_adjust_time > 80) {
+	if(get_full_ticks() - racket_delay_adjust_time > 200) {
 		racket_delay_adjust_time = get_full_ticks();
 		racket_delay += 1;
 	}
 }
 
 static void decrease_racket_delay() {
-	if(get_full_ticks() - racket_delay_adjust_time > 80) {
+	if(get_full_ticks() - racket_delay_adjust_time > 200) {
 		if(racket_delay > 0) {
 			racket_delay_adjust_time = get_full_ticks();
 			racket_delay -= 1;
@@ -146,10 +151,13 @@ void close_pneumatic(void)
 
 void serving(void){
 	// check if pneumatic is closed before serving
-	if (GPIO_ReadInputDataBit(GPIOE, SERVE_RACKET_PIN)) {
+	if (GPIO_ReadInputDataBit(GPIOE, SERVE_RACKET_PIN) && calibrated && !racket_hit) 
+	{
 		open_pneumatic();
 		serving_started = true;
 		serving_started_time = get_full_ticks();
+		racket_hit = true;
+		racket_hit_ticks = get_full_ticks();
 	}
 }
 
@@ -270,14 +278,16 @@ void racket_init(void)
 	close_upper_pneumatic();
 
 	switch_stat = GPIO_ReadInputDataBit(GPIOE, SERVE_SWITCH_PIN);
+	
+	motor_set_acceleration(MOTOR5, 1000);
 }
 
-// IRQ handler for GPIOE 7
+// IRQ handler for GPIOE 12
 void EXTI15_10_IRQHandler(void)
 {
-	// check status of GPIOE 11
+	// check status of GPIOE 12
 	if (EXTI_GetITStatus(EXTI_Line12) != RESET) {
-		// add pneumatic code here?	
+		// Switch handling?
 	  EXTI_ClearITPendingBit(EXTI_Line12);
 	}
 }
@@ -335,19 +345,35 @@ void racket_update(void)    //determine whether the motor should run
 			serving_started_time = 0;
 			racket_calibration_mode = 1;
 		}
+		if (get_full_ticks() - racket_hit_ticks > 1500) {
+			racket_hit = false;
+		}
 	}
 	// regular mode
 	else if (calibrated) {
-		if (get_encoder_value(MOTOR5) >= target_encoder_value) {
-			current_encoder_value = get_encoder_value(MOTOR5);
-			motor_lock(MOTOR5);
-			current_speed = 0;
+		if (get_encoder_value(MOTOR5) > target_encoder_value) {
+			motor_set_vel(MOTOR5, 20, CLOSE_LOOP);
+			current_speed = -20;
+		} else if (get_encoder_value(MOTOR5) <= target_encoder_value && get_encoder_value(MOTOR5) >= target_encoder_value - turn_encoder_value / 8) {
+			if (racket_hit && get_full_ticks() - racket_hit_ticks > 1200) {
+				racket_calibrate();
+			} else {
+				current_encoder_value = get_encoder_value(MOTOR5);
+				motor_lock(MOTOR5);
+				current_speed = 0;
+			}
 		}
-		else if (get_encoder_value(MOTOR5) <= target_encoder_value - turn_encoder_value / 2){
+		else if (get_encoder_value(MOTOR5) <= target_encoder_value - turn_encoder_value * 2 / 3){
 			motor_set_vel(MOTOR5, -racket_speed, OPEN_LOOP);
 			current_speed = racket_speed;
 		} else {
-			s32 vel_error = (target_encoder_value - get_encoder_value(MOTOR5))* racket_speed  / turn_encoder_value + SWING_RETURN_MIN_SPEED;
+
+			s32 vel_error = (target_encoder_value - get_encoder_value(MOTOR5))* racket_speed  / turn_encoder_value;
+			/* 
+			if (vel_error < SWING_RETURN_MIN_SPEED) { 
+				vel_error = SWING_RETURN_MIN_SPEED; 
+			}
+			*/
 			motor_set_vel(MOTOR5, -vel_error, OPEN_LOOP);
 			current_speed = vel_error;
 		}
@@ -394,22 +420,72 @@ void close_upper_pneumatic(void)
 }
 
 typedef struct {
-	u16 first_y_distance;
-	u16 second_y_distance;
-	u16 first_sense_time;
-	u16 second_sense_time;
+	u16 y_distance;
+	u16 sense_time;
 } ultrasonic_distance_data;
 
-static ultrasonic_distance_data ultra_data = {0, 0, 0, 0};
-static ultrasonic_distance_data reset_ultra_data = {0, 0, 0, 0};
+typedef struct {
+	int dy;
+	int dt;
+} ultrasonic_velocity_data;
 
-u16 sensor_calculate_delay(void) {
-	int dy = ultra_data.second_y_distance - ultra_data.first_y_distance;
-	int dt = ultra_data.second_sense_time - ultra_data.first_sense_time;
-	// linear extrapolation
-	int change_in_y = HIT_Y_DISTANCE - ultra_data.second_y_distance;
-	int time_to_hit = change_in_y * dt / dy;
-	return time_to_hit;
+typedef struct {
+	int acceleration;
+	int number_of_averages;
+} ultrasonic_accel_data;
+
+static ultrasonic_distance_data ultra_data = {0, 0};
+static ultrasonic_distance_data reset_ultra_data = {0, 0};
+
+const static u8 shuttle_acceleration_scale_factor = 100; // acceleration scaled by 100
+static ultrasonic_accel_data shuttle_acceleration = {0, 0};
+
+static ultrasonic_velocity_data prev_shuttle_velocity = {0, 0};
+static int global_delay = 0;
+static u16 sensor_last_sensed_time = 0;
+
+s32 sensor_calculate_delay(u16 second_y_distance) {
+	// calculate the current velocity
+	if (ultra_data.y_distance == 0 || ultra_data.sense_time == 0) {
+		ultra_data.y_distance = second_y_distance;
+		ultra_data.sense_time = get_full_ticks();
+		return -1;
+	}
+	int dy2 = second_y_distance - ultra_data.y_distance;
+	int dt2 = get_full_ticks() - ultra_data.sense_time;
+	
+	bool average_calculated = false;
+	// use velocity to find acceleration, only if a previous shuttle velocity exists
+	buzzer_control_note(5, 50, NOTE_D, 7);
+	
+	if (prev_shuttle_velocity.dy != 0 && prev_shuttle_velocity.dt != 0) {
+		average_calculated = true;
+		// (v2 - v1) / (t2 - t1)
+		int acceleration = (dy2 * prev_shuttle_velocity.dt - prev_shuttle_velocity.dy * dt2) * shuttle_acceleration_scale_factor / (prev_shuttle_velocity.dt * dt2 * prev_shuttle_velocity.dt * dt2);
+		// weighted average acceleration
+		shuttle_acceleration.acceleration = (shuttle_acceleration.acceleration * shuttle_acceleration.number_of_averages + acceleration) / (shuttle_acceleration.number_of_averages + 1);
+		++shuttle_acceleration.number_of_averages;
+	}
+	// assign as previous velocity
+	prev_shuttle_velocity.dy = dy2;
+	prev_shuttle_velocity.dt = dt2;
+	
+	// if acceleration is 0, just return invalid number here
+	if (!average_calculated) {
+		return -1;
+	}
+	
+	// use delta y = 1/2 * a * t^2 + vo * t extrapolation, solve for t
+	// equation is t = (sqrt(2 * a * (y - y0) + (v0)^2) - v0) / a
+	// v0 is dy2/dt2
+	
+	int t = (Sqrt( 2 * shuttle_acceleration.acceleration * (HIT_Y_DISTANCE - second_y_distance) / shuttle_acceleration_scale_factor + Sqr(dy2) / Sqr(dt2) ) - dy2 / dt2) * shuttle_acceleration_scale_factor / shuttle_acceleration.acceleration;
+	
+	if (t > 0) {
+		return t;
+	} else {
+		return 0;
+	}
 }
 
 /**
@@ -418,6 +494,37 @@ u16 sensor_calculate_delay(void) {
 void up_racket_sensor_check(void)
 {
 	if (!sensor_on) return;
+	/*
+	const static u16 SENSOR_TIMEOUT = 300;
+	if (get_full_ticks() - sensor_last_sensed_time > SENSOR_TIMEOUT) {
+		// reset all the variables
+		shuttle_acceleration.acceleration = 0;
+		shuttle_acceleration.number_of_averages = 0;
+		prev_shuttle_velocity.dy = 0;
+		prev_shuttle_velocity.dt = 0;
+		ultra_data.y_distance = 0;
+		ultra_data.sense_time = 0;
+	}
+	
+	// check all sensors for distance within threshold
+	for (u8 id = 0; id < US_DEVICE_COUNT; ++id) {
+		if (us_get_distance(id) >= 50 && us_get_distance(id) <= 1500) {
+			sensor_last_sensed_time = get_full_ticks();
+			int delay = sensor_calculate_delay(us_get_distance(id));
+			ultra_data.y_distance = us_get_distance(id);
+			ultra_data.sense_time = get_full_ticks();
+			global_delay = delay;
+			if (delay < 0) {
+				// do nothing
+			}
+			else if (delay < 100) {
+				upper_hit_delay(delay);
+			}
+			// make sure only one sensor's distance is used
+			break;
+		}
+	}
+	*/
 	
 	static u8 previous_detection = 0;
 	
@@ -426,15 +533,20 @@ void up_racket_sensor_check(void)
 	for (u8 id = 0; id < US_DEVICE_COUNT; ++id) {
 		if (us_get_distance(id) >= 50 && us_get_distance(id) <= 1400) {
 			tmp_detection = 1;
-			// experimental delay code
 		}
 	}
 	
 	if (previous_detection == 0 && tmp_detection == 1 && !hitting_mode_on) {
 		buzzer_control_note(5, 50, NOTE_C, 7);
-		upper_hit_delay(100);
+		upper_hit_delay(200);
 	}
 	previous_detection = tmp_detection;
+	
+}
+
+int get_global_delay(void)
+{
+	return shuttle_acceleration.acceleration;
 }
 
 /**
