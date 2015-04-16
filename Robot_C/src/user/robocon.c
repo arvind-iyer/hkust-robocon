@@ -285,11 +285,11 @@ void robocon_main(void)
 	wheel_base_tx_acc();
 	//racket_init();
 	serve_free();
-	gpio_init(&PD10,  GPIO_Speed_10MHz, GPIO_Mode_Out_PP, 1);		// pneumatric GPIO Robot D, GEN2
+	//gpio_init(&PD10,  GPIO_Speed_10MHz, GPIO_Mode_Out_PP, 1);		// pneumatric GPIO Robot D, GEN2
 	gpio_init(&PD9,  GPIO_Speed_10MHz, GPIO_Mode_Out_PP, 1);		// Serve pneumatric GPIO Robot D, GEN2
-	gpio_init(&PE9, GPIO_Speed_10MHz, GPIO_Mode_Out_PP, 1);		// pneu matic GPIO
+	gpio_init(&PD10, GPIO_Speed_10MHz, GPIO_Mode_Out_PP, 1);		// pneu matic GPIO
 	
-	gpio_init(&PE8, GPIO_Speed_10MHz, GPIO_Mode_Out_PP, 1);		//pneumatic GPIO 2
+	//gpio_init(&PD12, GPIO_Speed_10MHz, GPIO_Mode_Out_PP, 1);		//pneumatic GPIO 2
 	
 	gpio_init(&PE11, GPIO_Speed_10MHz, GPIO_Mode_IPU, 1);	// Mechanical switch ROBOT D Gen2
 	gpio_init(&PE5, GPIO_Speed_10MHz, GPIO_Mode_IPU, 1);	// Shuttlecock Holder button for ROBOT D Gen2

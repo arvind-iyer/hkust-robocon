@@ -57,9 +57,9 @@ void serve_update(void)
 	if ( hitting && (get_encoder_value(RACKET) <= init_encoder_reading+ENCODER_THRESHOLD/* ||get_full_ticks()>=serve_hit_start_time+SERVE_HIT_TIMEOUT+100-(SERVE_HIT_VEL/5)*/))
 	{
 		racket_lock();
-		log ("enc st hit",get_encoder_value(RACKET));
-		log ("serve delay", serve_hit_start_time - serve_start_time);
-		log ("serve time", get_full_ticks() - serve_hit_start_time);
+		//log ("enc st hit",get_encoder_value(RACKET));
+		//log ("serve delay", serve_hit_start_time - serve_start_time);
+		//log ("serve time", get_full_ticks() - serve_hit_start_time);
 	}
 	if (hitting && get_encoder_value(RACKET)==prev_encoder_reading && get_full_ticks()>=serve_hit_start_time+SERVE_HIT_TIMEOUT)
 	{
@@ -81,10 +81,10 @@ void serve_update(void)
 		if (gpio_read_input(SERVE_SWITCH))
 		{
 			init_encoder_reading = get_encoder_value(RACKET);
-			log("*sw st cal",get_encoder_value(RACKET));
+			//log("*sw st cal",get_encoder_value(RACKET));
 		}
-		else
-			log("enc st cal",get_encoder_value(RACKET));
+		//else
+			//log("enc st cal",get_encoder_value(RACKET));
 	}
 	
 	

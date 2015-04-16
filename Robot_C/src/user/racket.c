@@ -38,7 +38,8 @@ void racket_update(void)
 {
 	if (ROBOT=='D')
 		serve_update();
-	
+	if( !(is_pneu_extended || is_pneu_2_extended))
+		sensors_update();
 	if (racket_delayed_hit_queued && get_full_ticks() > racket_delayed_hit_start_time + RACKET_HIT_DELAY_TIME)
 	{
 		racket_delayed_hit_queued=0;
@@ -51,7 +52,7 @@ void racket_update(void)
 		is_pneu_extended = 0;
 		racket_pneumatic_set(is_pneu_extended);
 	}
-	if (ROBOT=='C' && is_pneu_2_extended && (get_full_ticks() > racket_pneu_2_start_time + 500))
+	if (is_pneu_2_extended && (get_full_ticks() > racket_pneu_2_start_time + 500))
 	{
 		is_pneu_2_extended = 0;
 		racket_pneumatic_2_set(is_pneu_2_extended);
