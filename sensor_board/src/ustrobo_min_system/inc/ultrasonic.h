@@ -11,7 +11,7 @@
 #define US_IRQHandler			  void TIM4_IRQHandler(void)
 
 #define	US_DEVICE_COUNT					15
-#define US_TRIG_PULSE         	6
+#define US_TRIG_PULSE         	15
 
 // 10 us
 //#define US_ECHO_PULSE_COUNT   5

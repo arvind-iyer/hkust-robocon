@@ -34,6 +34,11 @@ void timer_init(void)
   timer_off_idle_ms = 0;
 }
 
+void timer_reset_idle(void)
+{
+	timer_off_idle_ms = 0;
+}
+
 void timer_clock_set_flag(TIMER_SET_FLAG flag) 
 {
    timer_set_flag = flag; 
@@ -124,6 +129,7 @@ void timer_set(u16 t)
     }
     timer_next = 0;
   }
+	timer_reset_idle();
 }
 
 void timer_next_set(u16 t) 

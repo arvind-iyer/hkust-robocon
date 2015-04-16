@@ -23,6 +23,8 @@
 
 #define	NEC_CAN_ID					0x220
 
+#define	NEC_DEVICE_COUNT		1
+
 typedef u8 NEC_Data_TypeDef;
 
 typedef enum {
@@ -42,6 +44,19 @@ typedef struct {
 
 static const NEC_Msg NEC_NullMsg = {0,0};
 
+typedef struct {
+	const GPIO* gpio;
+	NEC_STATE state;
+	NEC_Msg last_msg, current_msg;
+	u8 data_reading_state;
+	u8 data_current_bit;
+	u8 data_current_buffer;
+	u16 cont_on_count, cont_off_count;
+	u16 cont_on_falling, cont_off_falling;
+	NEC_Data_TypeDef raw_data[4];
+	NEC_Data_TypeDef last_data;
+	u8 current_repeating_id;
+}	NEC_TypeDef;
 /**
   uart_init(COM1, 115200);
   
@@ -67,14 +82,14 @@ static const NEC_Msg NEC_NullMsg = {0,0};
 void nec_init(void);
 u16 get_nec_cont_on_max(void);
 u16 get_nec_cont_off_max(void);
-NEC_STATE get_nec_state(void);
-NEC_Data_TypeDef* get_nec_raw_data(void);  /** ARRAY **/
-NEC_Data_TypeDef get_nec_last_data(void);
+NEC_STATE get_nec_state(u8 i);
+NEC_Data_TypeDef* get_nec_raw_data(u8 i);  /** ARRAY **/
+NEC_Data_TypeDef get_nec_last_data(u8 i); 
 
 
-NEC_Msg get_nec_last_msg(void);
-NEC_Msg get_nec_current_msg(void);
+NEC_Msg get_nec_last_msg(u8 i);
+NEC_Msg get_nec_current_msg(u8 i);
   
-void nec_can_tx(void);
+void nec_can_tx(u8 i);
 
 #endif  /* __NEC_H */

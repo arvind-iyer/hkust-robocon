@@ -34,7 +34,7 @@ int main(void)
 	//wheel_base_init();
   us_init();
 	us_proc_init();
-  nec_init();
+  //nec_init();
   /** For debugging **/
 	uart_init(COM1, 115200);
 	uart_printf_enable(COM1);
@@ -64,7 +64,9 @@ int main(void)
 			}
 			
 			if (ticks_img % 50 == 4) {
-				nec_can_tx();
+				for (u8 i = 0; i < NEC_DEVICE_COUNT; ++i) {
+					nec_can_tx(i);
+				}
 			}
 
 		}

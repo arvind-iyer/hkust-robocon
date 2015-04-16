@@ -247,8 +247,6 @@ static void uart_com_handler(u8 data)
       }
     } else if (data == 'c' || data == 'C') {
       timer_clock_mode_toggle(true); 
-      
-      
     }
   }
 }

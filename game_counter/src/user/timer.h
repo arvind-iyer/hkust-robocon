@@ -11,15 +11,15 @@
 #include "ticks.h"
 
 #define TIMER_UPDATE_INTERVAL     10  /** MUST BE A FACTOR OF 500 */
-#define TIMER_COUNTING_DOWN_BUZZ  5
+#define TIMER_COUNTING_DOWN_BUZZ  10
 
 
 #define TIMER_COUNT_LIMIT          (10 * 60) // 10 minutes (exclusive)
-#define TIMER_CLOCK_LIMIT           (60 * 60 * 24)
-#define HOUR_ALARM                  1
+#define TIMER_CLOCK_LIMIT          (60 * 60 * 24)
+#define HOUR_ALARM                 1
 
 #define ALARM_COUNT               10
-#define IDLE_TIME_THRESHOLD       45000 // 45 s
+#define IDLE_TIME_THRESHOLD       600000 // 600 s / 10 minutes
 
 
 
@@ -48,6 +48,7 @@ typedef struct {
 } ALARM;
 
 void timer_init(void);
+void timer_reset_idle(void);
 void timer_clock_set_flag(TIMER_SET_FLAG flag);
 TIMER_SET_FLAG timer_clock_get_flag(void);
 

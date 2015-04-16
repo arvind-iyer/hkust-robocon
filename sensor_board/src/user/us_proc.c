@@ -6,7 +6,7 @@ static US_PROC_TypeDef us_proc[US_DEVICE_COUNT];
 
 u8 us_in_range(u8 i) 
 {
-	return us_get_distance(i) > 20 && us_get_distance(i) <= 1000;
+	return us_get_distance(i) > 20 && us_get_distance(i) <= 1600;
 }
 
 static void us_can_proc_tx(u8 id, u16 in_range_time, u16 in_distance)
@@ -14,7 +14,7 @@ static void us_can_proc_tx(u8 id, u16 in_range_time, u16 in_distance)
 	CAN_MESSAGE msg;
 	msg.id = (US_CAN_ID + id);
 	msg.length = 5;
-	msg.data[0] = US_CAN_PROC_CMD;
+
 	msg.data[1] = (u8) ((in_range_time >> 8) & 0xFF);
 	msg.data[2] = (u8) (in_range_time & 0xFF);
 	msg.data[3] = (u8) ((in_distance >> 8) & 0xFF);

@@ -63,7 +63,7 @@ void us_init(void)
 {
 	if (US_DEVICE_COUNT == 0) {return;}
 	// GPIO init
-	GPIO_PinRemapConfig(GPIO_Remap_SWJ_JTAGDisable, ENABLE); 
+	GPIO_PinRemapConfig(GPIO_Remap_SWJ_Disable, ENABLE); 
 	
 	for (u8 i = 0; i < US_DEVICE_COUNT; ++i) {
 		gpio_init(us_devices[i].trig_gpio, GPIO_Speed_50MHz, GPIO_Mode_Out_PP, 1);
