@@ -1,7 +1,14 @@
 #include "button_event.h"
 
-bool speed_button_released_before = false;
-bool home_pressed_before = false;
+static bool speed_button_released_before = false;
+static bool home_pressed_before = false;
+static bool side_control = false;
+
+static u16 speed_ratio;
+static s32 axis_speed;
+static s32 diagonal_speed;
+static s32 angle_speed;
+static s32 speed_divider;
 
 void button_event_wheel_base_set_vel(s32 x, s32 y, s32 w) {
 	wheel_base_set_vel(x, y, w);
@@ -11,10 +18,16 @@ void button_event_wheel_base_set_vel(s32 x, s32 y, s32 w) {
 void button_event_update(void)
 {
 	// Wheel Base
-	u16 speed_ratio = SPEED_MODES[wheel_base_get_speed_mode()];
-	s32 axis_speed = ANALOG_SPEED * speed_ratio / 100;
-	s32 diagonal_speed = ANALOG_SPEED * 707 / 1000 * speed_ratio / 100;
-	s32 angle_speed;
+	/* u16 */ speed_ratio = SPEED_MODES[wheel_base_get_speed_mode()];
+	/* s32 */ axis_speed = ANALOG_SPEED * speed_ratio / 100;
+	/* s32 */ diagonal_speed = ANALOG_SPEED * 707 / 1000 * speed_ratio / 100;
+	/* s32 angle_speed */;
+	
+	if (button_pressed(BUTTON_XBC_A)) {
+		speed_divider = 2;
+	} else {
+		speed_divider = 1;
+	}
 	
 	if (button_pressed(BUTTON_XBC_LB) && button_pressed(BUTTON_XBC_RB)) {
 		angle_speed = 0;
@@ -31,10 +44,19 @@ void button_event_update(void)
 	}
 	
 	if ( xbc_get_joy(XBC_JOY_LX) != 0 || xbc_get_joy(XBC_JOY_LY) != 0 ) {
-		button_event_wheel_base_set_vel(
-			axis_speed * xbc_get_joy(XBC_JOY_LX) / 1000,	// x
-			axis_speed * xbc_get_joy(XBC_JOY_LY) / 1000,	// y
-			angle_speed);
+		if (side_control == true) {
+			button_event_wheel_base_set_vel(
+				axis_speed * -xbc_get_joy(XBC_JOY_LY) / 1000,	// x
+				axis_speed * xbc_get_joy(XBC_JOY_LX) / 1000,	// y
+				angle_speed
+			);
+		} else {
+			button_event_wheel_base_set_vel(
+				axis_speed * xbc_get_joy(XBC_JOY_LX) / 1000,	// x
+				axis_speed * xbc_get_joy(XBC_JOY_LY) / 1000,	// y
+				angle_speed
+			);
+		}
 	} else if ( button_pressed(BUTTON_XBC_N) ) {
 		button_event_wheel_base_set_vel(0, axis_speed, angle_speed);
 	} else if ( button_pressed(BUTTON_XBC_E) ) {
@@ -57,6 +79,12 @@ void button_event_update(void)
 	
 	if (button_pressed(BUTTON_XBC_XBOX)) {
 		if (home_pressed_before == false) {
+			side_control = !side_control;
+			if (side_control) {
+				buzzer_play_song(SIDE_CONTROL_ON_SOUND, 200, 0);
+			} else {
+				buzzer_play_song(SIDE_CONTROL_OFF_SOUND, 200, 0);
+			}
 			home_pressed_before = true;
 		}
 	} else {
@@ -113,11 +141,11 @@ void button_event_update(void)
 	
 	// Rackets & sensors
 	if ( button_pressed(BUTTON_XBC_X) ) {
-		racket_out();
+		//racket_out();
 		low_racket_move();
 	} else if ( button_pressed(BUTTON_XBC_A) ) {
-		racket_in();
-		low_racket_move();
+		//racket_in();
+		//low_racket_move();
 	}
 	if ( button_pressed(BUTTON_XBC_Y) || button_pressed(BUTTON_XBC_B) )
 		low_racket_stop();

@@ -23,7 +23,6 @@ int main(void)
 	can_rx_init();
   can_motor_init();
 	
-	//us_mb_init();
 	bluetooth_init();
   //mb1240_init();
   xbc_mb_init(XBC_BLUETOOTH_FIRST); 
@@ -56,7 +55,7 @@ int main(void)
 	menu_add("UART test", uart_test);
   menu_add("NEC test", nec_test);
   //menu_add("MB1240 test", mb1240_test);
-  //menu_add("Ultra. test", ultra_test);
+  menu_add("Ultra. test", ultra_test);
   
 	menu(0, false);
 	
