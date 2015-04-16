@@ -31,49 +31,9 @@ bool robot_xbc_controls(void)
 	*/
 	//Analog Movement
 	
-	/*if(xbc_get_joy(XBC_JOY_LX) == 0 && xbc_get_joy(XBC_JOY_LY) == 0)
-	{
-		wheel_base_set_target_pos((POSITION){get_pos()->x, get_pos()->y, wheel_base_get_target_pos().angle});
-		wheel_base_pid_on();
-		is_it_moving(0);
-	}
-	else
-	{
-		wheel_base_pid_off();
-		is_it_moving(1);
-		wheel_base_set_target_pos((POSITION){get_pos()->x, get_pos()->y, get_pos()->angle});
-	}*/
 	
 	int dw = (xbc_get_joy(XBC_JOY_RT)-xbc_get_joy(XBC_JOY_LT))/5;
-	wheel_base_pid_off();
-	if(dw == 0)
-	{
-		//wheel_base_pid_on();
-		dw = pid_maintain_angle();
-		is_it_turning(0);
-	}
-	else if(dw != 0)
-	{
-		//wheel_base_pid_off();
-		is_it_turning(1);
-		wheel_base_set_target_pos((POSITION){get_pos()->x, get_pos()->y, get_pos()->angle});
-	}
-	
-	wheel_base_set_vel(xbc_get_joy(XBC_JOY_LX), xbc_get_joy(XBC_JOY_LY), dw );
-	
-	if((dw == 0) && (xbc_get_joy(XBC_JOY_LX) == 0 && xbc_get_joy(XBC_JOY_LY) == 0))
-	{
-		//wheel_base_pid_on();
-		wheel_base_set_vel(wheel_base_get_vel().x, wheel_base_get_vel().y, dw);
-		
-	}
-	else
-	{
-		//wheel_base_pid_off();
-		is_it_turning(0);
-		wheel_base_set_target_pos((POSITION){get_pos()->x, get_pos()->y, get_pos()->angle});
-	}
-	//wheel_base_update();
+	wheel_base_set_vel(xbc_get_joy(XBC_JOY_LX), xbc_get_joy(XBC_JOY_LY), dw);
 	
 	//Digital Movement
 	//Cardinals
@@ -144,7 +104,16 @@ void robot_d_function_controls(void)
 	else if(button_pressed(BUTTON_XBC_B))
 		serve_start();
 	else if(button_pressed(BUTTON_XBC_X))//Not essential
-		serve_calibrate();
+		//serve_calibrate();
+		{
+			plus_y();
+			#warning change it back
+		}
+	else if(button_pressed(BUTTON_XBC_Y))
+	{
+		#warning removethisbit
+		minus_y();
+	}
 	// change serve varibales
 	
 	if (button_pressed(BUTTON_XBC_LB) && button_pressed(BUTTON_XBC_Y))
@@ -153,10 +122,11 @@ void robot_d_function_controls(void)
 		
 		serve_change_delay(1);
 	else if (button_pressed(BUTTON_XBC_LB))
-		serve_change_vel(-2);
+		//serve_change_vel(-2);
+		plus_x();
 	else if (button_pressed(BUTTON_XBC_RB))
-		serve_change_vel(2);
-	
+		//serve_change_vel(2);
+		minus_x();
 	if (button_pressed(BUTTON_XBC_START))
 	{
 		serve_free();

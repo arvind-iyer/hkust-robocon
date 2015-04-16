@@ -2,8 +2,8 @@
 #include "approx_math.h"
 
 
-s32 SHIFT_X = (ROBOT == 'C' ? 31 : -53);
-s32 SHIFT_Y = (ROBOT == 'C' ? 980 : -168);
+s32 SHIFT_X = (ROBOT == 'C' ? 31 : -204);
+s32 SHIFT_Y = (ROBOT == 'C' ? 980 : 413);
 
 static POSITION gyro_pos = {0, 0, 0};
 static POSITION gyro_pos_raw = {0, 0, 0};
