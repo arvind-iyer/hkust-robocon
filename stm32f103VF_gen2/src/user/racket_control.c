@@ -13,7 +13,7 @@ static u8   low_racket_mode = 0;
 static s32  low_racket_speed = 240;
 static bool request_low_racket_move = 0;
 static u32  request_low_racket_move_time = 0;
-static bool use_high_switch = false;
+static bool use_high_switch = true;
 
 void low_racket_move(void) {
 	request_low_racket_move = 1;
@@ -25,6 +25,14 @@ void low_racket_stop() {
 }
 
 void sensor_init(void) {
+	/* GPIO configuration */
+	RCC_APB2PeriphClockCmd(RCC_APB2Periph_GPIOE, ENABLE);
+	GPIO_InitTypeDef GPIO_InitStructure;
+
+	GPIO_InitStructure.GPIO_Mode = GPIO_Mode_IPD;
+	GPIO_InitStructure.GPIO_Speed = GPIO_Speed_50MHz;
+	GPIO_InitStructure.GPIO_Pin = IR_Sensor_1_Pin | IR_Sensor_2_Pin | IR_Sensor_3_Pin;
+	GPIO_Init(GPIOA, &GPIO_InitStructure);
 }
 
 void racket_init(void) {
@@ -39,15 +47,27 @@ void racket_init(void) {
 }
 
 void sensor_update(void) {
+	if (request_low_racket_move == 0 && use_high_switch == 0) {
+		if (GPIO_ReadInputDataBit(GPIOA, IR_Sensor_1_Pin)) {
+		// High
+				low_racket_move();
+		} else if (GPIO_ReadInputDataBit(GPIOA, IR_Sensor_2_Pin)) {
+		// Mid
+				low_racket_move();
+		} else if (GPIO_ReadInputDataBit(GPIOA, IR_Sensor_3_Pin)) {
+		// Low
+				low_racket_move();
+		}
+	}
 	
 }
 
 void racket_update(void) {
 	// When B1 and B2 are pressed, their values are 1.
 	if (use_high_switch == true)
-		stop_switch  = GPIO_ReadInputDataBit(GPIOE, Switch_High_Pin);
+		stop_switch = GPIO_ReadInputDataBit(GPIOE, Switch_High_Pin);
 	else
-		stop_switch = GPIO_ReadInputDataBit(GPIOE, Switch_High_Pin); // Low
+		stop_switch = GPIO_ReadInputDataBit(GPIOE, Switch_Low_Pin); // Low
 	
 	if (stop_switch == true) {
 		stop_flag = 1;
@@ -72,7 +92,7 @@ void low_racket_update() {
 		}
 	} else if (low_racket_mode == 1) {
 		low_racket_speed = LOW_RACKET_HIT_SPEED;
-		if (stop_switch == 1 && (current_time - request_low_racket_move_time > 50) ) {
+		if (stop_switch == 1 && (current_time - request_low_racket_move_time > 50) || (current_time - request_low_racket_move_time > 1000) ) {
 			request_low_racket_move = 0;
 			stop_flag = 0;
 		}
@@ -96,9 +116,13 @@ bool get_low_switch(void) { return low_switch; }
 bool get_high_switch(void) { return high_switch; }
 u8 get_low_mode(void) { return low_racket_mode; }
 
-void racket_out(void) {
-	use_high_switch = 1;
+bool where_should_racket_stop(void) {
+	return use_high_switch;
 }
-void racket_in(void) {
+
+void racket_keep_low(void) {
 	use_high_switch = 0;
+}
+void racket_keep_high(void) {
+	use_high_switch = 1;
 }

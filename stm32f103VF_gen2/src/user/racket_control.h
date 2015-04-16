@@ -8,6 +8,9 @@
 #include "stdbool.h"
 
 // Sensor GPIO Pin
+#define IR_Sensor_1_Pin GPIO_Pin_5 // A5
+#define IR_Sensor_2_Pin GPIO_Pin_6 // A6
+#define IR_Sensor_3_Pin GPIO_Pin_7 // A7
 
 // Button Switch Pin
 #define Switch_B1_Pin  GPIO_Pin_0
@@ -17,6 +20,10 @@
 
 #define LOW_RACKET_MOTOR MOTOR6
 #define LOW_RACKET_HIT_SPEED -1800
+
+// Sensor functions
+void sensor_init(void);
+void sensor_update(void);
 
 // All racket functions
 void racket_init(void);
@@ -28,11 +35,6 @@ void low_racket_stop(void);
 void low_racket_standby(void);
 void low_racket_update(void);
 
-// Higher racket functions
-//void high_racket_move(void);
-//void high_racket_update(void);
-
-void racket_received_command(void);
 bool did_receive_command(void);
 void racket_update(void);
 
@@ -52,7 +54,8 @@ u16 get_racket_speed(void);
 s32 racket_current_time(void);
 u32 high_racket_move_time(void);
 
-void racket_out(void);
-void racket_in(void);
+bool where_should_racket_stop(void);
+void racket_keep_low(void);
+void racket_keep_high(void);
 
 #endif

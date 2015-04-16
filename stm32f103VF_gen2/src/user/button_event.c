@@ -2,13 +2,13 @@
 
 static bool speed_button_released_before = false;
 static bool home_pressed_before = false;
-static bool side_control = false;
+static bool side_control = true;
 
 static u16 speed_ratio;
 static s32 axis_speed;
 static s32 diagonal_speed;
 static s32 angle_speed;
-static s32 speed_divider;
+static s32 speed_divider = 1;
 
 void button_event_wheel_base_set_vel(s32 x, s32 y, s32 w) {
 	wheel_base_set_vel(x, y, w);
@@ -77,7 +77,7 @@ void button_event_update(void)
 		button_event_wheel_base_set_vel(0, 0, angle_speed);
 	}
 	
-	if (button_pressed(BUTTON_XBC_XBOX)) {
+	if (button_pressed(BUTTON_XBC_XBOX) || (button_pressed(BUTTON_XBC_R_JOY) && button_pressed(BUTTON_XBC_BACK)) ) {
 		if (home_pressed_before == false) {
 			side_control = !side_control;
 			if (side_control) {
@@ -140,13 +140,12 @@ void button_event_update(void)
 	}
 	
 	// Rackets & sensors
-	if ( button_pressed(BUTTON_XBC_X) ) {
-		//racket_out();
+	if (button_pressed(BUTTON_XBC_X)) {
 		low_racket_move();
-	} else if ( button_pressed(BUTTON_XBC_A) ) {
-		//racket_in();
-		//low_racket_move();
 	}
-	if ( button_pressed(BUTTON_XBC_Y) || button_pressed(BUTTON_XBC_B) )
-		low_racket_stop();
+	if (button_pressed(BUTTON_XBC_Y)) {
+		racket_keep_high();
+	} else if (button_pressed(BUTTON_XBC_B)) {
+		racket_keep_low();
+	}
 }

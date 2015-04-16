@@ -12,6 +12,8 @@ void robocon_main(void) {
 		if (ticks_img != get_ticks()) {
 			ticks_img = get_ticks();
 			
+			sensor_update();
+			
 			if (ticks_img % 10 == 0) {
 				// Every 10 ms (100 Hz)
 				bluetooth_update();
@@ -65,15 +67,16 @@ void robocon_main(void) {
           s[0] = '\\';
         }
 				//tft_prints(0, 6, "<[%d],[%d],[%d]>", wheel_base_get_vel_prev().x, wheel_base_get_vel_prev().y, wheel_base_get_vel_prev().w );
-				tft_prints(0, 6, "%s %d %s",
-					get_low_switch() ? "[(LOW)]" : "(LOW)",
-					get_low_mode(),
-					get_high_switch() ? "[(HIGH)]" : "(HIGH)"//,
-					//get_high_mode()
+				tft_prints(0, 6, "%s %s %s",
+					GPIO_ReadInputDataBit(GPIOE, Switch_Low_Pin) ? "[(LOW)]" : "(LOW)",
+					GPIO_ReadInputDataBit(GPIOE, Switch_High_Pin) ? "[(HIGH)]" : "(HIGH)",
+					where_should_racket_stop() ? "H" : "L"
 				);
 				tft_prints(0, 7, "%d, %d", get_low_speed() );
-				//tft_prints(0, 8, "%d, %d, %d", get_PID_err_diff_x(),get_PID_err_diff_y (),get_PID_err_diff_w());
-				//tft_prints(0, 9, "count: %d",get_change_count ());
+				tft_prints(0, 8, "%d %d %d", GPIO_ReadInputDataBit(GPIOA, IR_Sensor_1_Pin),
+				                             GPIO_ReadInputDataBit(GPIOA, IR_Sensor_2_Pin),
+				                             GPIO_ReadInputDataBit(GPIOA, IR_Sensor_3_Pin));
+				
 				tft_update();
 				NVIC_EnableIRQ(EXTI15_10_IRQn);
 			}

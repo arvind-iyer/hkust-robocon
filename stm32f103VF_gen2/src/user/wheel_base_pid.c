@@ -46,8 +46,8 @@ void wheel_base_pid_update(void) {
   /** Use wheel_base_set_vel(x,y,w) to control wheel base motors */
 
 	if(wheel_base_get_pid_flag()) {
-			 
-		// target update
+		wheel_base_set_vel(0, 0, 0);	 
+		/* // target update
 		target_pos = wheel_base_get_target_pos();
 		current_pos = *get_pos();
 		
@@ -64,7 +64,7 @@ void wheel_base_pid_update(void) {
 			count++;
 		}
 		
-		/***error update***/
+		// error update
 		// x
 		PID_err.diff.x = wheel_base_get_target_pos().x - current_pos.x;
 		//PID_err.derivative.x = (PID_err.diff.x - pre_err.diff.x) / time_interval ;
@@ -105,14 +105,14 @@ void wheel_base_pid_update(void) {
 		relative_velocity_x = vel.x * int_cos(get_pos()->angle) / 10000 - vel.y * int_sin(get_pos()->angle) / 10000;
 		relative_velocity_y = vel.y * int_cos(get_pos()->angle) / 10000 + vel.x * int_sin(get_pos()->angle) / 10000;
 		relative_velocity_w = vel.w;
-		wheel_base_set_vel(relative_velocity_x, relative_velocity_y, relative_velocity_w);
+		wheel_base_set_vel(relative_velocity_x, relative_velocity_y, relative_velocity_w); */
 	} else {
 		wheel_base_set_target_pos( *get_pos() );
 	}
 	
 	// update error
-	pre_err = PID_err ;
-	target_record = target_pos;
+	//pre_err = PID_err ;
+	//target_record = target_pos; */
 }
 
 s32 get_vx(void) { return relative_velocity_x; }
