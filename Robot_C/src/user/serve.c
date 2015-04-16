@@ -61,8 +61,7 @@ void serve_update(void)
 		log ("serve delay", serve_hit_start_time - serve_start_time);
 		log ("serve time", get_full_ticks() - serve_hit_start_time);
 	}
-	// if time takes too much time.
-	if (hitting && /*get_encoder_value(RACKET)==prev_encoder_reading &&*/ get_full_ticks()>=serve_hit_start_time+SERVE_HIT_TIMEOUT)
+	if (hitting && get_encoder_value(RACKET)==prev_encoder_reading && get_full_ticks()>=serve_hit_start_time+SERVE_HIT_TIMEOUT)
 	{
 		hitting=0;
 		motor_set_vel(RACKET, 0, OPEN_LOOP);

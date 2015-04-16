@@ -44,5 +44,4 @@ void sensors_update(void)
 		racket_delayed_hit(0);
 	}
 	
-	
 }
