@@ -19,7 +19,7 @@
 
 #define ENCODER_THRESHOLD 	-10000
 
-static u32 SERVE_HIT_TIMEOUT = 140;	// maximum serve duration.
+static u32 SERVE_HIT_TIMEOUT = 300;	// maximum serve duration.
 
 void serve_update(void);
 
