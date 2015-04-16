@@ -1,5 +1,11 @@
 #include "timer.h"
 
+TIMER
+	TIM11Ch1(TIM4, Ch1),
+	TIM11Ch2(TIM4, Ch2),
+	TIM11Ch3(TIM4, Ch3),
+	TIM11Ch4(TIM4, Ch4);
+
 
 void timer_init(TIM_TypeDef* TIMx, u16 Prescaler, u16 CounterMode, u16 Peroid, u16 ClockDivision)
 {
