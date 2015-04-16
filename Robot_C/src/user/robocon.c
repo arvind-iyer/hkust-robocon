@@ -293,6 +293,11 @@ void robocon_main(void)
 	
 	gpio_init(&PE11, GPIO_Speed_10MHz, GPIO_Mode_IPU, 1);	// Mechanical switch ROBOT D Gen2
 	gpio_init(&PE5, GPIO_Speed_10MHz, GPIO_Mode_IPU, 1);	// Shuttlecock Holder button for ROBOT D Gen2
+	
+	gpio_init(&PA4,GPIO_Speed_50MHz, GPIO_Mode_IPD,1);		// laser sensor
+	gpio_init(&PA6,GPIO_Speed_50MHz, GPIO_Mode_IPD,1);	// laser sensor grid 2
+	gpio_init(&PA7,GPIO_Speed_50MHz, GPIO_Mode_IPD,1);	// laser sensor grid 3
+	
 	//gpio_init(&);
 	//gpio_init(&PE7, GPIO_Speed_50MHz, GPIO_Mode_IPU, 0);		// laser sensor GPIO IN
 	
@@ -327,7 +332,6 @@ void robocon_main(void)
 				bluetooth_update();
         handle_bluetooth_input();
  
-        button_update();
 				// Every 10 ms (100 Hz)
          if (return_listener()) {
           return;
@@ -350,17 +354,9 @@ void robocon_main(void)
 				// Every 10 seconds (0.1 Hz)
 				battery_regular_check();
 			}
-
-      if (ticks_img % 100 == 3) {
-				if(special_char_handler_bt_get_last_char() == 'k')
-				{
-					tft_prints(0,7, "HIT");
-					tft_update();
-				}
-      }
 			
-			if (ticks_img % 100 == 3) {
-				// Every 100 ms (10 Hz)
+			if (ticks_img % 200 == 3) {
+				// Every 200 ms (5 Hz)
 				wheel_base_tx_position();
 			}
 			
