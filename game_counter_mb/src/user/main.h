@@ -32,6 +32,8 @@
 #include "wheel_base.h"
 #include "ultrasonic.h"
 #include "rtc.h"
+#include "nec.h"
+#include "nec_remote.h"
 
 #define UART_COM      COM1 
 #define UART_COM_BR   9600

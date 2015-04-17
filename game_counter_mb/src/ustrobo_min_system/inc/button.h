@@ -41,7 +41,8 @@
 #define BUTTON_D8_GPIO                 ((GPIO*) &PD8)
 #define BUTTON_D9_GPIO                 ((GPIO*) &PD9)
 #define BUTTON_D10_GPIO                ((GPIO*) &PD10)
-#define BUTTON_D11_GPIO                ((GPIO*) &PD11)
+//#define BUTTON_D11_GPIO                ((GPIO*) &PD11)
+#define	BUTTON_B9_GPIO								 ((GPIO*) &PB9)
 
 #define	BUTTON_COUNT							32    /*!< Number of buttons */
 #define BUTTON_RELEASED_LIMIT			20    /*!< Reset the button release time after the limit */
@@ -80,7 +81,8 @@ typedef enum {
   BUTTON_D8,
   BUTTON_D9,
   BUTTON_D10,
-  BUTTON_D11
+	
+	BUTTON_B9
   
 } BUTTON;
 

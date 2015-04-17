@@ -601,6 +601,16 @@
               <FileType>1</FileType>
               <FilePath>.\src\ustrobo_min_system\src\xbc_mb.c</FilePath>
             </File>
+            <File>
+              <FileName>nec.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\src\ustrobo_min_system\src\nec.c</FilePath>
+            </File>
+            <File>
+              <FileName>nec_remote.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\src\ustrobo_min_system\src\nec_remote.c</FilePath>
+            </File>
           </Files>
         </Group>
         <Group>

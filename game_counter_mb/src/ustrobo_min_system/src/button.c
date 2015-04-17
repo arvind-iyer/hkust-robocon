@@ -54,7 +54,8 @@ static const GPIO* buttons[BUTTON_COUNT] = {
   BUTTON_D8_GPIO,
   BUTTON_D9_GPIO,
   BUTTON_D10_GPIO,
-  BUTTON_D11_GPIO,
+	
+	BUTTON_B9_GPIO
 
 };
 
@@ -88,6 +89,9 @@ void button_update(void)
 		const GPIO* button = buttons[i];
 		if (gpio_read_input(button) == BUTTON_PRESSED) {
 			++button_pressed_count[i];
+			if (button_pressed_count[i] > 10000) {
+				button_pressed_count[i] = 5000;
+			}
 			button_released_count[i] = 0;
 		} else {
 			if (button_pressed_count[i] != 0) {
