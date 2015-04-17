@@ -305,41 +305,26 @@ void EXTI15_10_IRQHandler(void)
 	*/
 void racket_update(void)    //determine whether the motor should run
 {
+	static bool switch_five_tick_delay = false;
 	// calibration mode
+	if (switch_stat && switch_five_tick_delay == true) {
+		++switch_hit;
+		switch_five_tick_delay = false;
+	}
 	if (calibrate_mode_on) {
 		// update encoder values when switch is hit
 		if(GPIO_ReadInputDataBit(GPIOE, SERVE_SWITCH_PIN) != switch_stat) {
 			switch_stat = GPIO_ReadInputDataBit(GPIOE, SERVE_SWITCH_PIN);
-			if (switch_stat && racket_calibration_mode == 0) {
-				++switch_hit;
+			if (switch_stat) {
+				switch_five_tick_delay = true;
 				++switch_trigger_number;
 				if (!prev_encoder_value) {
 					prev_encoder_value = get_encoder_value(MOTOR5);
 				} else if (!current_encoder_value) {
 					current_encoder_value = get_encoder_value(MOTOR5);
 				}
-			} else if (switch_stat && racket_calibration_mode == 1) {
-				++switch_hit;
-				++switch_trigger_number;
-				current_encoder_value = get_encoder_value(MOTOR5);
 			}
 		}
-		// fast calibration
-		/*if (racket_calibration_mode == 1) {
-			if (switch_hit < 1) {
-				calibrated = false;
-				motor_set_vel(MOTOR5, -CALIBRATE_SPEED, CLOSE_LOOP);
-				current_speed = CALIBRATE_SPEED;
-			} else {
-				calibrate_mode_on = false;
-				calibrated = true;
-				motor_lock(MOTOR5);
-				target_encoder_value = current_encoder_value;
-				current_speed = 0;
-				serving_started_time = 0;
-			}
-		// slow calibration
-		} else */
 		if (switch_hit < 2) {
 			calibrated = false;
 			motor_set_vel(MOTOR5, -CALIBRATE_SPEED, CLOSE_LOOP);
@@ -353,41 +338,52 @@ void racket_update(void)    //determine whether the motor should run
 			current_speed = 0;
 			serving_started_time = 0;
 			serve_enabled = true;
-			//racket_calibration_mode = 1;
 		}
 	}
 	// regular mode
 	else if (calibrated) {
-		if (get_encoder_value(MOTOR5) > target_encoder_value) {
-			motor_set_vel(MOTOR5, 20, CLOSE_LOOP);
-			current_speed = -20;
-		} else if (get_encoder_value(MOTOR5) <= target_encoder_value && get_encoder_value(MOTOR5) >= target_encoder_value - turn_encoder_value / 8) {
-			current_encoder_value = get_encoder_value(MOTOR5);
-			motor_lock(MOTOR5);
-			current_speed = 0;
-		}
-		else if (get_encoder_value(MOTOR5) <= target_encoder_value - turn_encoder_value / 2){
-			motor_set_vel(MOTOR5, -racket_speed, OPEN_LOOP);
-			current_speed = racket_speed;
-		} else {
-			s32 vel_error = (target_encoder_value - get_encoder_value(MOTOR5))* racket_speed  / turn_encoder_value;
-			motor_set_vel(MOTOR5, -vel_error, OPEN_LOOP);
-			current_speed = vel_error;
-		}
+		static bool serving = false;
+		static bool trigger_calibrate = false;
+		static const u8 trigger_calibrate_delay = 20;
+		static u8 trigger_calibrate_counter = trigger_calibrate_delay;
 		if (trigger_serve) {
 			open_pneumatic();
 			serving_started = true;
-//			serving_started_time = get_full_ticks();
 			trigger_serve = false;
 		}
 		if (serving_started) {
 			++delay_counter;
-			//if (get_full_ticks() - serving_started_time > racket_delay){
 			if (delay_counter > racket_delay) {
 				delay_counter = 0;
 				racket_received_command();
 				serving_started = false;
+				serving = true;
 				close_pneumatic();
+			}
+		}
+		if (trigger_calibrate) {
+			--trigger_calibrate_counter;
+			if (!trigger_calibrate_counter) {
+				racket_calibrate();
+				trigger_calibrate_counter = trigger_calibrate_delay;
+				trigger_calibrate = false;
+			}
+		}
+		if (serving) {
+			if (get_encoder_value(MOTOR5) >= target_encoder_value - turn_encoder_value / 8) {
+				current_encoder_value = get_encoder_value(MOTOR5);
+				motor_lock(MOTOR5);
+				current_speed = 0;
+				serving = false;
+				trigger_calibrate = true;
+			}
+			else if (get_encoder_value(MOTOR5) <= target_encoder_value - turn_encoder_value / 2){
+				motor_set_vel(MOTOR5, -racket_speed, OPEN_LOOP);
+				current_speed = racket_speed;
+			} else {
+				s32 vel_error = (target_encoder_value - get_encoder_value(MOTOR5)) * racket_speed  / turn_encoder_value;
+				motor_set_vel(MOTOR5, -vel_error, OPEN_LOOP);
+				current_speed = vel_error;
 			}
 		}
 	}
@@ -544,7 +540,7 @@ void up_racket_sensor_check(void)
 	
 	if (previous_detection == 0 && tmp_detection == 1 && !hitting_mode_on) {
 		buzzer_control_note(5, 50, NOTE_C, 7);
-		upper_hit_delay(200);
+		upper_hit_delay(300);
 	}
 	previous_detection = tmp_detection;
 	
