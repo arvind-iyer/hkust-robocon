@@ -12,8 +12,10 @@ void robocon_main(void)
 		if (ticks_img != get_ticks()) {
 			ticks_img = get_ticks();
 			
-			up_racket_sensor_check();
-
+			if (ticks_img % 5 == 4) {
+				up_racket_sensor_check();
+			}
+			
 			if (ticks_img % 5 == 2) {
 				// Every 5 ms (200 Hz)
 				racket_update();

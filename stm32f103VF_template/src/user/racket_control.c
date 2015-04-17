@@ -14,6 +14,8 @@ static s32 turn_encoder_value = 0;
 static const u16 CALIBRATE_SPEED = 15;
 static const u16 SWING_RETURN_MIN_SPEED = 15;
 
+static u16 delay_counter = 0;
+
 // serving static variables
 static bool serving_started = false;
 static u32 serving_started_time = 0;
@@ -24,16 +26,17 @@ static u8 switch_trigger_number = 0;
 
 static bool racket_enable = false;
 
+static bool trigger_serve = false;
+static bool serve_enabled = false;
+
 static bool sensor_on = false;
 
 static u16 current_speed = 0;
-static bool racket_hit = false;
-static u16 racket_hit_ticks = 0;
 
 static u16 racket_speed = 1600;		//tested best result
 static u16 close_loop_racket_speed = 60;
 static u16 racket_speed_adjust_time = 0;
-static u16 racket_delay = 310;    //tested best result
+static u16 racket_delay = 54;    //tested best result
 static u16 racket_delay_adjust_time = 0;
 
 // hitting static variables
@@ -114,24 +117,31 @@ static void increase_racket_speed() {
 }
 
 static void decrease_racket_speed() {
-	if(racket_speed > 0 && get_full_ticks() - racket_speed_adjust_time > 200)
+	if(get_full_ticks() - racket_speed_adjust_time > 200)
 	{
 		racket_speed_adjust_time = get_full_ticks();
-		racket_speed -= 5;
+		if (racket_speed > 0)
+		{
+			racket_speed -= 5;
+		}
 	}
 }
 
 static void increase_racket_delay() {
-	if(get_full_ticks() - racket_delay_adjust_time > 200) {
-		racket_delay_adjust_time = get_full_ticks();
+	static u8 counter = 0;
+	++counter;
+	if(counter > 10) {
+		counter = 0;
 		racket_delay += 1;
 	}
 }
 
 static void decrease_racket_delay() {
-	if(get_full_ticks() - racket_delay_adjust_time > 200) {
+	static u8 counter = 0;
+	++counter;
+	if(counter > 10) {
+		counter = 0;
 		if(racket_delay > 0) {
-			racket_delay_adjust_time = get_full_ticks();
 			racket_delay -= 1;
 		}
 	}
@@ -151,13 +161,10 @@ void close_pneumatic(void)
 
 void serving(void){
 	// check if pneumatic is closed before serving
-	if (GPIO_ReadInputDataBit(GPIOE, SERVE_RACKET_PIN) && calibrated && !racket_hit) 
+	if (GPIO_ReadInputDataBit(GPIOE, SERVE_RACKET_PIN) && calibrated && serve_enabled) 
 	{
-		open_pneumatic();
-		serving_started = true;
-		serving_started_time = get_full_ticks();
-		racket_hit = true;
-		racket_hit_ticks = get_full_ticks();
+		trigger_serve = true;
+		serve_enabled = false;
 	}
 }
 
@@ -168,11 +175,12 @@ void racket_calibrate(void)			//calibrate to 1, run before start
 	calibrate_mode_on = true;
 	prev_encoder_value = 0;
 	current_encoder_value = 0;
-	if (racket_calibration_mode != 1) {
+//	if (racket_calibration_mode != 1) {
 		turn_encoder_value = 0;
-	}
+//	}
 	calibrated = false;
 	switch_hit = 0;
+	disable_ultrasonic_sensor();
 }
 
 void enable_ultrasonic_sensor(void)
@@ -215,7 +223,7 @@ void racket_init(void)
 	register_special_char_function(':', enable_ultrasonic_sensor);
 	register_special_char_function(';', disable_ultrasonic_sensor);	
 	
-	register_special_char_function('j', racket_received_command);
+//	register_special_char_function('j', racket_received_command);
 	
 	// debug commands
 	register_special_char_function('Y', open_pneumatic);
@@ -317,7 +325,7 @@ void racket_update(void)    //determine whether the motor should run
 			}
 		}
 		// fast calibration
-		if (racket_calibration_mode == 1) {
+		/*if (racket_calibration_mode == 1) {
 			if (switch_hit < 1) {
 				calibrated = false;
 				motor_set_vel(MOTOR5, -CALIBRATE_SPEED, CLOSE_LOOP);
@@ -331,7 +339,8 @@ void racket_update(void)    //determine whether the motor should run
 				serving_started_time = 0;
 			}
 		// slow calibration
-		} else if (switch_hit < 2) {
+		} else */
+		if (switch_hit < 2) {
 			calibrated = false;
 			motor_set_vel(MOTOR5, -CALIBRATE_SPEED, CLOSE_LOOP);
 			current_speed = CALIBRATE_SPEED;
@@ -343,10 +352,8 @@ void racket_update(void)    //determine whether the motor should run
 			motor_lock(MOTOR5);
 			current_speed = 0;
 			serving_started_time = 0;
-			racket_calibration_mode = 1;
-		}
-		if (get_full_ticks() - racket_hit_ticks > 1500) {
-			racket_hit = false;
+			serve_enabled = true;
+			//racket_calibration_mode = 1;
 		}
 	}
 	// regular mode
@@ -355,30 +362,29 @@ void racket_update(void)    //determine whether the motor should run
 			motor_set_vel(MOTOR5, 20, CLOSE_LOOP);
 			current_speed = -20;
 		} else if (get_encoder_value(MOTOR5) <= target_encoder_value && get_encoder_value(MOTOR5) >= target_encoder_value - turn_encoder_value / 8) {
-			if (racket_hit && get_full_ticks() - racket_hit_ticks > 1200) {
-				racket_calibrate();
-			} else {
-				current_encoder_value = get_encoder_value(MOTOR5);
-				motor_lock(MOTOR5);
-				current_speed = 0;
-			}
+			current_encoder_value = get_encoder_value(MOTOR5);
+			motor_lock(MOTOR5);
+			current_speed = 0;
 		}
-		else if (get_encoder_value(MOTOR5) <= target_encoder_value - turn_encoder_value * 2 / 3){
+		else if (get_encoder_value(MOTOR5) <= target_encoder_value - turn_encoder_value / 2){
 			motor_set_vel(MOTOR5, -racket_speed, OPEN_LOOP);
 			current_speed = racket_speed;
 		} else {
-
 			s32 vel_error = (target_encoder_value - get_encoder_value(MOTOR5))* racket_speed  / turn_encoder_value;
-			/* 
-			if (vel_error < SWING_RETURN_MIN_SPEED) { 
-				vel_error = SWING_RETURN_MIN_SPEED; 
-			}
-			*/
 			motor_set_vel(MOTOR5, -vel_error, OPEN_LOOP);
 			current_speed = vel_error;
 		}
+		if (trigger_serve) {
+			open_pneumatic();
+			serving_started = true;
+//			serving_started_time = get_full_ticks();
+			trigger_serve = false;
+		}
 		if (serving_started) {
-			if (get_full_ticks() - serving_started_time > racket_delay){
+			++delay_counter;
+			//if (get_full_ticks() - serving_started_time > racket_delay){
+			if (delay_counter > racket_delay) {
+				delay_counter = 0;
 				racket_received_command();
 				serving_started = false;
 				close_pneumatic();
@@ -531,7 +537,7 @@ void up_racket_sensor_check(void)
 	u8 tmp_detection = 0;
 	// If any sensors sense 
 	for (u8 id = 0; id < US_DEVICE_COUNT; ++id) {
-		if (us_get_distance(id) >= 50 && us_get_distance(id) <= 1400) {
+		if (us_get_distance(id) >= 50 && us_get_distance(id) <= 1200) {
 			tmp_detection = 1;
 		}
 	}

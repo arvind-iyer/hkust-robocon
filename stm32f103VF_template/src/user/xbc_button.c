@@ -14,7 +14,7 @@ static u32 last_increased_speed = 0;
 static u32 last_toggled_pneumatic = 0;
 
 static u32 xbc_last_received_nonzero_speed_timer = 0;
-
+static u32 xbc_last_received_nonzero_angle_timer = 0;
 // handler for all xbox buttons
 
 void xbc_button_handler(void)
@@ -22,6 +22,9 @@ void xbc_button_handler(void)
 	if (xbc_get_joy(XBC_JOY_LX) || xbc_get_joy(XBC_JOY_LY) || xbc_get_joy(XBC_JOY_LT) || xbc_get_joy(XBC_JOY_RT))
 	{
 		xbc_last_received_nonzero_speed_timer = get_full_ticks();
+		if (xbc_get_joy(XBC_JOY_LT) || xbc_get_joy(XBC_JOY_RT)) {
+			xbc_last_received_nonzero_angle_timer = get_full_ticks();
+		}
 	}
 	
 	if (button_pressed(BUTTON_XBC_Y))
@@ -122,4 +125,9 @@ void xbc_button_handler(void)
 u32 xbc_get_received_nonzero_speed_timer(void)
 {
 	return xbc_last_received_nonzero_speed_timer;
+}
+
+u32 xbc_get_received_nonzero_angle_timer(void)
+{
+	return xbc_last_received_nonzero_angle_timer;
 }

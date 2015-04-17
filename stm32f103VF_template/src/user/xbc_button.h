@@ -5,5 +5,5 @@
 
 u32 xbc_get_received_nonzero_speed_timer(void);
 void xbc_button_handler(void);
-
+u32 xbc_get_received_nonzero_angle_timer(void);
 #endif
