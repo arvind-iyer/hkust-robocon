@@ -33,7 +33,19 @@ bool robot_xbc_controls(void)
 	
 	
 	int dw = (xbc_get_joy(XBC_JOY_RT)-xbc_get_joy(XBC_JOY_LT))/5;
+	if(xbc_get_joy(XBC_JOY_LX) == 0 && xbc_get_joy(XBC_JOY_LY) == 0)
+	{
+		motor_set_acceleration(MOTOR_BOTTOM_RIGHT,500);
+		motor_set_acceleration(MOTOR_BOTTOM_LEFT,500);
+		motor_set_acceleration(MOTOR_TOP_LEFT,500);
+		motor_set_acceleration(MOTOR_TOP_RIGHT,500);
+	}
+	else
+	{
+		wheel_base_tx_acc();
+	}
 	wheel_base_set_vel(xbc_get_joy(XBC_JOY_LX), xbc_get_joy(XBC_JOY_LY), dw);
+	
 	
 	//Digital Movement
 	//Cardinals
@@ -104,29 +116,19 @@ void robot_d_function_controls(void)
 	else if(button_pressed(BUTTON_XBC_B))
 		serve_start();
 	else if(button_pressed(BUTTON_XBC_X))//Not essential
-		//serve_calibrate();
-		{
-			plus_y();
-			#warning change it back
-		}
-	else if(button_pressed(BUTTON_XBC_Y))
-	{
-		#warning removethisbit
-		minus_y();
-	}
+		serve_calibrate();
 	// change serve varibales
 	
 	if (button_pressed(BUTTON_XBC_LB) && button_pressed(BUTTON_XBC_Y))
 		serve_change_delay(-1);
 	else if (button_pressed(BUTTON_XBC_RB) && button_pressed(BUTTON_XBC_Y))
-		
 		serve_change_delay(1);
 	else if (button_pressed(BUTTON_XBC_LB))
-		//serve_change_vel(-2);
-		plus_x();
+		serve_change_vel(-2);
+		//plus_x();
 	else if (button_pressed(BUTTON_XBC_RB))
-		//serve_change_vel(2);
-		minus_x();
+		serve_change_vel(2);
+		//minus_x();
 	if (button_pressed(BUTTON_XBC_START))
 	{
 		serve_free();
@@ -367,9 +369,9 @@ void robocon_main(void)
 				u8 connect = xbc_get_connection() == XBC_DISCONNECTED ? 0 : 1;
 					 
         //tft_prints(0, 6, "Char: %s (%d) %c", s, wheel_base_bluetooth_get_last_char(), special_char_handler_bt_get_last_char());
-				tft_prints(0,3,"SHIT: (%d, %d)", gyro_get_shift_x(), gyro_get_shift_y());
+				//tft_prints(0,3,"SHIT: (%d, %d)", gyro_get_shift_x(), gyro_get_shift_y());
 				//tft_prints(0,3,"XBC: %d", connect);
-				//tft_prints(0,3,"Serve_delay: %d",serve_get_delay());
+				tft_prints(0,3,"Serve_delay: %d",serve_get_delay());
 				tft_prints(0,4, "pneu= %d", gpio_read_input(&PB9));
 				//tft_prints(0,4, "skipTick %d", tick_skip_count);
 				//tft_prints(0,4, "Serve_prior %d", serve_prioritized());
