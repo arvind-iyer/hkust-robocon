@@ -10,20 +10,6 @@
 
 #include "encoder.h"
 
-GPIO* const motor_L_pwm = &PB9;
-GPIO* const motor_R_pwm = &PB14;
-GPIO* const motor_U_pwm = &PB8;
-GPIO* const motor_D_pwm = &PA2;
-
-GPIO* const motor_L_dir = &PB5;
-GPIO* const motor_R_dir = &PC4;
-GPIO* const motor_U_dir = &PB4;
-GPIO* const motor_D_dir = &PA5;
-
-TIMER* const motor_L_TIM = &TIM11Ch1;
-
-const int no_of_motor = 4;
-
 enum dir
 {
 	ANTI_CKW = -1,
@@ -31,6 +17,10 @@ enum dir
 	CKW = 1
 };
 
+GPIO* const MOTOR_MAG = &PB9;
+GPIO* const MOTOR_DIR = &PB5;
+
+const int no_of_motor = 4;
 
 enum motor_error {
 	NULL_pointer = 0

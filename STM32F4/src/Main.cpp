@@ -71,41 +71,40 @@ int main()
 //	Usart uart1(USART1, 115200);
 //	uart1.setPrintUsart(USART1);
 	buzzer_init();
+	TIMER timer11 = {TIM11, Ch1};
 	encoder E1(&PE1, &PE3, TIM1);
 	encoder E2(&PE1, &PE3, TIM1);
 	encoder E3(&PE1, &PE3, TIM1);
-	motor motor_left(encoder_L_A, encoder_L_B, encoder_L_TIM, motor_L_pwm, motor_L_dir, motor_L_TIM);
+	motor MOTOR4(PHASE_A, PHASE_B, TIM4, MOTOR_MAG, MOTOR_DIR, &timer11);
 	can_init();
 	can_rx_init();
 	can_motor_init();
 	Leds Signal1(LED_1, LED_ON), Signal2(LED_2, LED_OFF);
 	buzzer_play_song(START_UP, 125, 0);
 	while (true) {
-		static int last_speed = 0;
 		if (ticks_img != ticks.getTicks()) {
 			ticks_img = ticks.getTicks();
 			buzzer_check();
-			motor_left.encoder::refresh();
-			if (last_speed != motor_left.get_change_of_encoder()) {
-				last_speed = motor_left.get_change_of_encoder();
-				motor_left.send_feedback();
+			MOTOR4.encoder::refresh();
+			if (MOTOR4.get_change_of_encoder() != 0) {
+//				uart1.Print("Real vel: %d\n", MOTOR4.get_change_of_encoder());
 			}
-			if (ticks_img % (1000 / motor_left.get_accel()) == 0) {
-				motor_left.refresh();
+			if (ticks_img % (1000 / MOTOR4.get_accel()) == 0) {
+				MOTOR4.refresh();
 			}
-//
-//			if (ticks_img % 100 == 0) {
-//				motor_left.send_feedback();
-//			}
+
+			if (ticks_img % 100 == 0) {
+				MOTOR4.send_feedback();
+			}
 
 			if (ticks_img % 1000 == 0) {
 
-				if (!motor_left.is_encoder_work) {
+				if (!MOTOR4.is_encoder_work) {
 
 					Signal1.led_control(ticks.getSeconds() % 2 ? LED_ON : LED_OFF);
 					Signal2.led_control(ticks.getSeconds() % 2 ? LED_ON : LED_OFF);
 					FAIL_MUSIC;
-				} else if (motor_left.is_overspeed()) {
+				} else if (MOTOR4.is_overspeed()) {
 					buzzer_play_song(SUCCESSFUL_SOUND,1000,0);
 					Signal1.led_control(LED_ON);
 					Signal2.led_control(LED_ON);
