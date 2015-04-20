@@ -1,5 +1,8 @@
 #include "timer.h"
 
+TIMER::TIMER(TIM_TypeDef* const TIM, Channel ch) : TIMx(TIM), Chx(ch) {}
+
+
 TIMER
 	TIM11Ch1(TIM4, Ch1),
 	TIM11Ch2(TIM4, Ch2),

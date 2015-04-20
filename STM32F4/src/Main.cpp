@@ -81,20 +81,22 @@ int main()
 	Leds Signal1(LED_1, LED_ON), Signal2(LED_2, LED_OFF);
 	buzzer_play_song(START_UP, 125, 0);
 	while (true) {
+		static int last_speed = 0;
 		if (ticks_img != ticks.getTicks()) {
 			ticks_img = ticks.getTicks();
 			buzzer_check();
 			motor_left.encoder::refresh();
-			if (motor_left.get_change_of_encoder() != 0) {
-//				uart1.Print("Real vel: %d\n", motor_left.get_change_of_encoder());
+			if (last_speed != motor_left.get_change_of_encoder()) {
+				last_speed = motor_left.get_change_of_encoder();
+				motor_left.send_feedback();
 			}
 			if (ticks_img % (1000 / motor_left.get_accel()) == 0) {
 				motor_left.refresh();
 			}
-
-			if (ticks_img % 100 == 0) {
-				motor_left.send_feedback();
-			}
+//
+//			if (ticks_img % 100 == 0) {
+//				motor_left.send_feedback();
+//			}
 
 			if (ticks_img % 1000 == 0) {
 

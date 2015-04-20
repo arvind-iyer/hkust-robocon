@@ -13,7 +13,7 @@ enum Channel{
 
 class TIMER {
 public:
-	TIMER(TIM_TypeDef* const TIMn, Channel Chn) : TIMx(TIMn), Chx(Chn){}
+	TIMER(TIM_TypeDef* const TIMn, Channel Chn);
 	TIM_TypeDef* const TIMx;
 	Channel Chx;
 };
