@@ -1,3 +1,0 @@
-[submodule "RoboconCtrl-Mac/RoboconCtrl-Mac/ThirdParty/ORSSerialPort"]
-	path = RoboconCtrl-Mac/RoboconCtrl-Mac/ThirdParty/ORSSerialPort
-	url = https://github.com/armadsen/ORSSerialPort.git
