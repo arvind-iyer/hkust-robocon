@@ -32,7 +32,7 @@ CRoboconCtrlApp::CRoboconCtrlApp()
 
 	// TODO: replace application ID string below with unique ID string; recommended
 	// format for string is CompanyName.ProductName.SubProduct.VersionInformation
-	SetAppID(_T("RoboconCtrl.AppID.v2.5"));
+	SetAppID(_T("RoboconCtrl.AppID.v2.7"));
 
 	// TODO: add construction code here,
 	// Place all significant initialization in InitInstance

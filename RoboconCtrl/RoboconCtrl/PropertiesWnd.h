@@ -41,6 +41,11 @@ public:
 	virtual std::vector<std::basic_string<TCHAR>> GetSettings();
 	virtual ~CPropertiesWnd();
 
+private:
+	std::vector<std::basic_string<TCHAR>> loaded_settings;
+	std::vector<std::basic_string<TCHAR>> saving_settings;
+	void UpdateProperties();
+
 protected:
 	afx_msg int OnCreate(LPCREATESTRUCT lpCreateStruct);
 	afx_msg void OnSize(UINT nType, int cx, int cy);

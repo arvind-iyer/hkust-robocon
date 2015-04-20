@@ -93,7 +93,7 @@ CMainFrame::~CMainFrame()
 		WaitForMultipleObjects(2, handles, TRUE, INFINITE);
 	}
 	terminate_thread();
-	WaitForSingleObject(xbox_thread_handle, INFINITE);
+	WaitForSingleObject(xbox_thread_handle->m_hThread, INFINITE);
 }
 
 int CMainFrame::OnCreate(LPCREATESTRUCT lpCreateStruct)

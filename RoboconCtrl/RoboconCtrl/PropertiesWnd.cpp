@@ -7,6 +7,7 @@
 #include "RoboconCtrl.h"
 
 #include <sstream>
+#include <fstream>
 
 #ifdef _DEBUG
 #undef THIS_FILE
@@ -20,10 +21,42 @@ static char THIS_FILE[]=__FILE__;
 CPropertiesWnd::CPropertiesWnd()
 {
 	m_nComboHeight = 0;
+	TCHAR path[MAX_PATH] = { 0 };
+	GetModuleFileName(NULL, path, MAX_PATH);
+	PathRemoveFileSpec(path);
+
+	SetCurrentDirectory(path);
+
+	// load com port if exists
+	std::ifstream file;
+	file.open("settings.ini");
+
+	if (file.is_open()) {
+		OutputDebugString(_T("File opened \n"));
+		std::string line;
+		std::getline(file, line);
+		if (line == "Version 2.7 Settings") {
+			OutputDebugString(_T("Loading Settings"));
+			while (std::getline(file, line)) {
+				loaded_settings.push_back(std::basic_string<TCHAR>(CString(line.c_str(), line.size())));
+				OutputDebugString(std::basic_string<TCHAR>(CString(line.c_str(), line.size())).c_str());
+			}
+		}
+	}
 }
 
 CPropertiesWnd::~CPropertiesWnd()
 {
+	// save properties data to com port
+	std::ofstream file;
+	file.open("settings.ini");
+
+	if (file.is_open()) {
+		file << "Version 2.7 Settings" << std::endl;
+		for (int i = 0; i < saving_settings.size(); ++i) {
+			file << std::string(CT2CA(CString(saving_settings[i].c_str(), saving_settings[i].size()))) << std::endl;
+		}
+	}
 }
 
 BEGIN_MESSAGE_MAP(CPropertiesWnd, CDockablePane)
@@ -145,9 +178,22 @@ void CPropertiesWnd::OnProperties1()
 	// TODO: Add your command handler code here
 }
 
+void CPropertiesWnd::UpdateProperties()
+{
+	std::vector<std::basic_string<TCHAR>> settings_to_be_saved;
+	for (int i = 0; i < 2; ++i) {
+		settings_to_be_saved.push_back(std::basic_string<TCHAR>((CString)m_wndPropList.GetProperty(0)->GetSubItem(i)->GetValue()));
+	}
+	for (int j = 0; j < 8; ++j) {
+		settings_to_be_saved.push_back(std::basic_string<TCHAR>((CString)m_wndPropList.GetProperty(1)->GetSubItem(j)->GetValue()));
+	}
+	saving_settings = settings_to_be_saved;
+}
+
 void CPropertiesWnd::OnUpdateProperties1(CCmdUI* /*pCmdUI*/)
 {
 	// TODO: Add your command update UI handler code here
+	UpdateProperties();
 }
 
 void CPropertiesWnd::OnProperties2()
@@ -289,6 +335,16 @@ void CPropertiesWnd::InitPropList()
 	pGroup2->AddSubItem(pProp);
 
 	m_wndPropList.AddProperty(pGroup2);
+
+	if (!loaded_settings.empty()) {
+		OutputDebugString(_T("Loading settings \n"));
+		for (int i = 0; i < 2; ++i) {
+			m_wndPropList.GetProperty(0)->GetSubItem(i)->SetValue(loaded_settings[i].c_str());
+		}
+		for (int j = 0; j < 8; ++j) {
+			m_wndPropList.GetProperty(1)->GetSubItem(j)->SetValue(loaded_settings[j + 2].c_str());
+		}
+	}
 }
 
 void CPropertiesWnd::OnSetFocus(CWnd* pOldWnd)
