@@ -171,11 +171,11 @@ void wheel_base_set_vel(s32 x, s32 y, s32 w)
 {
 	wheel_base_vel.x = x * 100;
 	wheel_base_vel.y = y * 100;
-	if (w != 0) {
+//	if (w != 0) {
 		wheel_base_vel.w = w * 100;
-	} else {
-		wheel_base_vel.w = wheel_base_angle_pid_update() * 100;
-	}
+//	} else {
+//		wheel_base_vel.w = wheel_base_angle_pid_update() * 100;
+//	}
 }
 
 /**

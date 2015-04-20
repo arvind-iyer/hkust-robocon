@@ -1,7 +1,7 @@
 #include "racket_control.h"
 #include "delay.h"
 #include "approx_math.h"
-#include "buzzer.h"
+#include "buzzer_song.h"
 
 // calibrate mode static variables
 static bool calibrate_mode_on = false;
@@ -343,15 +343,12 @@ void racket_update(void)    //determine whether the motor should run
 	// regular mode
 	else if (calibrated) {
 		static bool serving = false;
-		static bool trigger_calibrate = false;
-		static const u8 trigger_calibrate_delay = 20;
-		static u8 trigger_calibrate_counter = trigger_calibrate_delay;
 		if (trigger_serve) {
 			open_pneumatic();
 			serving_started = true;
 			trigger_serve = false;
 		}
-		if (serving_started) {
+		else if (serving_started) {
 			++delay_counter;
 			if (delay_counter > racket_delay) {
 				delay_counter = 0;
@@ -361,23 +358,15 @@ void racket_update(void)    //determine whether the motor should run
 				close_pneumatic();
 			}
 		}
-		if (trigger_calibrate) {
-			--trigger_calibrate_counter;
-			if (!trigger_calibrate_counter) {
-				racket_calibrate();
-				trigger_calibrate_counter = trigger_calibrate_delay;
-				trigger_calibrate = false;
-			}
-		}
-		if (serving) {
+		else if (serving) {
 			if (get_encoder_value(MOTOR5) >= target_encoder_value - turn_encoder_value / 8) {
 				current_encoder_value = get_encoder_value(MOTOR5);
 				motor_lock(MOTOR5);
 				current_speed = 0;
 				serving = false;
-				trigger_calibrate = true;
 			}
 			else if (get_encoder_value(MOTOR5) <= target_encoder_value - turn_encoder_value / 2){
+				FAIL_MUSIC;
 				motor_set_vel(MOTOR5, -racket_speed, OPEN_LOOP);
 				current_speed = racket_speed;
 			} else {
@@ -385,6 +374,12 @@ void racket_update(void)    //determine whether the motor should run
 				motor_set_vel(MOTOR5, -vel_error, OPEN_LOOP);
 				current_speed = vel_error;
 			}
+		}
+		else if (!serving) {
+			motor_lock(MOTOR5);
+			current_speed = 0;
+			serving = false;
+			SUCCESSFUL_MUSIC;
 		}
 	}
 }

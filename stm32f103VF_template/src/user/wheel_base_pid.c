@@ -310,14 +310,14 @@ void wheel_base_pid_update(void)
 	// PID mode check
 	if (wheel_base_get_pid_flag() == 1 && gyro_calibrated) {
 		
-		FAIL_MUSIC;
-		
 		// update position variables and reset PID if target position is changed
 		if (end_pos.x != wheel_base_get_target_pos().x || end_pos.y != wheel_base_get_target_pos().y || end_pos.angle != wheel_base_get_target_pos().angle) {
 			end_pos = wheel_base_get_target_pos();
 			reset_pid();
 			pid_locked = false;
 		}
+		
+		FAIL_MUSIC;
 		
 		// do not calculate PID if adjusting manually after PID is reached
 		if (pid_locked || (get_full_ticks() - wheel_base_get_last_manual_timer()) < BLUETOOTH_WHEEL_BASE_TIMEOUT + 300 ||
@@ -401,8 +401,8 @@ void wheel_base_pid_update(void)
 		
 		// scale speed with angle
 		
-		int x_final_speed = (x_speed * int_cos(get_pos()->angle) - y_speed * int_sin(get_pos()->angle)) / 10000;
-		int y_final_speed = (y_speed * int_cos(get_pos()->angle) + x_speed * int_sin(get_pos()->angle)) / 10000;
+		int x_final_speed = x_speed; //(x_speed * int_cos(get_pos()->angle) - y_speed * int_sin(get_pos()->angle)) / 10000;
+		int y_final_speed = y_speed; //(y_speed * int_cos(get_pos()->angle) + x_speed * int_sin(get_pos()->angle)) / 10000;
 		int t_final_speed =  0;
 		
 		u8 speed_ratio;

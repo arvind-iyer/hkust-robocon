@@ -27,12 +27,12 @@ void xbc_button_handler(void)
 		}
 	}
 	
-	if (button_pressed(BUTTON_XBC_Y))
+	if (button_pressed(BUTTON_XBC_B))
 	{
 		upper_hit();
 	}
 	
-	if (button_pressed(BUTTON_XBC_B))
+	if (button_pressed(BUTTON_XBC_Y))
 	{
 		static bool pneumatic_stat = 0;
 		if ((get_full_ticks() - last_toggled_pneumatic) > PNEUMATIC_CHANGE_TIMEOUT) {
@@ -46,12 +46,12 @@ void xbc_button_handler(void)
 		}
 	}
 	
-	if (button_pressed(BUTTON_XBC_X))
+	if (button_pressed(BUTTON_XBC_A))
 	{
 		serving();
 	}
 	
-	if (button_pressed(BUTTON_XBC_A))
+	if (button_pressed(BUTTON_XBC_X))
 	{
 		racket_calibrate();
 	}
