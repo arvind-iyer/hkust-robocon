@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>IDESourceControlProjectFavoriteDictionaryKey</key>
+	<false/>
+	<key>IDESourceControlProjectIdentifier</key>
+	<string>0AC9D210-848C-4974-90F9-E6764CA01497</string>
+	<key>IDESourceControlProjectName</key>
+	<string>RoboconCtrl-Mac</string>
+	<key>IDESourceControlProjectOriginsDictionary</key>
+	<dict>
+		<key>29520ACC299E031C2D6DD3F9BB8F0C698C64397E</key>
+		<string>https://github.com/hautonjt/Robocon2015.git</string>
+		<key>5A811E91F5DFF59170683E14D2C5755F19DE18CB</key>
+		<string>https://github.com/armadsen/ORSSerialPort.git</string>
+	</dict>
+	<key>IDESourceControlProjectPath</key>
+	<string>RoboconCtrl-Mac/RoboconCtrl-Mac.xcodeproj</string>
+	<key>IDESourceControlProjectRelativeInstallPathDictionary</key>
+	<dict>
+		<key>29520ACC299E031C2D6DD3F9BB8F0C698C64397E</key>
+		<string>../../..</string>
+		<key>5A811E91F5DFF59170683E14D2C5755F19DE18CB</key>
+		<string>../../..RoboconCtrl-Mac/RoboconCtrl-Mac/ThirdParty/ORSSerialPort/</string>
+	</dict>
+	<key>IDESourceControlProjectURL</key>
+	<string>https://github.com/hautonjt/Robocon2015.git</string>
+	<key>IDESourceControlProjectVersion</key>
+	<integer>111</integer>
+	<key>IDESourceControlProjectWCCIdentifier</key>
+	<string>29520ACC299E031C2D6DD3F9BB8F0C698C64397E</string>
+	<key>IDESourceControlProjectWCConfigurations</key>
+	<array>
+		<dict>
+			<key>IDESourceControlRepositoryExtensionIdentifierKey</key>
+			<string>public.vcs.git</string>
+			<key>IDESourceControlWCCIdentifierKey</key>
+			<string>5A811E91F5DFF59170683E14D2C5755F19DE18CB</string>
+			<key>IDESourceControlWCCName</key>
+			<string>ORSSerialPort</string>
+		</dict>
+		<dict>
+			<key>IDESourceControlRepositoryExtensionIdentifierKey</key>
+			<string>public.vcs.git</string>
+			<key>IDESourceControlWCCIdentifierKey</key>
+			<string>29520ACC299E031C2D6DD3F9BB8F0C698C64397E</string>
+			<key>IDESourceControlWCCName</key>
+			<string>Robocon2015</string>
+		</dict>
+	</array>
+</dict>
+</plist>

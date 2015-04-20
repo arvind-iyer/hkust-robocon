@@ -1,0 +1,470 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 46;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		175CE34F1AE5018D003173A3 /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 175CE34E1AE5018D003173A3 /* main.m */; };
+		175CE3511AE5018D003173A3 /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 175CE3501AE5018D003173A3 /* Images.xcassets */; };
+		175CE3541AE5018D003173A3 /* MainMenu.xib in Resources */ = {isa = PBXBuildFile; fileRef = 175CE3521AE5018D003173A3 /* MainMenu.xib */; };
+		175CE36A1AE501A3003173A3 /* AppDelegate.mm in Sources */ = {isa = PBXBuildFile; fileRef = 175CE3691AE501A3003173A3 /* AppDelegate.mm */; };
+		175CE36C1AE501D2003173A3 /* RoboconCtrl_MacTests.mm in Sources */ = {isa = PBXBuildFile; fileRef = 175CE36B1AE501D2003173A3 /* RoboconCtrl_MacTests.mm */; };
+		175CE3701AE5030A003173A3 /* Cocoa.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 175CE36F1AE5030A003173A3 /* Cocoa.framework */; };
+		175CE3721AE50311003173A3 /* OpenGL.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 175CE3711AE50311003173A3 /* OpenGL.framework */; };
+		175CE3761AE50387003173A3 /* SerialIO.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 175CE3741AE50387003173A3 /* SerialIO.cpp */; };
+		175CE37A1AE503EE003173A3 /* GameFieldView.mm in Sources */ = {isa = PBXBuildFile; fileRef = 175CE3791AE503EE003173A3 /* GameFieldView.mm */; };
+		175CE3831AE524F2003173A3 /* ORSSerialPort.m in Sources */ = {isa = PBXBuildFile; fileRef = 175CE37E1AE524F2003173A3 /* ORSSerialPort.m */; };
+		175CE3841AE524F2003173A3 /* ORSSerialPortManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 175CE3801AE524F2003173A3 /* ORSSerialPortManager.m */; };
+		175CE3851AE524F2003173A3 /* ORSSerialRequest.m in Sources */ = {isa = PBXBuildFile; fileRef = 175CE3821AE524F2003173A3 /* ORSSerialRequest.m */; };
+/* End PBXBuildFile section */
+
+/* Begin PBXContainerItemProxy section */
+		175CE35A1AE5018D003173A3 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 175CE33E1AE5018D003173A3 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 175CE3451AE5018D003173A3;
+			remoteInfo = "RoboconCtrl-Mac";
+		};
+/* End PBXContainerItemProxy section */
+
+/* Begin PBXFileReference section */
+		175CE3461AE5018D003173A3 /* RoboconCtrl-Mac.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "RoboconCtrl-Mac.app"; sourceTree = BUILT_PRODUCTS_DIR; };
+		175CE34A1AE5018D003173A3 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		175CE34B1AE5018D003173A3 /* AppDelegate.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = AppDelegate.h; sourceTree = "<group>"; };
+		175CE34E1AE5018D003173A3 /* main.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = main.m; sourceTree = "<group>"; };
+		175CE3501AE5018D003173A3 /* Images.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Images.xcassets; sourceTree = "<group>"; };
+		175CE3531AE5018D003173A3 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = Base; path = Base.lproj/MainMenu.xib; sourceTree = "<group>"; };
+		175CE3591AE5018D003173A3 /* RoboconCtrl-MacTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = "RoboconCtrl-MacTests.xctest"; sourceTree = BUILT_PRODUCTS_DIR; };
+		175CE35E1AE5018D003173A3 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		175CE3691AE501A3003173A3 /* AppDelegate.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = AppDelegate.mm; sourceTree = "<group>"; };
+		175CE36B1AE501D2003173A3 /* RoboconCtrl_MacTests.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = RoboconCtrl_MacTests.mm; sourceTree = "<group>"; };
+		175CE36F1AE5030A003173A3 /* Cocoa.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Cocoa.framework; path = System/Library/Frameworks/Cocoa.framework; sourceTree = SDKROOT; };
+		175CE3711AE50311003173A3 /* OpenGL.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = OpenGL.framework; path = System/Library/Frameworks/OpenGL.framework; sourceTree = SDKROOT; };
+		175CE3741AE50387003173A3 /* SerialIO.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = SerialIO.cpp; sourceTree = "<group>"; };
+		175CE3751AE50387003173A3 /* SerialIO.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SerialIO.h; sourceTree = "<group>"; };
+		175CE3791AE503EE003173A3 /* GameFieldView.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = GameFieldView.mm; sourceTree = "<group>"; };
+		175CE37B1AE5040F003173A3 /* GameFieldView.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = GameFieldView.h; sourceTree = "<group>"; };
+		175CE37D1AE524F2003173A3 /* ORSSerialPort.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ORSSerialPort.h; sourceTree = "<group>"; };
+		175CE37E1AE524F2003173A3 /* ORSSerialPort.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ORSSerialPort.m; sourceTree = "<group>"; };
+		175CE37F1AE524F2003173A3 /* ORSSerialPortManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ORSSerialPortManager.h; sourceTree = "<group>"; };
+		175CE3801AE524F2003173A3 /* ORSSerialPortManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ORSSerialPortManager.m; sourceTree = "<group>"; };
+		175CE3811AE524F2003173A3 /* ORSSerialRequest.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ORSSerialRequest.h; sourceTree = "<group>"; };
+		175CE3821AE524F2003173A3 /* ORSSerialRequest.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ORSSerialRequest.m; sourceTree = "<group>"; };
+/* End PBXFileReference section */
+
+/* Begin PBXFrameworksBuildPhase section */
+		175CE3431AE5018D003173A3 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				175CE3721AE50311003173A3 /* OpenGL.framework in Frameworks */,
+				175CE3701AE5030A003173A3 /* Cocoa.framework in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		175CE3561AE5018D003173A3 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXFrameworksBuildPhase section */
+
+/* Begin PBXGroup section */
+		175CE33D1AE5018D003173A3 = {
+			isa = PBXGroup;
+			children = (
+				175CE3481AE5018D003173A3 /* RoboconCtrl-Mac */,
+				175CE35C1AE5018D003173A3 /* RoboconCtrl-MacTests */,
+				175CE3471AE5018D003173A3 /* Products */,
+			);
+			sourceTree = "<group>";
+		};
+		175CE3471AE5018D003173A3 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				175CE3461AE5018D003173A3 /* RoboconCtrl-Mac.app */,
+				175CE3591AE5018D003173A3 /* RoboconCtrl-MacTests.xctest */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		175CE3481AE5018D003173A3 /* RoboconCtrl-Mac */ = {
+			isa = PBXGroup;
+			children = (
+				175CE34B1AE5018D003173A3 /* AppDelegate.h */,
+				175CE3691AE501A3003173A3 /* AppDelegate.mm */,
+				175CE37B1AE5040F003173A3 /* GameFieldView.h */,
+				175CE3791AE503EE003173A3 /* GameFieldView.mm */,
+				175CE3741AE50387003173A3 /* SerialIO.cpp */,
+				175CE3751AE50387003173A3 /* SerialIO.h */,
+				175CE3501AE5018D003173A3 /* Images.xcassets */,
+				175CE3521AE5018D003173A3 /* MainMenu.xib */,
+				175CE37C1AE524F2003173A3 /* Serial */,
+				175CE3731AE5031C003173A3 /* Frameworks */,
+				175CE3491AE5018D003173A3 /* Supporting Files */,
+			);
+			path = "RoboconCtrl-Mac";
+			sourceTree = "<group>";
+		};
+		175CE3491AE5018D003173A3 /* Supporting Files */ = {
+			isa = PBXGroup;
+			children = (
+				175CE34A1AE5018D003173A3 /* Info.plist */,
+				175CE34E1AE5018D003173A3 /* main.m */,
+			);
+			name = "Supporting Files";
+			sourceTree = "<group>";
+		};
+		175CE35C1AE5018D003173A3 /* RoboconCtrl-MacTests */ = {
+			isa = PBXGroup;
+			children = (
+				175CE35D1AE5018D003173A3 /* Supporting Files */,
+			);
+			path = "RoboconCtrl-MacTests";
+			sourceTree = "<group>";
+		};
+		175CE35D1AE5018D003173A3 /* Supporting Files */ = {
+			isa = PBXGroup;
+			children = (
+				175CE36B1AE501D2003173A3 /* RoboconCtrl_MacTests.mm */,
+				175CE35E1AE5018D003173A3 /* Info.plist */,
+			);
+			name = "Supporting Files";
+			sourceTree = "<group>";
+		};
+		175CE3731AE5031C003173A3 /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+				175CE3711AE50311003173A3 /* OpenGL.framework */,
+				175CE36F1AE5030A003173A3 /* Cocoa.framework */,
+			);
+			name = Frameworks;
+			sourceTree = "<group>";
+		};
+		175CE37C1AE524F2003173A3 /* Serial */ = {
+			isa = PBXGroup;
+			children = (
+				175CE37D1AE524F2003173A3 /* ORSSerialPort.h */,
+				175CE37E1AE524F2003173A3 /* ORSSerialPort.m */,
+				175CE37F1AE524F2003173A3 /* ORSSerialPortManager.h */,
+				175CE3801AE524F2003173A3 /* ORSSerialPortManager.m */,
+				175CE3811AE524F2003173A3 /* ORSSerialRequest.h */,
+				175CE3821AE524F2003173A3 /* ORSSerialRequest.m */,
+			);
+			name = Serial;
+			path = ThirdParty/ORSSerialPort/Source;
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXNativeTarget section */
+		175CE3451AE5018D003173A3 /* RoboconCtrl-Mac */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 175CE3631AE5018D003173A3 /* Build configuration list for PBXNativeTarget "RoboconCtrl-Mac" */;
+			buildPhases = (
+				175CE3421AE5018D003173A3 /* Sources */,
+				175CE3431AE5018D003173A3 /* Frameworks */,
+				175CE3441AE5018D003173A3 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = "RoboconCtrl-Mac";
+			productName = "RoboconCtrl-Mac";
+			productReference = 175CE3461AE5018D003173A3 /* RoboconCtrl-Mac.app */;
+			productType = "com.apple.product-type.application";
+		};
+		175CE3581AE5018D003173A3 /* RoboconCtrl-MacTests */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 175CE3661AE5018D003173A3 /* Build configuration list for PBXNativeTarget "RoboconCtrl-MacTests" */;
+			buildPhases = (
+				175CE3551AE5018D003173A3 /* Sources */,
+				175CE3561AE5018D003173A3 /* Frameworks */,
+				175CE3571AE5018D003173A3 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				175CE35B1AE5018D003173A3 /* PBXTargetDependency */,
+			);
+			name = "RoboconCtrl-MacTests";
+			productName = "RoboconCtrl-MacTests";
+			productReference = 175CE3591AE5018D003173A3 /* RoboconCtrl-MacTests.xctest */;
+			productType = "com.apple.product-type.bundle.unit-test";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		175CE33E1AE5018D003173A3 /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+				LastUpgradeCheck = 0620;
+				ORGANIZATIONNAME = "Hauton TSANG";
+				TargetAttributes = {
+					175CE3451AE5018D003173A3 = {
+						CreatedOnToolsVersion = 6.2;
+					};
+					175CE3581AE5018D003173A3 = {
+						CreatedOnToolsVersion = 6.2;
+						TestTargetID = 175CE3451AE5018D003173A3;
+					};
+				};
+			};
+			buildConfigurationList = 175CE3411AE5018D003173A3 /* Build configuration list for PBXProject "RoboconCtrl-Mac" */;
+			compatibilityVersion = "Xcode 3.2";
+			developmentRegion = English;
+			hasScannedForEncodings = 0;
+			knownRegions = (
+				en,
+				Base,
+			);
+			mainGroup = 175CE33D1AE5018D003173A3;
+			productRefGroup = 175CE3471AE5018D003173A3 /* Products */;
+			projectDirPath = "";
+			projectRoot = "";
+			targets = (
+				175CE3451AE5018D003173A3 /* RoboconCtrl-Mac */,
+				175CE3581AE5018D003173A3 /* RoboconCtrl-MacTests */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXResourcesBuildPhase section */
+		175CE3441AE5018D003173A3 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				175CE3511AE5018D003173A3 /* Images.xcassets in Resources */,
+				175CE3541AE5018D003173A3 /* MainMenu.xib in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		175CE3571AE5018D003173A3 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXResourcesBuildPhase section */
+
+/* Begin PBXSourcesBuildPhase section */
+		175CE3421AE5018D003173A3 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				175CE36A1AE501A3003173A3 /* AppDelegate.mm in Sources */,
+				175CE3831AE524F2003173A3 /* ORSSerialPort.m in Sources */,
+				175CE3851AE524F2003173A3 /* ORSSerialRequest.m in Sources */,
+				175CE34F1AE5018D003173A3 /* main.m in Sources */,
+				175CE3841AE524F2003173A3 /* ORSSerialPortManager.m in Sources */,
+				175CE3761AE50387003173A3 /* SerialIO.cpp in Sources */,
+				175CE37A1AE503EE003173A3 /* GameFieldView.mm in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		175CE3551AE5018D003173A3 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				175CE36C1AE501D2003173A3 /* RoboconCtrl_MacTests.mm in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin PBXTargetDependency section */
+		175CE35B1AE5018D003173A3 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 175CE3451AE5018D003173A3 /* RoboconCtrl-Mac */;
+			targetProxy = 175CE35A1AE5018D003173A3 /* PBXContainerItemProxy */;
+		};
+/* End PBXTargetDependency section */
+
+/* Begin PBXVariantGroup section */
+		175CE3521AE5018D003173A3 /* MainMenu.xib */ = {
+			isa = PBXVariantGroup;
+			children = (
+				175CE3531AE5018D003173A3 /* Base */,
+			);
+			name = MainMenu.xib;
+			sourceTree = "<group>";
+		};
+/* End PBXVariantGroup section */
+
+/* Begin XCBuildConfiguration section */
+		175CE3611AE5018D003173A3 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++0x";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				CODE_SIGN_IDENTITY = "-";
+				COPY_PHASE_STRIP = NO;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu99;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"DEBUG=1",
+					"$(inherited)",
+				);
+				GCC_SYMBOLS_PRIVATE_EXTERN = NO;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				MACOSX_DEPLOYMENT_TARGET = 10.9;
+				MTL_ENABLE_DEBUG_INFO = YES;
+				ONLY_ACTIVE_ARCH = YES;
+				SDKROOT = macosx;
+			};
+			name = Debug;
+		};
+		175CE3621AE5018D003173A3 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++0x";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				CODE_SIGN_IDENTITY = "-";
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				ENABLE_NS_ASSERTIONS = NO;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu99;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				MACOSX_DEPLOYMENT_TARGET = 10.9;
+				MTL_ENABLE_DEBUG_INFO = NO;
+				SDKROOT = macosx;
+			};
+			name = Release;
+		};
+		175CE3641AE5018D003173A3 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				COMBINE_HIDPI_IMAGES = YES;
+				INFOPLIST_FILE = "RoboconCtrl-Mac/Info.plist";
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/../Frameworks";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+			};
+			name = Debug;
+		};
+		175CE3651AE5018D003173A3 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				COMBINE_HIDPI_IMAGES = YES;
+				INFOPLIST_FILE = "RoboconCtrl-Mac/Info.plist";
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/../Frameworks";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+			};
+			name = Release;
+		};
+		175CE3671AE5018D003173A3 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				COMBINE_HIDPI_IMAGES = YES;
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(DEVELOPER_FRAMEWORKS_DIR)",
+					"$(inherited)",
+				);
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"DEBUG=1",
+					"$(inherited)",
+				);
+				INFOPLIST_FILE = "RoboconCtrl-MacTests/Info.plist";
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/../Frameworks @loader_path/../Frameworks";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/RoboconCtrl-Mac.app/Contents/MacOS/RoboconCtrl-Mac";
+			};
+			name = Debug;
+		};
+		175CE3681AE5018D003173A3 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				COMBINE_HIDPI_IMAGES = YES;
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(DEVELOPER_FRAMEWORKS_DIR)",
+					"$(inherited)",
+				);
+				INFOPLIST_FILE = "RoboconCtrl-MacTests/Info.plist";
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/../Frameworks @loader_path/../Frameworks";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/RoboconCtrl-Mac.app/Contents/MacOS/RoboconCtrl-Mac";
+			};
+			name = Release;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		175CE3411AE5018D003173A3 /* Build configuration list for PBXProject "RoboconCtrl-Mac" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				175CE3611AE5018D003173A3 /* Debug */,
+				175CE3621AE5018D003173A3 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		175CE3631AE5018D003173A3 /* Build configuration list for PBXNativeTarget "RoboconCtrl-Mac" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				175CE3641AE5018D003173A3 /* Debug */,
+				175CE3651AE5018D003173A3 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		175CE3661AE5018D003173A3 /* Build configuration list for PBXNativeTarget "RoboconCtrl-MacTests" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				175CE3671AE5018D003173A3 /* Debug */,
+				175CE3681AE5018D003173A3 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+/* End XCConfigurationList section */
+	};
+	rootObject = 175CE33E1AE5018D003173A3 /* Project object */;
+}
