@@ -94,13 +94,7 @@ GPIO
 
 
 
-GPIO::GPIO(GPIO_TypeDef* _gpio, uint16_t pin) : gpio(_gpio), gpio_pin(pin), gpio_is_inited(false) {
-
-	if (gpio == GPIOB && (gpio_pin == GPIO_Pin_0 || gpio_pin == GPIO_Pin_1)) {
-		PB0.gpio_init(GPIO_Speed_100MHz, GPIO_Mode_OUT, GPIO_OType_PP, GPIO_PuPd_NOPULL);
-		PB1.gpio_init(GPIO_Speed_100MHz, GPIO_Mode_OUT, GPIO_OType_PP, GPIO_PuPd_NOPULL);
-	}
-}
+GPIO::GPIO(GPIO_TypeDef* _gpio, uint16_t pin) : gpio(_gpio), gpio_pin(pin), gpio_is_inited(false) {}
 
 uint8_t GPIO::get_pin_source() const
 {

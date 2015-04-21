@@ -21,6 +21,9 @@ GPIO* const motor_U_dir = &PB4;
 GPIO* const motor_D_dir = &PA5;
 
 TIMER* const motor_L_TIM = &TIM11Ch1;
+TIMER* const motor_R_TIM = &TIM12Ch1;
+TIMER* const motor_U_TIM = &TIM10Ch1;
+TIMER* const motor_D_TIM = &TIM9Ch1;
 
 const int no_of_motor = 4;
 
@@ -71,8 +74,8 @@ namespace _motor {
 
 		TIM_TypeDef* const motor_timer;
 		const int MAX_PWM = SystemCoreClock / 2 / 10000 - 1;
-		const int MAX_ACCEL = 1000;
-		const int MIN_ACCEL = 5;
+		static const int MAX_ACCEL = 1000;
+		static const int MIN_ACCEL = 5;
 
 		// Access
 

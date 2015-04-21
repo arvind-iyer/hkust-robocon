@@ -71,10 +71,10 @@ int main()
 //	Usart uart1(USART1, 115200);
 //	uart1.setPrintUsart(USART1);
 	buzzer_init();
-	encoder E1(&PE1, &PE3, TIM1);
-	encoder E2(&PE1, &PE3, TIM1);
-	encoder E3(&PE1, &PE3, TIM1);
-	motor motor_left(encoder_L_A, encoder_L_B, encoder_L_TIM, motor_L_pwm, motor_L_dir, motor_L_TIM);
+	motor motor_up(encoder_U_A, encoder_U_B, TIM4, motor_U_pwm, motor_U_dir, motor_U_TIM);
+	motor motor_down(encoder_D_A, encoder_D_B, TIM4, motor_D_pwm, motor_D_dir, motor_D_TIM);
+	motor motor_right(encoder_R_A, encoder_R_B, TIM4, motor_R_pwm, motor_R_dir, motor_R_TIM);
+	motor motor_left(encoder_L_A, encoder_L_B, TIM4, motor_L_pwm, motor_L_dir, motor_L_TIM);
 	can_init();
 	can_rx_init();
 	can_motor_init();
@@ -86,17 +86,20 @@ int main()
 			ticks_img = ticks.getTicks();
 			buzzer_check();
 			motor_left.encoder::refresh();
-			if (last_speed != motor_left.get_change_of_encoder()) {
-				last_speed = motor_left.get_change_of_encoder();
-				motor_left.send_feedback();
-			}
+//			if (last_speed != motor_left.get_change_of_encoder()) {
+//				last_speed = motor_left.get_change_of_encoder();
+//				motor_left.send_feedback();
+//			}
 			if (ticks_img % (1000 / motor_left.get_accel()) == 0) {
 				motor_left.refresh();
 			}
-//
-//			if (ticks_img % 100 == 0) {
-//				motor_left.send_feedback();
-//			}
+
+			if (ticks_img % 100 == 0) {
+				motor_up.send_feedback();
+				motor_down.send_feedback();
+				motor_right.send_feedback();
+				motor_left.send_feedback();
+			}
 
 			if (ticks_img % 1000 == 0) {
 

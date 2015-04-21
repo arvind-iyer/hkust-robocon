@@ -15,9 +15,19 @@ vel(0),	m_TIM(TIMx), encoder_value(0), flowing_flag(0), is_encoder_work(true), t
 	++current_id;
 	phaseA->gpio_init(GPIO_Speed_50MHz, GPIO_Mode_AF, GPIO_OType_PP, GPIO_PuPd_NOPULL);
 	phaseB->gpio_init(GPIO_Speed_50MHz, GPIO_Mode_AF, GPIO_OType_PP, GPIO_PuPd_NOPULL);
-
-  GPIO_PinAFConfig(phaseA->gpio, phaseA->get_pin_source(), GPIO_AF_TIM4);
-  GPIO_PinAFConfig(phaseB->gpio, phaseB->get_pin_source(), GPIO_AF_TIM4);
+ if (phaseA == encoder_L_A) {
+		GPIO_PinAFConfig(phaseA->gpio, phaseA->get_pin_source(), GPIO_AF_TIM4);
+		GPIO_PinAFConfig(phaseB->gpio, phaseB->get_pin_source(), GPIO_AF_TIM4);
+ } else if (phaseA == encoder_R_A) {
+		GPIO_PinAFConfig(phaseA->gpio, phaseA->get_pin_source(), GPIO_AF_TIM3);
+		GPIO_PinAFConfig(phaseB->gpio, phaseB->get_pin_source(), GPIO_AF_TIM3);
+ } else if (phaseA == encoder_U_A) {
+		GPIO_PinAFConfig(phaseA->gpio, phaseA->get_pin_source(), GPIO_AF_TIM2);
+		GPIO_PinAFConfig(phaseB->gpio, phaseB->get_pin_source(), GPIO_AF_TIM2);
+	} else if (phaseA == encoder_D_A) {
+		GPIO_PinAFConfig(phaseA->gpio, phaseA->get_pin_source(), GPIO_AF_TIM5);
+		GPIO_PinAFConfig(phaseB->gpio, phaseB->get_pin_source(), GPIO_AF_TIM5);
+	}
 
   timer_init(m_TIM, 0, TIM_CounterMode_Up, 65535, TIM_CKD_DIV1);
   encoder_timer_init(m_TIM, SOURCE_ENCODER_INIT_VAL);
@@ -57,10 +67,10 @@ void encoder::send_feedback(void)
   msg.id = CAN_MOTOR_BASE + this_id;
   msg.length = CAN_ENCODER_FEEDBACK_LENGTH;
   msg.data[0] = CAN_ENCODER_FEEDBACK;
-  msg.data[1] = one_to_n_bytes(vel,0);
-  msg.data[2] = one_to_n_bytes(vel,1);
-  msg.data[3] = one_to_n_bytes(vel,2);
-  msg.data[4] = one_to_n_bytes(vel,3);
+  msg.data[1] = one_to_n_bytes(encoder_value,0);
+  msg.data[2] = one_to_n_bytes(encoder_value,1);
+  msg.data[3] = one_to_n_bytes(encoder_value,2);
+  msg.data[4] = one_to_n_bytes(encoder_value,3);
   can_tx_enqueue(msg);
 }
 

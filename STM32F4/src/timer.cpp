@@ -4,11 +4,25 @@ TIMER::TIMER(TIM_TypeDef* const TIM, Channel ch) : TIMx(TIM), Chx(ch) {}
 
 
 TIMER
-	TIM11Ch1(TIM4, Ch1),
-	TIM11Ch2(TIM4, Ch2),
-	TIM11Ch3(TIM4, Ch3),
-	TIM11Ch4(TIM4, Ch4);
+	TIM9Ch1(TIM9, Ch1),
+	TIM9Ch2(TIM9, Ch2),
+	TIM9Ch3(TIM9, Ch3),
+	TIM9Ch4(TIM9, Ch4),
 
+	TIM10Ch1(TIM10, Ch1),
+	TIM10Ch2(TIM10, Ch2),
+	TIM10Ch3(TIM10, Ch3),
+	TIM10Ch4(TIM10, Ch4),
+
+	TIM11Ch1(TIM11, Ch1),
+	TIM11Ch2(TIM11, Ch2),
+	TIM11Ch3(TIM11, Ch3),
+	TIM11Ch4(TIM11, Ch4),
+
+	TIM12Ch1(TIM12, Ch1),
+	TIM12Ch2(TIM12, Ch2),
+	TIM12Ch3(TIM12, Ch3),
+	TIM12Ch4(TIM12, Ch4);
 
 void timer_init(TIM_TypeDef* TIMx, u16 Prescaler, u16 CounterMode, u16 Peroid, u16 ClockDivision)
 {
