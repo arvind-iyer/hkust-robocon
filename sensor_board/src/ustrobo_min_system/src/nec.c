@@ -5,6 +5,10 @@ static NEC_TypeDef nec_devices[] = {
 	{.gpio = &PA5},
 	{.gpio = &PA6},
 	{.gpio = &PA7},
+	{.gpio = &PC4},
+	{.gpio = &PC5},
+	{.gpio = &PB0},
+	{.gpio = &PB1},
 };
 
 //typedef struct {
@@ -44,7 +48,7 @@ typedef enum {
   NEC_RAW_COMMAND_HIGH  /** Complement of low **/
 } nec_raw_data_id;
 
-static NEC_STATE nec_state = NEC_NULL;
+//static NEC_STATE nec_state = NEC_NULL;
 
 
 
@@ -53,21 +57,21 @@ typedef struct {
   u16 min, max;
 } NEC_RANGE;
 
-static const u16 NEC_PULSE_LOW_MAX = 3400;
+//static const u16 NEC_PULSE_LOW_MAX = 3400;
 static const NEC_RANGE
-  NEC_BURST_ON_RANGE = {280, 320},
-  NEC_BURST_OFF_RANGE = {130, 185},
+  NEC_BURST_ON_RANGE = {800, 1000},
+  NEC_BURST_OFF_RANGE = {350, 550},
   
-  NEC_DATA_ON_RANGE = {10, 35},
-  NEC_DATA_ONE_OFF_RANGE = {35, 75},
-  NEC_DATA_ZERO_OFF_RANGE = {5, 25},
+  NEC_DATA_ON_RANGE = {35, 65},
+  NEC_DATA_ONE_OFF_RANGE = {135, 175},
+  NEC_DATA_ZERO_OFF_RANGE = {35, 65},
   
-  NEC_REPEAT_START_ON_RANGE = {10, 35},
-  NEC_REPEAT_START_OFF_RANGE = {1200, 1600};
+  NEC_REPEAT_START_ON_RANGE = {35, 65},
+  NEC_REPEAT_START_OFF_RANGE = {3000, 4500};
 
 static const NEC_RANGE NEC_REPEAT_RANGE[NEC_REPEAT_CYCLE] = {
-  /* + */ {285, 315}, /* - */ {60, 80},
-  /* + */ {10, 35},   /* - */ {3200, 3400}
+  /* + */ {750, 850}, /* - */ {150, 250},
+  /* + */ {35, 65},   /* - */ {8000, 8999}
 };  
 
 
@@ -85,6 +89,10 @@ void nec_init(void)
 		nec_devices[i].current_msg = NEC_NullMsg;
 		nec_devices[i].last_msg = NEC_NullMsg;
 		nec_devices[i].data_reading_state = 0;
+		
+		nec_devices[i].deque_head = 0;
+		nec_devices[i].deque_tail = 0;
+		nec_devices[i].pulse_width = 0;
 	}
   //gpio_init(NEC_GPIO, GPIO_Speed_50MHz, GPIO_Mode_IN_FLOATING, 1);
   
@@ -96,7 +104,7 @@ void nec_init(void)
 
 	
 	TIM_TimeBaseStructure.TIM_Period = 10;	                 				       // Timer period, 1000 ticks in one second
-	TIM_TimeBaseStructure.TIM_Prescaler = SystemCoreClock / (NEC_FREQUENCY*10) - 1;     // 72M/1M - 1 = 71
+	TIM_TimeBaseStructure.TIM_Prescaler = SystemCoreClock / 1000000 - 1;     // 72M/1M - 1 = 71
 	TIM_TimeBaseInit(NEC_TIM, &TIM_TimeBaseStructure);      							 // this part feeds the parameter we set above
 	
 	TIM_ClearITPendingBit(NEC_TIM, TIM_IT_Update);												 // Clear Interrupt bits
@@ -128,22 +136,22 @@ void nec_state_reset(u8 id)
   current_msg = NEC_NullMsg;*/
 }
 
-static u8 nec_process_data(u8 i)
+static u8 nec_process_data(u8 id, u16 pulse_width, u8 pulse_flag)
 {
-	NEC_TypeDef* nec_device = &nec_devices[i];
-  if (nec_device->data_reading_state) {
-    if (nec_in_range(NEC_DATA_ON_RANGE, nec_device->cont_on_falling)) {
+	NEC_TypeDef* nec_device = &nec_devices[id]; 
+  if (pulse_flag) {
+    if (nec_in_range(NEC_DATA_ON_RANGE, pulse_width)) {
       nec_device->data_reading_state = 0;
       return 1;
     } else {
-      nec_state_reset(i);
+      nec_state_reset(id);
       return 0;
     }
   } else {
     u16 data = (u16)-1;  // Invalid data
-    if (nec_in_range(NEC_DATA_ONE_OFF_RANGE, nec_device->cont_off_falling)) {
+    if (nec_in_range(NEC_DATA_ONE_OFF_RANGE, pulse_width)) {
       data = 1;
-    } else if (nec_in_range(NEC_DATA_ZERO_OFF_RANGE, nec_device->cont_off_falling)) {
+    } else if (nec_in_range(NEC_DATA_ZERO_OFF_RANGE, pulse_width)) {
       data = 0;
     }
     
@@ -158,7 +166,7 @@ static u8 nec_process_data(u8 i)
       return 1;
       
     } else {
-      nec_state_reset(i);
+      nec_state_reset(id);
       return 0;
     }
   }  
@@ -174,168 +182,237 @@ static void nec_buffer_reset(u8 i, u8 next_reading_state)
   nec_device->data_reading_state = next_reading_state;  
 }
 
-static void nec_loop(u8 i) 
+void nec_printf(void)
 {
-		NEC_TypeDef* nec_device = &nec_devices[i];
-    u8 input = gpio_read_input(NEC_GPIO);
-    if (!input) {
-      ++nec_device->cont_on_count;
-			/*
-      if (nec_device->cont_on_count > cont_on_max) {
-        cont_on_max = nec_device->cont_on_count;
-      }
-			*/
-      if (nec_device->cont_off_count) {
-        nec_device->cont_off_falling = nec_device->cont_off_count;
-        printf("-%d", nec_device->cont_off_falling);
-        nec_device->cont_off_count = 0;
-      } else {
-        nec_device->cont_off_falling = 0;
-      }
-    } else {
-      if (nec_device->cont_off_count < NEC_PULSE_LOW_MAX) {
-        ++nec_device->cont_off_count;
-      } else {
-        // Reset
-        nec_device->cont_off_count = 0;
-        nec_state_reset(i);
-      }
-      
-			/*
-      if (nec_device->cont_off_count > nec_device->cont_off_max) {
-        nec_device->cont_off_max = nec_device->cont_off_count; 
-      }
-			*/
+	printf("\n");
+	
+	/*
+	for (u8 id = 0; id < NEC_DEVICE_COUNT; ++id) {
+		NEC_TypeDef* nec_device = &nec_devices[id];
+		
+		u16 i = nec_device->deque_head;
+		printf("\n%d:", id);
+		while (i != nec_device->deque_tail) {
+			printf("%c%d", i&0x01?'+':'-', nec_device->deque[i]);
+			i = (i + 1) % NEC_QUEUE_SIZE;
+		}
+		//printf("%d:%X\n", nec_devices[i].state, nec_devices[i].current_msg.command); 
+	}
+	*/
+	
+	for (u8 id = 0; id < NEC_DEVICE_COUNT; ++id) {
+		printf("%d:%X\n", nec_devices[id].state, nec_devices[id].current_msg.command); 
+	}
+	
+}
+
+void nec_update(void)
+{
+	//printf(":\n");
+	//NEC_TypeDef* nec_device = &nec_devices[0];
+	//u16 i = nec_device->deque_head;
+		
+	for (u8 id = 0; id < NEC_DEVICE_COUNT; ++id) {
+		NEC_TypeDef* nec_device = &nec_devices[id];
+		while (nec_device->deque_head != nec_device->deque_tail) {
+			//printf("%c%d", i&0x01?'+':'-', nec_device->deque[i]);
+			//i = (i + 1) % NEC_QUEUE_SIZE; 
+			u16 i = nec_device->deque_head;
+			u16 pulse_width = nec_device->deque[i];
+			u8 pulse_flag = i & 0x01;	// High pulse or low pulse
 			
-      if (nec_device->cont_on_count) {
-        nec_device->cont_on_falling = nec_device->cont_on_count;
-        printf("+%d", nec_device->cont_on_falling);
-        nec_device->cont_on_count = 0;
-      } else {
-        nec_device->cont_on_falling = 0; 
-      }
-    }
+			//continue;
+			
+			switch (nec_device->state) {
+				case NEC_NULL:
+					if (nec_in_range(NEC_BURST_ON_RANGE, pulse_width) && pulse_flag) { 
+						// Burst on
+						nec_device->state = NEC_BURST;
+					} else {
+						// Wrong signal
+						nec_state_reset(id);
+					}
+					break;
+					
+				case NEC_BURST:
+					
+					if (nec_in_range(NEC_BURST_OFF_RANGE, pulse_width) && !pulse_flag) {
+						// Burst confirmed, start reading address
+						nec_device->state = NEC_ADDRESS_LOW;
+						nec_device->data_current_bit = 0;
+						nec_device->data_current_buffer = 0;
+						nec_device->data_reading_state = 1; 
+					} else {
+						// Wrong signal
+						nec_state_reset(id);
+					}
+				break;
+					
+				case NEC_ADDRESS_LOW:
+					
+					nec_process_data(id, pulse_width, pulse_flag);
+					if (nec_device->data_current_bit >= NEC_DATA_BIT) {
+						nec_device->state = NEC_ADDRESS_HIGH;
+						nec_device->raw_data[NEC_RAW_ADDRESS_LOW] = nec_device->last_data = nec_device->data_current_buffer;
+						
+						// Buffers reset
+						nec_buffer_reset(id, 1);
+					}
+				break;
+					
+				case NEC_ADDRESS_HIGH:
+					//break;
+					nec_process_data(id, pulse_width, pulse_flag);
+					if (nec_device->data_current_bit >= NEC_DATA_BIT) {
+						nec_device->state = NEC_COMMAND_LOW;
+						nec_device->raw_data[NEC_RAW_ADDRESS_HIGH] = nec_device->last_data = nec_device->data_current_buffer;
+						// Buffers reset
+						nec_buffer_reset(id, 1); 
+						
+					}
+				break;
+					
+				case NEC_COMMAND_LOW:
+					
+					nec_process_data(id, pulse_width, pulse_flag);
+					if (nec_device->data_current_bit >= NEC_DATA_BIT) {
+						nec_device->state = NEC_COMMAND_HIGH;
+						nec_device->raw_data[NEC_RAW_COMMAND_LOW] = nec_device->last_data = nec_device->data_current_buffer;
+						// Buffers reset
+						nec_buffer_reset(id, 1);
+					}
+				break;
+					
+				case NEC_COMMAND_HIGH:
+					
+					nec_process_data(id, pulse_width, pulse_flag);
+					if (nec_device->data_current_bit >= NEC_DATA_BIT) {
+						nec_device->state = NEC_REPEAT_START;
+						nec_device->raw_data[NEC_RAW_COMMAND_HIGH] = nec_device->last_data = nec_device->data_current_buffer;
+						// Buffers reset
+						nec_buffer_reset(id, 1);
+						
+						// DATA VALID CHECK
+						if ((nec_device->raw_data[NEC_RAW_ADDRESS_LOW] & NEC_DATA_MAX) == (~nec_device->raw_data[NEC_RAW_ADDRESS_HIGH] & NEC_DATA_MAX)  \
+							&& (nec_device->raw_data[NEC_RAW_COMMAND_LOW] & NEC_DATA_MAX) == (~nec_device->raw_data[NEC_RAW_COMMAND_HIGH] & NEC_DATA_MAX)) {
+							// Successful data
+							nec_set_msg(&nec_device->current_msg, nec_device->raw_data[NEC_RAW_ADDRESS_LOW], nec_device->raw_data[NEC_RAW_COMMAND_LOW]);
+							nec_set_msg(&nec_device->last_msg, nec_device->raw_data[NEC_RAW_ADDRESS_LOW], nec_device->raw_data[NEC_RAW_COMMAND_LOW]); 
+							buzzer_control_note(1, 100, (MUSIC_NOTE_LETTER) (nec_device->raw_data[NEC_RAW_COMMAND_LOW] % 12 + 1), 6);
+						} else {
+							// Invalid data
+							nec_state_reset(id); 
+						}
+						
+						
+					}
+				break;
+					
+				case NEC_REPEAT_START:
+					if (nec_in_range(NEC_REPEAT_START_ON_RANGE, pulse_width) && pulse_flag) {
+						/*** Repeat start on detected ***/
+					} else if (nec_in_range(NEC_REPEAT_START_OFF_RANGE, pulse_width) && !pulse_flag) {
+						/*** Repeat start off detected ***/
+						nec_device->current_repeating_id = 0;
+						nec_device->state = NEC_REPEATING;
+					} else {
+						nec_state_reset(id);  
+					}
+				break;
+					
+				case NEC_REPEATING:
+					if (nec_device->current_repeating_id % 2 == 0) {
+						// On pulse
+						if (nec_in_range(NEC_REPEAT_RANGE[nec_device->current_repeating_id], pulse_width) && pulse_flag) {
+							nec_device->current_repeating_id = (nec_device->current_repeating_id + 1) % NEC_REPEAT_CYCLE;
+						} else {
+							// Repeat ends or wrong data
+							nec_state_reset(id);
+						}
+					} else {
+						// Off pulse
+						if (nec_in_range(NEC_REPEAT_RANGE[nec_device->current_repeating_id], pulse_width) && !pulse_flag) {
+							nec_device->current_repeating_id = (nec_device->current_repeating_id + 1) % NEC_REPEAT_CYCLE;
+						} else {
+							// Repeat ends or wrong data
+							nec_state_reset(id);
+						}
+					}
+				
+				break;
+			}
+			
+			nec_device->deque_head = (nec_device->deque_head + 1) % NEC_QUEUE_SIZE;
+		}
+	}
+}
+
+
+static void nec_loop(u8 id) 
+{
+		NEC_TypeDef* nec_device = &nec_devices[id]; 
+    u8 input = !gpio_read_input(nec_device->gpio);
+		u8 prev_state = nec_device->deque_tail & 0x01;
+		
+		if (input ^ prev_state) {
+			// Trigger or falling
+			// Store the pulse width
+			nec_device->deque[nec_device->deque_tail] = nec_device->pulse_width;
+			// Reset pulse width
+			//printf("%d", nec_device->pulse_width);
+			nec_device->pulse_width = 0;
+			nec_device->deque_tail = (nec_device->deque_tail + 1) % NEC_QUEUE_SIZE;
+		} else {
+			// Remaining the same state
+			if (nec_device->pulse_width < NEC_PULSE_MAX) {
+				++nec_device->pulse_width;
+			} else {
+				nec_state_reset(id);
+			}
+		}
+		
+		return;
+		
+		
+//    if (!input) {
+//      ++nec_device->cont_on_count;
+//			/*
+//      if (nec_device->cont_on_count > cont_on_max) {
+//        cont_on_max = nec_device->cont_on_count;
+//      }
+//			*/
+//      if (nec_device->cont_off_count) {
+//        nec_device->cont_off_falling = nec_device->cont_off_count;
+//        printf("-%d", nec_device->cont_off_falling);
+//        nec_device->cont_off_count = 0;
+//      } else {
+//        nec_device->cont_off_falling = 0;
+//      }
+//    } else {
+//      if (nec_device->cont_off_count < NEC_PULSE_LOW_MAX) {
+//        ++nec_device->cont_off_count;
+//      } else {
+//        // Reset
+//        nec_device->cont_off_count = 0;
+//        nec_state_reset(i);
+//      }
+//      
+//			/*
+//      if (nec_device->cont_off_count > nec_device->cont_off_max) {
+//        nec_device->cont_off_max = nec_device->cont_off_count; 
+//      }
+//			*/
+//			
+//      if (nec_device->cont_on_count) {
+//        nec_device->cont_on_falling = nec_device->cont_on_count;
+//        printf("+%d", nec_device->cont_on_falling);
+//        nec_device->cont_on_count = 0;
+//      } else {
+//        nec_device->cont_on_falling = 0; 
+//      }
+//    }
     
-    if (nec_device->cont_on_falling ^ nec_device->cont_off_falling) {
-      switch (nec_state) {
-        case NEC_NULL:
-          if (nec_in_range(NEC_BURST_ON_RANGE, nec_device->cont_on_falling)) { 
-            // Burst on
-            nec_state = NEC_BURST;
-          } else {
-            // Wrong signal
-            nec_state_reset(i);
-          }
-          break;
-          
-        case NEC_BURST:
-          
-          if (nec_in_range(NEC_BURST_OFF_RANGE, nec_device->cont_off_falling)) {
-            // Burst confirmed, start reading address
-            nec_state = NEC_ADDRESS_LOW;
-            nec_device->data_current_bit = 0;
-            nec_device->data_current_buffer = 0;
-            nec_device->data_reading_state = 1; 
-          } else {
-            // Wrong signal
-            nec_state_reset(i);
-          }
-        break;
-          
-        case NEC_ADDRESS_LOW:
-          
-          nec_process_data(i);
-          if (nec_device->data_current_bit >= NEC_DATA_BIT) {
-            nec_state = NEC_ADDRESS_HIGH;
-            nec_device->raw_data[NEC_RAW_ADDRESS_LOW] = nec_device->last_data = nec_device->data_current_buffer;
-            
-            // Buffers reset
-            nec_buffer_reset(i, 1);
-          }
-        break;
-          
-        case NEC_ADDRESS_HIGH:
-          //break;
-          nec_process_data(i);
-          if (nec_device->data_current_bit >= NEC_DATA_BIT) {
-            nec_state = NEC_COMMAND_LOW;
-            nec_device->raw_data[NEC_RAW_ADDRESS_HIGH] = nec_device->last_data = nec_device->data_current_buffer;
-            // Buffers reset
-            nec_buffer_reset(i, 1); 
-            
-          }
-        break;
-          
-        case NEC_COMMAND_LOW:
-          
-          nec_process_data(i);
-          if (nec_device->data_current_bit >= NEC_DATA_BIT) {
-            nec_device->state = NEC_COMMAND_HIGH;
-            nec_device->raw_data[NEC_RAW_COMMAND_LOW] = nec_device->last_data = nec_device->data_current_buffer;
-            // Buffers reset
-            nec_buffer_reset(i, 1);
-          }
-        break;
-          
-        case NEC_COMMAND_HIGH:
-          
-          nec_process_data(i);
-          if (nec_device->data_current_bit >= NEC_DATA_BIT) {
-            nec_state = NEC_REPEAT_START;
-            nec_device->raw_data[NEC_RAW_COMMAND_HIGH] = nec_device->last_data = nec_device->data_current_buffer;
-            // Buffers reset
-            nec_buffer_reset(i, 1);
-            
-            // DATA VALID CHECK
-            if ((nec_device->raw_data[NEC_RAW_ADDRESS_LOW] & NEC_DATA_MAX) == (~nec_device->raw_data[NEC_RAW_ADDRESS_HIGH] & NEC_DATA_MAX)  \
-              && (nec_device->raw_data[NEC_RAW_COMMAND_LOW] & NEC_DATA_MAX) == (~nec_device->raw_data[NEC_RAW_COMMAND_HIGH] & NEC_DATA_MAX)) {
-              // Successful data
-              nec_set_msg(&nec_device->current_msg, nec_device->raw_data[NEC_RAW_ADDRESS_LOW], nec_device->raw_data[NEC_RAW_COMMAND_LOW]);
-              nec_set_msg(&nec_device->last_msg, nec_device->raw_data[NEC_RAW_ADDRESS_LOW], nec_device->raw_data[NEC_RAW_COMMAND_LOW]); 
-              buzzer_control_note(1, 100, (MUSIC_NOTE_LETTER) (nec_device->raw_data[NEC_RAW_COMMAND_LOW] % 12 + 1), 6);
-            } else {
-              // Invalid data
-              nec_state_reset(i); 
-            }
-            
-            
-          }
-        break;
-          
-        case NEC_REPEAT_START:
-          if (nec_in_range(NEC_REPEAT_START_ON_RANGE, nec_device->cont_on_falling)) {
-            /*** Repeat start on detected ***/
-          } else if (nec_in_range(NEC_REPEAT_START_OFF_RANGE, nec_device->cont_off_falling)) {
-            /*** Repeat start off detected ***/
-            nec_device->current_repeating_id = 0;
-            nec_device->state = NEC_REPEATING;
-          } else {
-            nec_state_reset(i);  
-          }
-        break;
-          
-        case NEC_REPEATING:
-          if (nec_device->current_repeating_id % 2 == 0) {
-            // On pulse
-            if (nec_in_range(NEC_REPEAT_RANGE[nec_device->current_repeating_id], nec_device->cont_on_falling)) {
-              nec_device->current_repeating_id = (nec_device->current_repeating_id + 1) % NEC_REPEAT_CYCLE;
-            } else {
-              // Repeat ends or wrong data
-              nec_state_reset(i);
-            }
-          } else {
-            // Off pulse
-            if (nec_in_range(NEC_REPEAT_RANGE[nec_device->current_repeating_id], nec_device->cont_off_falling)) {
-              nec_device->current_repeating_id = (nec_device->current_repeating_id + 1) % NEC_REPEAT_CYCLE;
-            } else {
-              // Repeat ends or wrong data
-              nec_state_reset(i);
-            }
-          }
-        
-        break;
-      }
-    }
+
 }
 
 
@@ -344,9 +421,10 @@ NEC_IRQHandler
   
   if (TIM_GetITStatus(NEC_TIM, TIM_IT_Update) != RESET) {
     TIM_ClearFlag(NEC_TIM, TIM_IT_Update);
+		TIM_ClearITPendingBit(NEC_TIM, TIM_IT_Update);
 		for (u8 i = 0; i < NEC_DEVICE_COUNT; ++i) { 
 			nec_loop(i);
-			
+			//printf("test");
 		}
   }
  
@@ -397,6 +475,7 @@ void nec_can_tx(u8 i)
 	msg.id = NEC_CAN_ID + i;
 	msg.data[0] = nec_devices[i].current_msg.address;
 	msg.data[1] = nec_devices[i].current_msg.command;
+	msg.data[2] = nec_devices[i].state;
 	can_tx_enqueue(msg); 
 }
 

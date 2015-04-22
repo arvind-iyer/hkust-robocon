@@ -15,6 +15,7 @@
 #define NEC_IRQn            TIM3_IRQn
 #define NEC_IRQHandler      void TIM3_IRQHandler(void)
 
+#define	NEC_QUEUE_SIZE			300
 
 #define NEC_FREQUENCY       38000
 #define NEC_GPIO            ((GPIO*) &PA4)
@@ -23,7 +24,9 @@
 
 #define	NEC_CAN_ID					0x220
 
-#define	NEC_DEVICE_COUNT		1
+#define	NEC_DEVICE_COUNT		4
+
+#define	NEC_PULSE_MAX				9000
 
 typedef u8 NEC_Data_TypeDef;
 
@@ -51,8 +54,13 @@ typedef struct {
 	u8 data_reading_state;
 	u8 data_current_bit;
 	u8 data_current_buffer;
-	u16 cont_on_count, cont_off_count;
-	u16 cont_on_falling, cont_off_falling;
+	//u16 cont_on_count, cont_off_count;
+	//u16 cont_on_falling, cont_off_falling;
+	
+	u16 pulse_width;
+	u16 deque[NEC_QUEUE_SIZE];
+	u16 deque_head, deque_tail;
+	
 	NEC_Data_TypeDef raw_data[4];
 	NEC_Data_TypeDef last_data;
 	u8 current_repeating_id;
@@ -80,6 +88,8 @@ typedef struct {
 	**/
 
 void nec_init(void);
+void nec_printf(void);
+void nec_update(void);
 u16 get_nec_cont_on_max(void);
 u16 get_nec_cont_off_max(void);
 NEC_STATE get_nec_state(u8 i);
