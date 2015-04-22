@@ -67,7 +67,7 @@ void racket_update(void)
 	{
 		racket_laser_not_alligned=0;
 		racket_hit();
-		serve_enabled = 0;
+		serve_enabled = 0; 
 		racket_last_laser_trigger_time=get_full_ticks();
 
 	}*/
