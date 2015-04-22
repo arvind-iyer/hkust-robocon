@@ -13,7 +13,7 @@ static s32 prev_encoder_reading = 8000;	// encoder reading when racket is locked
 static u32 serve_start_time=0;
 static u32 serve_hit_start_time = 0;
 static u32 serve_calibrate_start_time = 0;
-
+static u16 switch_counter = 0;
 
 //States : stationary motor
 bool serve_hit_queued=0;		// que for serve, and wait for delay
@@ -47,6 +47,14 @@ void racket_lock()
 // serve update, included in racket update
 void serve_update(void)
 {
+	if (gpio_read_input(SERVE_SWITCH))
+	{
+		switch_counter++;
+	}
+	else
+	{
+		switch_counter=0;
+	}
 	// wait for serve que, and hit the racket
 	if (serve_hit_queued && get_full_ticks()>=serve_start_time+SERVE_DELAY)
 	{
@@ -71,14 +79,14 @@ void serve_update(void)
 
 	
 	// after calibrating, wait for switch and lock motor. Once calibrated once already, calibrate relies on encoder value to stop.
-	if (calibrate_in_process && (gpio_read_input(SERVE_SWITCH) || (init_encoder_is_set && get_encoder_value(RACKET)>init_encoder_reading-1000 )))
+	if (calibrate_in_process && (switch_counter>5 || (init_encoder_is_set && get_encoder_value(RACKET)>init_encoder_reading-1000 )))
 	{
 		init_encoder_is_set=1;
 		calibrated=1;
 		racket_lock();
-		
+		SUCCESSFUL_MUSIC;
 		// temporary code. ONLY UPDATE ENCODER VALUE IF RACKET HITS SWITCH
-		if (gpio_read_input(SERVE_SWITCH))
+		if (switch_counter>5)
 		{
 			init_encoder_reading = get_encoder_value(RACKET);
 			//log("*sw st cal",get_encoder_value(RACKET));
@@ -89,14 +97,15 @@ void serve_update(void)
 	
 	
 	// DUMMY CODE : PRINT OUT LOG ERROR MESSAGE IF MOTOR IS MOVING WITH FLAGS DOWN
-	if (!hitting && !calibrated && (gpio_read_input(SERVE_SWITCH) || (init_encoder_is_set && get_encoder_value(RACKET)>init_encoder_reading-2000 )))
+	/*if (!hitting && !calibrated && (gpio_read_input(SERVE_SWITCH) || (init_encoder_is_set && get_encoder_value(RACKET)>init_encoder_reading-2000 )))
 	{
 		//log("CAL ERROR",gpio_read_input(SERVE_SWITCH));
-	}
+	}*/
 	
 	// if calibration doesn't stop 1.5 seconds, FORCE STOP CALIBRATION, and register current encoder value as init encoder value.
 	if (calibrate_in_process && serve_calibrate_start_time+1500<get_full_ticks())
 	{
+		SUCCESSFUL_MUSIC;
 		init_encoder_is_set=1;
 		calibrated=1;
 		//racket_lock();
