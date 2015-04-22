@@ -9,9 +9,12 @@ static bool servo_released = false;
 static bool use_xbc_input = false;
 
 static u16 prev_ticks=-1;
+static u16 turn_timer=-1;
+
 static u16 tick_skip_count=0;
 
 bool serve_pneu_button_enabled=1;
+bool turn_timer_started = 0;
 bool robot_xbc_controls(void)
 {
 	if(xbc_get_connection() == XBC_DISCONNECTED)
@@ -33,12 +36,38 @@ bool robot_xbc_controls(void)
 	
 	
 	int dw = (xbc_get_joy(XBC_JOY_RT)-xbc_get_joy(XBC_JOY_LT))/5;
+	/*
+	if(dw == 0 && turn_timer == (u16)-1)
+	{
+		turn_timer_started = 1;
+		turn_timer = get_full_ticks();
+		log("Stopped", 1);
+	}
+	else if(dw == 0 && (turn_timer + 100 < get_full_ticks() ) && turn_timer_started)
+	{
+		turn_timer_started = 0;
+		log("PID", wheel_base_get_target_pos().angle);
+		wheel_base_set_target_pos((POSITION){get_pos()->x, get_pos()->y, get_pos()->angle});
+	}
+	else if(dw!=0)
+	{
+		turn_timer = -1;
+		turn_timer_started = 0;
+		log("Turning", 1);
+	}
+	
+	if(get_pos()->angle != wheel_base_get_target_pos().angle)
+	{
+		dw = pid_maintain_angle();
+		log("PID", wheel_base_get_target_pos().angle);
+	}
+	*/
 	if(xbc_get_joy(XBC_JOY_LX) == 0 && xbc_get_joy(XBC_JOY_LY) == 0)
 	{
-		motor_set_acceleration(MOTOR_BOTTOM_RIGHT,500);
-		motor_set_acceleration(MOTOR_BOTTOM_LEFT,500);
-		motor_set_acceleration(MOTOR_TOP_LEFT,500);
-		motor_set_acceleration(MOTOR_TOP_RIGHT,500);
+		motor_set_acceleration(MOTOR_BOTTOM_RIGHT,250);
+		motor_set_acceleration(MOTOR_BOTTOM_LEFT,250);
+		motor_set_acceleration(MOTOR_TOP_LEFT,150);
+		motor_set_acceleration(MOTOR_TOP_RIGHT,150);
 	}
 	else
 	{
@@ -279,6 +308,8 @@ void robocon_main(void)
 	racket_pneumatic_set(0);
 	racket_pneumatic_2_set(0);
 	
+	wheel_base_set_target_pos((POSITION){get_pos()->x, get_pos()->y, 0}); 
+	
 	log("XBC=",xbc_get_connection());
 	
 	while (1) {
@@ -372,7 +403,8 @@ void robocon_main(void)
 				//tft_prints(0,3,"SHIT: (%d, %d)", gyro_get_shift_x(), gyro_get_shift_y());
 				//tft_prints(0,3,"XBC: %d", connect);
 				tft_prints(0,3,"Serve_delay: %d",serve_get_delay());
-				tft_prints(0,4, "pneu= %d", gpio_read_input(&PB9));
+				//tft_prints(0,4, "pneu= %d", gpio_read_input(&PB9));
+				tft_prints(0,4,"[%d , %d, %d ]", get_pos()->x, get_pos()->y, get_pos()->angle);
 				//tft_prints(0,4, "skipTick %d", tick_skip_count);
 				//tft_prints(0,4, "Serve_prior %d", serve_prioritized());
 				//tft_prints(0,2, "x%d y%d", gyro_get_shift_x(), gyro_get_shift_y());
