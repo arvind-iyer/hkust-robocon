@@ -15,6 +15,10 @@ static u16 tick_skip_count=0;
 
 bool serve_pneu_button_enabled=1;
 bool turn_timer_started = 0;
+
+// enabling sensors by button.
+bool sensors_activated = 0;
+
 bool robot_xbc_controls(void)
 {
 	if(xbc_get_connection() == XBC_DISCONNECTED)
@@ -75,7 +79,7 @@ bool robot_xbc_controls(void)
 	
 	//Digital Movement
 	//Cardinals
-	if(button_pressed(BUTTON_XBC_N))//Move forward
+	/*if(button_pressed(BUTTON_XBC_N))//Move forward
 		wheel_base_set_vel(0, wheel_base_get_speed_mode() * 10, 0 );
 	else if(button_pressed(BUTTON_XBC_S))//Move Backwards
 		wheel_base_set_vel(0, -1 * wheel_base_get_speed_mode() * 10, 0);
@@ -92,7 +96,7 @@ bool robot_xbc_controls(void)
 		wheel_base_set_vel(-1 * wheel_base_get_speed_mode() * WHEEL_BASE_XY_VEL_RATIO/100, -1 * wheel_base_get_speed_mode() * WHEEL_BASE_XY_VEL_RATIO/100, 0);
 	else if(button_pressed(BUTTON_XBC_SE))
 		wheel_base_set_vel(wheel_base_get_speed_mode() * WHEEL_BASE_XY_VEL_RATIO/100,-1 * wheel_base_get_speed_mode() * WHEEL_BASE_XY_VEL_RATIO/100, 0);
-	
+	*/
 	
 	//Function Keys 
 	
@@ -117,24 +121,36 @@ bool robot_xbc_controls(void)
 
 void robot_c_function_controls(void)
 {
+	// enable sensors
+	if(button_pressed(BUTTON_XBC_RB))
+		sensors_activated=1;
+	else
+		sensors_activated=0;
+	
 	//Racket Hit
 	if(button_pressed(BUTTON_XBC_B))
 		racket_hit();
 	if(button_pressed(BUTTON_XBC_A))
 		racket_down_hit();
-	if(button_pressed(BUTTON_XBC_RB))
-		plus_x();
-	if(button_pressed(BUTTON_XBC_LB))
-		minus_x();
-	if(button_pressed(BUTTON_XBC_X))
-		plus_y();
-	if(button_pressed(BUTTON_XBC_Y))
-		minus_y();
+	//if(button_pressed(BUTTON_XBC_RB))
+	//	plus_x();
+	//if(button_pressed(BUTTON_XBC_LB))
+	//	minus_x();
+	//if(button_pressed(BUTTON_XBC_X))
+	//	plus_y();
+	//if(button_pressed(BUTTON_XBC_Y))
+	//	minus_y();
 	
 }
 
 void robot_d_function_controls(void)
 {
+	// enable sensors
+	if(button_pressed(BUTTON_XBC_RB))
+		sensors_activated=1;
+	else
+		sensors_activated=0;
+	
 	//Racket Hit
 	if(button_pressed(BUTTON_XBC_A))
 		racket_hit();
@@ -145,14 +161,14 @@ void robot_d_function_controls(void)
 		serve_calibrate();
 	// change serve varibales
 	
-	if (button_pressed(BUTTON_XBC_LB) && button_pressed(BUTTON_XBC_Y))
+	if (button_pressed(BUTTON_XBC_N) && button_pressed(BUTTON_XBC_Y))
 		serve_change_delay(-1);
-	else if (button_pressed(BUTTON_XBC_RB) && button_pressed(BUTTON_XBC_Y))
+	else if (button_pressed(BUTTON_XBC_S) && button_pressed(BUTTON_XBC_Y))
 		serve_change_delay(1);
-	else if (button_pressed(BUTTON_XBC_LB))
+	else if (button_pressed(BUTTON_XBC_W) && button_pressed(BUTTON_XBC_Y))
 		serve_change_vel(-2);
 		//plus_x();
-	else if (button_pressed(BUTTON_XBC_RB))
+	else if (button_pressed(BUTTON_XBC_E) && button_pressed(BUTTON_XBC_Y))
 		serve_change_vel(2);
 		//minus_x();
 	if (button_pressed(BUTTON_XBC_START))
@@ -299,7 +315,9 @@ void robocon_main(void)
 	//gpio_write(&PE5, 0);		//write 1 to Laser sensor
 	//gpio_write(&PE6, 0);		//write 1 to Laser sensor 2
 	//register_special_char_function('m',print);
-	
+	gpio_init(&PA4,GPIO_Speed_50MHz, GPIO_Mode_IPD,1);		// laser sensor
+	gpio_init(&PA6,GPIO_Speed_50MHz, GPIO_Mode_IPD,1);	// laser sensor grid 2
+	gpio_init(&PA7,GPIO_Speed_50MHz, GPIO_Mode_IPD,1);	// laser sensor grid 3
 	
 	toggle_serve_pneu();
 	racket_pneumatic_set(0);
@@ -318,7 +336,7 @@ void robocon_main(void)
 			ticks_img = get_ticks();
 			if (ticks_img%2 == 1)
 			{
-				if (!serve_prioritized())
+				if (!serve_prioritized() && sensors_activated)
 					sensors_update();			// only update sensors when serve is not prioritized.
 				racket_update();
 			}

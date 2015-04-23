@@ -26,9 +26,9 @@ void serve_update(void);
 // interface
 void serve_free(void);
 void serve_lock(void);
-void serve_calibrate(void);
-void serve_hit(void);
-void serve_start(void);
+void serve_calibrate(void);		// THIS IS ALSO THE FUNCTION U CALL
+void serve_hit(void);		// DO NOT CALL THIS FUNCTION
+void serve_start(void);		// THIS IS FUNCTION U CALL
 
 // primary control
 void toggle_serve_pneu(void);
