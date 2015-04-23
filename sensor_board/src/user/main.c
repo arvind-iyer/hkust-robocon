@@ -76,7 +76,7 @@ int main(void)
 				}
 			}
 			
-			if (ticks_img % 200 == 5) {
+			if (ticks_img % 50 == 5) {
 				nec_printf();
 			}
 

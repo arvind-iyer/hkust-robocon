@@ -24,9 +24,9 @@
 
 #define	NEC_CAN_ID					0x220
 
-#define	NEC_DEVICE_COUNT		4
+#define	NEC_DEVICE_COUNT		8
 
-#define	NEC_PULSE_MAX				9000
+#define	NEC_PULSE_MAX				1000
 
 typedef u8 NEC_Data_TypeDef;
 

@@ -1078,12 +1078,7 @@ void nec_mb_test(void)
     led_control(LED_D2, (LED_STATE) !gpio_read_input(&PC6));
     if (ticks_img != get_ticks()) {
       ticks_img = get_ticks();
-
-      
-      if (ticks_img % 20 == 0) {
-        //xbc_update();
-      }
-      
+			
       if (ticks_img % 50 == 3) {
         button_update();
         if (return_listener()) {
@@ -1096,7 +1091,11 @@ void nec_mb_test(void)
         draw_top_bar();
         tft_prints(0, 1, "NEC TEST");
         for (u8 i = 0; i < NEC_DEVICE_COUNT; ++i) {
-					tft_prints(0, i + 2, "%d {0x%02X,0x%02X}", i, nec_get_msg(i)->address, nec_get_msg(i)->command);
+					if (nec_get_msg(i)->state == 0) {
+						tft_prints(0, i + 2, "%d {--,--}");
+					} else {
+						tft_prints(0, i + 2, "%d {0x%02X,0x%02X}", i, nec_get_msg(i)->address, nec_get_msg(i)->command);
+					}
 				}
         tft_update();
         

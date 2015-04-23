@@ -11,6 +11,7 @@ typedef u8 NEC_Data_TypeDef;
 
 typedef struct {
   NEC_Data_TypeDef address, command;
+	u8 state;
 } NEC_Msg;
 
 void nec_mb_init(void);

@@ -10,12 +10,11 @@ static void nec_mb_decoding(CanRxMsg msg)
 {
 	if (msg.StdId >= NEC_CAN_ID && msg.StdId < NEC_CAN_ID + NEC_DEVICE_COUNT) {
 		if (msg.DLC == 3) {
-			if (msg.Data[0] < NEC_DEVICE_COUNT) {
-				u8 id = msg.Data[0];
-				nec_msg[id].address = (u8) msg.Data[1];
-				nec_msg[id].command = (u8) msg.Data[2];
-				last_nec_rx_ticks = get_full_ticks();
-			}
+			u8 id = msg.StdId - NEC_CAN_ID; 
+			nec_msg[id].state = (u8) msg.Data[0];
+			nec_msg[id].address = (u8) msg.Data[1];
+			nec_msg[id].command = (u8) msg.Data[2];
+			last_nec_rx_ticks = get_full_ticks();
 		}
 	}
 }

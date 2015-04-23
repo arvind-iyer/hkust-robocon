@@ -59,19 +59,19 @@ typedef struct {
 
 //static const u16 NEC_PULSE_LOW_MAX = 3400;
 static const NEC_RANGE
-  NEC_BURST_ON_RANGE = {800, 1000},
-  NEC_BURST_OFF_RANGE = {350, 550},
+  NEC_BURST_ON_RANGE = {80, 100},
+  NEC_BURST_OFF_RANGE = {35, 55},
   
-  NEC_DATA_ON_RANGE = {35, 65},
-  NEC_DATA_ONE_OFF_RANGE = {135, 175},
-  NEC_DATA_ZERO_OFF_RANGE = {35, 65},
+  NEC_DATA_ON_RANGE = {3, 8},
+  NEC_DATA_ONE_OFF_RANGE = {13, 18},
+  NEC_DATA_ZERO_OFF_RANGE = {3, 6},
   
-  NEC_REPEAT_START_ON_RANGE = {35, 65},
-  NEC_REPEAT_START_OFF_RANGE = {3000, 4500};
+  NEC_REPEAT_START_ON_RANGE = {3, 6},
+  NEC_REPEAT_START_OFF_RANGE = {350, 450};
 
 static const NEC_RANGE NEC_REPEAT_RANGE[NEC_REPEAT_CYCLE] = {
-  /* + */ {750, 850}, /* - */ {150, 250},
-  /* + */ {35, 65},   /* - */ {8000, 8999}
+  /* + */ {75, 95}, /* - */ {10, 30},
+  /* + */ {3, 8},   /* - */ {800, 999}
 };  
 
 
@@ -103,7 +103,7 @@ void nec_init(void)
 	RCC_APB1PeriphClockCmd(NEC_RCC , ENABLE);
 
 	
-	TIM_TimeBaseStructure.TIM_Period = 10;	                 				       // Timer period, 1000 ticks in one second
+	TIM_TimeBaseStructure.TIM_Period = 100;	                 				       // Timer period, 1000 ticks in one second
 	TIM_TimeBaseStructure.TIM_Prescaler = SystemCoreClock / 1000000 - 1;     // 72M/1M - 1 = 71
 	TIM_TimeBaseInit(NEC_TIM, &TIM_TimeBaseStructure);      							 // this part feeds the parameter we set above
 	
@@ -184,24 +184,24 @@ static void nec_buffer_reset(u8 i, u8 next_reading_state)
 
 void nec_printf(void)
 {
-	printf("\n");
+	printf("\r\n");
 	
-	/*
-	for (u8 id = 0; id < NEC_DEVICE_COUNT; ++id) {
-		NEC_TypeDef* nec_device = &nec_devices[id];
-		
-		u16 i = nec_device->deque_head;
-		printf("\n%d:", id);
-		while (i != nec_device->deque_tail) {
-			printf("%c%d", i&0x01?'+':'-', nec_device->deque[i]);
-			i = (i + 1) % NEC_QUEUE_SIZE;
+	if (0) {
+		for (u8 id = 0; id < NEC_DEVICE_COUNT; ++id) {
+			NEC_TypeDef* nec_device = &nec_devices[id];
+			
+			u16 i = nec_device->deque_head;
+			printf("\n%d:", id);
+			while (i != nec_device->deque_tail) {
+				printf("%c%d", i&0x01?'+':'-', nec_device->deque[i]);
+				i = (i + 1) % NEC_QUEUE_SIZE;
+			}
+			//printf("%d:%X\n", nec_devices[i].state, nec_devices[i].current_msg.command); 
 		}
-		//printf("%d:%X\n", nec_devices[i].state, nec_devices[i].current_msg.command); 
-	}
-	*/
-	
-	for (u8 id = 0; id < NEC_DEVICE_COUNT; ++id) {
-		printf("%d:%X\n", nec_devices[id].state, nec_devices[id].current_msg.command); 
+	} else {
+		for (u8 id = 0; id < NEC_DEVICE_COUNT; ++id) {
+			printf("%d:%X\r\n", nec_devices[id].state, nec_devices[id].current_msg.command); 
+		}
 	}
 	
 }
@@ -473,9 +473,9 @@ void nec_can_tx(u8 i)
 	
 	msg.length = 3;
 	msg.id = NEC_CAN_ID + i;
-	msg.data[0] = nec_devices[i].current_msg.address;
-	msg.data[1] = nec_devices[i].current_msg.command;
-	msg.data[2] = nec_devices[i].state;
+	msg.data[0] = nec_devices[i].state;
+	msg.data[1] = nec_devices[i].current_msg.address;
+	msg.data[2] = nec_devices[i].current_msg.command;
 	can_tx_enqueue(msg); 
 }
 
