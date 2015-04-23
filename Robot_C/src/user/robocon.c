@@ -36,7 +36,7 @@ bool robot_xbc_controls(void)
 	
 	
 	int dw = (xbc_get_joy(XBC_JOY_RT)-xbc_get_joy(XBC_JOY_LT))/5;
-	/*
+	
 	if(dw == 0 && turn_timer == (u16)-1)
 	{
 		turn_timer_started = 1;
@@ -47,6 +47,7 @@ bool robot_xbc_controls(void)
 	{
 		turn_timer_started = 0;
 		log("PID", wheel_base_get_target_pos().angle);
+		dw = pid_maintain_angle();
 		wheel_base_set_target_pos((POSITION){get_pos()->x, get_pos()->y, get_pos()->angle});
 	}
 	else if(dw!=0)
@@ -56,12 +57,12 @@ bool robot_xbc_controls(void)
 		log("Turning", 1);
 	}
 	
-	if(get_pos()->angle != wheel_base_get_target_pos().angle)
+	if(dw == 0 && (turn_timer + 100 < get_full_ticks() ) )
 	{
 		dw = pid_maintain_angle();
-		log("PID", wheel_base_get_target_pos().angle);
+		log("PID2", wheel_base_get_target_pos().angle);
 	}
-	*/
+	
 	if(xbc_get_joy(XBC_JOY_LX) == 0 && xbc_get_joy(XBC_JOY_LY) == 0)
 	{
 		motor_set_acceleration(MOTOR_BOTTOM_RIGHT,250);
