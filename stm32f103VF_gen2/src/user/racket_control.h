@@ -11,6 +11,7 @@
 #define IR_Sensor_1_Pin GPIO_Pin_5 // A5
 #define IR_Sensor_2_Pin GPIO_Pin_6 // A6
 #define IR_Sensor_3_Pin GPIO_Pin_7 // A7
+#define IR_Sensor_4_Pin GPIO_Pin_4 // C4
 
 // Button Switch Pin
 #define Switch_B1_Pin  GPIO_Pin_0

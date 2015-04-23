@@ -26,13 +26,21 @@ void low_racket_stop() {
 
 void sensor_init(void) {
 	/* GPIO configuration */
-	RCC_APB2PeriphClockCmd(RCC_APB2Periph_GPIOE, ENABLE);
+	RCC_APB2PeriphClockCmd(RCC_APB2Periph_GPIOA, ENABLE);
 	GPIO_InitTypeDef GPIO_InitStructure;
 
 	GPIO_InitStructure.GPIO_Mode = GPIO_Mode_IPD;
 	GPIO_InitStructure.GPIO_Speed = GPIO_Speed_50MHz;
 	GPIO_InitStructure.GPIO_Pin = IR_Sensor_1_Pin | IR_Sensor_2_Pin | IR_Sensor_3_Pin;
 	GPIO_Init(GPIOA, &GPIO_InitStructure);
+	
+	
+	RCC_APB2PeriphClockCmd(RCC_APB2Periph_GPIOC, ENABLE);
+
+	GPIO_InitStructure.GPIO_Mode = GPIO_Mode_IPD;
+	GPIO_InitStructure.GPIO_Speed = GPIO_Speed_50MHz;
+	GPIO_InitStructure.GPIO_Pin = IR_Sensor_4_Pin;
+	GPIO_Init(GPIOC, &GPIO_InitStructure);
 }
 
 void racket_init(void) {
@@ -51,12 +59,18 @@ void sensor_update(void) {
 		if (GPIO_ReadInputDataBit(GPIOA, IR_Sensor_1_Pin)) {
 		// High
 				low_racket_move();
+				SUCCESSFUL_MUSIC;
 		} else if (GPIO_ReadInputDataBit(GPIOA, IR_Sensor_2_Pin)) {
 		// Mid
 				low_racket_move();
+				SUCCESSFUL_MUSIC;
 		} else if (GPIO_ReadInputDataBit(GPIOA, IR_Sensor_3_Pin)) {
 		// Low
 				low_racket_move();
+				SUCCESSFUL_MUSIC;
+		} else if (GPIO_ReadInputDataBit(GPIOC, IR_Sensor_4_Pin)) {
+			low_racket_move();
+			SUCCESSFUL_MUSIC;
 		}
 	}
 	
