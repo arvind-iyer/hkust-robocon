@@ -15,7 +15,7 @@ bool ultra_detect_shuttle(void)	//200~800 for robot D
 				// checks for range of distance. Rising edge.
 				if (us_get_distance(i)<1500 && us_get_distance(i)>400)
 				{
-					log("ult_detect",us_get_distance(i));
+					//log("ult_detect",us_get_distance(i));
 					short_distance_detected=1;
 					return 0;
 				}

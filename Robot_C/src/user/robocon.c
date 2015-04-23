@@ -41,12 +41,10 @@ bool robot_xbc_controls(void)
 	{
 		turn_timer_started = 1;
 		turn_timer = get_full_ticks();
-		log("Stopped", 1);
 	}
 	else if(dw == 0 && (turn_timer + 100 < get_full_ticks() ) && turn_timer_started)
 	{
 		turn_timer_started = 0;
-		log("PID", wheel_base_get_target_pos().angle);
 		dw = pid_maintain_angle();
 		wheel_base_set_target_pos((POSITION){get_pos()->x, get_pos()->y, get_pos()->angle});
 	}
@@ -54,13 +52,11 @@ bool robot_xbc_controls(void)
 	{
 		turn_timer = -1;
 		turn_timer_started = 0;
-		log("Turning", 1);
 	}
 	
 	if(dw == 0 && (turn_timer + 100 < get_full_ticks() ) )
 	{
 		dw = pid_maintain_angle();
-		log("PID2", wheel_base_get_target_pos().angle);
 	}
 	
 	if(xbc_get_joy(XBC_JOY_LX) == 0 && xbc_get_joy(XBC_JOY_LY) == 0)
