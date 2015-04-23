@@ -9,24 +9,16 @@ static WHEEL_BASE_VEL wheel_base_vel = {0, 0, 0},
 static const CLOSE_LOOP_FLAG wheel_base_close_loop_flag = CLOSE_LOOP;
 static u8 wheel_base_speed_mode = WHEEL_BASE_DEFAULT_SPEED_MODE;
 static u32 wheel_base_bluetooth_vel_last_update = 0;
-static u32 wheel_base_bluetooth_angle_last_update = 0;
 
 static const u8 WHEEL_BASE_PID_MANUAL_SPEED = 15;
 		
-static int wheel_base_acc = 300;
-static int wheel_base_pid_acc = 300;
-
+static int wheel_base_acc = 125;
 
 // static u32 wheel_base_last_can_tx = 0;
 		
 static u8 wheel_base_pid_flag = 0;
 static POSITION target_pos = {0, 0, 0};
 //static PID wheel_base_pid = {0, 0, 0};
-
-u32 wheel_base_get_last_angle_timer(void)
-{
-	return wheel_base_bluetooth_angle_last_update;
-}
 
 /**
 	* @brief Handler for the bluetooth RX with id 0x4?
@@ -55,9 +47,6 @@ static void wheel_base_bluetooth_decode(u8 id, u8 length, u8* data)
 					}
 					wheel_base_set_vel(x_vel * speed_ratio / 100, y_vel * speed_ratio / 100, w_vel * speed_ratio / 100);
 					wheel_base_bluetooth_vel_last_update = get_full_ticks();
-					if (w_vel != 0) {
-						wheel_base_bluetooth_angle_last_update = get_full_ticks();
-					}
 				}
 			}
 		break;
@@ -71,7 +60,6 @@ static void wheel_base_bluetooth_decode(u8 id, u8 length, u8* data)
 		break;
 	}
 }
-
 
 static void wheel_base_auto_bluetooth_decode(u8 id, u8 length, u8* data)
 {
@@ -171,11 +159,7 @@ void wheel_base_set_vel(s32 x, s32 y, s32 w)
 {
 	wheel_base_vel.x = x * 100;
 	wheel_base_vel.y = y * 100;
-	if (w != 0) {
-		wheel_base_vel.w = w * 100;
-	} else {
-		wheel_base_vel.w = wheel_base_angle_pid_update() * 100;
-	}
+	wheel_base_vel.w = w * 100;
 }
 
 /**
@@ -281,23 +265,12 @@ void wheel_base_update(void)
 			y_error = 1;
 		}
 		s32 x_wheel_base_acc, y_wheel_base_acc;
-		if (wheel_base_get_pid_flag() == 1 && (get_full_ticks() - wheel_base_get_last_manual_timer()) > BLUETOOTH_WHEEL_BASE_TIMEOUT + 1000 &&
-			(get_full_ticks() - xbc_get_received_nonzero_speed_timer()) > BLUETOOTH_WHEEL_BASE_TIMEOUT + 1000) {
-			if (x_error > y_error) {
-				x_wheel_base_acc = wheel_base_pid_acc;
-				y_wheel_base_acc = wheel_base_pid_acc * y_error / x_error;
-			} else {
-				x_wheel_base_acc = wheel_base_pid_acc * x_error / y_error;
-				y_wheel_base_acc = wheel_base_pid_acc;
-			}
+		if (x_error > y_error) {
+			x_wheel_base_acc = wheel_base_acc;
+			y_wheel_base_acc = wheel_base_acc * y_error / x_error;
 		} else {
-			if (x_error > y_error) {
-				x_wheel_base_acc = wheel_base_acc;
-				y_wheel_base_acc = wheel_base_acc * y_error / x_error;
-			} else {
-				x_wheel_base_acc = wheel_base_acc * x_error / y_error;
-				y_wheel_base_acc = wheel_base_acc;
-			}
+			x_wheel_base_acc = wheel_base_acc * x_error / y_error;
+			y_wheel_base_acc = wheel_base_acc;
 		}
 		wheel_base_vel_prev.x = wheel_base_vel_update(wheel_base_vel_prev.x, wheel_base_vel.x, x_wheel_base_acc);
 		wheel_base_vel_prev.y = wheel_base_vel_update(wheel_base_vel_prev.y, wheel_base_vel.y, y_wheel_base_acc);
@@ -352,11 +325,6 @@ void wheel_base_set_pid(PID pid)
 POSITION wheel_base_get_target_pos(void)
 {
 	return target_pos;
-}
-
-void wheel_base_set_angle_pos(s16 angle)
-{
-	target_pos.angle = angle;
 }
 
 void wheel_base_set_target_pos(POSITION pos)
