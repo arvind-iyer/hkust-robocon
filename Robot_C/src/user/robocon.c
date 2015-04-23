@@ -336,7 +336,7 @@ void robocon_main(void)
 			ticks_img = get_ticks();
 			if (ticks_img%2 == 1)
 			{
-				if (!serve_prioritized() && sensors_activated)
+				if (sensors_activated && !serve_prioritized())
 					sensors_update();			// only update sensors when serve is not prioritized.
 				racket_update();
 			}
@@ -419,9 +419,10 @@ void robocon_main(void)
 				//tft_prints(0,3,"XBC: %d", connect);
 				tft_prints(0,3,"Serve_delay: %d",serve_get_delay());
 				//tft_prints(0,4, "pneu= %d", gpio_read_input(&PB9));
-				tft_prints(0,4,"[%d , %d, %d ]", get_pos()->x, get_pos()->y, get_pos()->angle);
+				//tft_prints(0,4,"[%d , %d, %d ]", get_pos()->x, get_pos()->y, get_pos()->angle);
+				tft_prints(0,4,"senser_on : %d", sensors_activated);
+				
 				//tft_prints(0,4, "skipTick %d", tick_skip_count);
-				//tft_prints(0,4, "Serve_prior %d", serve_prioritized());
 				//tft_prints(0,2, "x%d y%d", gyro_get_shift_x(), gyro_get_shift_y());
 				//tft_prints(0,7, "LASER%d %d", gpio_read_input(LASER_GPIO),racket_get_laser_hit_delay);
 				tft_prints(0,2,"Encoder: %d", get_encoder_value(RACKET));
