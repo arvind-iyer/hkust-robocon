@@ -18,7 +18,7 @@
 #include "encoder.h"
 #include "ultrasonic_mb.h"
   //'C' or 'D'
-#define ROBOT 'D'
+#define ROBOT 'C'
 
 
 /*** Optional ***/
