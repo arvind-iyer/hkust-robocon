@@ -75,8 +75,6 @@ void wheel_base_pid_on(void);
 void wheel_base_pid_off(void);
 u8 wheel_base_get_pid_flag(void);
 u32 wheel_base_get_last_manual_timer(void);
-u32 wheel_base_get_last_angle_timer(void);
-void wheel_base_set_angle_pos(s16 angle);
 
 // For debugging purpose only
 void wheel_base_override_change_speed(void);
