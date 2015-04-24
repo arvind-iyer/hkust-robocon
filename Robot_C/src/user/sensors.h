@@ -12,7 +12,7 @@
 #define laser_sensor_3 &PA7
 
 // const variables
-static const u32 SENSOR_PULSE_WIDTH_MAX = 200;		// in milliseconds * 2
+static const u32 SENSOR_PULSE_WIDTH_MAX = 100;		// in milliseconds * 2
 static const u32 SENSOR_PULSE_WIDTH_MIN = 5;				// in milliseconds * 2
 
 

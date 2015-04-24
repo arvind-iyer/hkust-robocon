@@ -93,6 +93,6 @@ void sensors_update(void)
 	{
 		racket_down_hit();
 		log("ir_racket", 1);
-		last_ultra_detect_time = get_full_ticks()-1400;	// minor ultrasonic noise correction. when hitting by ir, disable ultrasonic for 100 ms
+		last_ultra_detect_time = get_full_ticks()-1200;	// minor ultrasonic noise correction. when hitting by ir, disable ultrasonic for 300 ms
 	}
 }
