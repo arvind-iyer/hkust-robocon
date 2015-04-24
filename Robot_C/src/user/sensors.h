@@ -7,7 +7,7 @@
 #include "stm32f10x_exti.h"
 #include "robocon.h"
 
-#define laser_sensor_1 &PA4
+#define laser_sensor_1 &PA5
 #define laser_sensor_2 &PA6
 #define laser_sensor_3 &PA7
 

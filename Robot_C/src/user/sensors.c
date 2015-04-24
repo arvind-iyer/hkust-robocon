@@ -52,9 +52,7 @@ bool ultra_detect_shuttle(void)	//200~800 for robot D
 
 bool ir_detect_shuttle(void)
 {
-	// for 1.5 seconds after sensor triggered hitting, it ignores any incoming data.
-	if (last_ir_detect_time+1500>get_full_ticks())
-		return 0;
+	
 	
 	
 	// if one of the laser sensor is triggered, add to the counter
@@ -62,16 +60,18 @@ bool ir_detect_shuttle(void)
 	{
 		//log("ir_pulse",ir_detected_counter);
 		ir_detected_counter+=1;
-		
 		//given the acceptable width of pulse, hit the bottom racket.
 		// IT IS NOT A FALLING EDGE
 		 if ( ir_detected_counter<SENSOR_PULSE_WIDTH_MAX && ir_detected_counter>SENSOR_PULSE_WIDTH_MIN)
 		{
 			log("ir_pulse",ir_detected_counter);
-			//ir_detected_counter=0;
 			last_ir_detect_time = get_full_ticks();
-			return 1;
 		}
+		// for 1.5 seconds after sensor triggered hitting, it ignores any incoming data.
+		if (last_ir_detect_time+1500>get_full_ticks())
+			return 0;
+		else	
+			return 1;
 	}
 	
 	// reset ir_detected_counter
@@ -93,6 +93,6 @@ void sensors_update(void)
 	{
 		racket_down_hit();
 		log("ir_racket", 1);
-		last_ultra_detect_time = get_full_ticks()-1200;	// minor ultrasonic noise correction. when hitting by ir, disable ultrasonic for 300 ms
+		last_ultra_detect_time = get_full_ticks()-1000;	// minor ultrasonic noise correction. when hitting by ir, disable ultrasonic for 500 ms
 	}
 }
