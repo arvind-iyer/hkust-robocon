@@ -38,10 +38,10 @@ static const u16 SPEED_MODES[10] =	// In percentage (20 = 20%)
 #define	WHEEL_BASE_DEFAULT_SPEED_MODE					3			// from 0 to 9
 
 // Wheel base motors acceleration (CONSTANT, to be configured upon startup)
-#define	WHEEL_BASE_BR_ACC											ROBOT=='C'?300:250		// Bottom-right wheel
-#define	WHEEL_BASE_BL_ACC										  ROBOT=='C'?300:250// Bottom-left wheel
-#define	WHEEL_BASE_TL_ACC											ROBOT=='C'?300:90 // Top-left wheel
-#define	WHEEL_BASE_TR_ACC											ROBOT=='C'?300:90 		// Top-right wheel
+#define	WHEEL_BASE_BR_ACC											ROBOT=='C'?300:150		// Bottom-right wheel
+#define	WHEEL_BASE_BL_ACC										  ROBOT=='C'?300:200// Bottom-left wheel
+#define	WHEEL_BASE_TL_ACC											ROBOT=='C'?300:200 // Top-left wheel
+#define	WHEEL_BASE_TR_ACC											ROBOT=='C'?300:150 		// Top-right wheel
 
 #define XY_BR_SCALE 100
 #define XY_BL_SCALE 100
@@ -56,10 +56,10 @@ typedef struct {
 } WHEEL_BASE_VEL;
 
 static const MOTOR_ID
-	MOTOR_BOTTOM_RIGHT 		= ROBOT=='C'?MOTOR1:MOTOR3,		//changed from MOTOR1		//MOTOR3 for C
-	MOTOR_BOTTOM_LEFT 		= ROBOT=='C'?MOTOR4:MOTOR4,		//changed from MOTOR2		// MOTOR4 for C
-	MOTOR_TOP_LEFT 				= ROBOT=='C'?MOTOR3:MOTOR1,		//changed from MOTOR3				//MOTOR1 for C
-	MOTOR_TOP_RIGHT 			= ROBOT=='C'?MOTOR2:MOTOR2;		//changed from MOTOR4				// MOTOR2 for C
+	MOTOR_BOTTOM_RIGHT 		= ROBOT=='C'?MOTOR1:MOTOR1,		//changed from MOTOR1		//MOTOR3 for C
+	MOTOR_BOTTOM_LEFT 		= ROBOT=='C'?MOTOR4:MOTOR2,		//changed from MOTOR2		// MOTOR4 for C
+	MOTOR_TOP_LEFT 				= ROBOT=='C'?MOTOR3:MOTOR3,		//changed from MOTOR3				//MOTOR1 for C
+	MOTOR_TOP_RIGHT 			= ROBOT=='C'?MOTOR2:MOTOR4;		//changed from MOTOR4				// MOTOR2 for C
 
 
 

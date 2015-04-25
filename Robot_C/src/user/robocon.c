@@ -58,7 +58,8 @@ bool robot_xbc_controls(void)
 		turn_timer_started = 0;
 	}
 	
-	if(dw == 0 && (turn_timer + 100 < get_full_ticks() ) )
+//	if(dw == 0 && (turn_timer + 100 < get_full_ticks() ) )
+	if(dw == 0)
 	{
 		dw = pid_maintain_angle();
 	}
@@ -411,6 +412,8 @@ void robocon_main(void)
           s[1] = s[0];
           s[0] = '\\';
         }
+				
+				
 				
 				u8 connect = xbc_get_connection() == XBC_DISCONNECTED ? 0 : 1;
 					 
