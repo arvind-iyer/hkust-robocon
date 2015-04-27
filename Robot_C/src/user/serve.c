@@ -2,7 +2,7 @@
 
 
 //racket variables
-static s32 SERVE_CAL_VEL = -200 ;		
+static s32 SERVE_CAL_VEL = -220 ;		
 static s32 SERVE_HIT_VEL = 1300;			//can be changed by controller
 static u32 SERVE_DELAY = 300;			// can be changed by controller
 
@@ -36,7 +36,6 @@ void racket_lock()
 {
 	hitting=0;
 	calibrate_in_process=0;
-	motor_set_vel(RACKET, 0, OPEN_LOOP);
 	motor_lock(RACKET);
 	//log("motor_lock",1);
 }
@@ -77,6 +76,7 @@ void serve_update(void)
 	if ( hitting && init_encoder_is_set && (get_encoder_value(RACKET) <= init_encoder_reading+ENCODER_THRESHOLD/* ||get_full_ticks()>=serve_hit_start_time+SERVE_HIT_TIMEOUT+100-(SERVE_HIT_VEL/5)*/))
 	{
 		FAIL_MUSIC;
+		motor_set_vel(RACKET, 0, OPEN_LOOP);
 		racket_lock();
 		calibrated=0;
 		log ("*enc st hit",get_encoder_value(RACKET));
@@ -88,7 +88,6 @@ void serve_update(void)
 		hitting=0;
 		calibrate_in_process=0;
 		calibrated=0;
-		motor_set_vel(RACKET, 0, OPEN_LOOP);
 		serve_calibrate();
 		log("*!tim st hit",get_full_ticks() - serve_start_time);
 	}
@@ -97,7 +96,7 @@ void serve_update(void)
 	*		Calibration termination mechanisms
 	*/
 	// after calibrating, wait for switch and lock motor. Once calibrated once already, calibrate relies on encoder value to stop.
-	if (calibrate_in_process && switch_counter>10)
+	if (calibrate_in_process && switch_counter>5)
 	{
 		init_encoder_is_set=1;
 		calibrated=1;
@@ -109,7 +108,7 @@ void serve_update(void)
 	}
 	if (calibrate_in_process &&init_encoder_is_set && get_encoder_value(RACKET)>init_encoder_reading-2000 )
 	{
-		motor_set_vel(RACKET, SERVE_CAL_VEL/2, OPEN_LOOP);
+		motor_set_vel(RACKET, SERVE_CAL_VEL+30, OPEN_LOOP);
 		//log("*enc st cal",get_encoder_value(RACKET));
 	}
 	
@@ -121,7 +120,7 @@ void serve_update(void)
 		calibrated=1;
 		hitting=0;
 		calibrate_in_process=0;
-		motor_set_vel(RACKET, SERVE_CAL_VEL/2, OPEN_LOOP);
+		motor_set_vel(RACKET, SERVE_CAL_VEL+50, OPEN_LOOP);
 		//racket_lock();
 		//init_encoder_reading = get_encoder_value(RACKET);
 		log("*tim st cal",get_full_ticks() - serve_start_time);
@@ -132,6 +131,8 @@ void serve_update(void)
 void serve_free(void)
 {
 	calibrated=0;
+	hitting=0;
+	calibrate_in_process=0;
 	motor_set_vel(RACKET, 0, OPEN_LOOP);
 }
 
