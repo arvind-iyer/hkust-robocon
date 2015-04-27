@@ -14,12 +14,12 @@
 
 #define SERVE_SWITCH &PE11
 #define RACKET MOTOR5
-#define SERVE_PNEU_GPIO &PD9
-
+#define SERVE_PNEU_GPIO &PE15//&PD9
+#define SERVE_PNEU_GPIO_BACKUP &PD9
 
 #define ENCODER_THRESHOLD 	-10000
 
-static u32 SERVE_HIT_TIMEOUT = 300;	// maximum serve duration.
+static u32 SERVE_HIT_TIMEOUT = 130;	// maximum serve duration.
 
 void serve_update(void);
 

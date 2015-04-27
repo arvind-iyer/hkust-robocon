@@ -302,6 +302,7 @@ void robocon_main(void)
 	serve_free();
 	//gpio_init(&PD10,  GPIO_Speed_10MHz, GPIO_Mode_Out_PP, 1);		// pneumatric GPIO Robot D, GEN2
 	gpio_init(&PD9,  GPIO_Speed_10MHz, GPIO_Mode_Out_PP, 1);		// Serve pneumatric GPIO Robot D, GEN2
+	gpio_init(&PE15,  GPIO_Speed_10MHz, GPIO_Mode_Out_PP, 1);		// Serve pneumatric GPIO Robot D, GEN2. MOSFET burnt
 	gpio_init(&PD10, GPIO_Speed_10MHz, GPIO_Mode_Out_PP, 1);		// pneu matic GPIO
 	
 	//gpio_init(&PD12, GPIO_Speed_10MHz, GPIO_Mode_Out_PP, 1);		//pneumatic GPIO 2
@@ -335,12 +336,12 @@ void robocon_main(void)
 			prev_ticks=ticks_img;
 			
 			ticks_img = get_ticks();
-			if (ticks_img%2 == 1)
-			{
+			//if (ticks_img%2 == 1)
+			//{
 				if (sensors_activated && !serve_prioritized())
 					sensors_update();			// only update sensors when serve is not prioritized.
 				racket_update();
-			}
+			//}
 			if (ticks_img % 10 == 0) {
         //wheel_base_update();	//wheel_base_update now also handles auto positioning system
 				bluetooth_update();
@@ -370,24 +371,24 @@ void robocon_main(void)
 				battery_regular_check();
 			}
 
-      if (ticks_img % 100 == 3) {
+      /*if (ticks_img % 100 == 3) {
 				if(special_char_handler_bt_get_last_char() == 'k')
 				{
 					tft_prints(0,7, "HIT");
 					tft_update();
 				}
-      }
+      }*/
 			
-			if (ticks_img % 100 == 3) {
+			if (ticks_img % 100 == 3 && !serve_prioritized()) {
 				// Every 100 ms (10 Hz)
 				wheel_base_tx_position();
 			}
 			
-			if (ticks_img % 500 == 4) {
+			if (ticks_img % 500 == 4 && !serve_prioritized()) {
 				led_control(LED_D3, (LED_STATE) (ticks_img == 0));
 			}
 			
-			if (ticks_img % 50 == 5) {
+			if (ticks_img % 50 == 5 && !serve_prioritized()) {
 				//wheel_base_joystick_control();
 				if (button_pressed(BUTTON_1) > 10 || button_pressed(BUTTON_2) > 10 || button_pressed(BUTTON_XBC_BACK) > 10) {
 					/** Stop the wheel base before return **/

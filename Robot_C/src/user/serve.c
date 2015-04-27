@@ -7,7 +7,6 @@ static s32 SERVE_HIT_VEL = 1300;			//can be changed by controller
 static u32 SERVE_DELAY = 300;			// can be changed by controller
 
 static s32 init_encoder_reading = 8000;	// will be kept updating according to the switch. Encoder value at switch location.
-static s32 prev_encoder_reading = 8000;	// encoder reading when racket is locked.
 
 // timer and encoder variables
 static u32 serve_start_time=0;
@@ -37,7 +36,7 @@ void racket_lock()
 {
 	hitting=0;
 	calibrate_in_process=0;
-	prev_encoder_reading = get_encoder_value(RACKET);
+	motor_set_vel(RACKET, 0, OPEN_LOOP);
 	motor_lock(RACKET);
 	//log("motor_lock",1);
 }
@@ -47,6 +46,10 @@ void racket_lock()
 // serve update, included in racket update
 void serve_update(void)
 {
+	/**
+	*			Start reading the pulse width
+	*
+	*/
 	if (gpio_read_input(SERVE_SWITCH))
 	{
 		switch_counter++;
@@ -55,62 +58,72 @@ void serve_update(void)
 	{
 		switch_counter=0;
 	}
+	
+	/**
+	*		Serve start mechanism
+	*/
 	// wait for serve que, and hit the racket
 	if (serve_hit_queued && get_full_ticks()>=serve_start_time+SERVE_DELAY)
 	{
+		buzzer_play_song(CLICK, 100, 0);
 		serve_hit();
+		log("serve_hit",serve_hit_start_time);
 	}
 	
+	/**
+	*		Serve termination mechanisms
+	*/
 	// while hitting, check for encoder value or time and stop.
-	if ( hitting && (get_encoder_value(RACKET) <= init_encoder_reading+ENCODER_THRESHOLD/* ||get_full_ticks()>=serve_hit_start_time+SERVE_HIT_TIMEOUT+100-(SERVE_HIT_VEL/5)*/))
+	if ( hitting && init_encoder_is_set && (get_encoder_value(RACKET) <= init_encoder_reading+ENCODER_THRESHOLD/* ||get_full_ticks()>=serve_hit_start_time+SERVE_HIT_TIMEOUT+100-(SERVE_HIT_VEL/5)*/))
 	{
+		FAIL_MUSIC;
 		racket_lock();
-		//log ("enc st hit",get_encoder_value(RACKET));
-		//log ("serve delay", serve_hit_start_time - serve_start_time);
-		//log ("serve time", get_full_ticks() - serve_hit_start_time);
+		calibrated=0;
+		log ("*enc st hit",get_encoder_value(RACKET));
 	}
-	if (hitting && get_encoder_value(RACKET)==prev_encoder_reading && get_full_ticks()>=serve_hit_start_time+SERVE_HIT_TIMEOUT)
+	// after SERVE_HIT_TIMEOUT, stop motor
+	if (hitting && get_full_ticks()>=serve_hit_start_time+SERVE_HIT_TIMEOUT)
 	{
+		FAIL_MUSIC;
 		hitting=0;
+		calibrate_in_process=0;
+		calibrated=0;
 		motor_set_vel(RACKET, 0, OPEN_LOOP);
 		serve_calibrate();
-		log("*tim st hit",get_full_ticks() - serve_start_time);
+		log("*!tim st hit",get_full_ticks() - serve_start_time);
 	}
 
-	
+	/**
+	*		Calibration termination mechanisms
+	*/
 	// after calibrating, wait for switch and lock motor. Once calibrated once already, calibrate relies on encoder value to stop.
-	if (calibrate_in_process && (switch_counter>5 || (init_encoder_is_set && get_encoder_value(RACKET)>init_encoder_reading-1000 )))
+	if (calibrate_in_process && switch_counter>10)
 	{
 		init_encoder_is_set=1;
 		calibrated=1;
 		racket_lock();
-		SUCCESSFUL_MUSIC;
-		// temporary code. ONLY UPDATE ENCODER VALUE IF RACKET HITS SWITCH
-		if (switch_counter>5)
-		{
-			init_encoder_reading = get_encoder_value(RACKET);
-			//log("*sw st cal",get_encoder_value(RACKET));
-		}
-		//else
-			//log("enc st cal",get_encoder_value(RACKET));
+		buzzer_play_song(START_UP, 120, 0);
+		//ONLY UPDATE ENCODER VALUE IF RACKET HITS SWITCH
+		init_encoder_reading = get_encoder_value(RACKET);
+		log("*!sw st cal",get_encoder_value(RACKET));
 	}
-	
-	
-	// DUMMY CODE : PRINT OUT LOG ERROR MESSAGE IF MOTOR IS MOVING WITH FLAGS DOWN
-	/*if (!hitting && !calibrated && (gpio_read_input(SERVE_SWITCH) || (init_encoder_is_set && get_encoder_value(RACKET)>init_encoder_reading-2000 )))
+	if (calibrate_in_process &&init_encoder_is_set && get_encoder_value(RACKET)>init_encoder_reading-2000 )
 	{
-		//log("CAL ERROR",gpio_read_input(SERVE_SWITCH));
-	}*/
+		motor_set_vel(RACKET, SERVE_CAL_VEL/2, OPEN_LOOP);
+		//log("*enc st cal",get_encoder_value(RACKET));
+	}
 	
 	// if calibration doesn't stop 1.5 seconds, FORCE STOP CALIBRATION, and register current encoder value as init encoder value.
 	if (calibrate_in_process && serve_calibrate_start_time+1500<get_full_ticks())
 	{
+		init_encoder_is_set=0;
 		SUCCESSFUL_MUSIC;
-		init_encoder_is_set=1;
 		calibrated=1;
+		hitting=0;
+		calibrate_in_process=0;
+		motor_set_vel(RACKET, SERVE_CAL_VEL/2, OPEN_LOOP);
 		//racket_lock();
-		prev_encoder_reading = get_encoder_value(RACKET);
-		init_encoder_reading = get_encoder_value(RACKET);
+		//init_encoder_reading = get_encoder_value(RACKET);
 		log("*tim st cal",get_full_ticks() - serve_start_time);
 	}
 }
@@ -147,6 +160,7 @@ void serve_calibrate(void)
 void toggle_serve_pneu(void)
 {
 	gpio_write(SERVE_PNEU_GPIO, is_released);
+	gpio_write(SERVE_PNEU_GPIO_BACKUP, is_released);
 	is_released=!is_released;
 	//log((is_released?"ball release! ":"hold ball"),0);
 }
