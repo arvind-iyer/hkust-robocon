@@ -3,7 +3,7 @@
 
 #include "can_protocol.h"
 
-#define	NEC_DEVICE_COUNT			1
+#define	NEC_DEVICE_COUNT			8
 #define	NEC_CAN_ID						0x220
 #define	NEC_CAN_RX_TIMEOUT		300
 

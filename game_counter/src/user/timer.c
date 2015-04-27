@@ -204,7 +204,6 @@ void timer_update(void)
          
         }
       }
-      
     } else if (ticks_counter == 500) {
       if (timer_set_flag == TIMER_SET_ALARM_HOUR || timer_set_flag == TIMER_SET_ALARM_MINUTE) {
         // Keep turning on colon for alarm setting

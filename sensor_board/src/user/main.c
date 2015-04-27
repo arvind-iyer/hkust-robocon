@@ -59,7 +59,7 @@ int main(void)
 				us_proc_update();
 			}
 			
-			led_control(LED_D1, (LED_STATE) !gpio_read_input(&PA5));
+			led_control(LED_D1, (LED_STATE) !gpio_read_input(&PA4));
 
 			if (ticks_img % 10 == 3) {
 				for (u8 i = 0; i < US_DEVICE_COUNT; ++i) {

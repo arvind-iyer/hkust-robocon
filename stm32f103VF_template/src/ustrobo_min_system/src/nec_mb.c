@@ -10,6 +10,7 @@ static void nec_mb_decoding(CanRxMsg msg)
 {
 	if (msg.StdId >= NEC_CAN_ID && msg.StdId < NEC_CAN_ID + NEC_DEVICE_COUNT) {
 		if (msg.DLC == 3) {
+		
 			u8 id = msg.StdId - NEC_CAN_ID; 
 			nec_msg[id].state = (u8) msg.Data[0];
 			nec_msg[id].address = (u8) msg.Data[1];

@@ -2,10 +2,13 @@
   ******************************************************************************
   * STM32F103VG Mainboard Library
   * Maintained by Kenneth Au
-  * Version: (Robocon 2015) Version 3.0
-  * Last update: 14th April, 2015
+  * Version: (Robocon 2015) Version 3.2
+  * Last update: 27th April, 2015
  ******************************************************************************
   */
+
+/** Version 3.2 (27th April, 2015) **/
+- NEC Protocol improvement
 
 /** Version 3.1 (15th April, 2015) **/
 - UART bug fixed (by using the old usart library)
