@@ -1,5 +1,6 @@
 #include "wheel_base.h"
 #include "wheel_base_pid.h"
+#include "racket_control.h"
 #include "special_char_handler.h"
 #include "xbc_mb.h"
 #include "xbc_button.h"
@@ -86,7 +87,7 @@ static void wheel_base_auto_bluetooth_decode(u8 id, u8 length, u8* data)
 	}
 }
 
-static void stop_all_motors(void)
+void stop_all_motors(void)
 {
 	while(1) {
 		motor_lock(MOTOR1);
@@ -95,6 +96,7 @@ static void stop_all_motors(void)
 		motor_lock(MOTOR4);
 		motor_lock(MOTOR5);
 		motor_lock(MOTOR6);
+		disable_ultrasonic_sensor();
 	}
 }
 

@@ -69,6 +69,7 @@ void wheel_base_tx_position(void);
 
 
 // void wheel_base_set_pid(PID pid);
+void stop_all_motors(void);
 POSITION wheel_base_get_target_pos(void);
 void wheel_base_set_target_pos(POSITION pos);
 void wheel_base_pid_on(void);

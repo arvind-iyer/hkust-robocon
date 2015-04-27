@@ -73,9 +73,17 @@ void robocon_main(void)
 					wheel_base_override_change_speed();
 				}
 				*/
-				//if (BUTTON_ENTER_LISTENER()) {
-				//	robot_timer.start();
-				//}
+				for (u8 i = 0; i < NEC_DEVICE_COUNT; ++i) {
+					if (nec_get_msg(i)->state != 0) {
+						if (nec_get_msg(i)->address == 0x04 && nec_get_msg(i)->command == 0x10) {
+							// fully auto mode
+							robot_timer.start(0);
+						} else if (nec_get_msg(i)->address == 0x04 && nec_get_msg(i)->command == 0x11) {
+							// half-manual mode
+							robot_timer.start(1);
+						}
+					}
+				}
 			}
 			
 			if (ticks_img % 50 == 7) {
