@@ -37,6 +37,8 @@ u16 get_racket_speed(void);
 u16 get_racket_delay(void);
 u8 get_up_switch(void);
 u8 get_switch_trigger_number(void);
+bool is_serving(void);
+
 int get_global_delay(void);
 
 void upper_hit(void);

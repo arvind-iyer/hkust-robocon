@@ -76,12 +76,12 @@ void xbc_button_handler(void)
 		set_returning_pos();
 	}
 	
-	if (button_pressed(BUTTON_XBC_LB))
+	if (button_pressed(BUTTON_XBC_RB))
 	{
 		wheel_base_pid_on();
 	}
 	
-	if (button_pressed(BUTTON_XBC_RB))
+	if (button_pressed(BUTTON_XBC_LB))
 	{
 		wheel_base_pid_off();
 	}

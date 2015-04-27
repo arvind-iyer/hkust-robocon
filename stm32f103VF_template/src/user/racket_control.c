@@ -21,6 +21,7 @@ static bool serving_started = false;
 static u32 serving_started_time = 0;
 static bool switch_stat;
 static u8 switch_hit = 0;
+static bool serving_now = false;
 
 static u8 switch_trigger_number = 0;
 
@@ -105,6 +106,10 @@ u8 get_up_switch(void){
 
 u8 get_switch_trigger_number(void) {
 	return switch_trigger_number;
+}
+
+bool is_serving(void) {
+	return serving_now;
 }
 
 // internal functions (special char functions)
@@ -342,7 +347,6 @@ void racket_update(void)    //determine whether the motor should run
 	}
 	// regular mode
 	else if (calibrated) {
-		static bool serving = false;
 		if (trigger_serve) {
 			open_pneumatic();
 			serving_started = true;
@@ -354,7 +358,7 @@ void racket_update(void)    //determine whether the motor should run
 				delay_counter = 0;
 				racket_received_command();
 				serving_started = false;
-				serving = true;
+				serving_now = true;
 				close_pneumatic();
 			}
 		}
@@ -363,7 +367,7 @@ void racket_update(void)    //determine whether the motor should run
 				current_encoder_value = get_encoder_value(MOTOR5);
 				motor_lock(MOTOR5);
 				current_speed = 0;
-				serving = false;
+				serving_now = false;
 			}
 			else if (get_encoder_value(MOTOR5) <= target_encoder_value - turn_encoder_value / 2){
 				FAIL_MUSIC;
@@ -378,7 +382,7 @@ void racket_update(void)    //determine whether the motor should run
 		else if (!serving) {
 			motor_lock(MOTOR5);
 			current_speed = 0;
-			serving = false;
+			serving_now = false;
 			SUCCESSFUL_MUSIC;
 		}
 	}
