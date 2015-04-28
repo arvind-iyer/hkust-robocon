@@ -21,9 +21,6 @@ bool sensors_activated = 0;
 
 bool robot_xbc_controls(void)
 {
-	if(xbc_get_connection() == XBC_DISCONNECTED)
-		return false;//Xbox Controller not connected
-	
 	//Update Button Data
 	button_update();
 	/*
@@ -77,28 +74,12 @@ bool robot_xbc_controls(void)
 	}
 	wheel_base_set_vel(xbc_get_joy(XBC_JOY_LX), xbc_get_joy(XBC_JOY_LY), dw);
 	
-	
-	//Digital Movement
-	//Cardinals
-	/*if(button_pressed(BUTTON_XBC_N))//Move forward
-		wheel_base_set_vel(0, wheel_base_get_speed_mode() * 10, 0 );
-	else if(button_pressed(BUTTON_XBC_S))//Move Backwards
-		wheel_base_set_vel(0, -1 * wheel_base_get_speed_mode() * 10, 0);
-	else if(button_pressed(BUTTON_XBC_E))//Move Right
-		wheel_base_set_vel(wheel_base_get_speed_mode() * 10, 0, 0);
-	else if(button_pressed(BUTTON_XBC_W))//Move Left
-		wheel_base_set_vel(-1 * wheel_base_get_speed_mode() * 10, 0, 0);
-	//Diagonals
-	else if(button_pressed(BUTTON_XBC_NW))
-		wheel_base_set_vel(-1 * wheel_base_get_speed_mode() * WHEEL_BASE_XY_VEL_RATIO/100, wheel_base_get_speed_mode() * WHEEL_BASE_XY_VEL_RATIO/100, 0);
-	else if(button_pressed(BUTTON_XBC_NE))
-		wheel_base_set_vel(wheel_base_get_speed_mode() * WHEEL_BASE_XY_VEL_RATIO/100, wheel_base_get_speed_mode() * WHEEL_BASE_XY_VEL_RATIO/100, 0);
-	else if(button_pressed(BUTTON_XBC_SW))
-		wheel_base_set_vel(-1 * wheel_base_get_speed_mode() * WHEEL_BASE_XY_VEL_RATIO/100, -1 * wheel_base_get_speed_mode() * WHEEL_BASE_XY_VEL_RATIO/100, 0);
-	else if(button_pressed(BUTTON_XBC_SE))
-		wheel_base_set_vel(wheel_base_get_speed_mode() * WHEEL_BASE_XY_VEL_RATIO/100,-1 * wheel_base_get_speed_mode() * WHEEL_BASE_XY_VEL_RATIO/100, 0);
+	/*
+	80 = up
+	81= down
+	4D = right
+	51 = left
 	*/
-	
 	//Function Keys 
 	
 	if (ROBOT=='C')
@@ -163,9 +144,9 @@ void robot_d_function_controls(void)
 	// change serve varibales
 	
 	if (button_pressed(BUTTON_XBC_N) && button_pressed(BUTTON_XBC_Y))
-		serve_change_delay(-1);
-	else if (button_pressed(BUTTON_XBC_S) && button_pressed(BUTTON_XBC_Y))
 		serve_change_delay(1);
+	else if (button_pressed(BUTTON_XBC_S) && button_pressed(BUTTON_XBC_Y))
+		serve_change_delay(-1);
 	else if (button_pressed(BUTTON_XBC_W) && button_pressed(BUTTON_XBC_Y))
 		serve_change_vel(-2);
 		//plus_x();
@@ -184,6 +165,15 @@ void robot_d_function_controls(void)
 	if (!gpio_read_input(&PE5))
 	{
 		serve_pneu_button_enabled=1;
+	}
+	
+	/**
+	* NEC controls
+	
+	*/
+	if (nec_get_msg(0)->address==0x40 && nec_get_msg(0)->command==0x05)
+	{
+		racket_hit();
 	}
 }
 
@@ -354,8 +344,8 @@ void robocon_main(void)
         }
 			}
 			
-			// Serve optimization applied wheel_base update
-			if (!serve_prioritized() && ticks_img % 5 == 1) {
+			// wheel_base update
+			if (ticks_img % 5 == 1) {
         wheel_base_update();
 			}
 				
@@ -424,9 +414,9 @@ void robocon_main(void)
 				tft_prints(0,3,"Serve_delay: %d",serve_get_delay());
 				//tft_prints(0,4, "pneu= %d", gpio_read_input(&PB9));
 				//tft_prints(0,4,"[%d , %d, %d ]", get_pos()->x, get_pos()->y, get_pos()->angle);
-				tft_prints(0,4,"senser_on : %d", sensors_activated);
+				//tft_prints(0,4,"senser_on : %d", sensors_activated);
 				
-				//tft_prints(0,4, "skipTick %d", tick_skip_count);
+				tft_prints(0,4, "skipTick %d", tick_skip_count);
 				//tft_prints(0,2, "x%d y%d", gyro_get_shift_x(), gyro_get_shift_y());
 				//tft_prints(0,7, "LASER%d %d", gpio_read_input(LASER_GPIO),racket_get_laser_hit_delay);
 				tft_prints(0,2,"Encoder: %d", get_encoder_value(RACKET));

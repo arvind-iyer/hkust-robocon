@@ -34,6 +34,7 @@
 #include "serve.h"
 #include "xbc_mb.h"
 #include "log.h"
+#include "nec_mb.h"
 
 
 void robocon_main(void);

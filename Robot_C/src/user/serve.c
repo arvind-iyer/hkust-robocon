@@ -4,7 +4,7 @@
 //racket variables
 static s32 SERVE_CAL_VEL = -220 ;		
 static s32 SERVE_HIT_VEL = 1300;			//can be changed by controller
-static u32 SERVE_DELAY = 300;			// can be changed by controller
+static u32 SERVE_DELAY = 280;			// can be changed by controller
 
 static s32 init_encoder_reading = 8000;	// will be kept updating according to the switch. Encoder value at switch location.
 
@@ -26,6 +26,9 @@ bool calibrate_in_process = 0;			// true if it is calibrating
 // other trigger values
 bool init_encoder_is_set=0;	// first calibration is done.
 bool is_released=0;	// pneumatic for serve
+
+// AUTO SERVE VARIABLES
+bool auto_serve_queued = 0;			// when you press auto-serve
 
 
 
@@ -58,6 +61,24 @@ void serve_update(void)
 		switch_counter=0;
 	}
 	
+	
+	/**
+	*			Auto_serve start mechanism
+	*/
+	led_control(LED_D2, (LED_STATE) !gpio_read_input(&PC6));
+	if (nec_get_msg(0)->address==0x40 && nec_get_msg(0)->command==0x01 && !hitting && !calibrate_in_process && !serve_hit_queued)
+	{
+		auto_serve_queued=1;
+		if (!calibrated){serve_calibrate();}
+		else {serve_start();
+		auto_serve_queued=0;}
+	}
+	if (auto_serve_queued && calibrated)
+	{
+		serve_start();
+		auto_serve_queued=0;
+	}
+	
 	/**
 	*		Serve start mechanism
 	*/
@@ -69,6 +90,7 @@ void serve_update(void)
 		log("serve_hit",serve_hit_start_time);
 	}
 	
+	
 	/**
 	*		Serve termination mechanisms
 	*/
@@ -76,9 +98,11 @@ void serve_update(void)
 	if ( hitting && init_encoder_is_set && (get_encoder_value(RACKET) <= init_encoder_reading+ENCODER_THRESHOLD/* ||get_full_ticks()>=serve_hit_start_time+SERVE_HIT_TIMEOUT+100-(SERVE_HIT_VEL/5)*/))
 	{
 		FAIL_MUSIC;
-		motor_set_vel(RACKET, 0, OPEN_LOOP);
-		racket_lock();
+		//motor_set_vel(RACKET, 0, OPEN_LOOP);
+		hitting=0;
+		calibrate_in_process=0;
 		calibrated=0;
+		serve_calibrate();
 		log ("*enc st hit",get_encoder_value(RACKET));
 	}
 	// after SERVE_HIT_TIMEOUT, stop motor
@@ -160,8 +184,8 @@ void serve_calibrate(void)
 
 void toggle_serve_pneu(void)
 {
-	gpio_write(SERVE_PNEU_GPIO, is_released);
-	gpio_write(SERVE_PNEU_GPIO_BACKUP, is_released);
+	gpio_write(SERVE_PNEU_GPIO, !is_released);
+	gpio_write(SERVE_PNEU_GPIO_BACKUP, !is_released);
 	is_released=!is_released;
 	//log((is_released?"ball release! ":"hold ball"),0);
 }
