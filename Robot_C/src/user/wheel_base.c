@@ -214,6 +214,7 @@ void wheel_base_update(void)
   
     */
 	
+	
 	motor_set_vel(MOTOR_BOTTOM_RIGHT, (WHEEL_BASE_XY_VEL_RATIO * (wheel_base_vel.x + wheel_base_vel.y) / 1000 + WHEEL_BASE_W_VEL_RATIO * wheel_base_vel.w / 1000), wheel_base_close_loop_flag);
 	motor_set_vel(MOTOR_BOTTOM_LEFT,(WHEEL_BASE_XY_VEL_RATIO * (wheel_base_vel.x - wheel_base_vel.y) / 1000 + WHEEL_BASE_W_VEL_RATIO * wheel_base_vel.w / 1000), wheel_base_close_loop_flag);
 	motor_set_vel(MOTOR_TOP_LEFT,			(WHEEL_BASE_XY_VEL_RATIO * (-wheel_base_vel.x - wheel_base_vel.y) / 1000 + WHEEL_BASE_W_VEL_RATIO * wheel_base_vel.w / 1000), wheel_base_close_loop_flag);

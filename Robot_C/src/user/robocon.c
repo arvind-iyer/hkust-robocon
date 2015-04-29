@@ -19,6 +19,8 @@ bool turn_timer_started = 0;
 // enabling sensors by button.
 bool sensors_activated = 0;
 
+u16 prev_vels[100] = { 0 };
+u16 vel_index = 0;												 
 bool robot_xbc_controls(void)
 {
 	//Update Button Data
@@ -37,6 +39,7 @@ bool robot_xbc_controls(void)
 	
 	
 	int dw = (xbc_get_joy(XBC_JOY_RT)-xbc_get_joy(XBC_JOY_LT))/5;
+	#warning PID is off
 	
 	if(dw == 0 && turn_timer == (u16)-1)
 	{
@@ -61,18 +64,29 @@ bool robot_xbc_controls(void)
 		dw = pid_maintain_angle();
 	}
 	
-//	if(xbc_get_joy(XBC_JOY_LX) == 0 && xbc_get_joy(XBC_JOY_LY) == 0)
-//	{
-//		motor_set_acceleration(MOTOR_BOTTOM_RIGHT,250);
-//		motor_set_acceleration(MOTOR_BOTTOM_LEFT,300);
-//		motor_set_acceleration(MOTOR_TOP_LEFT,300);
-//		motor_set_acceleration(MOTOR_TOP_RIGHT,250);
-//	}
-//	else
-//	{
-//		wheel_base_tx_acc();
-//	}
-	wheel_base_set_vel(xbc_get_joy(XBC_JOY_LX), xbc_get_joy(XBC_JOY_LY), dw);
+	int vx = xbc_get_joy(XBC_JOY_LX);
+	int vy = xbc_get_joy(XBC_JOY_LY);
+	wheel_base_set_vel(vx, vy, dw);
+	
+	prev_vels[(vel_index++)%(sizeof(prev_vels)/sizeof(prev_vels[0]))] = (Abs(vx) + Abs(vy)+ Abs(dw))/20;
+	
+	u16 acc_mod = 0;
+	for (int i = 0; i < sizeof(prev_vels)/sizeof(prev_vels[0]); i++)
+		acc_mod += prev_vels[i];
+	
+	if(get_ticks() % 500 == 0)
+	{
+		log("Accmod: ", acc_mod);
+	}
+	
+	
+	
+	
+		motor_set_acceleration(MOTOR_BOTTOM_RIGHT,0.25 * acc_mod);
+		motor_set_acceleration(MOTOR_BOTTOM_LEFT,0.25 * acc_mod);
+		motor_set_acceleration(MOTOR_TOP_LEFT,1 * acc_mod);
+		motor_set_acceleration(MOTOR_TOP_RIGHT,0.75 * acc_mod);
+	
 	
 	/*
 	80 = up
