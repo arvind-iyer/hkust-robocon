@@ -3,7 +3,8 @@
 volatile u16 ticks = 0;
 volatile u16 seconds = 0;
 volatile u32 current_time = 0;
-  
+static u16 days_left = 0;
+
 /**
   * @brief  Get the ticks passed from 0-999
   * @param  None
@@ -35,6 +36,16 @@ u32 get_current_time(void)
 u32 get_full_ticks(void)
 {
 	return seconds * 1000 + ticks;
+}
+
+void set_days_left(u16 days) 
+{
+	days_left = days;
+}
+
+u16 get_days_left(void)
+{
+	return days_left;
 }
 
 /**
@@ -75,6 +86,13 @@ void ticks_init(void) {
 	ticks = seconds = 0;
 }
 
+static void new_date(void)
+{
+	if (days_left > 0) {
+		--days_left;
+	}
+}
+
 /**
   * @brief  Timer for ticks
   * @param  None
@@ -91,6 +109,7 @@ TICKS_IRQHandler
       seconds++;
       if (current_time >= 24 * 60 * 60 - 1) {
         current_time = 0;
+				new_date();
       } else {
         ++current_time;
       }
