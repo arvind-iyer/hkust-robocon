@@ -93,7 +93,10 @@ bool timer_clock_set(u32 i)
     if (i >= 60) {return false;}
     alarms[alarm_id_tmp].time = alarm_hour * 3600 + i * 60;
     return true;
-  } else {
+  } else if (timer_set_flag == TIMER_SET_DAYS_LEFT) {
+		if (i >= 999) {return false;}
+		set_days_left(i);
+	} else {
     return false;
   }
 }
@@ -145,10 +148,13 @@ void timer_update(void)
 {
   if (clock_mode) {
     if (ticks_counter == 0) {
-      game_counter_colon_set(1);
+      
       ticks_counter = 0;
       u32 display_time = 0;
       u32 current_time = get_current_time();
+			u8 display_days_left = 0;
+			
+			
       switch (timer_set_flag) {
         case TIMER_SET_OFF:
         case TIMER_SET_HOUR:
@@ -161,12 +167,19 @@ void timer_update(void)
           display_time = alarms[alarm_id_tmp].time;
         break;
       }
+			
      
       
       u8 second = display_time % 60;
       u8 minute = (display_time / 60) % 60;
       u8 hour = (display_time / 3600) % 24;
       
+			if (timer_set_flag != TIMER_SET_OFF) {
+				if (second >= 15 && second <= 45) {
+					display_days_left = 1;
+				}
+			}
+			
       if (HOUR_ALARM) {
         if (current_time % 3600 == 0) {
           // No hour alarm from 1 am to 8 am (inclusively)
@@ -184,10 +197,18 @@ void timer_update(void)
       
       hour %= 12; // same for AM and PM
       
-      game_counter_set_digit_id(0, hour);
-      game_counter_set_digit_id(1, minute / 10);
-      game_counter_set_digit_id(2, minute % 10);
-      
+			if (display_days_left) {
+				game_counter_colon_set(1);
+				game_counter_set_digit_id(0, hour);
+				game_counter_set_digit_id(1, minute / 10);
+				game_counter_set_digit_id(2, minute % 10);
+      } else {
+				u16 days_left = get_days_left();
+				game_counter_colon_set(0);
+				game_counter_set_digit_id(0, (days_left / 100) % 10);
+				game_counter_set_digit_id(1, (days_left / 10) % 10);
+				game_counter_set_digit_id(2, (days_left) % 10); 
+			}
 
       
       // ALARM BUZZ!
@@ -225,6 +246,11 @@ void timer_update(void)
           game_counter_set_digit_id(2, NO_DIGIT);
         break;
         
+				case TIMER_SET_DAYS_LEFT:
+					game_counter_set_digit_id(0, NO_DIGIT);
+					game_counter_set_digit_id(1, NO_DIGIT);
+					game_counter_set_digit_id(2, NO_DIGIT);
+				break;
         default:
         break;
       }

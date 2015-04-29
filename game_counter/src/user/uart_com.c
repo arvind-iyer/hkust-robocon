@@ -82,6 +82,11 @@ static void uart_com_handler(u8 data)
       time = (time / 60) * 60;
       set_current_time(time);
       buzzer_control_note(3, 100, NOTE_C, 7);
+    } else if (strstr(uart_buffer, "set_days_left")) {
+      timer_set_counter = 0;
+      uart_buffer[0] = '\0';
+      timer_clock_set_flag(TIMER_SET_DAYS_LEFT);
+      buzzer_control_note(3, 100, NOTE_C, 7);
     } else if (strstr(uart_buffer, "mario_start")) {
       uart_buffer_reset();
       MARIO_BEGIN_MUSIC;
@@ -155,7 +160,7 @@ static void uart_com_handler(u8 data)
               buzzer_control_note(3, 100, NOTE_C, 7);
               return;
             }
-          }        
+          }   			
         }
         
       // Input the latest TWO digits ASCII

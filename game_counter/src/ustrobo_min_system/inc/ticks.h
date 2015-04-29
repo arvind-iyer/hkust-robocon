@@ -19,6 +19,8 @@ void set_current_time(u32 time);
 u32 get_current_time(void);
 u32 get_time(void);
 void set_time(u32 time);
+void set_days_left(u16 days);
+u16 get_days_left(void);
 
 u32 get_full_ticks(void);
 void ticks_init(void);
