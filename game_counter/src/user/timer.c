@@ -238,7 +238,7 @@ void timer_update(void)
       if (pre_counter_timer && ticks_counter == 0) {
         // pre_counter 
         if (pre_counter_timer <= TIMER_COUNTING_DOWN_BUZZ) {
-          buzzer_control_note(1, 500, NOTE_F, 6);
+          buzzer_control_note(1, 200, NOTE_F, 6);
         }
         
         if (!timer_toggle_flag) {
@@ -273,8 +273,8 @@ void timer_update(void)
                     timer_on_flag = false;
                   }
               } else {
-                if (timer <= TIMER_COUNTING_DOWN_BUZZ || timer == 30) {
-                  buzzer_control_note(1, 500, NOTE_F, 6);
+                if (timer <= TIMER_COUNTING_DOWN_BUZZ) {
+                  buzzer_control_note(1, 200, NOTE_F, 6);
                 }
               }
             }

@@ -31,7 +31,7 @@ static u16 buzzer_time_ms = 0;		                  /*!< The time left (in millise
 static u8 buzzer_count = 0;                         /*!< Storing the buzzer buzzing count for buzzer_control */
 
 /* Note frequency related */
-static u8 buzzer_volume = 30;	                	    /*!< Volume percentage for the buzzer, 0 - 100 (101 for full buzz) */
+static u8 buzzer_volume = 25;	                	    /*!< Volume percentage for the buzzer, 0 - 100 (101 for full buzz) */
 static u16 buzzer_note_period = 1;                  /*!< The current buzzer musical note period (in microsecond) */
 // Musical note period (1/freq) of the 0th octave in macroseconds (us), array to be completed through buzzer_init
 static u16 NOTE0_PERIOD[13] = {0};
