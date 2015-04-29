@@ -61,17 +61,17 @@ bool robot_xbc_controls(void)
 		dw = pid_maintain_angle();
 	}
 	
-	if(xbc_get_joy(XBC_JOY_LX) == 0 && xbc_get_joy(XBC_JOY_LY) == 0)
-	{
-		motor_set_acceleration(MOTOR_BOTTOM_RIGHT,250);
-		motor_set_acceleration(MOTOR_BOTTOM_LEFT,250);
-		motor_set_acceleration(MOTOR_TOP_LEFT,150);
-		motor_set_acceleration(MOTOR_TOP_RIGHT,150);
-	}
-	else
-	{
-		wheel_base_tx_acc();
-	}
+//	if(xbc_get_joy(XBC_JOY_LX) == 0 && xbc_get_joy(XBC_JOY_LY) == 0)
+//	{
+//		motor_set_acceleration(MOTOR_BOTTOM_RIGHT,250);
+//		motor_set_acceleration(MOTOR_BOTTOM_LEFT,300);
+//		motor_set_acceleration(MOTOR_TOP_LEFT,300);
+//		motor_set_acceleration(MOTOR_TOP_RIGHT,250);
+//	}
+//	else
+//	{
+//		wheel_base_tx_acc();
+//	}
 	wheel_base_set_vel(xbc_get_joy(XBC_JOY_LX), xbc_get_joy(XBC_JOY_LY), dw);
 	
 	/*
