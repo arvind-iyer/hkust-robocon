@@ -56,33 +56,6 @@ void racket_update(void)
 		racket_pneumatic_2_set(is_pneu_2_extended);
 	}
 	
-	if (!gpio_read_input(LASER_GPIO))
-	{
-		//racket_hit();
-	}
-	
-	/*if (ROBOT=='C' && !gpio_read_input(LASER_GPIO) && racket_laser_not_alligned)
-	{
-		racket_laser_not_alligned=0;
-		racket_hit();
-		serve_enabled = 0; 
-		racket_last_laser_trigger_time=get_full_ticks();
-
-	}*/
-	/*
-	if (ROBOT=='C' && !racket_laser_not_alligned && gpio_read_input(LASER_GPIO) && get_full_ticks() > racket_last_laser_trigger_time + racket_laser_trigger_interval)		//trigger racket with laser
-	{
-		////serve_enabled = 0;
-		
-		serve_enabled = 0;
-		racket_last_laser_trigger_time=get_full_ticks();
-		racket_hit();
-		racket_laser_not_alligned=1;
-		
-		
-		////racket_laser_trigger_enabled=0;
-	}*/
-	
 }
 
 void racket_delayed_hit(int delay)
