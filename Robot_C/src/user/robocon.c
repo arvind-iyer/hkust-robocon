@@ -68,11 +68,12 @@ bool robot_xbc_controls(void)
 	int vy = xbc_get_joy(XBC_JOY_LY);
 	wheel_base_set_vel(vx, vy, dw);
 	
+	if(get_ticks() % 5 == 0)
 	prev_vels[(vel_index++)%(sizeof(prev_vels)/sizeof(prev_vels[0]))] = (Abs(vx) + Abs(vy)+ Abs(dw))/20;
 	
 	u16 acc_mod = 0;
 	for (int i = 0; i < sizeof(prev_vels)/sizeof(prev_vels[0]); i++)
-		acc_mod += prev_vels[i];
+	acc_mod += (prev_vels[i] > 0 ? prev_vels[i] : 1);
 	
 	if(get_ticks() % 500 == 0)
 	{
@@ -82,10 +83,10 @@ bool robot_xbc_controls(void)
 	
 	
 	
-		motor_set_acceleration(MOTOR_BOTTOM_RIGHT,0.25 * acc_mod);
-		motor_set_acceleration(MOTOR_BOTTOM_LEFT,0.25 * acc_mod);
-		motor_set_acceleration(MOTOR_TOP_LEFT,1 * acc_mod);
-		motor_set_acceleration(MOTOR_TOP_RIGHT,0.75 * acc_mod);
+		motor_set_acceleration(MOTOR_BOTTOM_RIGHT,0.27 * acc_mod);
+		motor_set_acceleration(MOTOR_BOTTOM_LEFT,0.27 * acc_mod);
+		motor_set_acceleration(MOTOR_TOP_LEFT,0.63 * acc_mod);
+		motor_set_acceleration(MOTOR_TOP_RIGHT, 0.54 * acc_mod);
 	
 	
 	/*
