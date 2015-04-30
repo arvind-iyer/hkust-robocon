@@ -5,6 +5,8 @@
 #include "ticks.h"
 #include "crc.h"
 #include "led.h"
+#include "gpio.h"
+#include "buzzer_song.h"
 
 #define	BLUETOOTH_COM										COM2			/* UART Port */
 #define	BLUETOOTH_COM_BR								115200		/* Baudrate */
@@ -22,7 +24,8 @@
 #define BLUETOOTH_RX_RESET_TIMEOUT				50
 #define BLUETOOTH_RX_CHECKBYTES_FLAG			1		// True if rx uses check bytes for verification
 
-
+#define	BLUETOOTH_STATE_PIN								((const GPIO*) &PB1)
+#define	BLUETOOTH_STATE_ON_TICKS					500
 typedef struct {
 	u8 id;
 	u8 mask;
@@ -51,6 +54,7 @@ const u8* bluetooth_recent_rx_data(void);
 
 void bluetooth_update(void);
 void bluetooth_rx_handler(u8 rx_data);
+
 
 #define	BLUETOOTH_RX_FILTER_NUM		28
 

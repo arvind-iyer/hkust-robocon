@@ -10,10 +10,13 @@ static bool timer_toggle_flag = false;
 
 static u16 timer = 0;
 static u16 timer_next = 0;
+static void (*timer_next_action)(void) = 0;
 static u16 pre_counter_timer = 0;
 static u16 ticks_counter = 0;
 static TIMER_MODE timer_mode = DOWN_COUNTING;
 
+static u16 lottery_time_left = 0;
+static u8 lottery_result = 0;
 
 void timer_init(void)
 {
@@ -31,6 +34,7 @@ void timer_init(void)
     alarms[i].music = BIRTHDAY_SONG; 
   }
   timer_next = 0;
+	timer_next_action = 0;
   timer_off_idle_ms = 0;
 }
 
@@ -131,6 +135,7 @@ void timer_set(u16 t)
       timer_mode = UP_COUNTING;
     }
     timer_next = 0;
+		timer_next_action = 0;
   }
 	timer_reset_idle();
 }
@@ -139,6 +144,11 @@ void timer_next_set(u16 t)
 {
   if (t >= TIMER_COUNT_LIMIT) {t = TIMER_COUNT_LIMIT - 1;}
   timer_next = t; 
+}
+
+void timer_set_next_action(void (*fx)(void)) 
+{
+	timer_next_action = fx;
 }
 
 /**
@@ -174,8 +184,8 @@ void timer_update(void)
       u8 minute = (display_time / 60) % 60;
       u8 hour = (display_time / 3600) % 24;
       
-			if (timer_set_flag != TIMER_SET_OFF) {
-				if (second >= 15 && second <= 45) {
+			if (timer_set_flag == TIMER_SET_OFF && get_days_left() > 0) {
+				if ((second >= 15 && second <= 29) || (second >= 45 && second <= 59)) {
 					display_days_left = 1;
 				}
 			}
@@ -197,7 +207,7 @@ void timer_update(void)
       
       hour %= 12; // same for AM and PM
       
-			if (display_days_left) {
+			if (!display_days_left) {
 				game_counter_colon_set(1);
 				game_counter_set_digit_id(0, hour);
 				game_counter_set_digit_id(1, minute / 10);
@@ -205,7 +215,11 @@ void timer_update(void)
       } else {
 				u16 days_left = get_days_left();
 				game_counter_colon_set(0);
-				game_counter_set_digit_id(0, (days_left / 100) % 10);
+				if (days_left > 100) {
+					game_counter_set_digit_id(0, (days_left / 100) % 10);
+				} else {
+					game_counter_set_digit_id(0, NO_DIGIT);
+				}
 				game_counter_set_digit_id(1, (days_left / 10) % 10);
 				game_counter_set_digit_id(2, (days_left) % 10); 
 			}
@@ -264,7 +278,7 @@ void timer_update(void)
       if (pre_counter_timer && ticks_counter == 0) {
         // pre_counter 
         if (pre_counter_timer <= TIMER_COUNTING_DOWN_BUZZ) {
-          buzzer_control_note(1, 200, NOTE_F, 6);
+          buzzer_control_note(1, 300, NOTE_F, 6);
         }
         
         if (!timer_toggle_flag) {
@@ -296,18 +310,25 @@ void timer_update(void)
                     timer = timer_next;
                     timer_next = 0;
                   } else {
-                    timer_on_flag = false;
+										timer_on_flag = false;
+										if (timer_next_action != 0) {
+											void (*tmp)(void) = timer_next_action;
+											timer_next_action = 0;
+											(*tmp)();
+										}
                   }
               } else {
                 if (timer <= TIMER_COUNTING_DOWN_BUZZ) {
-                  buzzer_control_note(1, 200, NOTE_F, 6);
+                  buzzer_control_note(1, 300, NOTE_F, 6);
                 }
               }
             }
             
             
           } else if (ticks_counter == 500) {
-            
+            if (timer <= TIMER_COUNTING_DOWN_BUZZ) {
+							buzzer_control_note(1, 200, NOTE_F, 5);
+						}
           }
         break;
         
@@ -330,39 +351,71 @@ void timer_update(void)
       }
 
     }
-
-    if (ticks_counter == 0) {
-      game_counter_colon_set(1);
-      /** Update the display **/
-      if (pre_counter_timer) {
-        game_counter_set_digit_id(0, pre_counter_timer);
-        game_counter_set_digit_id(1, pre_counter_timer);
-        game_counter_set_digit_id(2, pre_counter_timer);
-      } else {
-        if (timer_mode == UP_COUNTING && !timer_on_flag) {
-          game_counter_display_up();
-        } else {
-          game_counter_set_time(timer / 60, timer % 60);
-        }
-      }
-    } else if (ticks_counter == 500) {
-      if (!timer_on_flag) {
-        game_counter_all_off();
-      }
-      game_counter_colon_set(0);
-    }
-    
-    
-    timer_toggle_flag = false;
-    
-    if (!timer_on_flag) {
-      // Timer idle time check
-      timer_off_idle_ms += TIMER_UPDATE_INTERVAL;
-      if (timer_off_idle_ms >= IDLE_TIME_THRESHOLD) {
-        timer_clock_mode_toggle(true);
-      }
-    }
-    
+		
+		if (lottery_time_left == 0)  {
+			if (ticks_counter == 0) {
+				game_counter_colon_set(1);
+				/** Update the display **/
+				if (pre_counter_timer) {
+					game_counter_set_digit_id(0, pre_counter_timer);
+					game_counter_set_digit_id(1, pre_counter_timer);
+					game_counter_set_digit_id(2, pre_counter_timer);
+				} else {
+					if (timer_mode == UP_COUNTING && !timer_on_flag) {
+						game_counter_display_up();
+					} else {
+						game_counter_set_time(timer / 60, timer % 60);
+					}
+				}
+			} else if (ticks_counter == 500) {
+				if (!timer_on_flag) {
+					game_counter_all_off();
+				}
+				game_counter_colon_set(0);
+			}
+			
+			
+			timer_toggle_flag = false;
+			
+			if (!timer_on_flag) {
+				// Timer idle time check
+				timer_off_idle_ms += TIMER_UPDATE_INTERVAL;
+				if (timer_off_idle_ms >= IDLE_TIME_THRESHOLD) {
+					timer_clock_mode_toggle(true);
+				}
+			}
+		} else {
+			// Lottery
+			game_counter_all_off();
+			game_counter_set_digit_id(0, NO_DIGIT);
+			
+			
+			if (lottery_result) {
+				// AB
+				game_counter_set_digit_id(1, DIGIT_A);
+				game_counter_set_digit_id(2, DIGIT_b);
+			} else {
+				// CD
+				game_counter_set_digit_id(1, DIGIT_C);
+				game_counter_set_digit_id(2, DIGIT_d);
+			}
+			
+			if (lottery_time_left > LOTTERY_TIME - 1000) {
+				if (ticks_counter % 50 == 0) {
+					lottery_result = (lottery_result + 1) % 2;
+					buzzer_control_note(1, 20, NOTE_G, 6);
+				}
+			} else if (lottery_time_left == LOTTERY_TIME - 1000) {
+				MARIO_END_MUSIC;
+			} else if (lottery_time_left < LOTTERY_TIME - 3000) {
+				if (lottery_time_left % 1000 >= 500) {
+					game_counter_all_off();
+				}
+			}
+			
+			lottery_time_left -= TIMER_UPDATE_INTERVAL;
+		}
+	
   }
   
   ticks_counter = (ticks_counter + TIMER_UPDATE_INTERVAL) % 1000;
@@ -380,6 +433,7 @@ void timer_start(u8 pre_counter)
     pre_counter_timer = pre_counter;
     buzzer_control_note(1, 1500, NOTE_F, 7);
     timer_toggle_flag = true;
+		lottery_time_left = 0;
   }
 }
 
@@ -388,6 +442,7 @@ void timer_stop(void)
   buzzer_control_note(1, 1000, NOTE_F, 6);
   pre_counter_timer = 0; 
   timer_on_flag = false;
+	lottery_time_left = 0;
 }
 
 bool is_timer_start(void)
@@ -399,4 +454,12 @@ bool is_timer_start(void)
 u32 get_timer_ms(void)
 {
   return timer * 1000 + ticks_counter;
+}
+
+void lottery_draw(void)
+{	
+	if (!timer_on_flag) {
+		lottery_time_left = LOTTERY_TIME;
+		lottery_result = (get_ticks() % 20 < 10);
+	}
 }

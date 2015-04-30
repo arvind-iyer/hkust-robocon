@@ -31,6 +31,10 @@ static u16 rx_successful_rx_data_count = 0;
 static u32 rx_last_update = 0;
 static u32 rx_successful_toggle = 0;
 
+/** State **/
+static u8 connection_state = 0;
+static u32 last_state_off_ticks = 0;
+
 /** Recent successful data **/
 static u8 rx_recent_data_id = 0;
 static u8 rx_recent_data_length = 0;
@@ -53,6 +57,9 @@ void bluetooth_init(void)
 	rx_filter_count = 0;
 	rx_successful_rx_data_count = 0;
 	bluetooth_enable_flag = 1;
+	
+	gpio_init(BLUETOOTH_STATE_PIN, GPIO_Speed_2MHz, GPIO_Mode_IN_FLOATING, 1);
+	
 }
 
 /**
@@ -338,6 +345,18 @@ const u8* bluetooth_recent_rx_data(void)
 }
 
 /**
+	* @brief Get the connection state of the Bluetooth
+	* @param None.
+	* @retval The connection state of the Bluetooth (1 as connected, 0 as disconnected)
+	* @warning If the bluetooth state pin is NOT connected to anything (i.e., floating),
+	*						it is possible to have wrong detection (may detect as connected)
+	*/
+u8 bluetooth_get_connection(void)
+{
+	return connection_state;
+}
+
+/**
 	* @brief Regular check of the bluetooth rx. 
 	* 				Reset the rx_state if there is not any data received after BLUETOOTH_RX_RESET_TIMEOUT ms.
 	*					Also toggle the LED for every successful receive.
@@ -346,12 +365,29 @@ const u8* bluetooth_recent_rx_data(void)
 	*/
 void bluetooth_update(void)
 {
-	u32 current_time = get_seconds() * 1000 + get_ticks();
-	if (current_time - rx_last_update > BLUETOOTH_RX_RESET_TIMEOUT) {
+	u32 current_ticks = get_full_ticks();
+	if (current_ticks - rx_last_update > BLUETOOTH_RX_RESET_TIMEOUT) {
 		bluetooth_rx_data_reset();
 		if (rx_successful_toggle == LED_ON) {
 			led_control(LED_D1, LED_OFF);
 		}
 	}
 	
+	if (!gpio_read_input(BLUETOOTH_STATE_PIN)) {
+		last_state_off_ticks = current_ticks;
+	}
+	
+	if (current_ticks - last_state_off_ticks <= BLUETOOTH_STATE_ON_TICKS || last_state_off_ticks == 0) {
+		// Off
+		if (connection_state) {
+			// Disconnect
+			buzzer_play_song(DISCONNECTED, 150, 0); 
+			connection_state = 0;
+		}
+	} else {
+		if (!connection_state) {
+			buzzer_play_song(CONNECTED, 150, 0); 
+			connection_state = 1;
+		}
+	}
 }

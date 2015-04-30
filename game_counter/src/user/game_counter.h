@@ -12,6 +12,9 @@
 #define NO_DIGIT  12
 #define DIGIT_U   13
 #define DIGIT_P   14
+#define	DIGIT_b		15
+#define	DIGIT_C		16
+#define	DIGIT_d		17
 
 typedef struct {
   const GPIO* gpio;

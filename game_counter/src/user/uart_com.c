@@ -16,6 +16,13 @@ static void uart_buffer_reset(void)
   uart_set_flag = false;
 }
 
+static void set_prep_time(void)
+{
+	timer_set(15);
+  timer_next_set(5);
+	timer_set_next_action(set_prep_time);
+}
+
 static void uart_com_handler(u8 data)
 {
   if (get_timer_mode()) {
@@ -218,6 +225,7 @@ static void uart_com_handler(u8 data)
       if (!is_timer_start()) {
         timer_set(60);
         timer_next_set(5);
+				timer_set_next_action(set_prep_time);
         buzzer_control_note(2, 80, NOTE_D, 7); 
       }
     } else if (data == 's' || data == 'S') {
@@ -225,6 +233,7 @@ static void uart_com_handler(u8 data)
       if (!is_timer_start()) {
         timer_set(5);
         timer_next_set(0);
+				timer_set_next_action(set_prep_time);
         buzzer_control_note(2, 80, NOTE_E, 7);
       }
       
@@ -232,6 +241,7 @@ static void uart_com_handler(u8 data)
       if (!is_timer_start()) {
         timer_set(15);
         timer_next_set(5);
+				timer_set_next_action(set_prep_time);
         buzzer_control_note(2, 80, NOTE_Fs, 7);
       }
     } else if (data == 't' || data == 'T') {
@@ -239,6 +249,7 @@ static void uart_com_handler(u8 data)
       if (!is_timer_start()) {
         timer_set(30);
         timer_next_set(5);
+				timer_set_next_action(set_prep_time);
         buzzer_control_note(2, 80, NOTE_G, 7);
       }
     } else if (data == 'g' || data == 'G') {
@@ -252,7 +263,9 @@ static void uart_com_handler(u8 data)
       }
     } else if (data == 'c' || data == 'C') {
       timer_clock_mode_toggle(true); 
-    }
+    } else if (data == '~') {
+			lottery_draw();
+		}
   }
 }
 

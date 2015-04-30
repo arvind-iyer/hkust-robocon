@@ -48,6 +48,9 @@ static const u8 DIGIT_MAP[][LED_SEGMENT_COUNT]={
     {0, 0, 0, 0, 0, 0, 0},  /*!< No digit */
     {0, 1, 1, 1, 1, 1, 0},  /*!< Letter U */
     {1, 1, 0, 0, 1, 1, 1},  /*!< Letter P */
+		{0, 0, 1, 1, 1, 1, 1},	/*!< Letter b */
+		{1, 0, 0, 1, 1, 1, 0}, 	/*!< Letter C */
+		{0, 1, 1, 1, 1 ,0 ,1}		/*!< Letter d */
 };
   
 static LED_TUBE LED_COLON = {&PB1, false};

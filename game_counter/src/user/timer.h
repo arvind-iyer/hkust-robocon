@@ -21,7 +21,7 @@
 #define ALARM_COUNT               10
 #define IDLE_TIME_THRESHOLD       600000 // 600 s / 10 minutes
 
-
+#define	LOTTERY_TIME							15000		// 15s
 
 typedef struct {
   u8 minute;
@@ -62,12 +62,13 @@ void timer_clock_mode_toggle(bool flag);
 u8 get_timer_mode(void);
 void timer_set(u16 t);
 void timer_next_set(u16 t);
+void timer_set_next_action(void (*fx)(void));
 
 void timer_update(void);
 void timer_start(u8 pre_counter);
 void timer_stop(void);
 bool is_timer_start(void);
 u32 get_timer_ms(void);
-
+void lottery_draw(void);
 
 #endif  /* __TIMER_H */
