@@ -47,6 +47,9 @@ static u16 upper_delay = 0;	// Delay (upper_delay) ms to hit when the upper_hit_
 static const u16 UPPER_HOLD_DELAY  = 500;
 static const u16 REENABLE_RACKET_DELAY = 500;
 
+static const u16 ULTRA_UPPER_LIMIT = 1300;
+static const u16 ULTRA_LOWER_LIMIT = 50;
+
 // defines for hitting GPIO pins
 #define HIT_RACKET_PIN_1 GPIO_Pin_9
 // #define HIT_RACKET_PIN_2 GPIO_Pin_11
@@ -492,6 +495,12 @@ s32 sensor_calculate_delay(u16 second_y_distance) {
 /**
 	* @brief Checks if sensors detect the ball
 	*/
+
+typedef struct
+{
+	u8 first, second;
+} ut_pairs;
+
 void up_racket_sensor_check(void)
 {
 	if (!sensor_on) return;
@@ -528,18 +537,32 @@ void up_racket_sensor_check(void)
 	*/
 	
 	static u8 previous_detection = 0;
-	
+	static ut_pairs pairs[] = { {6,3}, {3,4}, {4,1}, {1,2}, {2,7}, {7,0}, {0,8} };
+	static u8 pair_length = 7;
 	u8 tmp_detection = 0;
+	
 	// If any sensors sense 
-	for (u8 id = 0; id < US_DEVICE_COUNT; ++id) {
-		if (us_get_distance(id) >= 50 && us_get_distance(id) <= 1200) {
+	//for (u8 id = 0; id < US_DEVICE_COUNT; ++id) {
+	//	if (us_get_distance(id) >= 50 && us_get_distance(id) <= 1200) {
+	//		++tmp_detection;
+	//	}
+	//}
+	
+	for (u8 pair = 0; pair < pair_length; ++pair) {
+		u16 distance1 = us_get_distance(pairs[pair].first);
+		u16 distance2 = us_get_distance(pairs[pair].second);
+		if (distance1 >= ULTRA_LOWER_LIMIT && distance1 <= ULTRA_UPPER_LIMIT
+			&& distance2 >= ULTRA_LOWER_LIMIT && distance2 <= ULTRA_UPPER_LIMIT)
+		{
+			buzzer_control_note(5, 50, NOTE_E, 7);
 			tmp_detection = 1;
+			break;
 		}
 	}
-	
-	if (previous_detection == 0 && tmp_detection == 1 && !hitting_mode_on) {
+		
+	if (previous_detection == 0 && tmp_detection && !hitting_mode_on) {
 		buzzer_control_note(5, 50, NOTE_C, 7);
-		upper_hit_delay(300);
+		upper_hit_delay(100);
 	}
 	previous_detection = tmp_detection;
 	

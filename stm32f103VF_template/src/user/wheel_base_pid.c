@@ -20,7 +20,7 @@
 const static int GYRO_TICKS_TIMEOUT = 2000;
 static bool gyro_calibrated = false;
 
-static int C_PR = 234;
+static int C_PR = 150;
 static int C_IN = 0;
 static int C_DE = 0;
 
@@ -126,12 +126,12 @@ static void reset_gyro(void)
 // calibrate gyro to the T shaped point on front side of game field
 void set_starting_pos(void)
 {
-	#warning hard_coded!
-	gyro_calibrated = gyro_pos_set(0, 4700, 0) || 1;
-	if (gyro_calibrated) {
-		POSITION target_pos = {0, 4700, 0};
-		wheel_base_set_target_pos(target_pos);
+	while(!gyro_available) {
+		gyro_cal();
 	}
+	gyro_pos_set(0, 4700, 0);
+	POSITION target_pos = {0, 4700, 0};
+	wheel_base_set_target_pos(target_pos);
 }
 
 // function to set PID directly to serving position
@@ -153,7 +153,7 @@ void set_returning_pos(void)
 // function to move back after serve
 void set_after_serve_pos(void)
 {
-	POSITION target_pos = {1492, 1266, 0};
+	POSITION target_pos = {1492, 2780, 0};
 	wheel_base_set_target_pos(target_pos);
 }
 
@@ -239,18 +239,7 @@ void wheel_base_pid_update(void)
 {
   /** TODO: Code the auto PID **/
   /** Use wheel_base_set_vel(x,y,w) to control wheel base motors */
-	
-	// auto gyro calibration code
-	if (!gyro_calibrated && get_full_ticks() > GYRO_TICKS_TIMEOUT) {
-		#warning hard_coded!
-		gyro_calibrated = gyro_pos_set(0, 4700, 0) || 1; 
 		
-		if (gyro_calibrated) {
-			POSITION target_pos = {0, 4700, 0};
-			wheel_base_set_target_pos(target_pos);
-		}
-	}
-	
 	// PID mode check
 	if (wheel_base_get_pid_flag() == 1 && gyro_calibrated) {
 		

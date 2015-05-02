@@ -200,20 +200,46 @@ u8 wheel_base_vel_diff(void)
 
 // updates wheel base velocity using fake acceleration
 
-static s32 wheel_base_vel_update(s32 current_vel, s32 target_vel, s32 wheel_base_accel)
-{
-	// base case
-	if (target_vel <= current_vel + wheel_base_accel && target_vel >= current_vel - wheel_base_accel)
+static s32 wheel_base_vel_update(s32 current_vel, s32 target_vel, s32 wheel_base_accel, s32* current_acc)
+{	
+	// a = a + j
+
+	// static const s32 max_accel = 2000;
+	// we want positive increasing acceleration here
+	if (target_vel - current_vel > 0)
 	{
+		// if acceleration is negative, we set it to zero first
+		if (*current_acc < 0) {
+			*current_acc = 0;
+		} else {
+		// otherwise we increase the acceleration
+			*current_acc = *current_acc + wheel_base_accel;
+		}
+		if (current_vel + *current_acc < target_vel) {
+			return current_vel + *current_acc;
+		} else {
+			return target_vel;
+		}
+	}
+	// we want neative increasing acceleration here
+	else if (target_vel - current_vel < 0)
+	{
+		// if acceleration is positive, we set it to zero first
+		if (*current_acc > 0) {
+			*current_acc = 0;
+		} else {
+		// otherwise we increase the acceleration in the negative direction
+			*current_acc = *current_acc - wheel_base_accel;
+		}
+		if (current_vel + *current_acc > target_vel) {
+			return current_vel + *current_acc;
+		} else {
+			return target_vel;
+		}
+	// we reached the velocity we want
+	} else {
+		*current_acc = 0;
 		return target_vel;
-	}
-	else if (target_vel > current_vel + wheel_base_accel)
-	{
-		return current_vel + wheel_base_accel;
-	}
-	else 
-	{
-		return current_vel - wheel_base_accel;
 	}
 }
 
@@ -274,9 +300,14 @@ void wheel_base_update(void)
 			x_wheel_base_acc = wheel_base_acc * x_error / y_error;
 			y_wheel_base_acc = wheel_base_acc;
 		}
-		wheel_base_vel_prev.x = wheel_base_vel_update(wheel_base_vel_prev.x, wheel_base_vel.x, x_wheel_base_acc);
-		wheel_base_vel_prev.y = wheel_base_vel_update(wheel_base_vel_prev.y, wheel_base_vel.y, y_wheel_base_acc);
-		wheel_base_vel_prev.w = wheel_base_vel_update(wheel_base_vel_prev.w, wheel_base_vel.w, wheel_base_acc);
+		
+		static s32 x_current_acc = 0;
+		static s32 y_current_acc = 0;
+		static s32 w_current_acc = 0;
+		
+		wheel_base_vel_prev.x = wheel_base_vel_update(wheel_base_vel_prev.x, wheel_base_vel.x, x_wheel_base_acc, &x_current_acc);
+		wheel_base_vel_prev.y = wheel_base_vel_update(wheel_base_vel_prev.y, wheel_base_vel.y, y_wheel_base_acc, &y_current_acc);
+		wheel_base_vel_prev.w = wheel_base_vel_update(wheel_base_vel_prev.w, wheel_base_vel.w, wheel_base_acc, &w_current_acc);
 	}
 	
 	motor_set_vel(MOTOR_TOP_LEFT, ((-wheel_base_vel_prev.y - wheel_base_vel_prev.x) * WHEEL_BASE_XY_VEL_RATIO + wheel_base_vel_prev.w * WHEEL_BASE_W_VEL_RATIO) / 100000, wheel_base_close_loop_flag);

@@ -15,7 +15,7 @@ const static int STOP_TIMER_TIMEOUT = 200;
 static bool calibrate = false;
 static bool serve = false;
 static bool timer_enabled = false;
-static u8 mode = -1;
+static u8 mode;
 
 static void auto_timer_init(u8 timer_mode)
 {
@@ -28,6 +28,12 @@ static void auto_timer_init(u8 timer_mode)
 	mode = timer_mode;
 }
 
+static void auto_timer_off()
+{
+	timer_enabled = false;
+	wheel_base_pid_off();
+}
+
 static void auto_timer_update()
 {
 	for (u8 i = 0; i < NEC_DEVICE_COUNT; ++i) {
@@ -38,7 +44,7 @@ static void auto_timer_update()
 	// do not update timer if not enabled
 	if (!timer_enabled) { return; }
 	if (wheel_base_get_last_manual_timer() != 0 && get_full_ticks() - wheel_base_get_last_manual_timer() > STOP_TIMER_TIMEOUT) {
-		timer_enabled = false;
+		auto_timer_off();
 	}
 	// config
 	if (mode == 0) {
@@ -63,9 +69,10 @@ static void auto_timer_update()
 			// after serve
 			set_after_serve_pos();
 			enable_ultrasonic_sensor();
-			timer_enabled = false;
+			auto_timer_off();
 		}
 	} else if (mode == 1) {
+		buzzer_control_note(5, 50, NOTE_F, 7);
 		for (u8 i = 0; i < NEC_DEVICE_COUNT; ++i) {
 			if (nec_get_msg(i)->state != 0 && nec_get_msg(i)->address == 0x04) {
 				switch (nec_get_msg(i)->command) {
@@ -74,7 +81,7 @@ static void auto_timer_update()
 					case 0x14: serving(); break;
 					case 0x15: set_after_serve_pos(); enable_ultrasonic_sensor(); break;
 					case 0x16: upper_hit(); break;
-					case 0x17: timer_enabled = false; break;
+					case 0x17: auto_timer_off(); break;
 					default: break;
 				}
 			}

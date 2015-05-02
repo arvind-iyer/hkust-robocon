@@ -34,11 +34,12 @@ int main(void)
 	special_char_handler_init();
 	racket_init();
 
-	system_start(2000);
+	system_start(1200);
 	
 	#warning UGLY HACK
 
-	//while(gyro_pos_set(0, 4700, 0));
+	while(!gyro_available);
+	gyro_pos_set(0, 4700, 0);
 	
 	menu_add("Robot A Prog", robocon_main);
 	menu_add("Position test", position_test);
