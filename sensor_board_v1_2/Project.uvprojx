@@ -615,6 +615,11 @@
               <FileType>1</FileType>
               <FilePath>.\src\user\us_proc.c</FilePath>
             </File>
+            <File>
+              <FileName>nec_protocol.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\src\user\nec_protocol.c</FilePath>
+            </File>
           </Files>
         </Group>
         <Group>
