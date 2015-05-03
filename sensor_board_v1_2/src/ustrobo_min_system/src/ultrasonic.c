@@ -116,48 +116,117 @@ void us_init(void)
 	
 	
 	
-	// EXIT & NVIC Init
+	// EXTI & NVIC Init
 	
-	
-	
-	// S0: PA4
-  GPIO_EXTILineConfig(GPIO_PortSourceGPIOA, GPIO_PinSource4);
-  EXTI_InitStructure.EXTI_Line = EXTI_Line4;
-  EXTI_InitStructure.EXTI_Mode = EXTI_Mode_Interrupt;
-  EXTI_InitStructure.EXTI_Trigger = EXTI_Trigger_Rising_Falling;
-  EXTI_InitStructure.EXTI_LineCmd = ENABLE;
-  EXTI_Init(&EXTI_InitStructure);
-	
-  NVIC_InitStructure.NVIC_IRQChannelPreemptionPriority = 2;
-	NVIC_InitStructure.NVIC_IRQChannelSubPriority = 2;
-	NVIC_InitStructure.NVIC_IRQChannelCmd = ENABLE;
-	NVIC_InitStructure.NVIC_IRQChannel = EXTI4_IRQn;
-	NVIC_Init(&NVIC_InitStructure);
-	
-	// S1: PA5
-  GPIO_EXTILineConfig(GPIO_PortSourceGPIOA, GPIO_PinSource5);
-  EXTI_InitStructure.EXTI_Line = EXTI_Line5;
-  EXTI_InitStructure.EXTI_Mode = EXTI_Mode_Interrupt;
-  EXTI_InitStructure.EXTI_Trigger = EXTI_Trigger_Rising_Falling;
-  EXTI_InitStructure.EXTI_LineCmd = ENABLE;
-  EXTI_Init(&EXTI_InitStructure);
-	
-  NVIC_InitStructure.NVIC_IRQChannelPreemptionPriority = 2;
-	NVIC_InitStructure.NVIC_IRQChannelSubPriority = 2;
-	NVIC_InitStructure.NVIC_IRQChannelCmd = ENABLE;
-	NVIC_InitStructure.NVIC_IRQChannel = EXTI9_5_IRQn;  
-	NVIC_Init(&NVIC_InitStructure);	
-	
-	
+	// THE US Timer
 	NVIC_InitStructure.NVIC_IRQChannelPreemptionPriority = 1;
 	NVIC_InitStructure.NVIC_IRQChannelSubPriority = 1;
 	NVIC_InitStructure.NVIC_IRQChannelCmd = ENABLE;
 	NVIC_InitStructure.NVIC_IRQChannel = US_IRQn;
 	NVIC_Init(&NVIC_InitStructure);
-  
 
+	// All EXTI 
+  EXTI_InitStructure.EXTI_Mode = EXTI_Mode_Interrupt;
+  EXTI_InitStructure.EXTI_Trigger = EXTI_Trigger_Rising_Falling;
+  EXTI_InitStructure.EXTI_LineCmd = ENABLE;
+	
+	// S0: PA4
+  GPIO_EXTILineConfig(GPIO_PortSourceGPIOA, GPIO_PinSource4);
+  EXTI_InitStructure.EXTI_Line = EXTI_Line4;
+  EXTI_Init(&EXTI_InitStructure);
+	
+	// S1: PA5
+  GPIO_EXTILineConfig(GPIO_PortSourceGPIOA, GPIO_PinSource5);
+  EXTI_InitStructure.EXTI_Line = EXTI_Line5;
+  EXTI_Init(&EXTI_InitStructure);
+	
+	// S2: PA6
+  GPIO_EXTILineConfig(GPIO_PortSourceGPIOA, GPIO_PinSource6);
+  EXTI_InitStructure.EXTI_Line = EXTI_Line6;
+  EXTI_Init(&EXTI_InitStructure);
 
+	// S3: PB1
+  GPIO_EXTILineConfig(GPIO_PortSourceGPIOB, GPIO_PinSource1);
+  EXTI_InitStructure.EXTI_Line = EXTI_Line1;
+  EXTI_Init(&EXTI_InitStructure);
+	
+	// S4: PB0
+  GPIO_EXTILineConfig(GPIO_PortSourceGPIOB, GPIO_PinSource0);
+  EXTI_InitStructure.EXTI_Line = EXTI_Line0;
+  EXTI_Init(&EXTI_InitStructure);
 
+	// S5: PA7
+  GPIO_EXTILineConfig(GPIO_PortSourceGPIOA, GPIO_PinSource7);
+  EXTI_InitStructure.EXTI_Line = EXTI_Line7;
+  EXTI_Init(&EXTI_InitStructure);
+	
+	// S6: PB11
+  GPIO_EXTILineConfig(GPIO_PortSourceGPIOB, GPIO_PinSource11);
+  EXTI_InitStructure.EXTI_Line = EXTI_Line11;
+  EXTI_Init(&EXTI_InitStructure);
+	
+	// S7: PB12
+  GPIO_EXTILineConfig(GPIO_PortSourceGPIOB, GPIO_PinSource12);
+  EXTI_InitStructure.EXTI_Line = EXTI_Line12;
+  EXTI_Init(&EXTI_InitStructure);
+
+	// S8: PB13
+  GPIO_EXTILineConfig(GPIO_PortSourceGPIOB, GPIO_PinSource13);
+  EXTI_InitStructure.EXTI_Line = EXTI_Line13;
+  EXTI_Init(&EXTI_InitStructure);
+
+	// S9: PC10
+  GPIO_EXTILineConfig(GPIO_PortSourceGPIOC, GPIO_PinSource10);
+  EXTI_InitStructure.EXTI_Line = EXTI_Line10;
+  EXTI_Init(&EXTI_InitStructure);
+	
+	// S10: PB15
+  GPIO_EXTILineConfig(GPIO_PortSourceGPIOB, GPIO_PinSource15);
+  EXTI_InitStructure.EXTI_Line = EXTI_Line15;
+  EXTI_Init(&EXTI_InitStructure);
+	
+	// S11: PB14
+  GPIO_EXTILineConfig(GPIO_PortSourceGPIOB, GPIO_PinSource14);
+  EXTI_InitStructure.EXTI_Line = EXTI_Line14;
+  EXTI_Init(&EXTI_InitStructure);
+
+	// S12: PB9
+  GPIO_EXTILineConfig(GPIO_PortSourceGPIOB, GPIO_PinSource9);
+  EXTI_InitStructure.EXTI_Line = EXTI_Line9;
+  EXTI_Init(&EXTI_InitStructure);
+
+	// S13: PB8
+  GPIO_EXTILineConfig(GPIO_PortSourceGPIOB, GPIO_PinSource8);
+  EXTI_InitStructure.EXTI_Line = EXTI_Line8;
+  EXTI_Init(&EXTI_InitStructure);
+	
+	// S13: PB8
+  GPIO_EXTILineConfig(GPIO_PortSourceGPIOB, GPIO_PinSource8);
+  EXTI_InitStructure.EXTI_Line = EXTI_Line8;
+  EXTI_Init(&EXTI_InitStructure);
+	
+	// S14: PD2
+  GPIO_EXTILineConfig(GPIO_PortSourceGPIOD, GPIO_PinSource2);
+  EXTI_InitStructure.EXTI_Line = EXTI_Line2;
+  EXTI_Init(&EXTI_InitStructure);
+	
+	// All EXTI IRQ
+	const enum IRQn ALL_EXTI[] = {
+		EXTI0_IRQn, 
+		EXTI1_IRQn,
+		EXTI2_IRQn,
+		EXTI3_IRQn,
+		EXTI4_IRQn,
+		EXTI9_5_IRQn,
+		EXTI15_10_IRQn
+	};
+  NVIC_InitStructure.NVIC_IRQChannelPreemptionPriority = 2;
+	NVIC_InitStructure.NVIC_IRQChannelSubPriority = 2;
+	NVIC_InitStructure.NVIC_IRQChannelCmd = ENABLE;
+	for (u8 i = 0; i < sizeof(ALL_EXTI) / sizeof (enum IRQn); ++i) {
+		NVIC_InitStructure.NVIC_IRQChannel = ALL_EXTI[i];
+		NVIC_Init(&NVIC_InitStructure);		
+	}
 }
 
 static void us_trigger(u8 i)
@@ -216,7 +285,7 @@ void us_echo_interrupt(u8 i)
 	u16 counter = TIM_GetCounter(US_TIM); 
 	u8 signal = gpio_read_input(us_devices[i].echo_gpio);
 	if (us_devices[i].echo_gpio_state == signal) {
-		// Not toggling (not fulfulling EXTI)
+		// Not toggling (not satisfying EXTI), not likely to be happened
 		return;
 	}
 	us_devices[i].echo_gpio_state = signal;
@@ -235,15 +304,31 @@ void us_echo_interrupt(u8 i)
 }
 
 
-
-// S3: PC9, S4: PC7, S8: PB5, S9: PB7
-void EXTI9_5_IRQHandler(void) 
+// S4: PB0
+void EXTI0_IRQHandler(void) 
 {
-  if(EXTI_GetITStatus(EXTI_Line5) != RESET) {
-		EXTI_ClearITPendingBit(EXTI_Line5);
-		us_echo_interrupt(1);
+  if(EXTI_GetITStatus(EXTI_Line0) != RESET) {
+		EXTI_ClearITPendingBit(EXTI_Line0);
+		us_echo_interrupt(4); 
   }
-	
+}
+
+// S3: PB1
+void EXTI1_IRQHandler(void) 
+{
+  if(EXTI_GetITStatus(EXTI_Line1) != RESET) {
+		EXTI_ClearITPendingBit(EXTI_Line1);
+		us_echo_interrupt(3); 
+  }
+}
+
+// S14: PD2
+void EXTI2_IRQHandler(void) 
+{
+  if(EXTI_GetITStatus(EXTI_Line2) != RESET) {
+		EXTI_ClearITPendingBit(EXTI_Line2);
+		us_echo_interrupt(14); 
+  }
 }
 
 // S0: PA4
@@ -255,7 +340,59 @@ void EXTI4_IRQHandler(void)
   }
 }
 
+// S1: PA5, S2: PA6, S5: PA7, S13: PB8, S12: PB9
+void EXTI9_5_IRQHandler(void) 
+{
+  if(EXTI_GetITStatus(EXTI_Line5) != RESET) {
+		EXTI_ClearITPendingBit(EXTI_Line5);
+		us_echo_interrupt(1);
+  }
+  if(EXTI_GetITStatus(EXTI_Line6) != RESET) {
+		EXTI_ClearITPendingBit(EXTI_Line6);
+		us_echo_interrupt(2);
+  }
+  if(EXTI_GetITStatus(EXTI_Line7) != RESET) {
+		EXTI_ClearITPendingBit(EXTI_Line7);
+		us_echo_interrupt(5);
+  }
+  if(EXTI_GetITStatus(EXTI_Line8) != RESET) {
+		EXTI_ClearITPendingBit(EXTI_Line8);
+		us_echo_interrupt(13);
+  }
+  if(EXTI_GetITStatus(EXTI_Line9) != RESET) {
+		EXTI_ClearITPendingBit(EXTI_Line9);
+		us_echo_interrupt(12);
+  }
+}
 
+// S9: PC10, S6: PB11, S7: PB12, S8: PB13, S11: PB14, S10: PB15
+void EXTI15_10_IRQHandler(void) 
+{
+  if(EXTI_GetITStatus(EXTI_Line10) != RESET) {
+		EXTI_ClearITPendingBit(EXTI_Line10);
+		us_echo_interrupt(9);
+  }
+  if(EXTI_GetITStatus(EXTI_Line11) != RESET) {
+		EXTI_ClearITPendingBit(EXTI_Line11);
+		us_echo_interrupt(6);
+  }
+	if(EXTI_GetITStatus(EXTI_Line12) != RESET) {
+		EXTI_ClearITPendingBit(EXTI_Line12);
+		us_echo_interrupt(7);
+  }
+	if(EXTI_GetITStatus(EXTI_Line13) != RESET) {
+		EXTI_ClearITPendingBit(EXTI_Line13);
+		us_echo_interrupt(8);
+  }
+	if(EXTI_GetITStatus(EXTI_Line14) != RESET) {
+		EXTI_ClearITPendingBit(EXTI_Line14);
+		us_echo_interrupt(11);
+  }
+	if(EXTI_GetITStatus(EXTI_Line15) != RESET) {
+		EXTI_ClearITPendingBit(EXTI_Line15);
+		us_echo_interrupt(10);
+  }
+}
 
 US_IRQHandler
 {

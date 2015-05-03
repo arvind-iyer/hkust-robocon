@@ -1,14 +1,14 @@
 #include "nec.h"
 
 static NEC_TypeDef nec_devices[] = {
-	{.gpio = &PA4},
-	{.gpio = &PA5},
-	{.gpio = &PA6},
-	{.gpio = &PA7},
-	{.gpio = &PC4},
-	{.gpio = &PC5},
-	{.gpio = &PB0},
-	{.gpio = &PB1},
+	{.gpio = &PA0},
+	{.gpio = &PA1},
+	{.gpio = &PA2},
+	{.gpio = &PA3},
+	{.gpio = &PC9},
+	{.gpio = &PC8},
+	{.gpio = &PC7},
+	{.gpio = &PC6},
 };
 
 //typedef struct {
