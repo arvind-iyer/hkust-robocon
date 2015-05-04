@@ -116,6 +116,9 @@ void serve_update(void)
 		log("*!tim st hit",get_full_ticks() - serve_start_time);
 	}
 
+	
+	if (calibrate_in_process)
+		motor_set_vel(RACKET, SERVE_CAL_VEL, OPEN_LOOP);
 	/**
 	*		Calibration termination mechanisms
 	*/
