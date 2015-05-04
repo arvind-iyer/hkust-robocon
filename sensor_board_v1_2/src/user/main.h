@@ -34,6 +34,6 @@
 #include "nec.h"
 #include "adc.h"
 #include "mb1240.h"
-
+#include "nec_protocol.h"
 
 #endif /* __MAIN_H */

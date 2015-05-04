@@ -67,7 +67,7 @@ void us_init(void)
 	
 	for (u8 i = 0; i < US_DEVICE_COUNT; ++i) {
 		gpio_init(us_devices[i].trig_gpio, GPIO_Speed_50MHz, GPIO_Mode_Out_PP, 1);
-		gpio_init(us_devices[i].echo_gpio, GPIO_Speed_50MHz, GPIO_Mode_IN_FLOATING, 1);
+		gpio_init(us_devices[i].echo_gpio, GPIO_Speed_50MHz, GPIO_Mode_IPD, 1);
 		us_devices[i].trigger_time_us = 0;
 		us_devices[i].falling_time_us = 0;
 		us_devices[i].pulse_width_tmp = 0;

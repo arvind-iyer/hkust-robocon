@@ -15,7 +15,7 @@
 #define NEC_IRQn            TIM3_IRQn
 #define NEC_IRQHandler      void TIM3_IRQHandler(void)
 
-#define	NEC_QUEUE_SIZE			300
+#define	NEC_QUEUE_SIZE			100
 
 #define NEC_FREQUENCY       38000
 #define NEC_GPIO            ((GPIO*) &PA4)
@@ -24,7 +24,7 @@
 
 #define	NEC_CAN_ID					0x220
 
-#define	NEC_DEVICE_COUNT		4
+#define	NEC_DEVICE_COUNT		8
 
 #define	NEC_PULSE_MAX				1000
 

@@ -10,7 +10,7 @@
 #define US_IRQn						  TIM4_IRQn
 #define US_IRQHandler			  void TIM4_IRQHandler(void)
 
-#define	US_DEVICE_COUNT					2
+#define	US_DEVICE_COUNT					15
 #define US_TRIG_PULSE         	15
 
 // 10 us
@@ -20,7 +20,7 @@
 //#define	US_IDLE_RESET_COUNT		60000		// 12 ms
 //#define	US_TAKE_TURN_BREAK		100
 
-#define	US_RESET_TIME						50000	// 40ms
+#define	US_RESET_TIME						40000	// 40ms
 
 
 #define	US_CAN_ID								0x200

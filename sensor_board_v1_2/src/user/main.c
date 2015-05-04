@@ -27,6 +27,7 @@ int main(void)
 	can_init();
 	can_rx_init();
   //can_motor_init();
+	//NEC_init();
 	
 	//bluetooth_init();
   //mb1240_init();
@@ -34,7 +35,7 @@ int main(void)
 	//wheel_base_init();
   us_init();
 	us_proc_init();
-  //nec_init();
+  nec_init();
   /** For debugging **/
 	uart_init(COM1, 115200);
 	uart_printf_enable(COM1);
@@ -60,7 +61,7 @@ int main(void)
 				us_proc_update();
 			}
 			
-			//led_control(LED_D1, (LED_STATE) !gpio_read_input(&PA4));
+			led_control(LED_SIG1, (LED_STATE) !gpio_read_input(&PA0));
 
 			if (ticks_img % 10 == 3) {
 				for (u8 i = 0; i < US_DEVICE_COUNT; ++i) {

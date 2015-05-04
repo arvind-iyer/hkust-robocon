@@ -84,7 +84,7 @@ static u8 nec_in_range(NEC_RANGE range, u16 val)
 void nec_init(void)
 {
 	for (u8 i = 0; i < NEC_DEVICE_COUNT; ++i) {
-		gpio_init(nec_devices[i].gpio, GPIO_Speed_50MHz, GPIO_Mode_IN_FLOATING, 1);
+		gpio_init(nec_devices[i].gpio, GPIO_Speed_50MHz, GPIO_Mode_IPD, 1);
 		nec_devices[i].state = NEC_NULL;
 		nec_devices[i].current_msg = NEC_NullMsg;
 		nec_devices[i].last_msg = NEC_NullMsg;
@@ -429,6 +429,7 @@ NEC_IRQHandler
   }
  
 }
+
 
 /*
 u16 get_nec_cont_on_max(u8 i)
