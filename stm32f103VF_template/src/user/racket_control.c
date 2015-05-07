@@ -52,16 +52,16 @@ static const u16 ULTRA_LOWER_LIMIT = 50;
 
 // defines for hitting GPIO pins
 #define HIT_RACKET_PIN_1 GPIO_Pin_9
-// #define HIT_RACKET_PIN_2 GPIO_Pin_11
+#define HIT_RACKET_PIN_2 GPIO_Pin_8
 // #define HIT_RACKET_PIN_3 GPIO_Pin_12
 // #define HIT_RACKET_PIN_4 GPIO_Pin_13
 // #define HIT_RACKET_PIN_5 GPIO_Pin_14
 
-const static u8 HIT_RACKET_NUMBER = 1;
+const static u8 HIT_RACKET_NUMBER = 2;
 
 const static uint16_t HIT_RACKET_PINS[HIT_RACKET_NUMBER] = 
 		{HIT_RACKET_PIN_1,
-//		HIT_RACKET_PIN_2,
+		HIT_RACKET_PIN_2,
 //		HIT_RACKET_PIN_3,
 //		HIT_RACKET_PIN_4,
 //		HIT_RACKET_PIN_5
