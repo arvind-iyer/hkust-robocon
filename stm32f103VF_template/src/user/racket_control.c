@@ -11,7 +11,7 @@ static s32 prev_encoder_value = 0;
 static s32 current_encoder_value = 0;
 static s32 target_encoder_value = 0;
 static s32 turn_encoder_value = 0;
-static const u16 CALIBRATE_SPEED = 15;
+static const u16 CALIBRATE_SPEED = 20;
 static const u16 SWING_RETURN_MIN_SPEED = 15;
 
 static u16 delay_counter = 0;
@@ -34,10 +34,11 @@ static bool sensor_on = false;
 
 static u16 current_speed = 0;
 
-static u16 racket_speed = 1600;		//tested best result
+// 1650, 52
+static u16 racket_speed = 1500;		//tested best result
 static u16 close_loop_racket_speed = 60;
 static u16 racket_speed_adjust_time = 0;
-static u16 racket_delay = 54;    //tested best result
+static u16 racket_delay = 52; //56;    //tested best result
 static u16 racket_delay_adjust_time = 0;
 
 // hitting static variables
