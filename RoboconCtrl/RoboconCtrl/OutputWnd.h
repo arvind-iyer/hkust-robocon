@@ -44,6 +44,7 @@ public:
 	CMFCTabCtrl	m_wndTabs;
 	COutputList m_wndOutputBuild;
 	COutputList m_wndOutputRead;
+	COutputList m_wndOutputDebug;
 
 protected:
 	void AdjustHorzScroll(COutputList& wndListBox);
@@ -56,6 +57,7 @@ protected:
 	afx_msg int OnCreate(LPCREATESTRUCT lpCreateStruct);
 	afx_msg void OnSize(UINT nType, int cx, int cy);
 	afx_msg LRESULT ReadFromSerial(WPARAM w, LPARAM l);
+	afx_msg LRESULT ReadDebugFromSerial(WPARAM w, LPARAM l);
 	afx_msg LRESULT PrintString(WPARAM w, LPARAM l);
 
 	DECLARE_MESSAGE_MAP()

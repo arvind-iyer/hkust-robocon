@@ -4,6 +4,11 @@
 #include <sstream>
 #include <iomanip>
 
+namespace {
+	const BYTE START_BYTE = 0x12;
+	const BYTE END_BYTE = 0x34;
+}
+
 RobotMCtrl::RobotMCtrl()
 {
 }
@@ -120,9 +125,9 @@ std::string RobotMCtrl::speed_mode(int speed) {
 
 std::pair<std::vector<int>, BOOL> RobotMCtrl::read(std::string string_received) {
 	// Determines whether or not both a start and a stop byte are present in the string
-	if (string_received.find_first_of(0x12) != std::string::npos && string_received.find_first_of(0x34) != std::string::npos) {
+	if (string_received.find_first_of(START_BYTE) != std::string::npos && string_received.find_first_of(END_BYTE) != std::string::npos) {
 		// Prune the start and stop bits from the string
-		std::string string = string_received.substr(string_received.find_first_of((char)0x12) + 1 , string_received.find_last_of((char)0x34) - string_received.find_first_of((char)0x12) - 1);
+		std::string string = string_received.substr(string_received.find_first_of((char)START_BYTE) + 1 , string_received.find_last_of((char)END_BYTE) - string_received.find_first_of((char)START_BYTE) - 1);
 		// Checks if data size is correct, and ID is correct
 		if (string.size() == 11 && string[0] == 0x60 && string[1] == 6 && string[8] == 0x60) {
 			char data[6];
@@ -154,14 +159,37 @@ std::pair<std::vector<int>, BOOL> RobotMCtrl::read(std::string string_received) 
 	return std::make_pair(std::vector<int>(), FALSE);
 }
 
+std::pair<std::string, BOOL> RobotMCtrl::read_string(std::string string_received)
+{
+	// Determines whether or not both a start and a stop byte are present in the string
+	if (string_received.find_first_of(START_BYTE) != std::string::npos && string_received.find_first_of(END_BYTE) != std::string::npos) {
+		// Prune the start and stop bits from the string
+		std::string string = string_received.substr(string_received.find_first_of((char)START_BYTE) + 1, string_received.find_last_of((char)END_BYTE) - string_received.find_first_of((char)START_BYTE) - 1);
+		if (string[0] == 0x99 && string[1] == string.size() - 5 && string[string.size() - 3] == 0x99) {
+			std::string data;
+			for (int i = 0; i < string.size() - 5; i++) {
+				data.push_back(string[i + 2]);
+			}
+			char buffer[2] = { 0, 0 };
+			crc16(buffer, data.c_str(), data.size());
+			// Verifies data using CRC
+			if (string[string.size() - 5] == buffer[0] && string[string.size() - 5] == buffer[1]) {
+
+				return std::make_pair(string, TRUE);
+			}
+		}
+	}
+	return std::make_pair(std::string(), FALSE);
+}
+
 std::string RobotMCtrl::coordinates(short x, short y, unsigned short angle)
 {
-	char soh = 0x12;
+	char soh = START_BYTE;
 	char id = 0x50;
 	char data_length = 0x06;
 	char data[6] = { (BYTE)(x >> 8), (BYTE)(x), (BYTE)(y >> 8), (BYTE)(y), (BYTE)(angle >> 8), (BYTE)(angle) };
 	char buffer[2] = { 0, 0 };
-	char eot = 0x34;
+	char eot = END_BYTE;
 	crc16(buffer, data, 6);
 
 	// construct the string to send

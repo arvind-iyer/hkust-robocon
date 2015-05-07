@@ -300,8 +300,13 @@ void CMainFrame::print_to_output(std::basic_string<TCHAR> string_to_print)
 }
 void CMainFrame::print_from_serial(std::basic_string<TCHAR> string_to_print)
 {
-		//m_wndOutput.ReadFromSerial(string_to_print);
+	//m_wndOutput.ReadFromSerial(string_to_print);
 	m_wndOutput.PostMessage(UWM_PRINT_FROM_SERIAL, 0, (LPARAM)new std::basic_string<TCHAR>(string_to_print));
+}
+void CMainFrame::print_from_debug(std::basic_string<TCHAR> string_to_print)
+{
+	//m_wndOutput.ReadFromSerial(string_to_print);
+	m_wndOutput.PostMessage(UWM_PRINT_FROM_DEBUG, 0, (LPARAM)new std::basic_string<TCHAR>(string_to_print));
 }
 
 // WPARAM - 1: Add "Write: " to beginning of string | 0: Don't add "Write: "
@@ -328,8 +333,15 @@ LRESULT CMainFrame::print_read_from_serial(WPARAM w, LPARAM l)
 			std::basic_ostringstream<TCHAR> oss;
 			oss << _T("Received Coordinate: (") << (data.first)[0] << _T(", ") << (data.first)[1] << _T(", ") << (data.first)[2] << _T(")");
 			print_from_serial(oss.str());
+			return 0;
 		}
-
+		std::pair<std::string, BOOL> data2 = RobotMCtrl().read_string(*string_to_print);
+		if (data2.second) {
+			std::basic_ostringstream<TCHAR> oss;
+			oss << _T("Received debug string:") << std::wstring(CString(data2.first.c_str(), data2.first.size()));
+			print_from_debug(oss.str());
+			return 0;
+		}
 	}
 	else {
 		print_from_serial(_T("Read: ") + std::wstring(CString(string_to_print->c_str(), string_to_print->size())));
@@ -664,6 +676,9 @@ void CMainFrame::OnEditClear()
 		OutputDebugString(_T("ERROR: cannot post clear message to output window!"));
 	}
 	if (!m_wndOutput.m_wndOutputRead.PostMessage(WM_COMMAND, MAKEWPARAM(ID_EDIT_CLEAR, 0), 0)) {
+		OutputDebugString(_T("ERROR: cannot post clear message to output window!"));
+	}
+	if (!m_wndOutput.m_wndOutputDebug.PostMessage(WM_COMMAND, MAKEWPARAM(ID_EDIT_CLEAR, 0), 0)) {
 		OutputDebugString(_T("ERROR: cannot post clear message to output window!"));
 	}
 }

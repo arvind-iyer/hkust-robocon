@@ -31,6 +31,7 @@ BEGIN_MESSAGE_MAP(COutputWnd, CDockablePane)
 	ON_WM_SIZE()
 	ON_REGISTERED_MESSAGE(UWM_PRINT_OUTPUT, COutputWnd::PrintString)
 	ON_REGISTERED_MESSAGE(UWM_PRINT_FROM_SERIAL, COutputWnd::ReadFromSerial)
+	ON_REGISTERED_MESSAGE(UWM_PRINT_FROM_DEBUG, COutputWnd::ReadDebugFromSerial)
 END_MESSAGE_MAP()
 
 int COutputWnd::OnCreate(LPCREATESTRUCT lpCreateStruct)
@@ -63,6 +64,12 @@ int COutputWnd::OnCreate(LPCREATESTRUCT lpCreateStruct)
 		return -1;      // fail to create
 	}
 
+	if (!m_wndOutputDebug.Create(dwStyle, rectDummy, &m_wndTabs, 2))
+	{
+		TRACE0("Failed to create output window\n");
+		return -1;      // fail to create
+	}
+
 	UpdateFonts();
 
 	CString strTabName;
@@ -73,6 +80,7 @@ int COutputWnd::OnCreate(LPCREATESTRUCT lpCreateStruct)
 	ASSERT(bNameValid);
 	m_wndTabs.AddTab(&m_wndOutputBuild, _T("All Logs"), (UINT)0);
 	m_wndTabs.AddTab(&m_wndOutputRead, _T("Serial Only"), (UINT)0);
+	m_wndTabs.AddTab(&m_wndOutputDebug, _T("Debug Only"), (UINT)0);
 
 	return 0;
 }
@@ -130,10 +138,25 @@ LRESULT COutputWnd::ReadFromSerial(WPARAM w, LPARAM l)
 	return 0;
 }
 
+LRESULT COutputWnd::ReadDebugFromSerial(WPARAM w, LPARAM l)
+{
+	std::shared_ptr<std::basic_string<TCHAR>>  string_read_from_serial(reinterpret_cast<std::basic_string<TCHAR>*>(l));
+
+	if (m_wndOutputDebug.GetCount() > MAX_STRINGS) {
+		m_wndOutputDebug.DeleteString(0);
+	}
+	m_wndOutputDebug.SetTopIndex(m_wndOutputDebug.AddString(string_read_from_serial->c_str()));
+	AdjustHorzScroll(m_wndOutputDebug);
+
+	return 0;
+}
+
+
 void COutputWnd::UpdateFonts()
 {
 	m_wndOutputBuild.SetFont(&afxGlobalData.fontRegular);
 	m_wndOutputRead.SetFont(&afxGlobalData.fontRegular);
+	m_wndOutputDebug.SetFont(&afxGlobalData.fontRegular);
 }
 
 /////////////////////////////////////////////////////////////////////////////
