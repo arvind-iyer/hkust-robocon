@@ -66,6 +66,9 @@ void racket_init(void) {
 	GPIO_InitStructure.GPIO_Pin = GPIO_Speed_50MHz;
 	GPIO_InitStructure.GPIO_Pin = FOREHAND | UNDERARM;
 	GPIO_Init(GPIOE, &GPIO_InitStructure);
+	
+	GPIO_SetBits(GPIOE, FOREHAND);
+	GPIO_SetBits(GPIOE, UNDERARM);
 }
 
 void sensor_update(void) { /*
