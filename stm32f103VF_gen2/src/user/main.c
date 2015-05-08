@@ -54,9 +54,8 @@ int main(void)
 	menu_add("ASCII test", ascii_test);
 	menu_add("GPIO Pin test", gpio_pin_test);
 	menu_add("UART test", uart_test);
-  menu_add("NEC test", nec_test);
-  //menu_add("MB1240 test", mb1240_test);
-  menu_add("Ultra. test", ultra_test);
+	menu_add("NEC test", nec_mb_test);
+	menu_add("Ultra. test", us_mb_test);
   
 	menu(0, false);
 	

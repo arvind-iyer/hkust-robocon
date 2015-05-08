@@ -15,7 +15,7 @@ static MENU_ITEM menu_list[MENU_LIST_MAX];
 	*/
 void system_start(u16 duration)
 {
-  const char* title = "Robocon 2015  Min System 2.0";
+  const char* title = "Robocon 2015  Min System 3.2";
   
 	led_control((LED) (LED_D1 | LED_D2 | LED_D3), LED_ON);
 	tft_clear();
@@ -176,7 +176,7 @@ void draw_top_bar(void)
 	u16 prev_bg_color = tft_get_bg_color();
 	u16 prev_text_color = tft_get_text_color();
 	// Top bar - time
-	tft_set_bg_color(PURPLE);
+	tft_set_bg_color(ORANGE);
 	tft_set_text_color(WHITE);
 	tft_clear_line(0);
 	tft_prints(0,0," %02d %02d", get_seconds() / 60, get_seconds() % 60);
@@ -304,7 +304,7 @@ void menu(u8 default_id, bool pre_enter)
 				
 				// Bottom bar - page number
 				tft_set_text_color(WHITE);
-				tft_set_bg_color(PURPLE);
+				tft_set_bg_color(ORANGE);
 				tft_clear_line(tft_get_max_y_char()-1);
 				tft_prints(1, tft_get_max_y_char()-1, "%d/%d", current_page + 1, page_count + 1);
 				

@@ -976,7 +976,8 @@ void uart_test(void)
 					tft_ui_listener(&tft_ui, tft_ui_event_select);
 				}        
       }
-      
+			
+				
       if (ticks_img % 50 == 6) {
         tft_clear();
 				draw_top_bar();
@@ -989,16 +990,20 @@ void uart_test(void)
         tft_prints(8, 4, "UART%d", tft_ui_get_val(&uart_rx_port) + 1);
 				tft_prints(0, 5, "Rx data:");
         tft_prints(11, 5, "%c ", received_data[tft_ui_get_val(&uart_rx_port)]);
+
 				if (ticks_img < 500) {
-					tft_prints(0, 7, "Click to send");
+					tft_prints(0, 8, "Click to send");
 				}
         tft_ui_update(&tft_ui, ticks_img % 500 < 25);
 				tft_update();
+				
+				
       }
     }
   }
 }
 
+#ifdef	__MB_1240_H
 void mb1240_test(void)
 {
 
@@ -1033,21 +1038,15 @@ void mb1240_test(void)
     }
   }
 }
+#endif
 
-
-
-void ultra_test(void)
+void us_mb_test(void)
 {
   //u16 distance_history[tft_width-2] = {0};
-	
-	/*
+
   while (true) {
     if (ticks_img != get_ticks()) {
       ticks_img = get_ticks();
-      
-      if (ticks_img % 20 == 0) {
-        //xbc_update();
-      }
       
       if (ticks_img % 50 == 3) {
         button_update();
@@ -1060,21 +1059,18 @@ void ultra_test(void)
         tft_clear();
         draw_top_bar();
         tft_prints(0, 1, "ULTRA. TEST");
-        tft_prints(0, 2, " %5d/%5d ", ultrasonic_get_successful_count(), ultrasonic_get_count());
-        tft_prints(0, 3, "Pulse: %d", get_pulse_width());
-        tft_prints(0, 4, "Distance: %d", get_distance());        
-        tft_prints(0, 5, "Avg.: %d", ultrasonic_get_distance_avg());
+        for (u8 i = 0, x = 0, y = 2; i < US_DEVICE_COUNT; ++i, ++y) {
+					if (y >= 10) {y = 2; x += 6;}
+					tft_prints(x, y, "%d", us_get_distance(i));
+				}
         tft_update();
-        
-        
       }
     }
   }
-	*/
 }
 
 
-void nec_test(void)
+void nec_mb_test(void)
 {
   //u16 distance_history[tft_width-2] = {0};
 
@@ -1082,12 +1078,7 @@ void nec_test(void)
     led_control(LED_D2, (LED_STATE) !gpio_read_input(&PC6));
     if (ticks_img != get_ticks()) {
       ticks_img = get_ticks();
-
-      
-      if (ticks_img % 20 == 0) {
-        //xbc_update();
-      }
-      
+			
       if (ticks_img % 50 == 3) {
         button_update();
         if (return_listener()) {
@@ -1099,20 +1090,13 @@ void nec_test(void)
         tft_clear();
         draw_top_bar();
         tft_prints(0, 1, "NEC TEST");
-        tft_prints(0, 2, "on_max: %d", get_nec_cont_on_max());
-        tft_prints(0, 3, "off_max: %d", get_nec_cont_off_max());
-        tft_prints(0, 4, "state:%d", get_nec_state());
-        tft_prints(0, 5, "last_data:%X", get_nec_last_data());
-        NEC_Data_TypeDef* raw_data = get_nec_raw_data();
-        
-        
-        tft_prints(0, 6, "{%02X,%02X} {%02X,%02X}", raw_data[0], raw_data[1], raw_data[2], raw_data[3]);
-        
-        NEC_Msg last_msg = get_nec_last_msg();
-        NEC_Msg current_msg = get_nec_current_msg();
-        
-        tft_prints(0, 7, "Last:    %02X %02X", last_msg.address, last_msg.command);
-        tft_prints(0, 8, "Current: %02X %02X", current_msg.address, current_msg.command);
+        for (u8 i = 0; i < NEC_DEVICE_COUNT; ++i) {
+					if (nec_get_msg(i)->state == 0) {
+						tft_prints(0, i + 2, "%d {--,--}");
+					} else {
+						tft_prints(0, i + 2, "%d {0x%02X,0x%02X}", i, nec_get_msg(i)->address, nec_get_msg(i)->command);
+					}
+				}
         tft_update();
         
         

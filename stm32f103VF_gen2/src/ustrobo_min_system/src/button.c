@@ -143,7 +143,7 @@ static BUTTON rotate_js_button(BUTTON b) {
 	
 	#ifdef MAINBOARD_V4
 	if (b <= 3) {
-		b = (BUTTON) ((b + 4 - o + 1) % 4);
+		b = (BUTTON) ((b + 4 - o) % 4);
 	}
 	#else
 	if (b <= 3) {
