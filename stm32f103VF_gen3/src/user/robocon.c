@@ -6,8 +6,6 @@ void robocon_main(void) {
   // Send the acceleration data
 	wheel_base_tx_acc();
 
-	buzzer_set_volume(80);
-	
 	for (; ; ) {
 		if (ticks_img != get_ticks()) {
 			ticks_img = get_ticks();
@@ -64,7 +62,8 @@ void robocon_main(void) {
 				
 				tft_prints(0, 6, "FOR: %d (%d)", has_forehand_daa_order(), when_forehand_daa_order());
 				tft_prints(0, 7, "UND: %d (%d)", has_underarm_daa_order(), when_underarm_daa_order());
-				
+				/* tft_prints(0, 8, "%s%s", GPIO_ReadInputDataBit(GPIOE, FOREHAND) ? " [FOR] " : " FOR ",
+				                         GPIO_ReadInputDataBit(GPIOE, UNDERARM) ? " [UND] " : " UND "); */
 				tft_prints(0, 9, "%d %d %d", GPIO_ReadInputDataBit(GPIOA, IR_Sensor_1_Pin),
 				                             GPIO_ReadInputDataBit(GPIOA, IR_Sensor_2_Pin),
 				                             GPIO_ReadInputDataBit(GPIOA, IR_Sensor_3_Pin));

@@ -3,17 +3,10 @@
 #include "delay.h"
 
 static u32  current_time = 0;
-static bool stop_switch = 0;
-static bool low_switch = 0;
-static bool high_switch = 0;
-static bool stop_flag = 0;
 
-// Lower racket variables
-static u8   forehand_daa = 0;
 static u8   forehand_daa_order = 0;
 static u32  forehand_daa_order_time = 0;
 
-static u8   underarm_daa = 0;
 static u8   underarm_daa_order = 0;
 static u32  underarm_daa_order_time = 0;
 
@@ -63,12 +56,11 @@ void racket_init(void) {
 	GPIO_InitTypeDef GPIO_InitStructure;
 
 	GPIO_InitStructure.GPIO_Mode = GPIO_Mode_Out_PP;
-	GPIO_InitStructure.GPIO_Pin = GPIO_Speed_50MHz;
-	GPIO_InitStructure.GPIO_Pin = FOREHAND | UNDERARM;
+	GPIO_InitStructure.GPIO_Speed = GPIO_Speed_2MHz;
+	GPIO_InitStructure.GPIO_Pin = GPIO_Pin_Forehand | GPIO_Pin_Underarm;
 	GPIO_Init(GPIOE, &GPIO_InitStructure);
 	
-	GPIO_SetBits(GPIOE, FOREHAND);
-	GPIO_SetBits(GPIOE, UNDERARM);
+	GPIO_WriteBit(GPIOE, GPIO_Pin_Forehand | GPIO_Pin_Underarm, Bit_RESET);
 }
 
 void sensor_update(void) { /*
@@ -97,19 +89,19 @@ void racket_update(void) {
 	current_time = get_full_ticks();
 	
 	if (forehand_daa_order == 1) {
-		GPIO_ResetBits(GPIOE, FOREHAND);
-	} else if (forehand_daa_order_time - current_time > FOREHAND_HOLD_MS && forehand_daa_order == 0) {
-		GPIO_SetBits(GPIOE, FOREHAND);
+		FAIL_MUSIC;
+		GPIO_WriteBit(GPIOE, GPIO_Pin_Forehand, Bit_SET);
+	} else if ((forehand_daa_order_time < FOREHAND_HOLD_MS || forehand_daa_order_time - current_time > FOREHAND_HOLD_MS) && forehand_daa_order == 0) {
+		GPIO_WriteBit(GPIOE, GPIO_Pin_Forehand, Bit_RESET);
 	}
 	
 	if (underarm_daa_order == 1) {
-		GPIO_ResetBits(GPIOE, UNDERARM);
-	} else if (underarm_daa_order_time - current_time > UNDERARM_HOLD_MS && underarm_daa_order == 0) {
-		GPIO_SetBits(GPIOE, UNDERARM);
+		GPIO_WriteBit(GPIOE, GPIO_Pin_Underarm, Bit_SET);
+		FAIL_MUSIC;
+	} else if ((underarm_daa_order_time < UNDERARM_HOLD_MS || underarm_daa_order_time - current_time > UNDERARM_HOLD_MS) && underarm_daa_order == 0) {
+		GPIO_WriteBit(GPIOE, GPIO_Pin_Underarm, Bit_RESET);
 	}
-	
 }
-
 
 u8 has_forehand_daa_order(void) {
 	return forehand_daa_order;

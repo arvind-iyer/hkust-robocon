@@ -6,6 +6,7 @@
 #include "ticks.h"
 #include "special_char_handler.h"
 #include "stdbool.h"
+#include "buzzer_song.h"
 
 // Sensor GPIO Pin
 #define IR_Sensor_1_Pin GPIO_Pin_5 // A5
@@ -13,11 +14,11 @@
 #define IR_Sensor_3_Pin GPIO_Pin_7 // A7
 #define IR_Sensor_4_Pin GPIO_Pin_4 // C4
 
-#define FOREHAND GPIO_Pin_13
-#define UNDERARM GPIO_Pin_12
+#define GPIO_Pin_Forehand GPIO_Pin_13
+#define GPIO_Pin_Underarm GPIO_Pin_12
 
-#define FOREHAND_HOLD_MS	250
-#define UNDERARM_HOLD_MS	250
+#define FOREHAND_HOLD_MS	500
+#define UNDERARM_HOLD_MS	300
 
 // Sensor functions
 void sensor_init(void);
