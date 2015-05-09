@@ -100,7 +100,10 @@ static void uart_com_handler(u8 data)
     } else if (strstr(uart_buffer, "mario_song")) {
       uart_buffer_reset();
       MARIO_MUSIC;
-    } else if (strstr(uart_buffer, "mario_end")) {
+    } else if (strstr(uart_buffer, "mario2_song")) {
+      uart_buffer_reset();
+      MARIO_MUSIC2;
+    }else if (strstr(uart_buffer, "mario_end")) {
       uart_buffer_reset();
       MARIO_END_MUSIC;
     } else if (strstr(uart_buffer, "birthday")) {

@@ -1,4 +1,5 @@
 #include "ticks.h"
+#include "flash.h"
 
 volatile u16 ticks = 0;
 volatile u16 seconds = 0;
@@ -41,6 +42,7 @@ u32 get_full_ticks(void)
 void set_days_left(u16 days) 
 {
 	days_left = days;
+	write_flash(0, (s32) days_left); 
 }
 
 u16 get_days_left(void)
@@ -84,6 +86,13 @@ void ticks_init(void) {
 	
 	//SysTick_Config(SystemCoreClock/1000);
 	ticks = seconds = 0;
+	
+	u16 tmp = (u16) read_flash(0);
+	
+	if (tmp > 0 && tmp < 999) {
+		days_left = tmp;
+	}
+	
 }
 
 static void new_date(void)
@@ -91,6 +100,7 @@ static void new_date(void)
 	if (days_left > 0) {
 		--days_left;
 	}
+	write_flash(0, days_left);
 }
 
 /**

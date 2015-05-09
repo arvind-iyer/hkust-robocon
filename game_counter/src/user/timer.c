@@ -151,52 +151,66 @@ void timer_set_next_action(void (*fx)(void))
 	timer_next_action = fx;
 }
 
+void output_days_left(u16 days_left)
+{
+		game_counter_colon_set(0);
+		if (days_left > 100) {
+			game_counter_set_digit_id(0, (days_left / 100) % 10);
+			game_counter_set_digit_id(1, (days_left / 10) % 10);
+			game_counter_set_digit_id(2, (days_left) % 10); 
+		} else {
+			game_counter_set_digit_id(0, (days_left / 10) % 10);
+			game_counter_set_digit_id(1, (days_left) % 10); 
+			game_counter_set_digit_id(2, DIGIT_d);
+		}
+}
+
 /**
   * @brief Updating the timer every 10 ms
   */
 void timer_update(void)
 {
   if (clock_mode) {
-    if (ticks_counter == 0) {
       
-      ticks_counter = 0;
-      u32 display_time = 0;
-      u32 current_time = get_current_time();
-			u8 display_days_left = 0;
+		//ticks_counter = 0;
+		u32 display_time = 0;
+		u32 current_time = get_current_time();
+		u8 display_days_left = 0;
+		
+		
+		switch (timer_set_flag) {
+			case TIMER_SET_OFF:
+			case TIMER_SET_HOUR:
+			case TIMER_SET_MINUTE:
+				display_time = current_time;
+			break;
 			
-			
-      switch (timer_set_flag) {
-        case TIMER_SET_OFF:
-        case TIMER_SET_HOUR:
-        case TIMER_SET_MINUTE:
-          display_time = current_time;
-        break;
-        
-        case TIMER_SET_ALARM_HOUR:
-        case TIMER_SET_ALARM_MINUTE:
-          display_time = alarms[alarm_id_tmp].time;
-        break;
-      }
-			
-     
-      
-      u8 second = display_time % 60;
-      u8 minute = (display_time / 60) % 60;
-      u8 hour = (display_time / 3600) % 24;
-      
-			if (timer_set_flag == TIMER_SET_OFF && get_days_left() > 0) {
-				if ((second >= 15 && second <= 29) || (second >= 45 && second <= 59)) {
-					display_days_left = 1;
-				}
+			case TIMER_SET_ALARM_HOUR:
+			case TIMER_SET_ALARM_MINUTE:
+				display_time = alarms[alarm_id_tmp].time;
+			break;
+		}
+
+		u8 second = display_time % 60;
+		u8 minute = (display_time / 60) % 60;
+		u8 hour = (display_time / 3600) % 24;
+		
+		if (timer_set_flag == TIMER_SET_OFF && get_days_left() > 0) {
+			if ((second >= 15 && second <= 29) || (second >= 45 && second <= 59)) {
+				display_days_left = 1;
 			}
-			
+		}
+		
+    if (ticks_counter == 0) {
       if (HOUR_ALARM) {
         if (current_time % 3600 == 0) {
           // No hour alarm from 1 am to 8 am (inclusively)
           if (hour < 1 || hour > 8) {
-            if (hour == 0 || hour == 12) {
+            if (hour == 0) {
               MARIO_MUSIC;
-            } else if (hour >= 0 && hour <= 11) {
+            } else if (hour == 12) {
+							MARIO_MUSIC2;
+						} else if (hour >= 0 && hour <= 11) {
               MARIO_END_MUSIC;
             } else {
               MARIO_BEGIN_MUSIC;
@@ -213,15 +227,7 @@ void timer_update(void)
 				game_counter_set_digit_id(1, minute / 10);
 				game_counter_set_digit_id(2, minute % 10);
       } else {
-				u16 days_left = get_days_left();
-				game_counter_colon_set(0);
-				if (days_left > 100) {
-					game_counter_set_digit_id(0, (days_left / 100) % 10);
-				} else {
-					game_counter_set_digit_id(0, NO_DIGIT);
-				}
-				game_counter_set_digit_id(1, (days_left / 10) % 10);
-				game_counter_set_digit_id(2, (days_left) % 10); 
+				output_days_left(get_days_left());
 			}
 
       
@@ -271,6 +277,20 @@ void timer_update(void)
       
     }
     
+		
+		// Flashing for days left
+		if (display_days_left) {
+			if (current_time % 5 == 1) {
+				if (ticks_counter % 200 == 0) {
+					game_counter_colon_set(0);
+					game_counter_set_digit_id(0, NO_DIGIT);
+					game_counter_set_digit_id(1, NO_DIGIT);
+					game_counter_set_digit_id(2, NO_DIGIT);
+				} else if (ticks_counter % 200 == 100) {
+					output_days_left(get_days_left());
+				}
+			}
+		}
   } else {
     
     if (timer_on_flag) {

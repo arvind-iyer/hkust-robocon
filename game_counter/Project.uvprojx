@@ -419,6 +419,11 @@
               <FilePath>.\src\user\game_counter.c</FilePath>
             </File>
             <File>
+              <FileName>flash.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\src\user\flash.c</FilePath>
+            </File>
+            <File>
               <FileName>main.c</FileName>
               <FileType>1</FileType>
               <FilePath>.\src\user\main.c</FilePath>
