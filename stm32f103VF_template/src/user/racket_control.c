@@ -2,6 +2,7 @@
 #include "delay.h"
 #include "approx_math.h"
 #include "buzzer_song.h"
+#include "send_debug_data.h"
 
 // calibrate mode static variables
 static bool calibrate_mode_on = false;
@@ -35,10 +36,11 @@ static bool sensor_on = false;
 static u16 current_speed = 0;
 
 // 1650, 52
-static u16 racket_speed = 1500;		//tested best result
-static u16 close_loop_racket_speed = 60;
+// 1500, 56
+static u16 racket_speed = 1400;		//tested best result
+//static u16 close_loop_racket_speed = 60;
 static u16 racket_speed_adjust_time = 0;
-static u16 racket_delay = 52; //56;    //tested best result
+static u16 racket_delay = 56; //56;    //tested best result
 static u16 racket_delay_adjust_time = 0;
 
 // hitting static variables
@@ -136,7 +138,7 @@ static void decrease_racket_speed() {
 	}
 }
 
-static void increase_racket_delay() {
+void increase_racket_delay() {
 	static u8 counter = 0;
 	++counter;
 	if(counter > 10) {
@@ -145,7 +147,7 @@ static void increase_racket_delay() {
 	}
 }
 
-static void decrease_racket_delay() {
+void decrease_racket_delay() {
 	static u8 counter = 0;
 	++counter;
 	if(counter > 10) {
@@ -314,6 +316,9 @@ void EXTI15_10_IRQHandler(void)
 	*/
 void racket_update(void)    //determine whether the motor should run
 {
+	char buffer[30];
+	sprintf(buffer, "Speed: %d", current_speed);
+	send_string(buffer);
 	static bool switch_five_tick_delay = false;
 	// calibration mode
 	if (switch_stat && switch_five_tick_delay == true) {

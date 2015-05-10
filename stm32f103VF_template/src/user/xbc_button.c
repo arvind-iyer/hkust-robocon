@@ -97,6 +97,7 @@ void xbc_button_handler(void)
 	}
 	
 	if (xbc_get_joy(XBC_JOY_RX)) {
+		/*
 		if (xbc_get_joy(XBC_JOY_RX) > 0 && (get_full_ticks() - last_increased_speed) > SPEED_CHANGE_TIMEOUT) {
 			u8 speed_mode = wheel_base_get_speed_mode();
 			if (speed_mode < 9) {
@@ -106,6 +107,7 @@ void xbc_button_handler(void)
 			buzzer_play_song(speed_changed_sound, 50, 0);
 			wheel_base_set_speed_mode(speed_mode);
 			last_increased_speed = get_full_ticks();
+
 		} else if (xbc_get_joy(XBC_JOY_RX) < 0 && (get_full_ticks() - last_decreased_speed) > SPEED_CHANGE_TIMEOUT) {
 			u8 speed_mode = wheel_base_get_speed_mode();
 			if (speed_mode > 0)
@@ -118,6 +120,13 @@ void xbc_button_handler(void)
 			last_decreased_speed = get_full_ticks();
 		}
 	}		
+	*/
+		if (xbc_get_joy(XBC_JOY_RX) > 0) {
+			increase_racket_delay();
+		} else if (xbc_get_joy(XBC_JOY_RX) < 0) {
+			decrease_racket_delay();
+		}
+	}
 }
 
 // function to get last non-zero speed received

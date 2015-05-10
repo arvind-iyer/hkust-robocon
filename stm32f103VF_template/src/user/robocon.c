@@ -18,9 +18,9 @@ void robocon_main(void)
 			}
 			
 			// disable everything while serving
-			if (is_serving()) {
-				continue;
-			}
+			//if (is_serving()) {
+			//	continue;
+			//}
 			
 			if (ticks_img % 5 == 4) {
 				up_racket_sensor_check();
@@ -109,7 +109,8 @@ void robocon_main(void)
 				tft_prints(0, 6, "Char: %s (%d)", s, special_char_handler_bt_get_last_char());
 //				tft_prints(0, 7, "Switch hit: %d", did_receive_command());
 //				tft_prints(0, 8, "switch: %d",get_switch());
-				tft_prints(0, 7, "T:(%3d,%3d,%3d)", get_prop(), get_int(), get_der());
+//				tft_prints(0, 7, "T:(%3d,%3d,%3d)", get_prop(), get_int(), get_der());
+				tft_prints(0, 7, "Speed: %d", get_current_speed());
 				tft_prints(0, 8, "VP(%3d,%3d,%3d)", vel_prev.x / 100, vel_prev.y / 100, vel_prev.w / 100);
 				tft_prints(0, 9, "D: %3d, S: %4d", get_racket_delay(), get_racket_speed());
 //				tft_prints(0, 9, "PID locked: %d", get_pid_stat());

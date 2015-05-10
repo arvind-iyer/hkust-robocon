@@ -453,6 +453,11 @@
               <FileType>1</FileType>
               <FilePath>.\src\user\auto_timer.c</FilePath>
             </File>
+            <File>
+              <FileName>send_debug_data.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\src\user\send_debug_data.c</FilePath>
+            </File>
           </Files>
         </Group>
         <Group>

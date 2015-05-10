@@ -44,6 +44,8 @@ int get_global_delay(void);
 void upper_hit(void);
 void upper_hit_delay(u16 delay);
 void up_racket_update(void);
+void increase_racket_delay(void);
+void decrease_racket_delay(void);
 
 void enable_ultrasonic_sensor(void);
 void disable_ultrasonic_sensor(void);
