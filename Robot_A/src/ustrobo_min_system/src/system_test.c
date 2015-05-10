@@ -305,7 +305,7 @@ void position_test(void)
             if (gyro_pos_set(0, 0, 0)) {
               CLICK_MUSIC;
             } else {
-              FAIL_MUSIC;
+              PLAY_FAIL_MUSIC1;
             }
           }
 					
@@ -827,7 +827,7 @@ void gpio_pin_test(void)
 							test_done = true;
 						}
 					} else if (GPIO_ReadInputData(GPIOE) != initial_input && last_input == initial_input) {
-						FAIL_MUSIC;
+						PLAY_FAIL_MUSIC1;
 					}
 				}
 				last_input = GPIO_ReadInputData(GPIOE);

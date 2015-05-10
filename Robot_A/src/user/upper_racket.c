@@ -26,14 +26,22 @@ static void upper_racket_set(u8 mode)
 	}
 }
 
-void upper_racket_hit(u16 pre_delay)
+
+/**
+	* @brief Start hitting the upper racket after pre_delay ms
+	* @param pre_delay: Delay (in millisecond)
+	* @retval True if the hit starts, false if hit cannot be done due to unfinished hit
+	*/
+bool upper_racket_hit(u16 pre_delay)
 {
 	if (racket_pre_ticks == 0 && racket_hit_ticks == 0 && racket_post_ticks == 0) {
 			racket_pre_ticks = get_full_ticks();
 			racket_pre_delay = pre_delay;
 			upper_racket_update(); 
+			return true;
 	} else {
 		buzzer_control_note(2, 100, NOTE_A, 5);
+		return false;
 	}
 	
 }

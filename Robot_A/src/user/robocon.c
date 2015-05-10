@@ -3,7 +3,7 @@
 #include "serving.h"
 
 static u16 ticks_img 	= (u16)-1;
-
+static u8 serving_mode = 0;
 /**
 	* @brief Process XBC input
 	*/
@@ -36,23 +36,38 @@ static void robocon_get_xbc(void)
 	}
 	
 	if (button_pressed(BUTTON_XBC_Y) == 1) {
+		if (!serving_mode) {
+			upper_racket_hit(0);
+			CLICK_MUSIC;
+		} else {
+			buzzer_control_note(3, 100, NOTE_G, 6);
+		}
+	} 
+	
+	if (button_pressed(BUTTON_XBC_Y) == 20) {
+		CLICK_MUSIC;
 		upper_racket_hit(0);
 	}
 	
 	if (button_pressed(BUTTON_XBC_B) == 1) {
+		
 		if (get_serving_calibrated()) {
+			CLICK_MUSIC;
+			serving_mode = 0;
 			serving_hit_start();
 		} else {
 			buzzer_control_note(3, 100, NOTE_G, 5);
 		}
-	}
-	
-	if (button_pressed(BUTTON_XBC_B) == 40 && !get_serving_calibrated()) {
+	} else if (button_pressed(BUTTON_XBC_B) == 40 && !get_serving_calibrated()) {
+		CLICK_MUSIC;
+		serving_mode = 0;
 		serving_hit_start();
 	}
 	
 	if (button_pressed(BUTTON_XBC_X) == 1) {
+		CLICK_MUSIC;
 		serving_cali_start();
+		serving_mode = 1;
 	}
 	
 	if (button_pressed(BUTTON_XBC_W) == 1 || button_hold(BUTTON_XBC_W, 20, 1)) {
@@ -88,8 +103,7 @@ static void robocon_get_xbc(void)
 	}
 }
 
-
-void robocon_main(void)
+void robocon_init(void)
 {
 	upper_racket_init();
 	serving_init();
@@ -97,6 +111,15 @@ void robocon_main(void)
   // Send the acceleration data
 	wheel_base_tx_acc();
 	
+	serving_mode = 0;
+	gpio_init(SERVING_LED_GPIO, GPIO_Speed_2MHz, GPIO_Mode_Out_PP, 1);
+	gpio_write(SERVING_LED_GPIO, 1);
+	
+}
+
+void robocon_main(void)
+{
+
 	while (1) {
 		if (ticks_img != get_ticks()) {
 			ticks_img = get_ticks();
@@ -106,6 +129,10 @@ void robocon_main(void)
 				bluetooth_update();
         wheel_base_pid_update();
 				wheel_base_update();
+				
+				
+				serving_update();
+				upper_racket_update();
 			}
 
 			
@@ -127,8 +154,17 @@ void robocon_main(void)
 			if (ticks_img % 20 == 5) {		// 50Hz
 				button_update();
 				robocon_get_xbc();
-				serving_update();
-				upper_racket_update();
+				
+				// LED indicator 
+				if (get_serving_cali_state() != SERVING_CALI_NULL) {
+					gpio_write(SERVING_LED_GPIO, ticks_img % 500 < 250);
+				} else if (get_serving_hit_state() != SERVING_NULL) {
+					gpio_write(SERVING_LED_GPIO, 1);
+				} else if (serving_mode) {
+					gpio_write(SERVING_LED_GPIO, ticks_img % 125 < 62);
+				} else {
+					gpio_write(SERVING_LED_GPIO, 0);
+				}
 				
 				
 				if (return_listener()) {
@@ -156,11 +192,11 @@ void robocon_main(void)
 				tft_prints(10, 5, get_serving_switch() ? "SW": "--");
 				s32 target_encoder = 0;
 				if (get_serving_cali_state() != SERVING_CALI_NULL) {
-					s32 target_encoder = get_serving_cali_encoder_target();
+					target_encoder = get_serving_cali_encoder_target();
 				} else if (get_serving_hit_state() != SERVING_NULL) {
-					s32 target_encoder = get_serving_hit_encoder_target();
+					target_encoder = get_serving_hit_encoder_target();
 				}
-				tft_prints(0, 6, " %d->%d", get_serving_encoder(), get_serving_hit_encoder_target());
+				tft_prints(0, 6, " %d->%d", get_serving_encoder(), target_encoder);
 				
 				tft_prints(0, 7, "Delay: %d", get_shuttle_drop_delay());
 				

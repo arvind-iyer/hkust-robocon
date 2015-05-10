@@ -1,6 +1,7 @@
 #ifndef	__SERVING_H
 #define	__SERVING_H
 
+#include <stdbool.h>
 #include "stm32f10x.h"
 #include "gpio.h"
 
@@ -24,49 +25,51 @@
 #define	SERVING_MOTOR						MOTOR5
 #define	SERVING_MOTOR_ACC				100
 
-#define	SERVING_UNCALI_SPEED									-200
-#define	SERVING_UNCALI_MODE										OPEN_LOOP
+#define	SERVING_UNCALI_SPEED									200						/*!< Uncalibration motor speed */
+#define	SERVING_UNCALI_MODE										OPEN_LOOP				/*!< Uncalibration motor mode */
 
-#define	SERVING_CALI_SPEED										15
-#define	SERVING_CALI_MODE											CLOSE_LOOP
-#define	SERVING_CALI_ENCODER_AFTER_SWITCH			-3500
-#define	SERVING_CALI_AFTER_SWITCH_SPEED				3
-#define	SERVING_CALI_AFTER_SWITCH_MODE				CLOSE_LOOP
+#define	SERVING_CALI_SPEED										-10							/*!< Calibration motor speed (when switch is off) */
+#define	SERVING_CALI_MODE											CLOSE_LOOP			/*!< Calibration motor mode  (when switch is off)*/
+#define	SERVING_CALI_ENCODER_AFTER_SWITCH			2000						/*!< Calibration motor speed (when switch is on) */
+#define	SERVING_CALI_AFTER_SWITCH_SPEED				-3								/*!< Calibration motor mode  (when switch is on) */
+#define	SERVING_CALI_AFTER_SWITCH_MODE				CLOSE_LOOP			/*!< Calibration motor mode  (when switch is on) */
+#define	SERVING_CALI_TIMEOUT									4000						/*!< Stop calibrating after the timeout (ms) */
 
-#define	SERVING_SHUTTLE_DROP_DELAY_DEFAULT		290
-#define	SERVING_HIT_SPEED_DEFAULT							-1500
-#define	SERVING_HIT_MODE											OPEN_LOOP
-#define	SERVING_HIT_ENCODER_DIFF							24000
+#define	SERVING_SHUTTLE_DROP_DELAY_DEFAULT		290							/*!< Default value of the shuttle drop delay in ms */
+#define	SERVING_HIT_SPEED_DEFAULT							-1500						/*!< Default motor speed for hitting */
+#define	SERVING_HIT_MODE											OPEN_LOOP				/*!< Motor mode for hitting */
+#define	SERVING_HIT_ENCODER_DIFF							22000						/*!< The encoder value diff, that the hitting will stop */
+#define	SERVING_HIT_TIMEOUT										500						/*!< Stop serving after the timeout (ms) */
 
-#define	SERVING_HIT_STOP_DELAY								800
+#define	SERVING_HIT_STOP_DELAY								1500							/*!< The delay (in ms) after hitting */
+
 typedef enum {
-	SERVING_CALI_NULL,
-	SERVING_CALI_START,
-	SERVING_CALI_UNCALI,
-	SERVING_CALI_TO_SWITCH,
-	SERVING_CALI_SWITCH_PRESSED,
-	SERVING_CALI_LOCK
+	SERVING_CALI_NULL,								/*!< No calibration is ongoing */
+	SERVING_CALI_START,								/*!< Calibration starts */
+	SERVING_CALI_UNCALI,							/*!< Uncalibrate if it was calibrated or the switch is pressed */
+	SERVING_CALI_TO_SWITCH,						/*!< Motor moves until the switch is on */
+	SERVING_CALI_SWITCH_PRESSED,			/*!< The switch is detected as on */
+	SERVING_CALI_LOCK									/*!< The motor is locked */
 } SERVING_CALI_STATE;
 
 typedef enum {
-	SERVING_NULL = 0,
-	SERVING_START,
-	SERVING_SHUTTLECOCK_DROPPED,
-	SERVING_RACKET_START_HITTING,
-	SERVING_RACKET_HITTING,
-	SERVING_RACKET_STOP_HITTING,
-	SERVING_RECALI
+	SERVING_NULL = 0,									/*!< No serving is ongoing */
+	SERVING_START,										/*!< Serving starts */
+	SERVING_SHUTTLECOCK_DROPPED,			/*!< Shuttlecock is dropped */
+	SERVING_RACKET_START_HITTING,			/*!< The motor starts moving */
+	SERVING_RACKET_HITTING,						/*!< The motor is moving and waiting for the termination case */
+	SERVING_RACKET_STOP_HITTING,			/*!< Termination case fulfilled, motor stop moving */
+	SERVING_RECALI										/*!< Recalibration */
 } SERVING_HIT_STATE;
 
 void serving_init(void);
-void serving_cali_start(void);
-void serving_hit_start(void);
+bool serving_cali_start(void);
+bool serving_hit_start(void);
 void serving_update(void);
 
 s32 get_serving_encoder(void);
 s32 get_serving_cali_encoder_target(void);
 s32 get_serving_hit_encoder_target(void);
-
 
 u8 get_serving_calibrated(void);
 u8 get_serving_switch(void);

@@ -6,10 +6,12 @@ static SERVING_HIT_STATE serving_hit_state = SERVING_NULL;
 static SERVING_CALI_STATE cali_state = SERVING_CALI_NULL;
 static u16 shuttle_drop_delay_ms = SERVING_SHUTTLE_DROP_DELAY_DEFAULT;
 static s16 serving_hit_speed = SERVING_HIT_SPEED_DEFAULT;
+static u32 cali_start_full_ticks = 0;
 
 static s32 serving_encoder_target = 0;
 static s32 cali_encoder_target = 0;
-static u32 serving_stop_hitting_time = 0;
+static u32 serving_start_hitting_full_ticks = 0;
+static u32 serving_stop_hitting_full_ticks = 0;
 
 static u8 serving_calibrated = 0;
 
@@ -75,26 +77,43 @@ void serving_init(void)
 	
 	motor_set_acceleration(SERVING_MOTOR, SERVING_MOTOR_ACC);
 	
+	serving_start_hitting_full_ticks = 0;
+	serving_stop_hitting_full_ticks = 0;
+	
+	cali_start_full_ticks = 0;
+	
 }
 
-void serving_cali_start(void)
+/**
+	* @brief Calibrate the serving part
+	* @retval True if the calibrate can starts, as no serving or calibration is ongoing
+	*/
+bool serving_cali_start(void)
 {
 	if (cali_state == SERVING_CALI_NULL && serving_hit_state == SERVING_NULL) {
 		cali_state = SERVING_CALI_START;
 		serving_update();
+		return true;
 	} else {
 		buzzer_control_note(5, 80, NOTE_E, 5);
+		return false;
 	}
 }
 
-void serving_hit_start(void)
+/**
+	* @brief Start serving
+	* @retval True if the serving can starts, as no serving or calibration is ongoing
+	*/
+bool serving_hit_start(void)
 {
 	if (cali_state == SERVING_CALI_NULL && serving_hit_state == SERVING_NULL) {
 		serving_hit_state = SERVING_START;
 		serving_calibrated = 0;
 		serving_update();
+		return true;
 	} else {
 		buzzer_control_note(3, 100, NOTE_E, 5);
+		return false;
 	}
 
 }
@@ -102,8 +121,21 @@ void serving_hit_start(void)
 
 void serving_cali_update(void)
 {
+	// Check timeout 
+	if (cali_state != SERVING_CALI_NULL && cali_start_full_ticks > 0) {
+		if (cali_start_full_ticks + SERVING_CALI_TIMEOUT <= get_full_ticks()) {
+			motor_set_vel(SERVING_MOTOR, 0, OPEN_LOOP);
+			serving_calibrated = 0;
+			cali_state = SERVING_CALI_NULL;
+			cali_start_full_ticks = 0;
+			PLAY_FAIL_MUSIC2;
+		}
+	}
+	
 	switch (cali_state) {
 		case SERVING_CALI_START:
+			valve_set(0);
+			cali_start_full_ticks = get_full_ticks();
 			if (get_serving_calibrated() || get_serving_switch()) {
 				cali_state = SERVING_CALI_UNCALI;
 			} else {
@@ -137,6 +169,7 @@ void serving_cali_update(void)
 			if ((SERVING_CALI_ENCODER_AFTER_SWITCH < 0 && encoder_val < cali_encoder_target)
 				|| (SERVING_CALI_ENCODER_AFTER_SWITCH > 0 && encoder_val > cali_encoder_target)
 			) {
+				cali_encoder_target = 0;
 				cali_state = SERVING_CALI_LOCK;
 				serving_cali_update();
 			} else {
@@ -149,7 +182,8 @@ void serving_cali_update(void)
 			motor_set_vel(SERVING_MOTOR, 0, CLOSE_LOOP);
 			serving_calibrated = 1;
 			cali_state = SERVING_CALI_NULL;
-			buzzer_play_song(MARIO_BEGIN, 80, 0);
+			cali_start_full_ticks = 0;
+			PLAY_OKAY_MUSIC1;
 		break;
 		
 	}
@@ -172,14 +206,17 @@ void serving_hit_update(void)
 		break;
 		
 		case SERVING_SHUTTLECOCK_DROPPED:
+			/* Wait for the CC1 interrupt */
 			
 		break;
 		
 		case SERVING_RACKET_START_HITTING:
+			/* Disable the CC1 interrupt */
 			TIM_ITConfig(SERVING_TIM, TIM_IT_CC1, DISABLE);
 			TIM_Cmd(SERVING_TIM, DISABLE);
 			
-
+			serving_start_hitting_full_ticks = get_full_ticks();
+			
 			serving_encoder_target = get_encoder_value(SERVING_MOTOR) + SERVING_HIT_ENCODER_DIFF;
 			motor_set_vel(SERVING_MOTOR, serving_hit_speed, SERVING_HIT_MODE);
 			serving_hit_state = SERVING_RACKET_HITTING;
@@ -190,15 +227,23 @@ void serving_hit_update(void)
 		case SERVING_RACKET_HITTING:
 		
 		{
+			bool timeout = serving_start_hitting_full_ticks + SERVING_HIT_TIMEOUT <= get_full_ticks();
 			s32 encoder_val = get_encoder_value(SERVING_MOTOR); 
 			if ((SERVING_HIT_ENCODER_DIFF < 0 && encoder_val < serving_encoder_target)
 				|| (SERVING_HIT_ENCODER_DIFF > 0 && encoder_val > serving_encoder_target)
-			) {
-				// Target arrived
+				|| timeout)	// Timeout
+			{
+				// Target fulfilled
 				motor_set_vel(SERVING_MOTOR, 0, OPEN_LOOP);	// Motor stop (0 open loop)
 				serving_hit_state = SERVING_RACKET_STOP_HITTING;
-				serving_stop_hitting_time = get_full_ticks();
-				buzzer_control_note(2, 200, NOTE_C, 7);
+				serving_stop_hitting_full_ticks = get_full_ticks();
+				serving_encoder_target = 0;
+				if (!timeout) {
+					PLAY_OKAY_MUSIC2;
+				} else {
+					PLAY_FAIL_MUSIC2;
+				}
+				serving_start_hitting_full_ticks = 0;
 			} else {
 				motor_set_vel(SERVING_MOTOR, serving_hit_speed, OPEN_LOOP);
 			}
@@ -206,9 +251,12 @@ void serving_hit_update(void)
 		break;
 		
 		case SERVING_RACKET_STOP_HITTING:
-			if (serving_stop_hitting_time == 0 || serving_stop_hitting_time + SERVING_HIT_STOP_DELAY <= get_full_ticks()) {
-				serving_hit_state = SERVING_RECALI;
-				serving_stop_hitting_time = 0;
+			if (serving_stop_hitting_full_ticks == 0 
+			|| serving_stop_hitting_full_ticks + SERVING_HIT_STOP_DELAY <= get_full_ticks()
+			) {
+				valve_set(0);
+				serving_hit_state = SERVING_NULL;
+				serving_stop_hitting_full_ticks = 0;
 			} else {
 				motor_set_vel(SERVING_MOTOR, 0, OPEN_LOOP);
 			}

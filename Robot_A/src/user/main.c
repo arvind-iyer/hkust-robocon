@@ -33,7 +33,7 @@ int main(void)
   /** For debugging **/
   //uart_init(COM1, 115200);
   //uart_printf_enable(COM1);
-  
+  robocon_init();
   
   system_start(1200);
 

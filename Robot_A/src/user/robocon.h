@@ -28,5 +28,8 @@
 #include "wheel_base.h"
 #include "wheel_base_pid.h"
 
+#define	SERVING_LED_GPIO			((GPIO*) &PE5)
+
+void robocon_init(void);
 void robocon_main(void);
 #endif	/* __ROBOCON_H */

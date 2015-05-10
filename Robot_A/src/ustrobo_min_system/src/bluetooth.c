@@ -377,7 +377,7 @@ void bluetooth_update(void)
 		last_state_off_ticks = current_ticks;
 	}
 	
-	/*
+	
 	if (current_ticks - last_state_off_ticks <= BLUETOOTH_STATE_ON_TICKS || last_state_off_ticks == 0) {
 		// Off
 		if (connection_state) {
@@ -391,5 +391,5 @@ void bluetooth_update(void)
 			connection_state = 1;
 		}
 	}
-	*/
+	
 }

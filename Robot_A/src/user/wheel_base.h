@@ -26,7 +26,7 @@
 #define	WHEEL_BASE_W_VEL_RATIO								-800		//	-80.0%
 static const u16 SPEED_MODES[10] =	// In percentage (20 = 20%)
 {
-	0, 10, 20, 30, 40, 50, 60, 70, 80, 90
+	0, 20, 40, 60, 80, 100, 120, 140, 160, 180
 };
 
 // Initialized value

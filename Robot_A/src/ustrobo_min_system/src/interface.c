@@ -250,7 +250,7 @@ void menu(u8 default_id, bool pre_enter)
 				if (BUTTON_ENTER_LISTENER() || pre_enter) {
 					if (menu_list[menu_selected].fx == 0) {
 						// NULL FUNCTION
-						buzzer_play_song(FAIL_SOUND, 120, 100);
+						PLAY_FAIL_MUSIC1;
 					} else {
 						u16 prev_bg_color = tft_get_bg_color();
 						u16 prev_text_color = tft_get_text_color();
