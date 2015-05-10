@@ -1,0 +1,51 @@
+# Compiled Object files
+*.slo
+*.lo
+*.o
+*.obj
+
+# Precompiled Headers
+*.gch
+*.pch
+
+# Compiled Dynamic libraries
+*.so
+*.dylib
+*.dll
+
+# Fortran module files
+*.mod
+
+# Compiled Static libraries
+*.lai
+*.la
+*.a
+*.lib
+
+# Executables
+*.exe
+*.out
+*.app
+
+# Keil Project Ignorable Objects
+*.axf
+*.crf
+*.d
+*.dep
+*.htm
+*.hex
+*.lnp
+*.o
+*.sct
+
+# Keil Project Ignorable User files
+*.William
+*.Kenneth Au
+*.Hp User
+
+# Keil Project Incomplete Compilation
+*._ia
+*.__i
+
+#Jlink log
+JLinkLog.txt

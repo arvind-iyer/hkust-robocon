@@ -51,7 +51,7 @@
           <CreateExecutable>1</CreateExecutable>
           <CreateLib>0</CreateLib>
           <CreateHexFile>1</CreateHexFile>
-          <DebugInformation>0</DebugInformation>
+          <DebugInformation>1</DebugInformation>
           <BrowseInformation>1</BrowseInformation>
           <ListingPath>.\output\</ListingPath>
           <HexFormatSelection>1</HexFormatSelection>
@@ -147,7 +147,7 @@
             <RestoreSysVw>1</RestoreSysVw>
           </Target>
           <RunDebugAfterBuild>0</RunDebugAfterBuild>
-          <TargetSelection>1</TargetSelection>
+          <TargetSelection>11</TargetSelection>
           <SimDlls>
             <CpuDll></CpuDll>
             <CpuDllArguments></CpuDllArguments>
@@ -161,21 +161,21 @@
             <PeripheralDll></PeripheralDll>
             <PeripheralDllArguments></PeripheralDllArguments>
             <InitializationFile></InitializationFile>
-            <Driver>BIN\UL2CM3.DLL</Driver>
+            <Driver>STLink\ST-LINKIII-KEIL_SWO.dll</Driver>
           </TargetDlls>
         </DebugOption>
         <Utilities>
           <Flash1>
-            <UseTargetDll>0</UseTargetDll>
-            <UseExternalTool>1</UseExternalTool>
+            <UseTargetDll>1</UseTargetDll>
+            <UseExternalTool>0</UseExternalTool>
             <RunIndependent>1</RunIndependent>
             <UpdateFlashBeforeDebugging>1</UpdateFlashBeforeDebugging>
             <Capability>1</Capability>
-            <DriverSelection>4099</DriverSelection>
+            <DriverSelection>4103</DriverSelection>
           </Flash1>
           <bUseTDR>0</bUseTDR>
-          <Flash2>Segger\JL2CM3.dll</Flash2>
-          <Flash3>"flash.bat" (.\output\@h.hex 3 256000 STM32F1_XL-density_768K)</Flash3>
+          <Flash2>STLink\ST-LINKIII-KEIL_SWO.dll</Flash2>
+          <Flash3>"flash.bat" (.\output\@h.hex 30 256000 STM32F1_XL-density_768K)</Flash3>
           <Flash4></Flash4>
           <pFcarmOut></pFcarmOut>
           <pFcarmGrp></pFcarmGrp>
@@ -363,7 +363,7 @@
             <useXO>0</useXO>
             <VariousControls>
               <MiscControls></MiscControls>
-              <Define>USE_STDPERIPH_DRIVER, STM32F10X_XL, USE_STM3210B_EVAL</Define>
+              <Define>USE_STDPERIPH_DRIVER, STM32F10X_XL, USE_STM3210B_EVAL, MAINBOARD_V4</Define>
               <Undefine></Undefine>
               <IncludePath>.\src;.\src\stm32f10x_std\inc;.\src\ustrobo_min_system\inc;.\src\user</IncludePath>
             </VariousControls>
@@ -409,34 +409,9 @@
           <GroupName>src</GroupName>
           <Files>
             <File>
-              <FileName>bluetooth.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>.\src\user\bluetooth.c</FilePath>
-            </File>
-            <File>
-              <FileName>can_protocol.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>.\src\user\can_protocol.c</FilePath>
-            </File>
-            <File>
               <FileName>buzzer_song.c</FileName>
               <FileType>1</FileType>
               <FilePath>.\src\user\buzzer_song.c</FilePath>
-            </File>
-            <File>
-              <FileName>can_motor.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>.\src\user\can_motor.c</FilePath>
-            </File>
-            <File>
-              <FileName>crc.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>.\src\user\crc.c</FilePath>
-            </File>
-            <File>
-              <FileName>interface.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>.\src\user\interface.c</FilePath>
             </File>
             <File>
               <FileName>main.c</FileName>
@@ -449,19 +424,39 @@
               <FilePath>.\src\user\robocon.c</FilePath>
             </File>
             <File>
-              <FileName>wheel_base.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>.\src\user\wheel_base.c</FilePath>
-            </File>
-            <File>
               <FileName>wheel_base_pid.c</FileName>
               <FileType>1</FileType>
               <FilePath>.\src\user\wheel_base_pid.c</FilePath>
             </File>
             <File>
-              <FileName>system_test.c</FileName>
+              <FileName>wheel_base.c</FileName>
               <FileType>1</FileType>
-              <FilePath>.\src\user\system_test.c</FilePath>
+              <FilePath>.\src\user\wheel_base.c</FilePath>
+            </File>
+            <File>
+              <FileName>racket.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\src\user\racket.c</FilePath>
+            </File>
+            <File>
+              <FileName>special_char_handler.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\src\user\special_char_handler.c</FilePath>
+            </File>
+            <File>
+              <FileName>log.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\src\user\log.c</FilePath>
+            </File>
+            <File>
+              <FileName>serve.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\src\user\serve.c</FilePath>
+            </File>
+            <File>
+              <FileName>sensors.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\src\user\sensors.c</FilePath>
             </File>
           </Files>
         </Group>
@@ -474,9 +469,9 @@
               <FilePath>.\src\ustrobo_min_system\src\approx_math.c</FilePath>
             </File>
             <File>
-              <FileName>battery.c</FileName>
+              <FileName>bluetooth.c</FileName>
               <FileType>1</FileType>
-              <FilePath>.\src\ustrobo_min_system\src\battery.c</FilePath>
+              <FilePath>.\src\ustrobo_min_system\src\bluetooth.c</FilePath>
             </File>
             <File>
               <FileName>button.c</FileName>
@@ -489,52 +484,19 @@
               <FilePath>.\src\ustrobo_min_system\src\buzzer.c</FilePath>
             </File>
             <File>
-              <FileName>debug.c</FileName>
+              <FileName>can_motor.c</FileName>
               <FileType>1</FileType>
-              <FilePath>.\src\ustrobo_min_system\src\debug.c</FilePath>
-              <FileOption>
-                <CommonProperty>
-                  <UseCPPCompiler>2</UseCPPCompiler>
-                  <RVCTCodeConst>0</RVCTCodeConst>
-                  <RVCTZI>0</RVCTZI>
-                  <RVCTOtherData>0</RVCTOtherData>
-                  <ModuleSelection>0</ModuleSelection>
-                  <IncludeInBuild>0</IncludeInBuild>
-                  <AlwaysBuild>0</AlwaysBuild>
-                  <GenerateAssemblyFile>2</GenerateAssemblyFile>
-                  <AssembleAssemblyFile>2</AssembleAssemblyFile>
-                  <PublicsOnly>2</PublicsOnly>
-                  <StopOnExitCode>11</StopOnExitCode>
-                  <CustomArgument></CustomArgument>
-                  <IncludeLibraryModules></IncludeLibraryModules>
-                  <ComprImg>1</ComprImg>
-                </CommonProperty>
-                <FileArmAds>
-                  <Cads>
-                    <interw>2</interw>
-                    <Optim>0</Optim>
-                    <oTime>2</oTime>
-                    <SplitLS>2</SplitLS>
-                    <OneElfS>2</OneElfS>
-                    <Strict>2</Strict>
-                    <EnumInt>2</EnumInt>
-                    <PlainCh>2</PlainCh>
-                    <Ropi>2</Ropi>
-                    <Rwpi>2</Rwpi>
-                    <wLevel>0</wLevel>
-                    <uThumb>2</uThumb>
-                    <uSurpInc>2</uSurpInc>
-                    <uC99>2</uC99>
-                    <useXO>2</useXO>
-                    <VariousControls>
-                      <MiscControls></MiscControls>
-                      <Define></Define>
-                      <Undefine></Undefine>
-                      <IncludePath></IncludePath>
-                    </VariousControls>
-                  </Cads>
-                </FileArmAds>
-              </FileOption>
+              <FilePath>.\src\ustrobo_min_system\src\can_motor.c</FilePath>
+            </File>
+            <File>
+              <FileName>can_protocol.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\src\ustrobo_min_system\src\can_protocol.c</FilePath>
+            </File>
+            <File>
+              <FileName>crc.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\src\ustrobo_min_system\src\crc.c</FilePath>
             </File>
             <File>
               <FileName>delay.c</FileName>
@@ -542,14 +504,29 @@
               <FilePath>.\src\ustrobo_min_system\src\delay.c</FilePath>
             </File>
             <File>
-              <FileName>lcd_red.c</FileName>
+              <FileName>encoder.c</FileName>
               <FileType>1</FileType>
-              <FilePath>.\src\ustrobo_min_system\src\lcd_red.c</FilePath>
+              <FilePath>.\src\ustrobo_min_system\src\encoder.c</FilePath>
+            </File>
+            <File>
+              <FileName>gpio.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\src\ustrobo_min_system\src\gpio.c</FilePath>
             </File>
             <File>
               <FileName>gyro.c</FileName>
               <FileType>1</FileType>
               <FilePath>.\src\ustrobo_min_system\src\gyro.c</FilePath>
+            </File>
+            <File>
+              <FileName>interface.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\src\ustrobo_min_system\src\interface.c</FilePath>
+            </File>
+            <File>
+              <FileName>led.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\src\ustrobo_min_system\src\led.c</FilePath>
             </File>
             <File>
               <FileName>motor_pwm.c</FileName>
@@ -562,52 +539,14 @@
               <FilePath>.\src\ustrobo_min_system\src\servo.c</FilePath>
             </File>
             <File>
-              <FileName>system.c</FileName>
+              <FileName>system_test.c</FileName>
               <FileType>1</FileType>
-              <FilePath>.\src\ustrobo_min_system\src\system.c</FilePath>
-              <FileOption>
-                <CommonProperty>
-                  <UseCPPCompiler>2</UseCPPCompiler>
-                  <RVCTCodeConst>0</RVCTCodeConst>
-                  <RVCTZI>0</RVCTZI>
-                  <RVCTOtherData>0</RVCTOtherData>
-                  <ModuleSelection>0</ModuleSelection>
-                  <IncludeInBuild>0</IncludeInBuild>
-                  <AlwaysBuild>0</AlwaysBuild>
-                  <GenerateAssemblyFile>2</GenerateAssemblyFile>
-                  <AssembleAssemblyFile>2</AssembleAssemblyFile>
-                  <PublicsOnly>2</PublicsOnly>
-                  <StopOnExitCode>11</StopOnExitCode>
-                  <CustomArgument></CustomArgument>
-                  <IncludeLibraryModules></IncludeLibraryModules>
-                  <ComprImg>1</ComprImg>
-                </CommonProperty>
-                <FileArmAds>
-                  <Cads>
-                    <interw>2</interw>
-                    <Optim>0</Optim>
-                    <oTime>2</oTime>
-                    <SplitLS>2</SplitLS>
-                    <OneElfS>2</OneElfS>
-                    <Strict>2</Strict>
-                    <EnumInt>2</EnumInt>
-                    <PlainCh>2</PlainCh>
-                    <Ropi>2</Ropi>
-                    <Rwpi>2</Rwpi>
-                    <wLevel>0</wLevel>
-                    <uThumb>2</uThumb>
-                    <uSurpInc>2</uSurpInc>
-                    <uC99>2</uC99>
-                    <useXO>2</useXO>
-                    <VariousControls>
-                      <MiscControls></MiscControls>
-                      <Define></Define>
-                      <Undefine></Undefine>
-                      <IncludePath></IncludePath>
-                    </VariousControls>
-                  </Cads>
-                </FileArmAds>
-              </FileOption>
+              <FilePath>.\src\ustrobo_min_system\src\system_test.c</FilePath>
+            </File>
+            <File>
+              <FileName>tft.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\src\ustrobo_min_system\src\tft.c</FilePath>
             </File>
             <File>
               <FileName>ticks.c</FileName>
@@ -615,9 +554,9 @@
               <FilePath>.\src\ustrobo_min_system\src\ticks.c</FilePath>
             </File>
             <File>
-              <FileName>uart.c</FileName>
+              <FileName>usart.c</FileName>
               <FileType>1</FileType>
-              <FilePath>.\src\ustrobo_min_system\src\uart.c</FilePath>
+              <FilePath>.\src\ustrobo_min_system\src\usart.c</FilePath>
             </File>
             <File>
               <FileName>xbc_mb.c</FileName>
@@ -625,120 +564,49 @@
               <FilePath>.\src\ustrobo_min_system\src\xbc_mb.c</FilePath>
             </File>
             <File>
-              <FileName>led.c</FileName>
+              <FileName>bluetooth_xbc_mb.c</FileName>
               <FileType>1</FileType>
-              <FilePath>.\src\ustrobo_min_system\src\led.c</FilePath>
+              <FilePath>.\src\ustrobo_min_system\src\bluetooth_xbc_mb.c</FilePath>
             </File>
             <File>
-              <FileName>gpio.c</FileName>
+              <FileName>can_xbc_mb.c</FileName>
               <FileType>1</FileType>
-              <FilePath>.\src\ustrobo_min_system\src\gpio.c</FilePath>
+              <FilePath>.\src\ustrobo_min_system\src\can_xbc_mb.c</FilePath>
             </File>
             <File>
-              <FileName>tft_160x128.c</FileName>
+              <FileName>mb1240.c</FileName>
               <FileType>1</FileType>
-              <FilePath>.\src\ustrobo_min_system\src\tft_160x128.c</FilePath>
-              <FileOption>
-                <CommonProperty>
-                  <UseCPPCompiler>2</UseCPPCompiler>
-                  <RVCTCodeConst>0</RVCTCodeConst>
-                  <RVCTZI>0</RVCTZI>
-                  <RVCTOtherData>0</RVCTOtherData>
-                  <ModuleSelection>0</ModuleSelection>
-                  <IncludeInBuild>0</IncludeInBuild>
-                  <AlwaysBuild>0</AlwaysBuild>
-                  <GenerateAssemblyFile>2</GenerateAssemblyFile>
-                  <AssembleAssemblyFile>2</AssembleAssemblyFile>
-                  <PublicsOnly>2</PublicsOnly>
-                  <StopOnExitCode>11</StopOnExitCode>
-                  <CustomArgument></CustomArgument>
-                  <IncludeLibraryModules></IncludeLibraryModules>
-                  <ComprImg>1</ComprImg>
-                </CommonProperty>
-                <FileArmAds>
-                  <Cads>
-                    <interw>2</interw>
-                    <Optim>0</Optim>
-                    <oTime>2</oTime>
-                    <SplitLS>2</SplitLS>
-                    <OneElfS>2</OneElfS>
-                    <Strict>2</Strict>
-                    <EnumInt>2</EnumInt>
-                    <PlainCh>2</PlainCh>
-                    <Ropi>2</Ropi>
-                    <Rwpi>2</Rwpi>
-                    <wLevel>2</wLevel>
-                    <uThumb>2</uThumb>
-                    <uSurpInc>2</uSurpInc>
-                    <uC99>2</uC99>
-                    <useXO>2</useXO>
-                    <VariousControls>
-                      <MiscControls></MiscControls>
-                      <Define></Define>
-                      <Undefine></Undefine>
-                      <IncludePath></IncludePath>
-                    </VariousControls>
-                  </Cads>
-                </FileArmAds>
-              </FileOption>
+              <FilePath>.\src\ustrobo_min_system\src\mb1240.c</FilePath>
             </File>
             <File>
-              <FileName>encoder.c</FileName>
+              <FileName>adc.c</FileName>
               <FileType>1</FileType>
-              <FilePath>.\src\ustrobo_min_system\src\encoder.c</FilePath>
+              <FilePath>.\src\ustrobo_min_system\src\adc.c</FilePath>
             </File>
             <File>
-              <FileName>usart.c</FileName>
+              <FileName>adc_app.c</FileName>
               <FileType>1</FileType>
-              <FilePath>.\src\ustrobo_min_system\src\usart.c</FilePath>
-              <FileOption>
-                <CommonProperty>
-                  <UseCPPCompiler>2</UseCPPCompiler>
-                  <RVCTCodeConst>0</RVCTCodeConst>
-                  <RVCTZI>0</RVCTZI>
-                  <RVCTOtherData>0</RVCTOtherData>
-                  <ModuleSelection>0</ModuleSelection>
-                  <IncludeInBuild>0</IncludeInBuild>
-                  <AlwaysBuild>0</AlwaysBuild>
-                  <GenerateAssemblyFile>2</GenerateAssemblyFile>
-                  <AssembleAssemblyFile>2</AssembleAssemblyFile>
-                  <PublicsOnly>2</PublicsOnly>
-                  <StopOnExitCode>11</StopOnExitCode>
-                  <CustomArgument></CustomArgument>
-                  <IncludeLibraryModules></IncludeLibraryModules>
-                  <ComprImg>1</ComprImg>
-                </CommonProperty>
-                <FileArmAds>
-                  <Cads>
-                    <interw>2</interw>
-                    <Optim>0</Optim>
-                    <oTime>2</oTime>
-                    <SplitLS>2</SplitLS>
-                    <OneElfS>2</OneElfS>
-                    <Strict>2</Strict>
-                    <EnumInt>2</EnumInt>
-                    <PlainCh>2</PlainCh>
-                    <Ropi>2</Ropi>
-                    <Rwpi>2</Rwpi>
-                    <wLevel>2</wLevel>
-                    <uThumb>2</uThumb>
-                    <uSurpInc>2</uSurpInc>
-                    <uC99>2</uC99>
-                    <useXO>2</useXO>
-                    <VariousControls>
-                      <MiscControls></MiscControls>
-                      <Define></Define>
-                      <Undefine></Undefine>
-                      <IncludePath></IncludePath>
-                    </VariousControls>
-                  </Cads>
-                </FileArmAds>
-              </FileOption>
+              <FilePath>.\src\ustrobo_min_system\src\adc_app.c</FilePath>
             </File>
             <File>
-              <FileName>pin_test.c</FileName>
+              <FileName>nec.c</FileName>
               <FileType>1</FileType>
-              <FilePath>.\src\ustrobo_min_system\src\pin_test.c</FilePath>
+              <FilePath>.\src\ustrobo_min_system\src\nec.c</FilePath>
+            </File>
+            <File>
+              <FileName>nec_remote.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\src\ustrobo_min_system\src\nec_remote.c</FilePath>
+            </File>
+            <File>
+              <FileName>nec_mb.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\src\ustrobo_min_system\src\nec_mb.c</FilePath>
+            </File>
+            <File>
+              <FileName>ultrasonic_mb.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\src\ustrobo_min_system\src\ultrasonic_mb.c</FilePath>
             </File>
           </Files>
         </Group>
