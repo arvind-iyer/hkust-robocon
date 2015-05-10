@@ -75,19 +75,24 @@ bool robot_xbc_controls(void)
 	for (int i = 0; i < sizeof(prev_vels)/sizeof(prev_vels[0]); i++)
 	acc_mod += (prev_vels[i] > 0 ? prev_vels[i] : 1);
 	
+	
+	
+//	  motor_set_acceleration(MOTOR_BOTTOM_RIGHT,BR_ACC_FAC * acc_mod);
+//		motor_set_acceleration(MOTOR_BOTTOM_LEFT,BL_ACC_FAC * acc_mod);
+//		motor_set_acceleration(MOTOR_TOP_LEFT,TL_ACC_FAC * acc_mod);
+//		motor_set_acceleration(MOTOR_TOP_RIGHT, TR_ACC_FAC * acc_mod);
+	acc_mod/=3;
+	
+
 	if(get_ticks() % 500 == 0)
 	{
 		log("Accmod: ", acc_mod);
-	}
-	
-	
-	
-	
-		motor_set_acceleration(MOTOR_BOTTOM_RIGHT,0.27 * acc_mod);
-		motor_set_acceleration(MOTOR_BOTTOM_LEFT,0.27 * acc_mod);
-		motor_set_acceleration(MOTOR_TOP_LEFT,0.63 * acc_mod);
-		motor_set_acceleration(MOTOR_TOP_RIGHT, 0.54 * acc_mod);
-	
+	}	
+  
+	motor_set_acceleration(MOTOR_BOTTOM_RIGHT,acc_mod);
+	motor_set_acceleration(MOTOR_BOTTOM_LEFT,acc_mod);
+	motor_set_acceleration(MOTOR_TOP_LEFT,acc_mod);
+	motor_set_acceleration(MOTOR_TOP_RIGHT, acc_mod);
 	
 	/*
 	80 = up

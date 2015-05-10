@@ -213,10 +213,12 @@ void wheel_base_update(void)
     * TODO2: If there is not any Bluetooth RX data after BLUETOOTH_WHEEL_BASE_TIMEOUT, stop the motors
   
     */
+	int mod = ROBOT=='C'?-1:1;
 	
 	
-	motor_set_vel(MOTOR_BOTTOM_RIGHT, (WHEEL_BASE_XY_VEL_RATIO * (wheel_base_vel.x + wheel_base_vel.y) / 1000 + WHEEL_BASE_W_VEL_RATIO * wheel_base_vel.w / 1000), wheel_base_close_loop_flag);
-	motor_set_vel(MOTOR_BOTTOM_LEFT,(WHEEL_BASE_XY_VEL_RATIO * (wheel_base_vel.x - wheel_base_vel.y) / 1000 + WHEEL_BASE_W_VEL_RATIO * wheel_base_vel.w / 1000), wheel_base_close_loop_flag);
+
+	motor_set_vel(MOTOR_BOTTOM_RIGHT, (WHEEL_BASE_XY_VEL_RATIO * (wheel_base_vel.x + mod*wheel_base_vel.y) / 1000 + WHEEL_BASE_W_VEL_RATIO * wheel_base_vel.w / 1000), wheel_base_close_loop_flag);
+	motor_set_vel(MOTOR_BOTTOM_LEFT,(WHEEL_BASE_XY_VEL_RATIO * (wheel_base_vel.x - mod*wheel_base_vel.y) / 1000 + WHEEL_BASE_W_VEL_RATIO * wheel_base_vel.w / 1000), wheel_base_close_loop_flag);
 	motor_set_vel(MOTOR_TOP_LEFT,			(WHEEL_BASE_XY_VEL_RATIO * (-wheel_base_vel.x - wheel_base_vel.y) / 1000 + WHEEL_BASE_W_VEL_RATIO * wheel_base_vel.w / 1000), wheel_base_close_loop_flag);
 	motor_set_vel(MOTOR_TOP_RIGHT,		 (WHEEL_BASE_XY_VEL_RATIO * (-wheel_base_vel.x + wheel_base_vel.y) / 1000 + WHEEL_BASE_W_VEL_RATIO * wheel_base_vel.w / 1000), wheel_base_close_loop_flag);
 
