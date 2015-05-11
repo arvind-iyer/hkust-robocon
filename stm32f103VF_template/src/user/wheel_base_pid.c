@@ -17,6 +17,7 @@
 #define T_MOTOR_MAX_SPEED 500
 
 // gyro variables
+const static int GYRO_TICKS_TIMEOUT = 2000;
 static bool gyro_calibrated = false;
 
 static int C_PR = 150;
