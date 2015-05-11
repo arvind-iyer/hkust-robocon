@@ -38,8 +38,8 @@ int main(void)
 	
 	#warning UGLY HACK
 
-	while(!gyro_available);
-	gyro_pos_set(0, 4700, 0);
+//	while(!gyro_available);
+//	gyro_pos_set(0, 4700, 0);
 	
 	menu_add("Robot A Prog", robocon_main);
 	menu_add("Position test", position_test);

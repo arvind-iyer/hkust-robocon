@@ -4,6 +4,9 @@
 #include "buzzer_song.h"
 #include "send_debug_data.h"
 
+#define SERVING_TIMER TIM4
+#define SERVING_TIMER_RCC RCC_APB1Periph_TIM4
+
 // current speed of serving racket
 static u16 current_speed = 0;
 
@@ -22,7 +25,8 @@ static bool racket_enable = false;
 // 1500, 56
 static u16 racket_speed = 1400;		//tested best result
 static u16 racket_speed_adjust_time = 0;
-static u16 racket_delay = 56; //56;    //tested best result
+static u16 racket_delay = 295; //56; //56;    //tested best result
+static bool trigger_serve_stop = false;
 
 // hitting static variables
 static bool hitting_mode_on = false;
@@ -56,7 +60,7 @@ const static uint16_t HIT_RACKET_PINS[] =
 };
 
 // defines for serving GPIO pins
-#define SERVE_RACKET_PIN GPIO_Pin_5
+#define SERVE_RACKET_PIN GPIO_Pin_9
 #define SERVE_SWITCH_PIN GPIO_Pin_11
 
 // Getters
@@ -124,21 +128,23 @@ void racket_decrease_racket_delay() {
 
 void racket_open_serve_pneumatic(void)
 {
-	GPIO_ResetBits(GPIOE, SERVE_RACKET_PIN);
+	GPIO_SetBits(GPIOB, SERVE_RACKET_PIN);
 }
 
 void racket_close_serve_pneumatic(void)
 {
-	GPIO_SetBits(GPIOE, SERVE_RACKET_PIN);
+	GPIO_ResetBits(GPIOB, SERVE_RACKET_PIN);
 }
 
 void racket_trigger_serving(void){
 	// check if pneumatic is closed before serving
-	if (GPIO_ReadInputDataBit(GPIOE, SERVE_RACKET_PIN) && current_racket_mode == LOCKED && racket_has_been_calibrated)
+	/*if (!GPIO_ReadInputDataBit(GPIOB, SERVE_RACKET_PIN) && current_racket_mode == LOCKED && racket_has_been_calibrated)
 	{
 		current_racket_mode = SERVING;
-		racket_has_been_calibrated = false;
 	}
+	*/
+	TIM_Cmd(SERVING_TIMER, ENABLE);
+	TIM_SetCounter(SERVING_TIMER, 0);
 }
 
 // calibrate the racket
@@ -187,7 +193,7 @@ void racket_init(void)
 	// GPIO configuration
 	GPIO_InitTypeDef GPIO_InitStructure;
 	
-	RCC_APB2PeriphClockCmd(RCC_APB2Periph_GPIOE, ENABLE);
+	RCC_APB2PeriphClockCmd(RCC_APB2Periph_GPIOE | RCC_APB2Periph_AFIO, ENABLE);
 	
 	// switch_serving init
 	GPIO_InitStructure.GPIO_Mode = GPIO_Mode_IPU;
@@ -218,7 +224,7 @@ void racket_init(void)
 	GPIO_InitStructure.GPIO_Mode = GPIO_Mode_Out_PP;
   GPIO_InitStructure.GPIO_Speed = GPIO_Speed_50MHz;
   GPIO_InitStructure.GPIO_Pin = SERVE_RACKET_PIN;
-	GPIO_Init(GPIOE, &GPIO_InitStructure);
+	GPIO_Init(GPIOB, &GPIO_InitStructure);
 
 	// hitting pneumatic init
 	for (u8 i = 0; i < sizeof(HIT_RACKET_PINS) / sizeof(HIT_RACKET_PINS[0]); ++i) {
@@ -227,13 +233,53 @@ void racket_init(void)
 		GPIO_InitStructure.GPIO_Pin = HIT_RACKET_PINS[i];
 		GPIO_Init(GPIOD, &GPIO_InitStructure);
 	}
+		
+	// timer init
+	TIM_TimeBaseInitTypeDef  TIM_TimeBaseStructure;
 	
+	TIM_TimeBaseStructure.TIM_CounterMode = TIM_CounterMode_Up;
+	TIM_TimeBaseStructure.TIM_ClockDivision = TIM_CKD_DIV1;
+	TIM_TimeBaseStructure.TIM_Period = 100;
+	TIM_TimeBaseStructure.TIM_Prescaler = SystemCoreClock / 1000000 - 1;;
+	TIM_TimeBaseInit(SERVING_TIMER, &TIM_TimeBaseStructure);
+	
+	TIM_OCInitTypeDef  TIM_OCInitStructure;
+	TIM_OCInitStructure.TIM_OCMode = TIM_OCMode_Active;
+	TIM_OCInitStructure.TIM_Pulse = racket_delay;
+	TIM_OCInitStructure.TIM_OutputState = TIM_OutputState_Enable;
+	TIM_OCInitStructure.TIM_OCPolarity = TIM_OCPolarity_Low;
+	TIM_OC1Init(SERVING_TIMER, &TIM_OCInitStructure);
+	TIM_OC1PreloadConfig(SERVING_TIMER, TIM_OCPreload_Disable); 
+	
+	NVIC_InitStructure.NVIC_IRQChannel = TIM4_IRQn;
+	NVIC_InitStructure.NVIC_IRQChannelPreemptionPriority = 0;
+	NVIC_InitStructure.NVIC_IRQChannelSubPriority = 1;
+	NVIC_InitStructure.NVIC_IRQChannelCmd = ENABLE;
+	NVIC_Init(&NVIC_InitStructure);
+	
+	RCC_APB1PeriphClockCmd(SERVING_TIMER_RCC, ENABLE);
+	
+	TIM_ClearITPendingBit(SERVING_TIMER, TIM_IT_CC1);
+	TIM_ITConfig(SERVING_TIMER, TIM_IT_CC1, ENABLE);
+	TIM_Cmd(SERVING_TIMER, DISABLE);
+	TIM_SetCounter(SERVING_TIMER, 0);
+
 	racket_close_serve_pneumatic();
 	racket_close_upper_pneumatic();
 
 	current_switch_status = GPIO_ReadInputDataBit(GPIOE, SERVE_SWITCH_PIN);
 	
 	motor_set_acceleration(MOTOR5, 1000);
+}
+
+void TIM4_IRQHandler(void)
+{
+	if (TIM_GetITStatus(SERVING_TIMER, TIM_IT_CC1) != RESET) {
+		TIM_ClearITPendingBit(SERVING_TIMER, TIM_IT_CC1);
+		FAIL_MUSIC;
+		TIM_Cmd(SERVING_TIMER, DISABLE);
+		TIM_SetCounter(SERVING_TIMER, 0);
+	}
 }
 
 // IRQ handler for GPIOE 12
@@ -255,7 +301,8 @@ void EXTI15_10_IRQHandler(void)
                 // check for edge trigger from 0 to 1
                 if (GPIO_ReadInputDataBit(GPIOE, SERVE_SWITCH_PIN) > current_switch_status) {
                     motor_lock(MOTOR5);
-                    current_racket_mode = LOCKED;
+										current_racket_mode = LOCKED;
+										current_speed = 0;
                 }
             }
             current_switch_status = GPIO_ReadInputDataBit(GPIOE, SERVE_SWITCH_PIN);
@@ -270,22 +317,24 @@ void EXTI15_10_IRQHandler(void)
 void racket_update(void)    //determine whether the motor should run
 {
     static int delay_counter = 0;
+		static int serving_stop_delay_counter = 0;
     if (current_racket_mode == SERVING) {
         // delay logic
         if (delay_counter < racket_delay) {
-						racket_open_serve_pneumatic();
-            ++delay_counter;
-            motor_lock(MOTOR5);
-            current_speed = 0;
+					racket_open_serve_pneumatic();
+          ++delay_counter;
+          motor_lock(MOTOR5);
+          current_speed = 0;
         } else {
-						racket_close_serve_pneumatic();
-            motor_set_vel(MOTOR5, -racket_speed, OPEN_LOOP);
-            current_speed = racket_speed;
+					racket_close_serve_pneumatic();
+					motor_set_vel(MOTOR5, -racket_speed, OPEN_LOOP);
+					current_speed = racket_speed;
+					racket_has_been_calibrated = false;
         }
     } else if (current_racket_mode == LOCKED) {
-        motor_lock(MOTOR5);
-        current_speed = 0;
-        delay_counter = 0;
+      motor_lock(MOTOR5);
+      current_speed = 0;
+      delay_counter = 0;
     }
 }
 
