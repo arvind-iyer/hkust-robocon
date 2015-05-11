@@ -172,12 +172,14 @@ void racket_init(void)
 	
 	register_special_char_function(':', enable_ultrasonic_sensor);
 	register_special_char_function(';', disable_ultrasonic_sensor);	
-		
+	
+//	register_special_char_function('j', racket_received_command);
+	
 	// debug commands
 	register_special_char_function('Y', racket_open_serve_pneumatic);
 	register_special_char_function('y', racket_close_serve_pneumatic);
-	register_special_char_function('J', racket_open_upper_pneumatic);
-	register_special_char_function('H', racket_close_upper_pneumatic);
+	register_special_char_function('J', racket_open_serve_pneumatic);
+	register_special_char_function('H', racket_close_serve_pneumatic);
 	
 	register_special_char_function('=', increase_racket_speed); // +
 	register_special_char_function('-', decrease_racket_speed); // -
@@ -191,9 +193,9 @@ void racket_init(void)
 	
 	// switch_serving init
 	GPIO_InitStructure.GPIO_Mode = GPIO_Mode_IPU;
-  GPIO_InitStructure.GPIO_Speed = GPIO_Speed_50MHz;
-  GPIO_InitStructure.GPIO_Pin = SERVE_SWITCH_PIN;
-  GPIO_Init(GPIOE, &GPIO_InitStructure);
+    GPIO_InitStructure.GPIO_Speed = GPIO_Speed_50MHz;
+    GPIO_InitStructure.GPIO_Pin = SERVE_SWITCH_PIN;
+    GPIO_Init(GPIOE, &GPIO_InitStructure);
 	
 	//interrupt for switch
 	GPIO_EXTILineConfig(GPIO_PortSourceGPIOE, GPIO_PinSource11);
@@ -216,8 +218,8 @@ void racket_init(void)
 	
 	// serving pneumatic init	
 	GPIO_InitStructure.GPIO_Mode = GPIO_Mode_Out_PP;
-  GPIO_InitStructure.GPIO_Speed = GPIO_Speed_50MHz;
-  GPIO_InitStructure.GPIO_Pin = SERVE_RACKET_PIN;
+    GPIO_InitStructure.GPIO_Speed = GPIO_Speed_50MHz;
+    GPIO_InitStructure.GPIO_Pin = SERVE_RACKET_PIN;
 	GPIO_Init(GPIOE, &GPIO_InitStructure);
 
 	// hitting pneumatic init
@@ -273,12 +275,10 @@ void racket_update(void)    //determine whether the motor should run
     if (current_racket_mode == SERVING) {
         // delay logic
         if (delay_counter < racket_delay) {
-						racket_open_serve_pneumatic();
             ++delay_counter;
             motor_lock(MOTOR5);
             current_speed = 0;
         } else {
-						racket_close_serve_pneumatic();
             motor_set_vel(MOTOR5, -racket_speed, OPEN_LOOP);
             current_speed = racket_speed;
         }
