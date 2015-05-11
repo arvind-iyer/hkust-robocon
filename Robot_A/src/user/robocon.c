@@ -1,9 +1,10 @@
 #include "robocon.h"
 #include "upper_racket.h"
 #include "serving.h"
+#include <stdbool.h>
 
 static u16 ticks_img 	= (u16)-1;
-static u8 serving_mode = 0;
+static bool serving_mode = 0;
 /**
 	* @brief Process XBC input
 	*/
@@ -28,6 +29,7 @@ static void robocon_get_xbc(void)
 			buzzer_control_note(1, 100, NOTE_C, 7);
 		}
 	}
+	
 	if (button_pressed(BUTTON_XBC_R_JOY) == 1) {
 		if (speed_mode < sizeof(SPEED_MODES) / sizeof(u16) - 1) {
 			wheel_base_set_speed_mode(speed_mode+1);
@@ -37,12 +39,12 @@ static void robocon_get_xbc(void)
 	
 	if (button_pressed(BUTTON_XBC_Y) == 1) {
 		if (!serving_mode) {
-			upper_racket_hit(0);
 			CLICK_MUSIC;
+			upper_racket_hit(0);
 		} else {
 			buzzer_control_note(3, 100, NOTE_G, 6);
 		}
-	} 
+	}
 	
 	if (button_pressed(BUTTON_XBC_Y) == 20) {
 		CLICK_MUSIC;
@@ -53,21 +55,20 @@ static void robocon_get_xbc(void)
 		
 		if (get_serving_calibrated()) {
 			CLICK_MUSIC;
-			serving_mode = 0;
+			serving_mode = false;
 			serving_hit_start();
 		} else {
 			buzzer_control_note(3, 100, NOTE_G, 5);
 		}
 	} else if (button_pressed(BUTTON_XBC_B) == 40 && !get_serving_calibrated()) {
 		CLICK_MUSIC;
-		serving_mode = 0;
+		serving_mode = false;
 		serving_hit_start();
 	}
 	
 	if (button_pressed(BUTTON_XBC_X) == 1) {
 		CLICK_MUSIC;
-		serving_cali_start();
-		serving_mode = 1;
+		serving_mode = serving_cali_start();
 	}
 	
 	if (button_pressed(BUTTON_XBC_W) == 1 || button_hold(BUTTON_XBC_W, 20, 1)) {

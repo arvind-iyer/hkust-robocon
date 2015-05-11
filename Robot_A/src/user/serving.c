@@ -1,5 +1,6 @@
 #include "serving.h"
 #include "buzzer_song.h"
+#include <stdbool.h>
 
 static u8 valve_state = 0;
 static SERVING_HIT_STATE serving_hit_state = SERVING_NULL;
@@ -7,19 +8,20 @@ static SERVING_CALI_STATE cali_state = SERVING_CALI_NULL;
 static u16 shuttle_drop_delay_ms = SERVING_SHUTTLE_DROP_DELAY_DEFAULT;
 static s16 serving_hit_speed = SERVING_HIT_SPEED_DEFAULT;
 static u32 cali_start_full_ticks = 0;
+static u32 cali_lock_full_ticks = 0;
 
 static s32 serving_encoder_target = 0;
 static s32 cali_encoder_target = 0;
 static u32 serving_start_hitting_full_ticks = 0;
 static u32 serving_stop_hitting_full_ticks = 0;
 
-static u8 serving_calibrated = 0;
+static bool serving_calibrated = false;
 
 static void valve_set(u8 i)
 {
 	valve_state = i;
-	#warning VALVE GPIO FLIPPED
-	gpio_write(SERVING_VALVE_GPIO, (BitAction) !valve_state);	
+	//#warning VALVE GPIO FLIPPED
+	gpio_write(SERVING_VALVE_GPIO, (BitAction) valve_state);	
 }
 
 
@@ -108,7 +110,7 @@ bool serving_hit_start(void)
 {
 	if (cali_state == SERVING_CALI_NULL && serving_hit_state == SERVING_NULL) {
 		serving_hit_state = SERVING_START;
-		serving_calibrated = 0;
+		serving_calibrated = false;
 		serving_update();
 		return true;
 	} else {
@@ -125,7 +127,7 @@ void serving_cali_update(void)
 	if (cali_state != SERVING_CALI_NULL && cali_start_full_ticks > 0) {
 		if (cali_start_full_ticks + SERVING_CALI_TIMEOUT <= get_full_ticks()) {
 			motor_set_vel(SERVING_MOTOR, 0, OPEN_LOOP);
-			serving_calibrated = 0;
+			serving_calibrated = false;
 			cali_state = SERVING_CALI_NULL;
 			cali_start_full_ticks = 0;
 			PLAY_FAIL_MUSIC2;
@@ -170,6 +172,7 @@ void serving_cali_update(void)
 				|| (SERVING_CALI_ENCODER_AFTER_SWITCH > 0 && encoder_val > cali_encoder_target)
 			) {
 				cali_encoder_target = 0;
+				cali_lock_full_ticks = get_full_ticks();
 				cali_state = SERVING_CALI_LOCK;
 				serving_cali_update();
 			} else {
@@ -180,10 +183,14 @@ void serving_cali_update(void)
 		
 		case SERVING_CALI_LOCK:
 			motor_set_vel(SERVING_MOTOR, 0, CLOSE_LOOP);
-			serving_calibrated = 1;
-			cali_state = SERVING_CALI_NULL;
-			cali_start_full_ticks = 0;
-			PLAY_OKAY_MUSIC1;
+			
+			if (cali_lock_full_ticks + SERVING_CALI_LOCK_TIME_MS <= get_full_ticks()) {
+				serving_calibrated = true;
+				cali_state = SERVING_CALI_NULL;
+				cali_start_full_ticks = 0;
+				PLAY_OKAY_MUSIC1;
+			}
+			
 		break;
 		
 	}
@@ -296,7 +303,7 @@ s32 get_serving_cali_encoder_target(void)
 	return cali_encoder_target;
 }
 
-u8 get_serving_calibrated(void)
+bool get_serving_calibrated(void)
 {
 	return serving_calibrated;
 }
