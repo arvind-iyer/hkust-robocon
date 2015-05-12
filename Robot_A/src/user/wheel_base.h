@@ -23,7 +23,7 @@
 
 // Wheel-base speed related
 #define	WHEEL_BASE_XY_VEL_RATIO								707		//  70.7%
-#define	WHEEL_BASE_W_VEL_RATIO								-800		//	-80.0%
+#define	WHEEL_BASE_W_VEL_RATIO								-700		//	-70.0%
 static const u16 SPEED_MODES[10] =	// In percentage (20 = 20%)
 {
 	0, 20, 40, 60, 80, 100, 120, 140, 160, 180

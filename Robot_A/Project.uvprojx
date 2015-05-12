@@ -448,6 +448,11 @@
               <FileType>1</FileType>
               <FilePath>.\src\user\us_auto.c</FilePath>
             </File>
+            <File>
+              <FileName>angle_lock.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\src\user\angle_lock.c</FilePath>
+            </File>
           </Files>
         </Group>
         <Group>

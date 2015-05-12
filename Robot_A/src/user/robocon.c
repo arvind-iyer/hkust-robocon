@@ -2,11 +2,14 @@
 #include "upper_racket.h"
 #include "serving.h"
 #include "us_auto.h"
+#include "angle_lock.h"
+
 #include <stdbool.h>
 
 static u16 ticks_img 	= (u16)-1;
 static bool serving_mode = false;
 static bool us_auto_mode = false;
+static bool angle_lock_mode = false;
 
 /**
 	* @brief Process XBC input
@@ -21,24 +24,39 @@ static void robocon_get_xbc(void)
 	s16 y_vel = xbc_get_joy(XBC_JOY_LY);
 	s16 w_vel = xbc_get_joy(XBC_JOY_RT) - xbc_get_joy(XBC_JOY_LT);
 	
+	if (angle_lock_mode) {
+		if (w_vel == 0) {
+			// Angle lock
+			w_vel = angle_lock_get_mv();
+		} else {
+			// Ignore the angle lock for a while
+			angle_lock_ignore(500);
+		}
+	}
+	
 	x_vel = speed_ratio * x_vel / 1000;
 	y_vel = speed_ratio * y_vel / 1000;
 	w_vel = speed_ratio * w_vel / 255 / 2;
 	wheel_base_set_vel(x_vel, y_vel, w_vel);
 	
-	if (button_pressed(BUTTON_XBC_L_JOY) == 1) {
+	static s16 rjx_val_prev = 0;
+	s16 rjx_val = xbc_get_joy(XBC_JOY_RX);
+	
+	if (rjx_val_prev != -XBC_JOY_SCALE && rjx_val == -XBC_JOY_SCALE) {
 		if (speed_mode > 0) {
 			wheel_base_set_speed_mode(speed_mode-1);
 			buzzer_control_note(1, 100, NOTE_C, 7);
 		}
 	}
 	
-	if (button_pressed(BUTTON_XBC_R_JOY) == 1) {
+	if (rjx_val_prev != XBC_JOY_SCALE && rjx_val == XBC_JOY_SCALE) {
 		if (speed_mode < sizeof(SPEED_MODES) / sizeof(u16) - 1) {
 			wheel_base_set_speed_mode(speed_mode+1);
 			buzzer_control_note(1, 100, NOTE_C, 8);
 		}
 	}
+	
+	rjx_val_prev = rjx_val;
 	
 	if (button_pressed(BUTTON_XBC_Y) == 1) {
 		if (!serving_mode) {
@@ -114,6 +132,18 @@ static void robocon_get_xbc(void)
 			buzzer_control_note(3, 100, NOTE_G, 5);
 		}
 	}
+	
+	if (button_pressed(BUTTON_XBC_START) == 1) {
+		CLICK_MUSIC;
+		angle_lock_mode = !angle_lock_mode; 
+	}
+	
+	if (button_pressed(BUTTON_XBC_A) == 12) {
+		// Uncalibrate
+		serving_uncalibrate();
+		serving_mode = false;
+		buzzer_control_note(3, 100, NOTE_G, 7);
+	}
 }
 
 void robocon_init(void)
@@ -124,11 +154,18 @@ void robocon_init(void)
   // Send the acceleration data
 	wheel_base_tx_acc();
 	
-	serving_mode = 0;
 	gpio_init(SERVING_LED_GPIO, GPIO_Speed_2MHz, GPIO_Mode_Out_PP, 1);
 	gpio_init(US_AUTO_LED_GPIO, GPIO_Speed_2MHz, GPIO_Mode_Out_PP, 1);
+	gpio_init(ANGLE_LOCK_LED_GPIO, GPIO_Speed_2MHz, GPIO_Mode_Out_PP, 1);
+	
 	gpio_write(SERVING_LED_GPIO, 1);
 	gpio_write(US_AUTO_LED_GPIO, 1);
+	gpio_write(ANGLE_LOCK_LED_GPIO, 1);
+	
+	
+	serving_mode = false;
+	us_auto_mode = false;
+	angle_lock_mode = false;
 	
 }
 
@@ -168,8 +205,22 @@ void robocon_main(void)
 			
 			if (ticks_img % 20 == 5) {		// 50Hz
 				button_update();
-				robocon_get_xbc();
 				us_auto_update();
+				angle_lock_update();
+				
+				
+				if (angle_lock_mode) {
+					if (angle_lock_ignored()) {
+						gpio_write(ANGLE_LOCK_LED_GPIO, (BitAction) (get_ticks() % 200 <= 100)); 
+					} else {
+						gpio_write(ANGLE_LOCK_LED_GPIO, 1);
+					}
+				} else {
+					gpio_write(ANGLE_LOCK_LED_GPIO, 0);
+				}
+				if (!angle_lock_mode) {angle_lock_ignore(200); }
+				robocon_get_xbc();
+				
 				
 				// LED indicator 
 				if (get_serving_cali_state() != SERVING_CALI_NULL) {
@@ -253,6 +304,8 @@ void robocon_main(void)
 					}
 				}
 				
+				tft_prints(11, 8, "%d", angle_lock_get_mv());
+				tft_prints(11, 9, "%d", angle_lock_get_target());
 				US_AUTO_RESPONSE us_response = us_auto_get_response();
 				
 				if (us_response == US_AUTO_NULL) { 

@@ -560,7 +560,7 @@ void can_test(void)
   TFT_UI tft_ui = {
 		.item_count = 2, .item_list = can_test_ui_list, .selected_item = 0, .click_event = can_on_click_listener
 	};
-  
+  can_rx_add_filter(0x00, 0x00, 0);
   while (true) {
     if (ticks_img != get_ticks()) {
       ticks_img = get_ticks();
@@ -621,6 +621,9 @@ void can_test(void)
         } else {
           tft_prints(0, 5, "No CAN received");
         }
+				
+				tft_prints(0, 7, "TEM: %d", can_empty_mailbox());
+				
         tft_prints(0, 8, "Received no.: %d", can_get_rx_count());
         if (ticks_img < 500) {
           tft_prints(1, 9, "Click to send");

@@ -3,7 +3,7 @@
 #include <stdbool.h>
 
 static u8 valve_state = 0;
-static SERVING_HIT_STATE serving_hit_state = SERVING_NULL;
+static volatile SERVING_HIT_STATE serving_hit_state = SERVING_NULL;
 static SERVING_CALI_STATE cali_state = SERVING_CALI_NULL;
 static u16 shuttle_drop_delay_ms = SERVING_SHUTTLE_DROP_DELAY_DEFAULT;
 static s16 serving_hit_speed = SERVING_HIT_SPEED_DEFAULT;
@@ -135,6 +135,20 @@ void serving_cali_update(void)
 	}
 	
 	switch (cali_state) {
+		case SERVING_CALI_NULL:
+			if (serving_hit_state == SERVING_NULL) {
+				// Not serving currently
+				if (serving_calibrated) {
+					// Locking
+					motor_set_vel(SERVING_MOTOR, 0, CLOSE_LOOP);
+				} else {
+					// Free
+					motor_set_vel(SERVING_MOTOR, 0, OPEN_LOOP);
+				}
+			}
+		
+		break;
+		
 		case SERVING_CALI_START:
 			valve_set(0);
 			cali_start_full_ticks = get_full_ticks();
@@ -147,23 +161,41 @@ void serving_cali_update(void)
 		break;
 		
 		case SERVING_CALI_UNCALI:
+		{
+			static u16 cont_off = 0;	/* Continous off */
+			
 			if (get_serving_switch()) {
 				motor_set_vel(SERVING_MOTOR, SERVING_UNCALI_SPEED, SERVING_UNCALI_MODE);
+				cont_off = 0;
 			} else {
-				cali_state = SERVING_CALI_TO_SWITCH;
+				++cont_off;
+				if (cont_off >= SERVING_UNCALI_SWITCH_OFF_COUNT) {
+					cali_state = SERVING_CALI_TO_SWITCH;
+				}
+				
 				// serving_cali_update();
 			}
+		}
 		break;
 		
 		case SERVING_CALI_TO_SWITCH:
+		{
 			#warning sometimes wrong detection, need to be debugged
+			static u16 cont_on = 0;
+			
 			if (!get_serving_switch()) {
 				motor_set_vel(SERVING_MOTOR, SERVING_CALI_SPEED, SERVING_CALI_MODE);
+				cont_on = 0;
 			} else {
-				cali_encoder_target = get_encoder_value(SERVING_MOTOR) + SERVING_CALI_ENCODER_AFTER_SWITCH;
-				cali_state = SERVING_CALI_SWITCH_PRESSED;
-				serving_cali_update();
+				++cont_on;
+				
+				if (cont_on >= SERVING_CALI_SWITCH_ON_COUNT) {
+					cali_encoder_target = get_encoder_value(SERVING_MOTOR) + SERVING_CALI_ENCODER_AFTER_SWITCH;
+					cali_state = SERVING_CALI_SWITCH_PRESSED;
+					serving_cali_update();
+				}
 			}
+		}
 		break;
 		
 		case SERVING_CALI_SWITCH_PRESSED:
@@ -200,6 +232,10 @@ void serving_cali_update(void)
 void serving_hit_update(void)
 {
 	switch (serving_hit_state) {
+		case SERVING_NULL:
+			// Not calibrating currenty
+		break;
+		
 		case SERVING_START:
 			valve_set(1);
 			serving_hit_state = SERVING_SHUTTLECOCK_DROPPED;
@@ -265,9 +301,8 @@ void serving_hit_update(void)
 				valve_set(0);
 				serving_hit_state = SERVING_NULL;
 				serving_stop_hitting_full_ticks = 0;
-			} else {
-				motor_set_vel(SERVING_MOTOR, 0, OPEN_LOOP);
 			}
+			motor_set_vel(SERVING_MOTOR, 0, OPEN_LOOP);
 			
 		break;
 		
@@ -307,6 +342,15 @@ s32 get_serving_cali_encoder_target(void)
 bool get_serving_calibrated(void)
 {
 	return serving_calibrated;
+}
+
+void serving_uncalibrate(void)
+{
+	// stop any current calibration
+	cali_state = SERVING_CALI_NULL;
+	cali_start_full_ticks = 0;
+	cali_lock_full_ticks = 0; 
+	serving_calibrated = false;
 }
 
 u8 get_serving_switch(void)
@@ -360,8 +404,6 @@ SERVING_IRQn_Handler
 			//TIM_SetCounter(SERVING_TIM, 0);										// Reset counter
 			//TIM_ITConfig(SERVING_TIM, TIM_IT_CC1, ENABLE);
 			
-			
-		} else if (serving_hit_state == SERVING_RACKET_HITTING) {
 			
 		}
 	}

@@ -23,24 +23,26 @@
 //#define	SERVING_SHUTTLECOCK_DROPPING_TIME				(500 * 10)	// 500ms
 
 #define	SERVING_MOTOR						MOTOR5
-#define	SERVING_MOTOR_ACC				100
+#define	SERVING_MOTOR_ACC				150
 
-#define	SERVING_UNCALI_SPEED									130							/*!< Uncalibration motor speed */
-#define	SERVING_UNCALI_MODE										OPEN_LOOP				/*!< Uncalibration motor mode */
+#define	SERVING_UNCALI_SPEED									130								/*!< Uncalibration motor speed */
+#define	SERVING_UNCALI_MODE										OPEN_LOOP			/*!< Uncalibration motor mode */
+#define	SERVING_UNCALI_SWITCH_OFF_COUNT				10							/*!< Count of the switch off, to prevent bouncing */
 
 #define	SERVING_CALI_SPEED										-8							/*!< Calibration motor speed (when switch is off) */
 #define	SERVING_CALI_MODE											CLOSE_LOOP			/*!< Calibration motor mode  (when switch is off)*/
-#define	SERVING_CALI_ENCODER_AFTER_SWITCH			2000						/*!< Calibration motor speed (when switch is on) */
+#define	SERVING_CALI_SWITCH_ON_COUNT					10							/*!< Count of the switch on, to prevent bouncing */
+#define	SERVING_CALI_ENCODER_AFTER_SWITCH			1200						/*!< Calibration motor speed (when switch is on) */
 #define	SERVING_CALI_AFTER_SWITCH_SPEED				-3							/*!< Calibration motor mode  (when switch is on) */
 #define	SERVING_CALI_AFTER_SWITCH_MODE				CLOSE_LOOP			/*!< Calibration motor mode  (when switch is on) */
 #define	SERVING_CALI_LOCK_TIME_MS							200							/*!< Calibration lock time (in ms), just for can tx*/
 #define	SERVING_CALI_TIMEOUT									4000						/*!< Stop calibrating after the timeout (ms) */
 
 
-#define	SERVING_SHUTTLE_DROP_DELAY_DEFAULT		305							/*!< Default value of the shuttle drop delay in ms */
-#define	SERVING_HIT_SPEED_DEFAULT							-1300						/*!< Default motor speed for hitting */
+#define	SERVING_SHUTTLE_DROP_DELAY_DEFAULT		320							/*!< Default value of the shuttle drop delay in ms */
+#define	SERVING_HIT_SPEED_DEFAULT							-1500						/*!< Default motor speed for hitting */
 #define	SERVING_HIT_MODE											OPEN_LOOP				/*!< Motor mode for hitting */
-#define	SERVING_HIT_ENCODER_DIFF							26000						/*!< The encoder value diff, that the hitting will stop */
+#define	SERVING_HIT_ENCODER_DIFF							24000						/*!< The encoder value diff, that the hitting will stop */
 #define	SERVING_HIT_TIMEOUT										500						/*!< Stop serving after the timeout (ms) */
 
 #define	SERVING_HIT_STOP_DELAY								1500							/*!< The delay (in ms) after hitting */
@@ -74,6 +76,7 @@ s32 get_serving_cali_encoder_target(void);
 s32 get_serving_hit_encoder_target(void);
 
 bool get_serving_calibrated(void);
+void serving_uncalibrate(void);
 u8 get_serving_switch(void);
 u16 get_shuttle_drop_delay(void);
 void set_shuttle_drop_delay(u16 delay_ms);
