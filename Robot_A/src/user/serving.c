@@ -156,6 +156,7 @@ void serving_cali_update(void)
 		break;
 		
 		case SERVING_CALI_TO_SWITCH:
+			#warning sometimes wrong detection, need to be debugged
 			if (!get_serving_switch()) {
 				motor_set_vel(SERVING_MOTOR, SERVING_CALI_SPEED, SERVING_CALI_MODE);
 			} else {

@@ -1,10 +1,13 @@
 #include "robocon.h"
 #include "upper_racket.h"
 #include "serving.h"
+#include "us_auto.h"
 #include <stdbool.h>
 
 static u16 ticks_img 	= (u16)-1;
-static bool serving_mode = 0;
+static bool serving_mode = false;
+static bool us_auto_mode = false;
+
 /**
 	* @brief Process XBC input
 	*/
@@ -102,6 +105,15 @@ static void robocon_get_xbc(void)
 			buzzer_control_note(1, 10, NOTE_E, 7);
 		}
 	}
+	
+	if (button_pressed(BUTTON_XBC_XBOX) == 1) {
+		if (!serving_mode) {
+			CLICK_MUSIC;
+			us_auto_mode = !us_auto_mode;
+		} else {
+			buzzer_control_note(3, 100, NOTE_G, 5);
+		}
+	}
 }
 
 void robocon_init(void)
@@ -114,7 +126,9 @@ void robocon_init(void)
 	
 	serving_mode = 0;
 	gpio_init(SERVING_LED_GPIO, GPIO_Speed_2MHz, GPIO_Mode_Out_PP, 1);
+	gpio_init(US_AUTO_LED_GPIO, GPIO_Speed_2MHz, GPIO_Mode_Out_PP, 1);
 	gpio_write(SERVING_LED_GPIO, 1);
+	gpio_write(US_AUTO_LED_GPIO, 1);
 	
 }
 
@@ -155,6 +169,7 @@ void robocon_main(void)
 			if (ticks_img % 20 == 5) {		// 50Hz
 				button_update();
 				robocon_get_xbc();
+				us_auto_update();
 				
 				// LED indicator 
 				if (get_serving_cali_state() != SERVING_CALI_NULL) {
@@ -168,7 +183,33 @@ void robocon_main(void)
 				}
 				
 				
-				if (return_listener()) {
+				if (us_auto_mode && !serving_mode && get_serving_hit_state() == SERVING_NULL) {
+					gpio_write(US_AUTO_LED_GPIO, 1);
+					switch (us_auto_get_response()) {
+					
+						case US_AUTO_HIT: {
+							u16 val = us_get_detection_val();
+							upper_racket_hit(10);
+							//buzzer_control_note(3, 50, NOTE_D, 7);
+							gpio_write(SERVING_LED_GPIO, 0);
+							break;
+						}
+							
+						case US_AUTO_E_STOP_HIT: {
+							upper_racket_e_stop();
+							
+							break;
+						}
+						
+						default:
+						
+						break;
+					}
+				} else {
+					gpio_write(US_AUTO_LED_GPIO, 0);
+				}
+				
+				if (button_pressed(BUTTON_1) == 30 || button_pressed(BUTTON_2) == 30 || button_pressed(BUTTON_XBC_BACK) == 30) {
 					/** Stop the wheel base before return **/
 					wheel_base_stop();
 					return; 
@@ -197,11 +238,34 @@ void robocon_main(void)
 				} else if (get_serving_hit_state() != SERVING_NULL) {
 					target_encoder = get_serving_hit_encoder_target();
 				}
-				tft_prints(0, 6, " %d->%d", get_serving_encoder(), target_encoder);
+				tft_prints(0, 6, "%d->%d", get_serving_encoder(), target_encoder);
 				
-				tft_prints(0, 7, "Delay: %d", get_shuttle_drop_delay());
+				tft_prints(0, 7, "Serve:%dms,%d", get_shuttle_drop_delay(), get_serving_hit_speed());
 				
-				tft_prints(0, 8, "Force: %d", get_serving_hit_speed());
+				for (u8 i = 0; i < US_AUTO_DEVICE_COUNT; ++i) {
+					u16 dist = us_get_distance(i);
+					if (dist == 0) {
+						tft_prints(i, 8, "+");
+					} else if (dist < 1000) {
+						tft_prints(i, 8, "%d", dist / 100);
+					} else {
+						tft_prints(i, 8, "+");
+					}
+				}
+				
+				US_AUTO_RESPONSE us_response = us_auto_get_response();
+				
+				if (us_response == US_AUTO_NULL) { 
+					tft_prints(0, 9, "---");
+				} else if (us_response == US_AUTO_HIT) {
+					tft_prints(0, 9, "HIT");
+				} else if (us_response == US_AUTO_HITTING) {
+					tft_prints(0, 9, "...");
+				}	else if (us_response == US_AUTO_E_STOP_HIT) {
+					tft_prints(0, 9, "[XXX]");
+				}
+				
+				tft_prints(5, 9, "%d", us_get_detection_val());
 				
 				//tft_prints(0, 4, "%s", wheel_base_get_pid_flag() ? "[AUTO]" : "MANUAL");
 				/*tft_prints(0, 5, "(%-4d,%-4d,%-4d)", wheel_base_get_target_pos().x, wheel_base_get_target_pos().y, wheel_base_get_target_pos().angle);

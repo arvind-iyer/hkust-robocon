@@ -443,6 +443,11 @@
               <FileType>1</FileType>
               <FilePath>.\src\user\upper_racket.c</FilePath>
             </File>
+            <File>
+              <FileName>us_auto.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\src\user\us_auto.c</FilePath>
+            </File>
           </Files>
         </Group>
         <Group>

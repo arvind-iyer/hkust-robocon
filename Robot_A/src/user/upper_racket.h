@@ -15,6 +15,7 @@
 
 
 void upper_racket_init(void);
+void upper_racket_e_stop(void);
 bool upper_racket_hit(u16 pre_delay);
 void upper_racket_update(void);
 

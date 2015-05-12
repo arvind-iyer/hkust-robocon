@@ -26,6 +26,13 @@ static void upper_racket_set(u8 mode)
 	}
 }
 
+void upper_racket_e_stop(void)
+{
+	racket_pre_ticks = 0;
+	racket_hit_ticks = 0;
+	racket_post_ticks = 0;
+	upper_racket_set(0);
+}
 
 /**
 	* @brief Start hitting the upper racket after pre_delay ms
