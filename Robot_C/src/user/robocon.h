@@ -37,10 +37,10 @@
 #include "nec_mb.h"
 
 
-#define TR_ACC_FAC			ROBOT=='C'?0.5:0.54
-#define TL_ACC_FAC			ROBOT=='C'?0.5:0.63 			
-#define BR_ACC_FAC			ROBOT=='C'?0.5:0.27 
-#define BL_ACC_FAC			ROBOT=='C'?0.5:0.27 
+#define TR_ACC_FAC			ROBOT=='C'?50:54
+#define TL_ACC_FAC			ROBOT=='C'?50:63 			
+#define BR_ACC_FAC			ROBOT=='C'?50:27 
+#define BL_ACC_FAC			ROBOT=='C'?50:27 
 
 
 void robocon_main(void);

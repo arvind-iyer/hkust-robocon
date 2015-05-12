@@ -19,8 +19,9 @@ bool turn_timer_started = 0;
 // enabling sensors by button.
 bool sensors_activated = 0;
 
-u16 prev_vels[100] = { 0 };
-u16 vel_index = 0;												 
+u16 prev_vels[50] = { 0 };
+u16 vel_index = 0;
+u16 acc_mod = 0;
 bool robot_xbc_controls(void)
 {
 	//Update Button Data
@@ -39,41 +40,61 @@ bool robot_xbc_controls(void)
 	
 	
 	int dw = (xbc_get_joy(XBC_JOY_RT)-xbc_get_joy(XBC_JOY_LT))/5;
-	#warning PID is off
 	
-	if(dw == 0 && turn_timer == (u16)-1)
-	{
-		turn_timer_started = 1;
-		turn_timer = get_full_ticks();
-	}
-	else if(dw == 0 && (turn_timer + 100 < get_full_ticks() ) && turn_timer_started)
-	{
-		turn_timer_started = 0;
-		dw = pid_maintain_angle();
-		wheel_base_set_target_pos((POSITION){get_pos()->x, get_pos()->y, get_pos()->angle});
-	}
-	else if(dw!=0)
-	{
-		turn_timer = -1;
-		turn_timer_started = 0;
-	}
+
+	
+//	
+//	if(dw == 0 && turn_timer == (u16)-1)
+//	{
+//		turn_timer_started = 1;
+//		turn_timer = get_full_ticks();
+//	}
+//	else if(dw == 0 && turn_timer_started)
+//	{
+//		turn_timer_started = 0;
+//		dw += pid_maintain_angle();
+//		wheel_base_set_target_pos((POSITION){get_pos()->x, get_pos()->y, get_pos()->angle});
+//	}
+//	else if(dw!=0)
+//	{
+//		turn_timer = -1;
+//		turn_timer_started = 0;
+//		
+//		wheel_base_set_target_pos((POSITION){get_pos()->x, get_pos()->y, get_pos()->angle});
+//	}
 	
 //	if(dw == 0 && (turn_timer + 100 < get_full_ticks() ) )
-	if(dw == 0)
-	{
-		dw = pid_maintain_angle();
-	}
+	
 	
 	int vx = xbc_get_joy(XBC_JOY_LX);
 	int vy = xbc_get_joy(XBC_JOY_LY);
-	wheel_base_set_vel(vx, vy, dw);
 	
-	if(get_ticks() % 5 == 0)
-	prev_vels[(vel_index++)%(sizeof(prev_vels)/sizeof(prev_vels[0]))] = (Abs(vx) + Abs(vy)+ Abs(dw))/20;
+	int dx = vx/Abs(vx) * (vx * vx / Sqrt( Sqr(Abs(vx)) + Sqr(Abs(vy))));
+	int dy = vy/Abs(vy) * (vy * vy / Sqrt( Sqr(Abs(vx)) + Sqr(Abs(vy))));
+
+	float angle_mod = 1 + (Sqr(acc_mod) / 80000);
+	if(dw != 0)
+	{
+		
+		wheel_base_set_target_pos((POSITION){get_pos()->x, get_pos()->y, get_pos()->angle});
+		turn_timer = get_full_ticks();
+	}
+	if(turn_timer + 100 > get_full_ticks())
+	{
+		wheel_base_set_target_pos((POSITION){get_pos()->x, get_pos()->y, get_pos()->angle});
+	}
+	else 
+	{
+		dw += (Abs(vx) + Abs(vy)) ? pid_maintain_angle() * angle_mod : pid_maintain_angle();
+	}
+
+	wheel_base_set_vel(dx, dy, dw);
 	
-	u16 acc_mod = 0;
+	prev_vels[(vel_index++)%(sizeof(prev_vels)/sizeof(prev_vels[0]))] = (Sqrt(Sqr(Abs(dx)) + Sqr(Abs(dy))+ Sqr(Abs(dw))))/20;
+	
+	acc_mod = 0;
 	for (int i = 0; i < sizeof(prev_vels)/sizeof(prev_vels[0]); i++)
-	acc_mod += (prev_vels[i] > 0 ? prev_vels[i] : 1);
+	acc_mod += (prev_vels[i] > 0 ? (prev_vels[i]) : 2);
 	
 	
 	
@@ -81,10 +102,10 @@ bool robot_xbc_controls(void)
 //		motor_set_acceleration(MOTOR_BOTTOM_LEFT,BL_ACC_FAC * acc_mod);
 //		motor_set_acceleration(MOTOR_TOP_LEFT,TL_ACC_FAC * acc_mod);
 //		motor_set_acceleration(MOTOR_TOP_RIGHT, TR_ACC_FAC * acc_mod);
-	acc_mod/=3;
+	//acc_mod/=2;
 	
 
-	if(get_ticks() % 500 == 0)
+	if(get_ticks() % 100 == 0)
 	{
 		log("Accmod: ", acc_mod);
 	}	
@@ -305,28 +326,17 @@ static void handle_bluetooth_input(void)
 void robocon_main(void)
 {
 	motor_set_acceleration(RACKET, 3000);
-//  static char last_key;
   // Send the acceleration data
 	wheel_base_tx_acc();
-	//racket_init();
 	serve_free();
-	//gpio_init(&PD10,  GPIO_Speed_10MHz, GPIO_Mode_Out_PP, 1);		// pneumatric GPIO Robot D, GEN2
 	gpio_init(&PD9,  GPIO_Speed_10MHz, GPIO_Mode_Out_PP, 1);		// Serve pneumatric GPIO Robot D, GEN2
 	gpio_init(&PE15,  GPIO_Speed_10MHz, GPIO_Mode_Out_PP, 1);		// Serve pneumatric GPIO Robot D, GEN2. MOSFET burnt
 	gpio_init(&PD10, GPIO_Speed_10MHz, GPIO_Mode_Out_PP, 1);		// pneu matic GPIO
 	
-	//gpio_init(&PD12, GPIO_Speed_10MHz, GPIO_Mode_Out_PP, 1);		//pneumatic GPIO 2
 	
 	gpio_init(&PE11, GPIO_Speed_10MHz, GPIO_Mode_IPU, 1);	// Mechanical switch ROBOT D Gen2
 	gpio_init(&PE5, GPIO_Speed_10MHz, GPIO_Mode_IPU, 1);	// Shuttlecock Holder button for ROBOT D Gen2
-	//gpio_init(&);
-	//gpio_init(&PE7, GPIO_Speed_50MHz, GPIO_Mode_IPU, 0);		// laser sensor GPIO IN
-	
-	//gpio_init(&PE5, GPIO_Speed_10MHz, GPIO_Mode_Out_PP, 1);		//laser sensor GPIO OUT
-	//gpio_init(&PE6, GPIO_Speed_50MHz, GPIO_Mode_Out_PP, 1);		// laser sensor GPIO OUT 2
-	//gpio_write(&PE5, 0);		//write 1 to Laser sensor
-	//gpio_write(&PE6, 0);		//write 1 to Laser sensor 2
-	//register_special_char_function('m',print);
+
 	gpio_init(&PA4,GPIO_Speed_50MHz, GPIO_Mode_IPD,1);		// laser sensor
 	gpio_init(&PA6,GPIO_Speed_50MHz, GPIO_Mode_IPD,1);	// laser sensor grid 2
 	gpio_init(&PA7,GPIO_Speed_50MHz, GPIO_Mode_IPD,1);	// laser sensor grid 3
@@ -381,13 +391,6 @@ void robocon_main(void)
 				battery_regular_check();
 			}
 
-      /*if (ticks_img % 100 == 3) {
-				if(special_char_handler_bt_get_last_char() == 'k')
-				{
-					tft_prints(0,7, "HIT");
-					tft_update();
-				}
-      }*/
 			
 			if (ticks_img % 100 == 3 && !serve_prioritized()) {
 				// Every 100 ms (10 Hz)
