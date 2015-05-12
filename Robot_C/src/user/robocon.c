@@ -43,28 +43,6 @@ bool robot_xbc_controls(void)
 	
 
 	
-//	
-//	if(dw == 0 && turn_timer == (u16)-1)
-//	{
-//		turn_timer_started = 1;
-//		turn_timer = get_full_ticks();
-//	}
-//	else if(dw == 0 && turn_timer_started)
-//	{
-//		turn_timer_started = 0;
-//		dw += pid_maintain_angle();
-//		wheel_base_set_target_pos((POSITION){get_pos()->x, get_pos()->y, get_pos()->angle});
-//	}
-//	else if(dw!=0)
-//	{
-//		turn_timer = -1;
-//		turn_timer_started = 0;
-//		
-//		wheel_base_set_target_pos((POSITION){get_pos()->x, get_pos()->y, get_pos()->angle});
-//	}
-	
-//	if(dw == 0 && (turn_timer + 100 < get_full_ticks() ) )
-	
 	
 	int vx = xbc_get_joy(XBC_JOY_LX);
 	int vy = xbc_get_joy(XBC_JOY_LY);
@@ -85,7 +63,7 @@ bool robot_xbc_controls(void)
 	}
 	else 
 	{
-		dw += (Abs(vx) + Abs(vy)) ? pid_maintain_angle() * angle_mod : pid_maintain_angle();
+		dw += (Abs(vx) + Abs(vy)) ? pid_maintain_angle() * 2: pid_maintain_angle();
 	}
 
 	wheel_base_set_vel(dx, dy, dw);
@@ -94,26 +72,26 @@ bool robot_xbc_controls(void)
 	
 	acc_mod = 0;
 	for (int i = 0; i < sizeof(prev_vels)/sizeof(prev_vels[0]); i++)
-	acc_mod += (prev_vels[i] > 0 ? (prev_vels[i]) : 2);
+	acc_mod += (prev_vels[i] > 0 ? (prev_vels[i]) : 1);
 	
-	
-	
-//	  motor_set_acceleration(MOTOR_BOTTOM_RIGHT,BR_ACC_FAC * acc_mod);
-//		motor_set_acceleration(MOTOR_BOTTOM_LEFT,BL_ACC_FAC * acc_mod);
-//		motor_set_acceleration(MOTOR_TOP_LEFT,TL_ACC_FAC * acc_mod);
-//		motor_set_acceleration(MOTOR_TOP_RIGHT, TR_ACC_FAC * acc_mod);
-	//acc_mod/=2;
-	
-
-	if(get_ticks() % 100 == 0)
+	u16 bl = WHEEL_BASE_BL_ACC,
+			br = WHEEL_BASE_BR_ACC,
+			tl = WHEEL_BASE_TL_ACC,
+			tr = WHEEL_BASE_TR_ACC;
+	if(get_ticks() % 500 == 0)
 	{
-		log("Accmod: ", acc_mod);
-	}	
+		log("BL_acc : ",  (acc_mod) * bl / 100);
+		log("BR_acc : ",  (acc_mod * br / 100));
+		log("TL_acc : ",  (acc_mod) * tl / 100);
+		log("TR_acc : ",  (acc_mod * tr / 100));
+	}
   
-	motor_set_acceleration(MOTOR_BOTTOM_RIGHT,acc_mod);
-	motor_set_acceleration(MOTOR_BOTTOM_LEFT,acc_mod);
-	motor_set_acceleration(MOTOR_TOP_LEFT,acc_mod);
-	motor_set_acceleration(MOTOR_TOP_RIGHT, acc_mod);
+	motor_set_acceleration(MOTOR_BOTTOM_RIGHT,(acc_mod * br)/100);
+	motor_set_acceleration(MOTOR_BOTTOM_LEFT,(acc_mod * bl)/100);
+	motor_set_acceleration(MOTOR_TOP_LEFT,(acc_mod * tl)/100);
+	motor_set_acceleration(MOTOR_TOP_RIGHT, (acc_mod * tr)/100);
+	
+	
 	
 	/*
 	80 = up
@@ -430,22 +408,22 @@ void robocon_main(void)
 				
 				
 				u8 connect = xbc_get_connection() == XBC_DISCONNECTED ? 0 : 1;
-					 
-        //tft_prints(0, 6, "Char: %s (%d) %c", s, wheel_base_bluetooth_get_last_char(), special_char_handler_bt_get_last_char());
-				//tft_prints(0,3,"SHIT: (%d, %d)", gyro_get_shift_x(), gyro_get_shift_y());
-				//tft_prints(0,3,"XBC: %d", connect);
-				tft_prints(0,3,"Serve_delay: %d",serve_get_delay());
-				//tft_prints(0,4, "pneu= %d", gpio_read_input(&PB9));
-				//tft_prints(0,4,"[%d , %d, %d ]", get_pos()->x, get_pos()->y, get_pos()->angle);
-				//tft_prints(0,4,"senser_on : %d", sensors_activated);
 				
-				tft_prints(0,4, "skipTick %d", tick_skip_count);
-				//tft_prints(0,2, "x%d y%d", gyro_get_shift_x(), gyro_get_shift_y());
-				//tft_prints(0,7, "LASER%d %d", gpio_read_input(LASER_GPIO),racket_get_laser_hit_delay);
-				tft_prints(0,2,"Encoder: %d", get_encoder_value(RACKET));
-				//tft_prints(0,7,"init: %d", get_init_enc());
-				tft_prints(0,5,"Racket: %d", serve_get_vel());
-				//tft_prints(0,3,"stop enc = %d",racket_get_last_stop_encoder_value());
+				if(ROBOT=='C')
+				{ 
+						tft_prints(0,2,"Acc: %d", acc_mod);
+					
+				}
+				else
+				{
+					tft_prints(0,2,"Encoder: %d", get_encoder_value(RACKET));
+					tft_prints(0,3,"Serve_delay: %d",serve_get_delay());
+					tft_prints(0,4,"Racket: %d", serve_get_vel());
+					tft_prints(0,5,"Acc: %d", acc_mod);
+					
+				}
+					 
+        
 				log_update();
 				tft_update();
 			}
