@@ -35,7 +35,7 @@ CPropertiesWnd::CPropertiesWnd()
 		OutputDebugString(_T("File opened \n"));
 		std::string line;
 		std::getline(file, line);
-		if (line == "Version 2.7 Settings") {
+		if (line == "Version 2.8 Settings") {
 			OutputDebugString(_T("Loading Settings"));
 			while (std::getline(file, line)) {
 				loaded_settings.push_back(std::basic_string<TCHAR>(CString(line.c_str(), line.size())));
@@ -52,7 +52,7 @@ CPropertiesWnd::~CPropertiesWnd()
 	file.open("settings.ini");
 
 	if (file.is_open()) {
-		file << "Version 2.7 Settings" << std::endl;
+		file << "Version 2.8 Settings" << std::endl;
 		for (int i = 0; i < saving_settings.size(); ++i) {
 			file << std::string(CT2CA(CString(saving_settings[i].c_str(), saving_settings[i].size()))) << std::endl;
 		}
