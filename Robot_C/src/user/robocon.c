@@ -361,6 +361,8 @@ void robocon_main(void)
 			if (ticks_img % 250 == 1) {
 				// Every 250 ms (4 Hz)
 				//battery_adc_update();
+				//send_string_s("hello\n", 6);
+				send_string("hi");
 			}
 			
 			

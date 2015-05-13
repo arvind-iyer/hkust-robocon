@@ -18,7 +18,7 @@
 #include "encoder.h"
 #include "ultrasonic_mb.h"
   //'C' or 'D'
-#define ROBOT 'D'
+#define ROBOT 'C'
 
 
 /*** Optional ***/
@@ -35,7 +35,7 @@
 #include "xbc_mb.h"
 #include "log.h"
 #include "nec_mb.h"
-
+#include "send_debug_data.h"
 
 #define TR_ACC_FAC			ROBOT=='C'?50:54
 #define TL_ACC_FAC			ROBOT=='C'?50:63 			
