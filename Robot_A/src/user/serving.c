@@ -71,8 +71,8 @@ void serving_init(void)
 	TIM_Cmd(SERVING_TIM, DISABLE);
 	
 	// Serving_IRQn NVIC init
-	NVIC_InitStructure.NVIC_IRQChannelPreemptionPriority = 1;
-	NVIC_InitStructure.NVIC_IRQChannelSubPriority = 1;
+	NVIC_InitStructure.NVIC_IRQChannelPreemptionPriority = 0;
+	NVIC_InitStructure.NVIC_IRQChannelSubPriority = 0;
 	NVIC_InitStructure.NVIC_IRQChannelCmd = ENABLE;
 	NVIC_InitStructure.NVIC_IRQChannel = SERVING_IRQn;
 	NVIC_Init(&NVIC_InitStructure);
@@ -262,7 +262,8 @@ void serving_hit_update(void)
 			serving_start_hitting_full_ticks = get_full_ticks();
 			
 			serving_encoder_target = get_encoder_value(SERVING_MOTOR) + SERVING_HIT_ENCODER_DIFF;
-			motor_set_vel(SERVING_MOTOR, serving_hit_speed, SERVING_HIT_MODE);
+			#warning PREV
+			//motor_set_vel(SERVING_MOTOR, serving_hit_speed, SERVING_HIT_MODE);
 			serving_hit_state = SERVING_RACKET_HITTING;
 			
 			
@@ -278,6 +279,7 @@ void serving_hit_update(void)
 				|| timeout)	// Timeout
 			{
 				// Target fulfilled
+				#warning prev
 				motor_set_vel(SERVING_MOTOR, 0, OPEN_LOOP);	// Motor stop (0 open loop)
 				serving_hit_state = SERVING_RACKET_STOP_HITTING;
 				serving_stop_hitting_full_ticks = get_full_ticks();
@@ -399,6 +401,7 @@ SERVING_IRQn_Handler
 		if (serving_hit_state == SERVING_SHUTTLECOCK_DROPPED) {
 			serving_hit_state = SERVING_RACKET_START_HITTING;
 			#warning
+			motor_set_vel(SERVING_MOTOR, serving_hit_speed, SERVING_HIT_MODE);
 			serving_update();
 			buzzer_control_note(2, 100, NOTE_A, 7);
 			//TIM_SetCounter(SERVING_TIM, 0);										// Reset counter

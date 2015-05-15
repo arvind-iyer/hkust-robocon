@@ -22,7 +22,7 @@ u8 xbc_command_rumble2[] = {0x08,0x00,0x08,0x00,0xff,0xff,0x00,0x00,0x00}; //
 u8 set_xbc_flag = 1;
 u8 get_state_xbc= 0;
 u8 array_s = 8;
-u8 xbc_id = 2;
+u8 xbc_id = 4;
 u8 usb_get_state(void)
 {
   return _state;

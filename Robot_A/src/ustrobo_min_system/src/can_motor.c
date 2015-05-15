@@ -57,6 +57,21 @@ void motor_set_vel(MOTOR_ID motor_id, s32 vel, CLOSE_LOOP_FLAG close_loop_flag)
 	msg.data[5] = (u8)(close_loop_flag);
 	
 	can_tx_enqueue(msg);
+	
+	#ifdef	CAN_MOTOR_DEBUGGING
+	static s32 prev_vel = -1;
+
+	
+	msg.id = get_can_motor_id(motor_id) + 0x400;
+	can_tx_enqueue(msg);
+	
+	if (prev_vel != vel && motor_id == CAN_MOTOR_DEBUGGING) {
+		msg.id = get_can_motor_id(motor_id) + 0x500;
+		prev_vel = vel;
+		can_tx_enqueue(msg);
+	}
+	#endif
+	
 }
 
 /**

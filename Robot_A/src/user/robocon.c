@@ -100,6 +100,7 @@ static void robocon_get_xbc(void)
 		}
 	}
 	
+	/***  ***/
 	if (button_pressed(BUTTON_XBC_E) == 1 || button_hold(BUTTON_XBC_E, 20, 1)) {
 		u16 delay = get_shuttle_drop_delay();
 		if (delay < 1000) {
@@ -108,6 +109,7 @@ static void robocon_get_xbc(void)
 		}
 	}
 	
+	/*** Decrease serving speed ***/
 	if (button_pressed(BUTTON_XBC_S) == 1 || button_hold(BUTTON_XBC_S, 20, 1)) {
 		s16 speed = get_serving_hit_speed();
 		if (speed > -1800) {
@@ -116,6 +118,7 @@ static void robocon_get_xbc(void)
 		}
 	}
 	
+	/*** Increase serving speed ***/
 	if (button_pressed(BUTTON_XBC_N) == 1 || button_hold(BUTTON_XBC_N, 20, 1)) {
 		s16 speed = get_serving_hit_speed();
 		if (speed < 1800) {
@@ -124,6 +127,7 @@ static void robocon_get_xbc(void)
 		}
 	}
 	
+	/*** Ultrasonic auto mode toggle ***/
 	if (button_pressed(BUTTON_XBC_XBOX) == 1) {
 		if (!serving_mode) {
 			CLICK_MUSIC;
@@ -133,6 +137,7 @@ static void robocon_get_xbc(void)
 		}
 	}
 	
+	/*** Anlge lock toggle ***/
 	if (button_pressed(BUTTON_XBC_START) == 1) {
 		CLICK_MUSIC;
 		angle_lock_mode = !angle_lock_mode; 
@@ -291,7 +296,7 @@ void robocon_main(void)
 				}
 				tft_prints(0, 6, "%d->%d", get_serving_encoder(), target_encoder);
 				
-				tft_prints(0, 7, "Serve:%dms,%d", get_shuttle_drop_delay(), get_serving_hit_speed());
+				tft_prints(0, 7, "Serve:%d,%d", get_shuttle_drop_delay(), get_serving_hit_speed());
 				
 				for (u8 i = 0; i < US_AUTO_DEVICE_COUNT; ++i) {
 					u16 dist = us_get_distance(i);

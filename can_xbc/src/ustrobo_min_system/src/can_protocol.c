@@ -194,7 +194,7 @@ u8 can_tx_enqueue(CAN_MESSAGE msg)
 	*/
 u8 can_tx_dequeue(void)
 {
-	if (!can_tx_queue_empty() && can_empty_mailbox() > 0) {
+	if (!can_tx_queue_empty() && can_empty_mailbox() == 3) {
 		CAN_MESSAGE msg = CAN_Tx_Queue.queue[CAN_Tx_Queue.head];
 		CanTxMsg TxMsg;
 		u8 data_length = msg.length;
@@ -216,7 +216,7 @@ u8 can_tx_dequeue(void)
 		}
 		
 		// If there are still empty mailbox, dequeue again
-		if (can_empty_mailbox() > 0) {
+		if (can_empty_mailbox() == 3) {
 			can_tx_dequeue();
 		}
 		

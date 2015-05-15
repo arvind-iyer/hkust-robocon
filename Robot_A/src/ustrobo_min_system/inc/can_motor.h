@@ -3,6 +3,9 @@
 
 #include "can_protocol.h"
 
+ #define	CAN_MOTOR_DEBUGGING					MOTOR5
+
+
 #define CAN_MOTOR_COUNT								16
 #define	CAN_MOTOR_BASE								0x0B0
 
