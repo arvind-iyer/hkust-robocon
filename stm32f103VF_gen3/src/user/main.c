@@ -28,6 +28,8 @@ int main(void)
   xbc_mb_init(XBC_BLUETOOTH_FIRST); 
 	wheel_base_init();
 	sensor_init();
+	us_mb_init();
+	
   //ultrasonic_init();
   //nec_init();
   /** For debugging **/

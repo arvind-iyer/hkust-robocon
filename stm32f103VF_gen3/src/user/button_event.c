@@ -2,6 +2,8 @@
 
 static bool speed_button_released_before = false;
 static bool home_pressed_before = false;
+static bool lb_pressed_before = false;
+static bool rb_pressed_before = false;
 static bool side_control = true;
 
 static u16 speed_ratio;
@@ -29,13 +31,7 @@ void button_event_update(void)
 		speed_divider = 1;
 	}
 	
-	if (button_pressed(BUTTON_XBC_LB) && button_pressed(BUTTON_XBC_RB)) {
-		angle_speed = 0;
-	} else if (button_pressed(BUTTON_XBC_LB)) {
-		angle_speed = -axis_speed * 0.35;
-	} else if (button_pressed(BUTTON_XBC_RB) ) {
-		angle_speed = axis_speed * 0.35;
-	} else if (xbc_get_joy(XBC_JOY_LT)!=0) {
+	if (xbc_get_joy(XBC_JOY_LT)!=0) {
 		angle_speed = -axis_speed * xbc_get_joy(XBC_JOY_LT) / 255;
 	} else if (xbc_get_joy(XBC_JOY_RT)!=0) {
 		angle_speed = axis_speed * xbc_get_joy(XBC_JOY_RT) / 255;
@@ -43,7 +39,9 @@ void button_event_update(void)
 		angle_speed = 0;
 	}
 	
-	if ( xbc_get_joy(XBC_JOY_LX) != 0 || xbc_get_joy(XBC_JOY_LY) != 0 ) {
+	if (button_pressed(BUTTON_XBC_LB) && button_pressed(BUTTON_XBC_RB)) {
+		button_event_wheel_base_set_vel(0, 0, 0);
+	} else if ( xbc_get_joy(XBC_JOY_LX) != 0 || xbc_get_joy(XBC_JOY_LY) != 0 ) {
 		if (side_control == true) {
 			button_event_wheel_base_set_vel(
 				axis_speed * -xbc_get_joy(XBC_JOY_LY) / 1000,	// x
@@ -137,6 +135,20 @@ void button_event_update(void)
 		speed_button_released_before = false;
 	} else if( !button_pressed(BUTTON_XBC_START) && !button_pressed(BUTTON_XBC_BACK) ) {
 		speed_button_released_before = true;
+	}
+	
+	if (button_pressed(BUTTON_XBC_LB)) {
+		sensor_off();
+	} else if (button_pressed(BUTTON_XBC_RB)) {
+		sensor_on();
+	}
+	
+	if ((button_pressed(BUTTON_XBC_Y) && button_pressed(BUTTON_XBC_B)) == false) {
+		if (button_pressed(BUTTON_XBC_Y)) {
+			sensor_decrease_delay();
+		} else if (button_pressed(BUTTON_XBC_B)) {
+			sensor_increase_delay();
+		}
 	}
 	
 	// Rackets & sensors

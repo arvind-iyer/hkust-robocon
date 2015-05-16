@@ -64,9 +64,7 @@ void robocon_main(void) {
 				tft_prints(0, 7, "UND: %d (%d)", has_underarm_daa_order(), when_underarm_daa_order());
 				/* tft_prints(0, 8, "%s%s", GPIO_ReadInputDataBit(GPIOE, FOREHAND) ? " [FOR] " : " FOR ",
 				                         GPIO_ReadInputDataBit(GPIOE, UNDERARM) ? " [UND] " : " UND "); */
-				tft_prints(0, 9, "%d %d %d", GPIO_ReadInputDataBit(GPIOA, IR_Sensor_1_Pin),
-				                             GPIO_ReadInputDataBit(GPIOA, IR_Sensor_2_Pin),
-				                             GPIO_ReadInputDataBit(GPIOA, IR_Sensor_3_Pin));
+				tft_prints(0, 9, "Delay: %d", get_sensor_delay());
 				
 				tft_update();
 				NVIC_EnableIRQ(EXTI15_10_IRQn);
