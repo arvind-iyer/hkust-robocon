@@ -68,3 +68,6 @@ Thumbs.db
 
 #Jlink log
 JLinkLog.txt
+
+# RoboconCtrl generated files
+*.csv
