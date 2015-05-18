@@ -92,7 +92,7 @@ void button_event_update(void)
 	// Speed mode adjustment
 	if ( speed_button_released_before && (button_pressed(BUTTON_XBC_START) || button_pressed(BUTTON_XBC_BACK) ) ) {
 		u8 speed_mode = wheel_base_get_speed_mode();
-		if ( button_pressed(BUTTON_XBC_START) && speed_mode < 9 ) {
+		if ( button_pressed(BUTTON_XBC_START) && speed_mode < 10 ) {
 			speed_mode += 1;
 		} else if ( button_pressed(BUTTON_XBC_BACK) && speed_mode > 0 ) {
 			speed_mode -= 1;
@@ -128,6 +128,9 @@ void button_event_update(void)
 				break;
 			case 9:
 				buzzer_play_song(SPEED_9, 200, 0);
+				break;
+			case 10:
+				buzzer_play_song(SPEED_10, 200, 0);
 				break;
 			default:
 				FAIL_MUSIC;
