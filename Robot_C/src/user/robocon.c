@@ -57,7 +57,7 @@ bool robot_xbc_controls(void)
 		wheel_base_set_target_pos((POSITION){get_pos()->x, get_pos()->y, get_pos()->angle});
 		turn_timer = get_full_ticks();
 	}
-	if(turn_timer + 100 > get_full_ticks())
+	if(turn_timer + 2000 > get_full_ticks())
 	{
 		wheel_base_set_target_pos((POSITION){get_pos()->x, get_pos()->y, get_pos()->angle});
 	}
