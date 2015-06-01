@@ -165,18 +165,31 @@ std::pair<std::string, BOOL> RobotMCtrl::read_string(std::string string_received
 	if (string_received.find_first_of(START_BYTE) != std::string::npos && string_received.find_first_of(END_BYTE) != std::string::npos) {
 		// Prune the start and stop bits from the string
 		std::string string = string_received.substr(string_received.find_first_of((char)START_BYTE) + 1, string_received.find_last_of((char)END_BYTE) - string_received.find_first_of((char)START_BYTE) - 1);
-		if (string[0] == 0x99 && string[1] == string.size() - 5 && string[string.size() - 3] == 0x99) {
+		
+		if ((BYTE)string[0] == 0x99 && (BYTE)string[1] == string.size() - 5 && (BYTE)string[string.size() - 3] == 0x99) {
 			std::string data;
-			for (int i = 0; i < string.size() - 5; i++) {
+			for (int i = 0; i <= string.size() - 6; i++) {
 				data.push_back(string[i + 2]);
 			}
+			OutputDebugString((std::wstring(CString(data.c_str(), data.size())) + _T("\n")).c_str());
 			char buffer[2] = { 0, 0 };
 			crc16(buffer, data.c_str(), data.size());
-			// Verifies data using CRC
-			if (string[string.size() - 5] == buffer[0] && string[string.size() - 5] == buffer[1]) {
 
-				return std::make_pair(string, TRUE);
-			}
+			std::basic_ostringstream<TCHAR> oss2;
+			oss2 << std::hex << std::setfill(_T('0')) << std::setw(2) << (BYTE)buffer[0] << " " << std::setw(2) << (BYTE)buffer[1] << std::endl;
+			
+			OutputDebugString((_T("Check bytes: ") + oss2.str() + _T("\n")).c_str());
+
+			std::basic_ostringstream<TCHAR> oss3;
+			oss3 << std::hex << std::setfill(_T('0')) << std::setw(2) << (BYTE)string[string.size() - 6] << " " << std::setw(2) << (BYTE)string[string.size() - 5] << std::endl;
+			OutputDebugString((_T("Protocol check bytes: ") + oss3.str() + _T("\n")).c_str());
+
+
+			// Verifies data using CRC
+			//if ((BYTE)string[string.size() - 6] == (BYTE)buffer[0] && (BYTE)string[string.size() - 5] == (BYTE)buffer[1]) {
+				OutputDebugString(_T("WTF\n"));
+				return std::make_pair(data, TRUE);
+			//}
 		}
 	}
 	return std::make_pair(std::string(), FALSE);
