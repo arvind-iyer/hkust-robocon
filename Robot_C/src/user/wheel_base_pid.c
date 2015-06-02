@@ -2,17 +2,18 @@
 s32 prev_error;
 s32 error;
 PID wheel_base_pid = {0,0,0};
+
 u16 integ_dw_index = 0,integ_dx_index = 0,integ_dy_index = 0;
 s32 integ_dw_list[20] = {0,0,0,0,0,
 												 0,0,0,0,0,
 												 0,0,0,0,0,
 												 0,0,0,0,0};
-
+ 
 s32 integ_dx_list[10] = {0,0,0,0,0,
 												 0,0,0,0,0};/*,
 												 0,0,0,0,0,
 												 0,0,0,0,0};*/
-
+ 
 s32 integ_dy_list[10] = {0,0,0,0,0,
 												 0,0,0,0,0};/*,
 												 0,0,0,0,0,
@@ -56,7 +57,7 @@ s32 pid_maintain_angle(void)
 	w+=(w/Abs(w))*(wi/2);
 	
 	
-	w = Abs(w) < 26? w*26/Abs(w) : w;
+	w = Abs(w) < 28? w*28/Abs(w) : w;
 	w = Abs(w) > 70 ? w*70/Abs(w) : w;
 	wheel_base_set_vel(curr_vel.x, curr_vel.y, w);
 

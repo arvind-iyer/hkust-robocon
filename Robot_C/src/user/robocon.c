@@ -42,6 +42,7 @@ bool robot_xbc_controls(void)
 	int dw = (xbc_get_joy(XBC_JOY_RT)-xbc_get_joy(XBC_JOY_LT))/5;
 	
 
+
 	
 	
 	int vx = xbc_get_joy(XBC_JOY_LX);
@@ -57,7 +58,7 @@ bool robot_xbc_controls(void)
 		wheel_base_set_target_pos((POSITION){get_pos()->x, get_pos()->y, get_pos()->angle});
 		turn_timer = get_full_ticks();
 	}
-	if(turn_timer + 2000 > get_full_ticks())
+	if(turn_timer + 200 > get_full_ticks())
 	{
 		wheel_base_set_target_pos((POSITION){get_pos()->x, get_pos()->y, get_pos()->angle});
 	}
@@ -78,6 +79,7 @@ bool robot_xbc_controls(void)
 			br = WHEEL_BASE_BR_ACC,
 			tl = WHEEL_BASE_TL_ACC,
 			tr = WHEEL_BASE_TR_ACC;
+	
 	if(get_ticks() % 500 == 0)
 	{
 		log("BL_acc : ",  (acc_mod) * bl / 100);
@@ -91,7 +93,15 @@ bool robot_xbc_controls(void)
 	motor_set_acceleration(MOTOR_TOP_LEFT,(acc_mod * tl)/100);
 	motor_set_acceleration(MOTOR_TOP_RIGHT, (acc_mod * tr)/100);
 	
+	//y = r*cos(theta)
+	//x = r*sin(theta)
+	int theta = int_arc_tan2(xbc_get_joy(XBC_JOY_RY), xbc_get_joy(XBC_JOY_RX));
+	theta = theta - 90;
+	if(theta < 0)
+		theta = 360 + theta;
+	theta = 360 - theta;
 	
+	log("Theta: ", theta);
 	
 	/*
 	80 = up
@@ -102,7 +112,7 @@ bool robot_xbc_controls(void)
 	//Function Keys 
 	
 	if (ROBOT=='C')
-		robot_c_function_controls();
+	 	robot_c_function_controls();
 	if (ROBOT=='D')
 		robot_d_function_controls();
 	
