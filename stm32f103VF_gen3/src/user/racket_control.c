@@ -86,7 +86,10 @@ void sensor_update(void) {
 		}
 	} */
 
-	if ((us_get_distance(2) > 0 && us_get_distance(2) < 823) || (us_get_distance(4) > 0 && us_get_distance(4) < 823)) {
+	if (
+		(us_get_distance(2) > 0 && us_get_distance(2) < 823) ||
+		(us_get_distance(4) > 0 && us_get_distance(4) < 823)
+	) {
 		// Forehand sensors
 		if (use_sensor == 1 && forehand_daa_order == 0) {
 			SUCCESSFUL_MUSIC;

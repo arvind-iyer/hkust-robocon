@@ -57,15 +57,14 @@ void robocon_main(void) {
 				tft_prints(0, 2, "Speed: %d", wheel_base_get_speed_mode());
 				tft_prints(0, 3, "(%-4d,%-4d,%-4d)", get_pos()->x, get_pos()->y,get_pos()->angle);
 				tft_prints(0, 4, "%s", wheel_base_get_pid_flag() ? "[AUTO]" : "MANUAL");
-				tft_prints(0, 5, "(%-4d,%-4d,%-4d)", wheel_base_get_target_pos().x, wheel_base_get_target_pos().y, wheel_base_get_target_pos().angle);
-				char s[3] = {special_char_handler_bt_get_last_char(), '\0'};
-				
-				tft_prints(0, 6, "FOR: %d (%d)", has_forehand_daa_order(), when_forehand_daa_order());
-				tft_prints(0, 7, "UND: %d (%d)", has_underarm_daa_order(), when_underarm_daa_order());
-				/* tft_prints(0, 8, "%s%s", GPIO_ReadInputDataBit(GPIOE, FOREHAND) ? " [FOR] " : " FOR ",
-				                         GPIO_ReadInputDataBit(GPIOE, UNDERARM) ? " [UND] " : " UND "); */
-				tft_prints(0, 9, "Delay: %d", get_sensor_delay());
-				
+				//tft_prints(0, 5, "(%-4d,%-4d,%-4d)", wheel_base_get_target_pos().x, wheel_base_get_target_pos().y, wheel_base_get_target_pos().angle);
+				//char s[3] = {special_char_handler_bt_get_last_char(), '\0'};
+				// tft_prints(0, 6, "FOR: %d (%d)", has_forehand_daa_order(), when_forehand_daa_order());
+				// tft_prints(0, 7, "UND: %d (%d)", has_underarm_daa_order(), when_underarm_daa_order());
+				tft_prints(0, 5, "Delay: %d", get_sensor_delay());
+				tft_prints(1, 7, "(%3d) F (%3d)", get_mvtl(), get_mvtr());
+				tft_prints(1, 8, "  L       R  ");
+				tft_prints(1, 9, "(%3d) B (%3d)", get_mvbl(), get_mvbr());
 				tft_update();
 				NVIC_EnableIRQ(EXTI15_10_IRQn);
 			}

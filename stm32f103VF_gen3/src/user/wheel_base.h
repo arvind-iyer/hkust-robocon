@@ -23,8 +23,8 @@
 #define WHEEL_BASE_REGULAR_CAN_TX							2000
 
 // Wheel-base speed related
-#define	WHEEL_BASE_XY_VEL_RATIO								808		//  Default: 707 (70.7%)
-#define	WHEEL_BASE_W_VEL_RATIO								-800		//	Default: -800 -80.0%
+#define	WHEEL_BASE_XY_VEL_RATIO								1000		//  Last tested value: 808 (80.8%)
+#define	WHEEL_BASE_W_VEL_RATIO								-500		//	Last tested value: -500 (-80.0%)
 static const u16 SPEED_MODES[11] =	// In percentage (20 = 20%)
 {
 	0, 10, 20, 30, 40, 50, 60, 70, 80, 90, 100
