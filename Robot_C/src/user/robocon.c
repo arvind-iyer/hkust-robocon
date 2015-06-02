@@ -22,6 +22,9 @@ bool sensors_activated = 0;
 u16 prev_vels[50] = { 0 };
 u16 vel_index = 0;
 u16 acc_mod = 0;
+
+s32 angle = 0;
+
 bool robot_xbc_controls(void)
 {
 	//Update Button Data
@@ -39,8 +42,8 @@ bool robot_xbc_controls(void)
 	//Analog Movement
 	
 	
-	int dw = (xbc_get_joy(XBC_JOY_RT)-xbc_get_joy(XBC_JOY_LT))/5;
-	
+	//int dw = (xbc_get_joy(XBC_JOY_RT)-xbc_get_joy(XBC_JOY_LT))/5;
+	int dw = pid_maintain_angle();
 
 
 	
@@ -52,6 +55,7 @@ bool robot_xbc_controls(void)
 	int dy = vy/Abs(vy) * (vy * vy / Sqrt( Sqr(Abs(vx)) + Sqr(Abs(vy))));
 
 	float angle_mod = 1 + (Sqr(acc_mod) / 80000);
+	/*
 	if(dw != 0)
 	{
 		
@@ -66,7 +70,22 @@ bool robot_xbc_controls(void)
 	{
 		dw += (Abs(vx) + Abs(vy)) ? pid_maintain_angle() * 2: pid_maintain_angle();
 	}
-
+	*/
+	
+	if(!(xbc_get_joy(XBC_JOY_RX) == 0 && xbc_get_joy(XBC_JOY_RX) == 0))
+	{
+		angle = int_arc_tan2(xbc_get_joy(XBC_JOY_RY), xbc_get_joy(XBC_JOY_RX));
+		angle = angle - 90;
+		if(angle < 0)
+			angle = 360 + angle;
+		angle = 360 - angle;
+		if(angle == 360)
+			angle = 0;
+		
+		wheel_base_set_target_pos((POSITION){get_pos()->x, get_pos()->y, 10*angle});
+	
+	}
+	
 	wheel_base_set_vel(dx, dy, dw);
 	
 	prev_vels[(vel_index++)%(sizeof(prev_vels)/sizeof(prev_vels[0]))] = (Sqrt(Sqr(Abs(dx)) + Sqr(Abs(dy))+ Sqr(Abs(dw))))/20;
@@ -80,14 +99,7 @@ bool robot_xbc_controls(void)
 			tl = WHEEL_BASE_TL_ACC,
 			tr = WHEEL_BASE_TR_ACC;
 	
-	if(get_ticks() % 500 == 0)
-	{
-		log("BL_acc : ",  (acc_mod) * bl / 100);
-		log("BR_acc : ",  (acc_mod * br / 100));
-		log("TL_acc : ",  (acc_mod) * tl / 100);
-		log("TR_acc : ",  (acc_mod * tr / 100));
-	}
-  
+	 
 	motor_set_acceleration(MOTOR_BOTTOM_RIGHT,(acc_mod * br)/100);
 	motor_set_acceleration(MOTOR_BOTTOM_LEFT,(acc_mod * bl)/100);
 	motor_set_acceleration(MOTOR_TOP_LEFT,(acc_mod * tl)/100);
@@ -95,14 +107,8 @@ bool robot_xbc_controls(void)
 	
 	//y = r*cos(theta)
 	//x = r*sin(theta)
-	int theta = int_arc_tan2(xbc_get_joy(XBC_JOY_RY), xbc_get_joy(XBC_JOY_RX));
-	theta = theta - 90;
-	if(theta < 0)
-		theta = 360 + theta;
-	theta = 360 - theta;
 	
-	log("Theta: ", theta);
-	
+		
 	/*
 	80 = up
 	81= down
@@ -424,15 +430,14 @@ void robocon_main(void)
 				if(ROBOT=='C')
 				{ 
 						tft_prints(0,2,"Acc: %d", acc_mod);
-					
+						tft_prints(0,3,"Angle: %d", angle);
 				}
 				else
 				{
 					tft_prints(0,2,"Encoder: %d", get_encoder_value(RACKET));
 					tft_prints(0,3,"Serve_delay: %d",serve_get_delay());
 					tft_prints(0,4,"Racket: %d", serve_get_vel());
-					tft_prints(0,5,"Acc: %d", acc_mod);
-					
+					tft_prints(0,5,"Angle: %d", angle);
 				}
 					 
         
