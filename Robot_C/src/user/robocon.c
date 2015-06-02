@@ -55,7 +55,6 @@ bool robot_xbc_controls(void)
 	int dy = vy/Abs(vy) * (vy * vy / Sqrt( Sqr(Abs(vx)) + Sqr(Abs(vy))));
 
 	float angle_mod = 1 + (Sqr(acc_mod) / 80000);
-	/*
 	if(dw != 0)
 	{
 		
@@ -70,9 +69,9 @@ bool robot_xbc_controls(void)
 	{
 		dw += (Abs(vx) + Abs(vy)) ? pid_maintain_angle() * 2: pid_maintain_angle();
 	}
-	*/
 	
-	if(!(xbc_get_joy(XBC_JOY_RX) == 0 && xbc_get_joy(XBC_JOY_RX) == 0))
+	/*
+	if(!(xbc_get_joy(XBC_JOY_RX) == 0 && xbc_get_joy(XBC_JOY_RY) == 0))
 	{
 		angle = int_arc_tan2(xbc_get_joy(XBC_JOY_RY), xbc_get_joy(XBC_JOY_RX));
 		angle = angle - 90;
@@ -85,6 +84,7 @@ bool robot_xbc_controls(void)
 		wheel_base_set_target_pos((POSITION){get_pos()->x, get_pos()->y, 10*angle});
 	
 	}
+	*/
 	
 	wheel_base_set_vel(dx, dy, dw);
 	
