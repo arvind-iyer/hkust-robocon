@@ -29,6 +29,7 @@ void serve_lock(void);
 void serve_calibrate(void);		// THIS IS ALSO THE FUNCTION U CALL
 void serve_hit(void);		// DO NOT CALL THIS FUNCTION
 void serve_start(void);		// THIS IS FUNCTION U CALL
+void fake_serve_start(void);
 
 // primary control
 void toggle_serve_pneu(void);

@@ -205,6 +205,19 @@ void serve_hit(void)
 	}
 	
 }
+void fake_serve_start(void)
+{
+	if (!is_released && calibrated && !serve_hit_queued && !hitting && !calibrate_in_process)
+	{
+		hitting=1;
+		calibrated=0;
+		serve_hit_queued=0;
+		motor_set_vel(RACKET,SERVE_HIT_VEL,OPEN_LOOP);
+		serve_hit_start_time=get_full_ticks();
+		
+	}
+	
+}
 
 
 /*************getter and setter functions ***********************/

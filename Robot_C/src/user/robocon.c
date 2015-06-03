@@ -183,6 +183,8 @@ void robot_d_function_controls(void)
 	if(button_pressed(BUTTON_XBC_A))
 		racket_hit();
 	//Calibrate
+	else if (button_pressed(BUTTON_XBC_LB) && button_pressed(BUTTON_XBC_B))
+		fake_serve_start();
 	else if(button_pressed(BUTTON_XBC_B))
 		serve_start();
 	else if(button_pressed(BUTTON_XBC_X))//Not essential
@@ -199,6 +201,8 @@ void robot_d_function_controls(void)
 	else if (button_pressed(BUTTON_XBC_E) && button_pressed(BUTTON_XBC_Y))
 		serve_change_vel(2);
 		//minus_x();
+	
+	
 	if (button_pressed(BUTTON_XBC_START))
 	{
 		serve_free();
@@ -365,7 +369,7 @@ void robocon_main(void)
 			//{
 				if (sensors_activated && !serve_prioritized())
 					sensors_update();			// only update sensors when serve is not prioritized.
-				racket_update();
+				//racket_update();
 			//}
 			if (ticks_img % 10 == 0) {
         //wheel_base_update();	//wheel_base_update now also handles auto positioning system
