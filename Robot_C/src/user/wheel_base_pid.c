@@ -29,38 +29,41 @@ s32 pid_maintain_angle(void)
 	
 	s32 dw = target.angle - get_pos()->angle;
 	s32 w = 0; 
-	if( (curr_pos.angle !=  target.angle))
-	{
-		if((dw<= 1800 && dw >= 0) || (-dw > 1800))
-		{
-			//Move right
-			w = 1;
-		}
-		else if((dw > 1800) || (-dw < 1800 && dw < 0))
-		{
-			//Move left
-			w = -1;
-		}
+	
+	if (dw > 1800) {
+		dw -= 3600;
+	} else if (dw < -1800) {
+		dw += 3600;
+	}	
+	
+	
+	if(dw >= 0) {
+		//Move right
+		w = 1;
+	} else if (dw < 0) {
+		//Move left
+		w = -1;
 	}
-	if(Abs(dw)> 1800) dw = 3600 - Abs(dw);
-	w = w*Abs(dw)/25;
+	
+	w = w*Abs(dw)/4;
 	//Setting velocity to be minimum magnitude of 19 and max of 50
 	
 	//Add integral factor
-	integ_dw_list[integ_dw_index++] = dw/40;
+	integ_dw_list[integ_dw_index++] = dw;
 	if(integ_dw_index >= 12) integ_dw_index = 0;
 	s32 wi = 0;
 	for (int i = 0; i < 12; i++)
 	{
-		wi+=Abs(integ_dw_list[i]);
+		wi+=Abs(integ_dw_list[i])/25;
 	}
 	w+=(w/Abs(w))*(wi/2);
 	
-	
-	w = Abs(w) < 28? w*28/Abs(w) : w;
-	w = Abs(w) > 70 ? w*70/Abs(w) : w;
-	wheel_base_set_vel(curr_vel.x, curr_vel.y, w);
-
+	if (Abs(dw) >= 10) {
+		w = Abs(w) < 15? w*15/Abs(w) : w;
+		w = Abs(w) > 70 ? w*70/Abs(w) : w;
+	} else {
+		w = 0;
+	}
 	return w;
 }
 

@@ -7,7 +7,7 @@ static u32 last_sent_OS_time = 0;
 static bool key_trigger_enable = true;
 static bool servo_released = false;
 static bool use_xbc_input = false;
-
+static bool force_terminate = false;
 static u16 prev_ticks=-1;
 static u16 turn_timer=-1;
 
@@ -51,24 +51,28 @@ bool robot_xbc_controls(void)
 	int vx = xbc_get_joy(XBC_JOY_LX);
 	int vy = xbc_get_joy(XBC_JOY_LY);
 	
-	int dx = vx/Abs(vx) * (vx * vx / Sqrt( Sqr(Abs(vx)) + Sqr(Abs(vy))));
-	int dy = vy/Abs(vy) * (vy * vy / Sqrt( Sqr(Abs(vx)) + Sqr(Abs(vy))));
+	int dx = vx;
+	int dy = vy;
+  int omega = (xbc_get_joy(XBC_JOY_RT)-xbc_get_joy(XBC_JOY_LT))/5;
+	const int speed_factor = 12;
+  static int accumulated_omega = 0;
+	static int target_angle = 0;
 
-	float angle_mod = 1 + (Sqr(acc_mod) / 80000);
-	if(dw != 0)
-	{
-		
-		wheel_base_set_target_pos((POSITION){get_pos()->x, get_pos()->y, get_pos()->angle});
-		turn_timer = get_full_ticks();
+  accumulated_omega += omega % speed_factor;
+  int incremental = accumulated_omega / speed_factor;
+  if (incremental != 0) {
+    target_angle += incremental;
+    accumulated_omega -= incremental * speed_factor; 
+  }
+	target_angle += omega / speed_factor;
+	if (target_angle < 0) {
+		target_angle += 3600;
+	} else if (target_angle > 3599) {
+		target_angle -= 3600;
 	}
-	if(turn_timer + 200 > get_full_ticks())
-	{
-		wheel_base_set_target_pos((POSITION){get_pos()->x, get_pos()->y, get_pos()->angle});
-	}
-	else 
-	{
-		dw += (Abs(vx) + Abs(vy)) ? pid_maintain_angle() * 2: pid_maintain_angle();
-	}
+
+	wheel_base_set_target_pos((POSITION){get_pos()->x, get_pos()->y, target_angle});
+
 	
 	/*
 	if(!(xbc_get_joy(XBC_JOY_RX) == 0 && xbc_get_joy(XBC_JOY_RY) == 0))
@@ -162,6 +166,13 @@ void robot_c_function_controls(void)
 
 void robot_d_function_controls(void)
 {
+  if (button_hold(BUTTON_XBC_XBOX, 10, 1)) {
+    force_terminate = true;
+    return;
+  } else if (button_released(BUTTON_XBC_XBOX)) {
+    force_terminate = false;
+  }
+  
 	// enable sensors
 	if(button_pressed(BUTTON_XBC_RB))
 		sensors_activated=1;
@@ -367,12 +378,19 @@ void robocon_main(void)
           return;
         }
 			}
-			
-			// wheel_base update
-			if (ticks_img % 5 == 1) {
-        wheel_base_update();
+			if (!force_terminate) {
+				// wheel_base update
+				if (ticks_img % 5 == 1) {
+					wheel_base_update();
+				}
+			} else {
+				wheel_base_set_vel(0, 0, 0);
+				motor_set_vel(MOTOR_BOTTOM_RIGHT, 0, OPEN_LOOP);
+				motor_set_vel(MOTOR_BOTTOM_LEFT, 0, OPEN_LOOP);
+				motor_set_vel(MOTOR_TOP_RIGHT, 0, OPEN_LOOP);
+				motor_set_vel(MOTOR_TOP_LEFT, 0, OPEN_LOOP);
+				serve_free();
 			}
-				
 				
 			if (ticks_img % 250 == 1) {
 				// Every 250 ms (4 Hz)
@@ -437,11 +455,11 @@ void robocon_main(void)
 					tft_prints(0,2,"Encoder: %d", get_encoder_value(RACKET));
 					tft_prints(0,3,"Serve_delay: %d",serve_get_delay());
 					tft_prints(0,4,"Racket: %d", serve_get_vel());
-					tft_prints(0,5,"Angle: %d", angle);
+          tft_prints(0,5,"Target: %d", wheel_base_get_target_pos().angle);
+					tft_prints(0,6,"Angle: %d", get_pos()->angle);
 				}
 					 
         
-				log_update();
 				tft_update();
 			}
 			
