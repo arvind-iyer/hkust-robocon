@@ -56,8 +56,8 @@ void robocon_main(void) {
 				tft_prints(0, 1, "V:(%3d,%3d,%3d)", vel.x, vel.y, vel.w);
 				tft_prints(0, 2, "Speed: %d", wheel_base_get_speed_mode());
 				tft_prints(0, 3, "(%-4d,%-4d,%-4d)", get_pos()->x, get_pos()->y,get_pos()->angle);
-				tft_prints(0, 4, "%s", wheel_base_get_pid_flag() ? "[AUTO]" : "MANUAL");
-				
+				//tft_prints(0, 4, "%s", wheel_base_get_pid_flag() ? "[AUTO]" : "MANUAL");
+				tft_prints(0, 4, "%s", button_event_is_side_control() ? "[SIDE CONTROL]" : "NORMAL CONTROL");
 				
 				tft_prints(0, 7, "(%4d) F (%4d)", wheel_base_get_vel_top_left(), wheel_base_get_vel_top_right());
 				tft_prints(0, 8, "  L         R  ");

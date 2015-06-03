@@ -200,3 +200,7 @@ void button_event_update(void)
 	}
 	
 }
+
+bool button_event_is_side_control(void) {
+	return side_control;
+}

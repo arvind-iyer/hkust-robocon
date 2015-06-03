@@ -39,5 +39,6 @@
 #define	BUTTON_PS4_HOME			BUTTON_XBC_XBOX
 
 void button_event_update(void);
+bool button_event_is_side_control(void);
 
 #endif
