@@ -1,16 +1,15 @@
 #include "button_event.h"
 
 static bool speed_button_released_before = false;
-static bool home_pressed_before = false;
-static bool lb_pressed_before = false;
-static bool rb_pressed_before = false;
 static bool side_control = true;
+
+static u32 home_holding_count = 0;
+static u32 start_and_select_holding_count = 0;
 
 static u16 speed_ratio;
 static s32 axis_speed;
 static s32 diagonal_speed;
 static s32 angle_speed;
-static s32 speed_divider = 1;
 
 void button_event_wheel_base_set_vel(s32 x, s32 y, s32 w) {
 	wheel_base_set_vel(x, y, w);
@@ -25,10 +24,16 @@ void button_event_update(void)
 	/* s32 */ diagonal_speed = ANALOG_SPEED * 707 / 1000 * speed_ratio / 100;
 	/* s32 angle_speed */;
 	
-	if (button_pressed(BUTTON_XBC_A)) {
-		speed_divider = 2;
+	if (button_pressed(BUTTON_XBC_XBOX)) {
+		home_holding_count += 1;
 	} else {
-		speed_divider = 1;
+		home_holding_count = 0;
+	}
+		
+	if (button_pressed(BUTTON_PS4_SELECT) && button_pressed(BUTTON_PS4_START)) {
+		start_and_select_holding_count += 1;
+	} else {
+		start_and_select_holding_count = 0;
 	}
 	
 	if (xbc_get_joy(XBC_JOY_LT)!=0) {
@@ -55,38 +60,65 @@ void button_event_update(void)
 				angle_speed
 			);
 		}
-	} else if ( button_pressed(BUTTON_XBC_N) ) {
-		button_event_wheel_base_set_vel(0, axis_speed, angle_speed);
-	} else if ( button_pressed(BUTTON_XBC_E) ) {
-		button_event_wheel_base_set_vel(axis_speed, 0, angle_speed);
-	} else if ( button_pressed(BUTTON_XBC_S) ) {
-		button_event_wheel_base_set_vel(0, -axis_speed, angle_speed);
-	} else if ( button_pressed(BUTTON_XBC_W) ) {
-		button_event_wheel_base_set_vel(-axis_speed, 0, angle_speed);
+	} else if ( button_pressed(BUTTON_PS4_UP) ) {
+		if (side_control == 0) {
+			button_event_wheel_base_set_vel(0, axis_speed, angle_speed);
+		} else { // 左
+			button_event_wheel_base_set_vel(-axis_speed, 0, angle_speed);
+		}
+	} else if ( button_pressed(BUTTON_PS4_RIGHT) ) {
+		if (side_control == 0) {
+			button_event_wheel_base_set_vel(axis_speed, 0, angle_speed);
+		} else { // 前
+			button_event_wheel_base_set_vel(0, axis_speed, angle_speed);
+		}
+	} else if ( button_pressed(BUTTON_PS4_DOWN) ) {
+		if (side_control == 0) {
+			button_event_wheel_base_set_vel(0, -axis_speed, angle_speed);
+		} else { // 右
+			button_event_wheel_base_set_vel(axis_speed, 0, angle_speed);
+		}
+	} else if ( button_pressed(BUTTON_PS4_LEFT) ) {
+		if (side_control == 0) {
+			button_event_wheel_base_set_vel(-axis_speed, 0, angle_speed);
+		} else { // 後
+			button_event_wheel_base_set_vel(0, -axis_speed, angle_speed);
+		}
 	} else if ( button_pressed(BUTTON_XBC_NE) ) {
-		button_event_wheel_base_set_vel(diagonal_speed, diagonal_speed, angle_speed);
+		if (side_control == 0) {
+			button_event_wheel_base_set_vel(diagonal_speed, diagonal_speed, angle_speed);
+		} else { // 左前 (NW)
+			button_event_wheel_base_set_vel(-diagonal_speed, diagonal_speed, angle_speed);
+		}
 	} else if ( button_pressed(BUTTON_XBC_SE) ) {
-		button_event_wheel_base_set_vel(diagonal_speed, -diagonal_speed, angle_speed);
+		if (side_control == 0) {
+			button_event_wheel_base_set_vel(diagonal_speed, -diagonal_speed, angle_speed);
+		} else { // 右前 (NE)
+			button_event_wheel_base_set_vel(diagonal_speed, diagonal_speed, angle_speed);
+		}
 	} else if ( button_pressed(BUTTON_XBC_SW) ) {
-		button_event_wheel_base_set_vel(-diagonal_speed, -diagonal_speed, angle_speed);
+		if (side_control == 0) {
+			button_event_wheel_base_set_vel(-diagonal_speed, -diagonal_speed, angle_speed);
+		} else { // 右後 (SE)
+			button_event_wheel_base_set_vel(diagonal_speed, -diagonal_speed, angle_speed);
+		}
 	} else if ( button_pressed(BUTTON_XBC_NW) ) {
-		button_event_wheel_base_set_vel(-diagonal_speed, diagonal_speed, angle_speed);
+		if (side_control == 0) {
+			button_event_wheel_base_set_vel(-diagonal_speed, diagonal_speed, angle_speed);
+		} else { // 左後 (SW)
+			button_event_wheel_base_set_vel(-diagonal_speed, -diagonal_speed, angle_speed);
+		}
 	} else if ( angle_speed != 0 ) {
 		button_event_wheel_base_set_vel(0, 0, angle_speed);
 	}
 	
-	if (button_pressed(BUTTON_XBC_XBOX) || (button_pressed(BUTTON_XBC_R_JOY) && button_pressed(BUTTON_XBC_BACK)) ) {
-		if (home_pressed_before == false) {
-			side_control = !side_control;
-			if (side_control) {
-				buzzer_play_song(SIDE_CONTROL_ON_SOUND, 200, 0);
-			} else {
-				buzzer_play_song(SIDE_CONTROL_OFF_SOUND, 200, 0);
-			}
-			home_pressed_before = true;
+	if (home_holding_count == 1 || start_and_select_holding_count == 1 ) {
+		side_control = !side_control;
+		if (side_control) {
+			buzzer_play_song(SIDE_CONTROL_ON_SOUND, 120, 0);
+		} else {
+			buzzer_play_song(SIDE_CONTROL_OFF_SOUND, 120, 0);
 		}
-	} else {
-		home_pressed_before = false;
 	}
 	
 	// Speed mode adjustment

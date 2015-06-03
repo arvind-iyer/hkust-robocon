@@ -13,6 +13,8 @@ static u8 wheel_base_pid_flag = 0;
 static POSITION target_pos = {0, 0, 0};
 static PID wheel_base_pid = {0, 0, 0};
 
+static s32 x_wheel_base_acc, y_wheel_base_acc;
+
 /**
 	* @brief Handler for the bluetooth RX with id 0x4?
 	* @param id: ID of the RX package
@@ -76,18 +78,6 @@ static void wheel_base_auto_bluetooth_decode(u8 id, u8 length, u8* data)
 	}
 }
 
-static void stop_all_motors(void)
-{
-	while(1) {
-		motor_lock(MOTOR1);
-		motor_lock(MOTOR2);
-		motor_lock(MOTOR3);
-		motor_lock(MOTOR4);
-		motor_lock(MOTOR5);
-		motor_lock(MOTOR6);
-	}
-}
-
 /**
 	* @brief Initialization of wheel base, including bluetooth rx filter, and all related variables
 	*/
@@ -95,7 +85,7 @@ void wheel_base_init(void)
 {
 	bluetooth_rx_add_filter(BLUETOOTH_WHEEL_BASE_VEL_ID, 0xF0, wheel_base_bluetooth_decode);
   bluetooth_rx_add_filter(BLUETOOTH_WHEEL_BASE_AUTO_POS_ID, 0xF0, wheel_base_auto_bluetooth_decode);
-	register_special_char_function(' ', stop_all_motors);
+	// bluetooth_rx_add_filter(BLUETOOTH_WHEEL_BASE_CHAR_ID, 0xFF, wheel_base_char_bluetooth_decode);
 	wheel_base_vel.x = wheel_base_vel.y = wheel_base_vel.w = 0;
 	wheel_base_bluetooth_vel_last_update = 0;
 	wheel_base_last_can_tx = 0;
@@ -131,10 +121,10 @@ u8 wheel_base_get_speed_mode(void)
 	*/
 void wheel_base_tx_acc(void)
 {
-	motor_set_acceleration(MOTOR_BOTTOM_RIGHT,WHEEL_BASE_BR_ACC);
-	motor_set_acceleration(MOTOR_BOTTOM_LEFT,WHEEL_BASE_BL_ACC);
-	motor_set_acceleration(MOTOR_TOP_LEFT,WHEEL_BASE_TL_ACC);
-	motor_set_acceleration(MOTOR_TOP_RIGHT,WHEEL_BASE_TR_ACC);
+	motor_set_acceleration(MOTOR_BOTTOM_RIGHT, WHEEL_BASE_BR_ACC);
+	motor_set_acceleration(MOTOR_BOTTOM_LEFT,  WHEEL_BASE_BL_ACC);
+	motor_set_acceleration(MOTOR_TOP_LEFT,     WHEEL_BASE_TL_ACC);
+	motor_set_acceleration(MOTOR_TOP_RIGHT,    WHEEL_BASE_TR_ACC);
 }
 
 
@@ -162,11 +152,6 @@ WHEEL_BASE_VEL wheel_base_get_vel(void)
 	return wheel_base_vel;
 }
 
-WHEEL_BASE_VEL wheel_base_get_vel_prev(void)
-{
-	return wheel_base_vel_prev;
-}
-
 /**
 	* @brief Check if the wheel base velocity is different from the previous one
 	* @param None
@@ -177,9 +162,8 @@ u8 wheel_base_vel_diff(void)
 	return wheel_base_vel.x != wheel_base_vel_prev.x || wheel_base_vel.y != wheel_base_vel_prev.y || wheel_base_vel.w != wheel_base_vel_prev.w;
 }
 
-
 s32 simulate_acceleration(s32 current_vel, s32 target_vel, s32 wheel_base_accel) {
-	if (target_vel <= current_vel + wheel_base_accel && target_vel >= current_vel - wheel_base_accel) {
+	if (target_vel <= (current_vel + wheel_base_accel) && target_vel >= (current_vel - wheel_base_accel)) {
 		return target_vel;
 	}
 	if (target_vel > current_vel + wheel_base_accel) {
@@ -205,13 +189,12 @@ void wheel_base_update() {
 		}
 	}
 	
-	if (wheel_base_vel_diff()) {
+	/* if (wheel_base_vel_diff()) {
 		int x_error = abs(wheel_base_vel.x);
 		int y_error = abs(wheel_base_vel.y);
 		if (x_error==0)		x_error = 1;
 		if (y_error==0)		y_error = 1;
 		
-		s32 x_wheel_base_acc, y_wheel_base_acc;
 		if (x_error > y_error) {
 			x_wheel_base_acc = wheel_base_acc;
 			y_wheel_base_acc = wheel_base_acc * y_error / x_error;
@@ -222,12 +205,17 @@ void wheel_base_update() {
 		wheel_base_vel_prev.x = simulate_acceleration(wheel_base_vel_prev.x, wheel_base_vel.x, x_wheel_base_acc);
 		wheel_base_vel_prev.y = simulate_acceleration(wheel_base_vel_prev.y, wheel_base_vel.y, y_wheel_base_acc);
 		wheel_base_vel_prev.w = simulate_acceleration(wheel_base_vel_prev.w, wheel_base_vel.w, wheel_base_acc);
-	}
+	}	
 	
 	mvtl = ((-wheel_base_vel_prev.y - wheel_base_vel_prev.x) * WHEEL_BASE_XY_VEL_RATIO + wheel_base_vel_prev.w * WHEEL_BASE_W_VEL_RATIO) / 1000;
 	mvtr = ((wheel_base_vel_prev.y - wheel_base_vel_prev.x) * WHEEL_BASE_XY_VEL_RATIO + wheel_base_vel_prev.w * WHEEL_BASE_W_VEL_RATIO) / 1000;
 	mvbl = ((-wheel_base_vel_prev.y  + wheel_base_vel_prev.x) * WHEEL_BASE_XY_VEL_RATIO	+ wheel_base_vel_prev.w * WHEEL_BASE_W_VEL_RATIO) / 1000;
-	mvbr = ((wheel_base_vel_prev.y + wheel_base_vel_prev.x) * WHEEL_BASE_XY_VEL_RATIO + wheel_base_vel_prev.w * WHEEL_BASE_W_VEL_RATIO) / 1000;
+	mvbr = ((wheel_base_vel_prev.y + wheel_base_vel_prev.x) * WHEEL_BASE_XY_VEL_RATIO + wheel_base_vel_prev.w * WHEEL_BASE_W_VEL_RATIO) / 1000; */
+	
+	mvtl = ((-wheel_base_vel.y - wheel_base_vel.x) * WHEEL_BASE_XY_VEL_RATIO + wheel_base_vel.w * WHEEL_BASE_W_VEL_RATIO) / 1000;
+	mvtr = ((wheel_base_vel.y - wheel_base_vel.x) * WHEEL_BASE_XY_VEL_RATIO + wheel_base_vel.w * WHEEL_BASE_W_VEL_RATIO) / 1000;
+	mvbl = ((-wheel_base_vel.y  + wheel_base_vel.x) * WHEEL_BASE_XY_VEL_RATIO	+ wheel_base_vel.w * WHEEL_BASE_W_VEL_RATIO) / 1000;
+	mvbr = ((wheel_base_vel.y + wheel_base_vel.x) * WHEEL_BASE_XY_VEL_RATIO + wheel_base_vel.w * WHEEL_BASE_W_VEL_RATIO) / 1000;
 	
 	motor_set_vel(
 		MOTOR_TOP_LEFT,
@@ -326,7 +314,11 @@ void wheel_base_override_change_speed(void)
 	wheel_base_set_speed_mode((wheel_base_get_speed_mode() + 1) % 10);
 }
 
-s32 get_mvtl() { return mvtl; }
-s32 get_mvtr() { return mvtr; }
-s32 get_mvbl() { return mvbl; }
-s32 get_mvbr() { return mvbr; }
+
+s32 wheel_base_get_vel_top_left(void) { return mvtl; }
+s32 wheel_base_get_vel_top_right(void) { return mvtr; }
+s32 wheel_base_get_vel_bottom_left(void) { return mvbl; }
+s32 wheel_base_get_vel_bottom_right(void) { return mvbr; }
+s32 wheel_base_get_acc_x(void) { return x_wheel_base_acc; }
+s32 wheel_base_get_acc_y(void) { return y_wheel_base_acc; }
+

@@ -66,10 +66,12 @@ void wheel_base_tx_acc(void);
 void wheel_base_set_vel(s32 x, s32 y, s32 w);
 WHEEL_BASE_VEL wheel_base_get_vel(void);
 WHEEL_BASE_VEL wheel_base_get_vel_prev(void);
-s32 get_mvtl(void);
-s32 get_mvtr(void);
-s32 get_mvbl(void);
-s32 get_mvbr(void);
+s32 wheel_base_get_vel_top_left(void);
+s32 wheel_base_get_vel_top_right(void);
+s32 wheel_base_get_vel_bottom_left(void);
+s32 wheel_base_get_vel_bottom_right(void);
+s32 wheel_base_get_acc_x(void);
+s32 wheel_base_get_acc_y(void);
 void wheel_base_update(void);
 void wheel_base_tx_position(void);
 
