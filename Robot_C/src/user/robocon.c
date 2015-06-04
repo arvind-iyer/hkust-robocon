@@ -51,10 +51,20 @@ bool robot_xbc_controls(void)
 	int vx = xbc_get_joy(XBC_JOY_LX);
 	int vy = xbc_get_joy(XBC_JOY_LY);
 	
+	int h = Sqrt(vx*vx + vy*vy);
+//	int cosine = vx / Sqrt(vx*vx + vy*vy);
+//	int sine = vy / Sqrt(vx*vx + vy*vy);
+	
 	int dx = vx;
 	int dy = vy;
+	// Scalar Speed limit
+	if (h > XBC_JOY_SCALE) {
+		dx = vx*XBC_JOY_SCALE / h;
+		dy = vy*XBC_JOY_SCALE / h;
+	}
+	// Spining velocity
   int omega = (xbc_get_joy(XBC_JOY_RT)-xbc_get_joy(XBC_JOY_LT))/5;
-	const int speed_factor = 12;
+	const int speed_factor = 10;
   static int accumulated_omega = 0;
 	static int target_angle = 0;
 

@@ -36,16 +36,7 @@ s32 pid_maintain_angle(void)
 		dw += 3600;
 	}	
 	
-	
-	if(dw >= 0) {
-		//Move right
-		w = 1;
-	} else if (dw < 0) {
-		//Move left
-		w = -1;
-	}
-	
-	w = w*Abs(dw)/4;
+	w = dw / 3;
 	//Setting velocity to be minimum magnitude of 19 and max of 50
 	
 	//Add integral factor
@@ -54,9 +45,9 @@ s32 pid_maintain_angle(void)
 	s32 wi = 0;
 	for (int i = 0; i < 12; i++)
 	{
-		wi+=Abs(integ_dw_list[i])/25;
+		wi+=integ_dw_list[i];
 	}
-	w+=(w/Abs(w))*(wi/2);
+	w+=wi/32;
 	
 	if (Abs(dw) >= 10) {
 		w = Abs(w) < 15? w*15/Abs(w) : w;
