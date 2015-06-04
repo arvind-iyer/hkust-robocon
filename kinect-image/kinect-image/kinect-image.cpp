@@ -22,16 +22,16 @@ namespace {
 	bool calibration_mode = true;
 	bool calibration_edge_trigger = true;
 	std::pair<pcl::PointXYZ, pcl::PointXYZ> create_net_line_endpoints() {
-		pcl::PointXYZ start_point = pcl::PointXYZ(1.22f, 0.37f, 1.76f);
+		pcl::PointXYZ start_point = pcl::PointXYZ(1.11f, 0.33f, 1.72f);
 
-		pcl::PointXYZ end_point = pcl::PointXYZ(0.14f, -0.20f, 7.68f);
+		pcl::PointXYZ end_point = pcl::PointXYZ(0.44f, -0.1f, 7.68f);
 		return std::make_pair(start_point, end_point);
 	}
 
 	std::pair<pcl::PointXYZ, pcl::PointXYZ> create_pole_line_endpoints() {
-		pcl::PointXYZ start_point = pcl::PointXYZ(0.14f, -0.20f, 7.68f);
+		pcl::PointXYZ start_point = pcl::PointXYZ(0.44f, -0.1f, 7.68f);
 
-		pcl::PointXYZ end_point = pcl::PointXYZ(0.16f, -1.62f, 7.42f);
+		pcl::PointXYZ end_point = pcl::PointXYZ(0.44f, -1.62f, 7.42f);
 
 		return std::make_pair(start_point, end_point);
 	}
@@ -53,12 +53,15 @@ inline void SafeRelease( Interface *& pInterfaceToRelease )
 
 void point_cloud_calibration(pcl::PointCloud<pcl::PointXYZ>* cloud, std::vector<UINT16>& depthBuffer, ICoordinateMapper*& pCoordinateMapper, int depthWidth, int depthHeight, pcl::visualization::PCLVisualizer& viewer)
 {
+	if (calibration_edge_trigger) {
+		viewer.removeAllShapes();
+		calibration_edge_trigger = false;
+	}
 	viewer.removeShape("net_line");
 	viewer.removeShape("pole_line");
-	viewer.removeShape("pole_line2");
 	//	viewer.removeShape("sphere");
-	viewer.addLine<pcl::PointXYZ, pcl::PointXYZ>(net_line.first, net_line.second, "net_line");
-	viewer.addLine<pcl::PointXYZ, pcl::PointXYZ>(pole_line.first, pole_line.second, "pole_line");
+	viewer.addLine<pcl::PointXYZ, pcl::PointXYZ>(net_line.first, net_line.second, 102.0 / 255.0, 1.0, 0.0, "net_line");
+	viewer.addLine<pcl::PointXYZ, pcl::PointXYZ>(pole_line.first, pole_line.second, 102.0 / 255.0, 1.0, 0.0, "pole_line");
 	//	viewer.addSphere(pcl::PointXYZ(0.0f, 0.0f, 0.0f), 0.2, 0.5, 0.5, 0.0, "sphere");
 
 	// calculate translation matrix
@@ -123,28 +126,8 @@ void point_cloud_calibration(pcl::PointCloud<pcl::PointXYZ>* cloud, std::vector<
 			cloud->push_back(point);
 		}
 	}
-	/*
-	// find origin point in current coordinate system
-	// calculate midpoint of the net
-	Eigen::Vector2d net_midpoint;
-	net_midpoint << (net_line.second.x + net_line.first.x) / 2.0, (net_line.second.y + net_line.second.x) / 2.0;
-
-	// find perpendicular line slope
-	double perpendicular_line_slope = -1.0 / ((net_line.second.y - net_line.first.y) / (net_line.second.x - net_line.first.x));
-	// find length to origin
-	double length_to_origin = 6.7 * std::sqrt(std::pow(net_line.second.x - net_line.first.x, 2.0) + std::pow(net_line.second.y - net_line.first.y, 2.0) + std::pow(net_line.second.z - net_line.first.z, 2.0)) / 6.1;
-	// complex equation to find x and y coordinate
-	double x = (std::pow(perpendicular_line_slope, 2.0) * net_midpoint(0) + length_to_origin * std::sqrt(std::pow(perpendicular_line_slope, 2.0) + 1.0) + net_midpoint(0)) / (std::pow(perpendicular_line_slope, 2.0) + 1.0);
-	double y = (std::pow(perpendicular_line_slope, 2.0) * net_midpoint(1) + length_to_origin * std::sqrt(std::pow(perpendicular_line_slope, 4.0) + std::pow(perpendicular_line_slope, 2.0)) + net_midpoint(1)) / (std::pow(perpendicular_line_slope, 2.0) + 1.0);
-	*/
-
 
 	Eigen::Matrix3d kinect_basis;
-	/*	
-		kinect_basis << net_line.first.x, net_line.second.x, pole_line.second.x,
-		net_line.first.y, net_line.second.y, pole_line.second.y,
-		net_line.first.z, net_line.second.z, pole_line.second.z;
-	*/
 	kinect_basis << net2, net_height, height2;
 
 	Eigen::Matrix3d gyro_basis;
@@ -166,8 +149,9 @@ bool point_filtering(Eigen::Vector3d& point_vector, float x, float y, float z)
 	if (point_vector(2) < 1570.0) {
 		return false;
 	}
+
 	// upper bound (filter ceiling - not needed for actual competition)
-	if (point_vector(2) > 2800.0) {
+	if (point_vector(2) > 2700.0) {
 		return false;
 	}
 
@@ -178,15 +162,119 @@ bool point_filtering(Eigen::Vector3d& point_vector, float x, float y, float z)
 	return true;
 }
 
+pcl::PolygonMesh generate_quad_mesh(pcl::PointCloud<pcl::PointXYZRGBA>::Ptr& cloud)
+{
+	std::vector<pcl::Vertices> polygon;
+	pcl::Vertices first_triangle;
+	first_triangle.vertices.push_back(0); first_triangle.vertices.push_back(1); first_triangle.vertices.push_back(2);
+	polygon.push_back(first_triangle);
+	pcl::Vertices second_triangle;
+	second_triangle.vertices.push_back(0); second_triangle.vertices.push_back(2); second_triangle.vertices.push_back(3);
+	polygon.push_back(second_triangle);
+
+	pcl::PolygonMesh mesh;
+	pcl::PCLPointCloud2 cloud2;
+	pcl::toPCLPointCloud2(*cloud, cloud2);
+
+	mesh.cloud = cloud2;
+	mesh.polygons = polygon;
+
+	return mesh;
+}
+
+void add_game_field_shapes(pcl::visualization::PCLVisualizer& viewer)
+{
+	// net
+	pcl::PointCloud<pcl::PointXYZRGBA>::Ptr net_cloud(new pcl::PointCloud<pcl::PointXYZRGBA>);
+	pcl::PointXYZRGBA net_bottom_left;
+	net_bottom_left.x = -3050.0f; net_bottom_left.y = 6700.0f; net_bottom_left.z = 0.0f;
+	net_bottom_left.r = 255; net_bottom_left.g = 255; net_bottom_left.b = 255; net_bottom_left.a = 255;
+	net_cloud->points.push_back(net_bottom_left);
+
+	pcl::PointXYZRGBA net_bottom_right;
+	net_bottom_left.x = 3050.0f; net_bottom_left.y = 6700.0f; net_bottom_left.z = 0.0f;
+	net_bottom_left.r = 255; net_bottom_left.g = 255; net_bottom_left.b = 255; net_bottom_left.a = 255;
+	net_cloud->points.push_back(net_bottom_left);
+
+	pcl::PointXYZRGBA net_top_right;
+	net_bottom_left.x = 3050.0f; net_bottom_left.y = 6700.0f; net_bottom_left.z = 1550.0f;
+	net_bottom_left.r = 255; net_bottom_left.g = 255; net_bottom_left.b = 255; net_bottom_left.a = 255;
+	net_cloud->points.push_back(net_bottom_left);
+
+	pcl::PointXYZRGBA net_top_left;
+	net_bottom_left.x = -3050.0f; net_bottom_left.y = 6700.0f; net_bottom_left.z = 1550.0f;
+	net_bottom_left.r = 255; net_bottom_left.g = 255; net_bottom_left.b = 255; net_bottom_left.a = 255;
+	net_cloud->points.push_back(net_bottom_left);
+
+	viewer.addPolygonMesh(generate_quad_mesh(net_cloud), "net mesh");
+
+	// field
+
+	pcl::PointCloud<pcl::PointXYZRGBA>::Ptr field_cloud(new pcl::PointCloud<pcl::PointXYZRGBA>);
+	pcl::PointXYZRGBA field_near_left;
+	field_near_left.x = -3050.0f; field_near_left.y = 0.0f; field_near_left.z = 0.0f;
+	field_near_left.r = 255; field_near_left.g = 255; field_near_left.b = 255; field_near_left.a = 255;
+	field_cloud->points.push_back(field_near_left);
+
+	pcl::PointXYZRGBA field_near_right;
+	field_near_right.x = 3050.0f; field_near_right.y = 0.0f; field_near_right.z = 0.0f;
+	field_near_right.r = 255; field_near_right.g = 255; field_near_right.b = 255; field_near_right.a = 255;
+	field_cloud->points.push_back(field_near_right);
+
+	pcl::PointXYZRGBA field_far_right;
+	field_far_right.x = 3050.0f; field_far_right.y = 13400.0f; field_far_right.z = 0.0f;
+	field_far_right.r = 255; field_far_right.g = 255; field_far_right.b = 255; field_far_right.a = 255;
+	field_cloud->points.push_back(field_far_right);
+
+	pcl::PointXYZRGBA field_far_left;
+	field_far_left.x = -3050.0f; field_far_left.y = 13400.0f; field_far_left.z = 0.0f;
+	field_far_left.r = 255; field_far_left.g = 255; field_far_left.b = 255; field_far_left.a = 255;
+	field_cloud->points.push_back(field_far_left);
+
+	viewer.addPolygonMesh(generate_quad_mesh(field_cloud), "field mesh");
+
+	// near yellow zone
+	/*
+	pcl::PointCloud<pcl::PointXYZRGBA>::Ptr near_yellow_zone_cloud(new pcl::PointCloud<pcl::PointXYZRGBA>);
+
+	pcl::PointXYZRGBA near_yellow_zone_bottom_left;
+	near_yellow_zone_bottom_left.x = -2570.0f; near_yellow_zone_bottom_left.y = 6700.0f - 5195.0f; near_yellow_zone_bottom_left.z = 10.0f;
+	near_yellow_zone_bottom_left.r = 255; near_yellow_zone_bottom_left.g = 255; near_yellow_zone_bottom_left.b = 0; near_yellow_zone_bottom_left.a = 255;
+	near_yellow_zone_cloud->points.push_back(near_yellow_zone_bottom_left);
+
+	pcl::PointXYZRGBA near_yellow_zone_bottom_right;
+	near_yellow_zone_bottom_right.x = -550.0f; near_yellow_zone_bottom_right.y = 6700.0f - 5195.0f; near_yellow_zone_bottom_right.z = 10.0f;
+	near_yellow_zone_bottom_right.r = 255; near_yellow_zone_bottom_right.g = 255; near_yellow_zone_bottom_right.b = 0; near_yellow_zone_bottom_right.a = 255;
+	near_yellow_zone_cloud->points.push_back(near_yellow_zone_bottom_right);
+
+	pcl::PointXYZRGBA near_yellow_zone_top_right;
+	near_yellow_zone_top_right.x = -550.0f; near_yellow_zone_top_right.y = 6700.0f - 3945.0f; near_yellow_zone_top_right.z = 10.0f;
+	near_yellow_zone_top_right.r = 255; near_yellow_zone_top_right.g = 255; near_yellow_zone_top_right.b = 0; near_yellow_zone_top_right.a = 255;
+	near_yellow_zone_cloud->points.push_back(near_yellow_zone_top_right);
+
+	pcl::PointXYZRGBA near_yellow_zone_top_left;
+	near_yellow_zone_top_left.x = -2570.0f; near_yellow_zone_top_left.y = 6700.0f - 3945.0f; near_yellow_zone_top_left.z = 10.0f;
+	near_yellow_zone_top_left.r = 255; near_yellow_zone_top_left.g = 255; near_yellow_zone_top_left.b = 0; near_yellow_zone_top_left.a = 255;
+	near_yellow_zone_cloud->points.push_back(near_yellow_zone_top_left);
+
+	viewer.addPolygonMesh(generate_quad_mesh(near_yellow_zone_cloud), "near yellow zone mesh");
+	*/
+
+	// far yellow zone
+
+	// 
+
+}
+
 void point_cloud_rendering(pcl::PointCloud<pcl::PointXYZ>* cloud, std::vector<UINT16>& depthBuffer, ICoordinateMapper*& pCoordinateMapper, int depthWidth, int depthHeight, pcl::visualization::PCLVisualizer& viewer)
 {
 	if (calibration_edge_trigger) {
-		viewer.removeShape("net_line");
-		viewer.removeShape("pole_line2");
-		viewer.removeShape("pole_line");
-		viewer.addLine<pcl::PointXYZ, pcl::PointXYZ>(pcl::PointXYZ(-3500.0f, 6700.0f, 1550.0f), pcl::PointXYZ(3500.0f, 6700.0f, 1550.0f), "net_line");
-		viewer.addLine<pcl::PointXYZ, pcl::PointXYZ>(pcl::PointXYZ(3500.0f, 6700.0f, 1550.0f), pcl::PointXYZ(3500.0f, 6700.0f, 0.0f), "pole_line");
-		viewer.addLine<pcl::PointXYZ, pcl::PointXYZ>(pcl::PointXYZ(-3500.0f, 6700.0f, 1550.0f), pcl::PointXYZ(-3500.0f, 6700.0f, 0.0f), "pole_line2");
+		viewer.removeAllShapes();
+
+		// add shapes for game field
+
+		add_game_field_shapes(viewer);
+
 		calibration_edge_trigger = false;
 	}
 	
@@ -266,6 +354,82 @@ void mouse_callback(const pcl::visualization::MouseEvent& event, void*)
 	if (event.getType() == pcl::visualization::MouseEvent::MouseButtonPress && event.getButton() == pcl::visualization::MouseEvent::LeftButton){
 		std::cout << "Mouse : " << event.getX() << ", " << event.getY() << std::endl;
 		std::cout << "Net Distance: " << std::sqrt(std::pow(net_line.second.x - net_line.first.x, 2.0) + std::pow(net_line.second.y - net_line.first.y, 2.0) + std::pow(net_line.second.z - net_line.first.z, 2.0)) << std::endl;
+	}
+}
+
+bool icp_cluster_tracking(pcl::PointCloud<pcl::PointXYZ>::Ptr& cluster_cloud)
+{
+	// the icp filter for cloud tracking
+	return true;
+}
+
+void cloud_processing(pcl::PointCloud<pcl::PointXYZ>::Ptr& point_cloud, pcl::visualization::PCLVisualizer& viewer)
+{
+	static bool removal_required = true;
+	if (calibration_mode) {
+		if (removal_required) {
+			viewer.removeAllPointClouds();
+			viewer.addPointCloud(point_cloud, "Cloud");
+			removal_required = false;
+		}
+		else {
+			if (!viewer.updatePointCloud(point_cloud, "Cloud")) {
+				// Show Point Cloud on Cloud Viewer
+				viewer.addPointCloud(point_cloud, "Cloud");
+				viewer.resetCameraViewpoint("Cloud");
+			}
+		}
+	} else {
+		if (!removal_required)
+		{
+			viewer.removePointCloud("Cloud");
+			viewer.resetCamera();
+			removal_required = true;
+		}
+		// Creating the KdTree object for the search method of the extraction
+		pcl::search::KdTree<pcl::PointXYZ>::Ptr tree(new pcl::search::KdTree<pcl::PointXYZ>);
+		tree->setInputCloud(point_cloud);
+
+		std::vector<pcl::PointIndices> cluster_indices;
+		pcl::EuclideanClusterExtraction<pcl::PointXYZ> ec;
+		ec.setClusterTolerance(25); // 1.5 cm
+		ec.setMinClusterSize(5);
+		ec.setMaxClusterSize(200);
+		ec.setSearchMethod(tree);
+		ec.setInputCloud(point_cloud);
+		ec.extract(cluster_indices);
+
+		static int prev_cloud_number = 0;
+		const static std::vector<std::tuple<unsigned char, unsigned char, unsigned char>> color_vector = {
+			std::make_tuple(0, 255, 0), std::make_tuple(255, 0, 0), std::make_tuple(0, 0, 255)
+		};
+
+		int j = 0;
+		for (std::vector<pcl::PointIndices>::const_iterator it = cluster_indices.begin(); it != cluster_indices.end(); ++it)
+		{
+			pcl::PointCloud<pcl::PointXYZ>::Ptr cloud_cluster(new pcl::PointCloud<pcl::PointXYZ>);
+			for (std::vector<int>::const_iterator pit = it->indices.begin(); pit != it->indices.end(); ++pit)
+				cloud_cluster->points.push_back(point_cloud->points[*pit]); //*
+			cloud_cluster->width = cloud_cluster->points.size();
+			cloud_cluster->height = 1;
+			cloud_cluster->is_dense = true;
+			pcl::visualization::PointCloudColorHandlerCustom<pcl::PointXYZ> single_color(cloud_cluster, std::get<0>(color_vector[j % 3]), std::get<1>(color_vector[j % 3]), std::get<2>(color_vector[j % 3]));
+			if (!viewer.updatePointCloud(cloud_cluster, single_color, "Cloud" + j)) {
+				// Show Point Cloud on Cloud Viewer
+				viewer.addPointCloud(cloud_cluster, single_color, "Cloud" + j);
+				viewer.setPointCloudRenderingProperties(pcl::visualization::PCL_VISUALIZER_POINT_SIZE, 3, "Cloud" + j);
+			}
+			j++;
+		}
+
+		if (prev_cloud_number > j) {
+			for (auto i = prev_cloud_number; i > j; --i) {
+				viewer.removePointCloud("Cloud" + i);
+			}
+		}
+		prev_cloud_number = j;
+//		std::cout << "Extracted clusters: " << j << std::endl;
+
 	}
 }
 
@@ -369,16 +533,8 @@ int _tmain(int argc, _TCHAR* argv[])
 
 	unsigned char counter = 0;
 
-	pcl::PassThrough<pcl::PointXYZ> pass;
-	pass.setFilterFieldName("y");
-	pass.setFilterLimits(-1.5f, 1.5f);
-
 	viewer.registerKeyboardCallback(keyboard_callback);
 	viewer.registerMouseCallback(mouse_callback);
-
-	pcl::PointCloud<pcl::PointXYZ>::Ptr pointcloud(new pcl::PointCloud<pcl::PointXYZ>());
-	pcl::PointCloud<pcl::PointXYZ>::Ptr cloud_filtered(new pcl::PointCloud<pcl::PointXYZ>);
-
 
 	while( !viewer.wasStopped() ){
 		viewer.spinOnce();
@@ -395,6 +551,7 @@ int _tmain(int argc, _TCHAR* argv[])
 		}
 		SafeRelease( pDepthFrame );
 
+		pcl::PointCloud<pcl::PointXYZ>::Ptr pointcloud(new pcl::PointCloud<pcl::PointXYZ>());
 		// Create Point Cloud
 		pointcloud->width = static_cast<uint32_t>(depthWidth);
 		pointcloud->height = static_cast<uint32_t>(depthHeight);
@@ -408,12 +565,8 @@ int _tmain(int argc, _TCHAR* argv[])
 		}
 
 		// do post processing of cloud
+		cloud_processing(pointcloud, viewer);
 
-		if (!viewer.updatePointCloud(pointcloud, "Cloud")) {
-			// Show Point Cloud on Cloud Viewer
-			viewer.addPointCloud(pointcloud, "Cloud");
-			viewer.resetCameraViewpoint("Cloud");
-		}
 		// Input Key ( Exit ESC key )
 		if( GetKeyState( VK_ESCAPE ) < 0 ){
 			break;
@@ -427,7 +580,6 @@ int _tmain(int argc, _TCHAR* argv[])
 			OutputDebugString(oss.str().c_str());
 			current_time = clock.now();
 		}
-		pointcloud->clear();
 	}
 
 	// End Processing
