@@ -453,6 +453,11 @@
               <FileType>1</FileType>
               <FilePath>.\src\user\angle_lock.c</FilePath>
             </File>
+            <File>
+              <FileName>flash.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\src\user\flash.c</FilePath>
+            </File>
           </Files>
         </Group>
         <Group>

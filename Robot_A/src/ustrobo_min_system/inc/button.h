@@ -29,10 +29,13 @@
 #define	BUTTON_1_GPIO							((GPIO*) &PB6)
 #define	BUTTON_2_GPIO							((GPIO*) &PB7)
 
-#define BUTTON_RELEASED_LIMIT			20    /*!< Reset the button release time after the limit */
+#define	BUTTON_CALIBRATE_GPIO			((GPIO*) &PE1)
+#define	BUTTON_AUTO_SERVE_GPIO		((GPIO*) &PE0)
 
-#define	BUTTON_COUNT							7    /*!< Number of buttons (exclude XBOX) */
-#define XBC_BUTTON_START_ID       7
+#define BUTTON_RELEASED_LIMIT			9    /*!< Reset the button release time after the limit */
+
+#define	BUTTON_COUNT							9    /*!< Number of buttons (exclude XBOX) */
+#define XBC_BUTTON_START_ID       9
 #define XBC_BUTTON_COUNTS         20
 
 #else 
@@ -95,6 +98,9 @@ typedef enum {
 	BUTTON_1,
 	BUTTON_2,
  
+	BUTTON_CALIBRATE,
+	BUTTON_AUTO_SERVE,
+	
   BUTTON_XBC_N		    = XBC_BUTTON_START_ID,
   BUTTON_XBC_S,
   BUTTON_XBC_W,

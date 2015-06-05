@@ -80,7 +80,7 @@ void ks103_init(void)
 		_delay_us(50);
 		uart_tx_byte(device->COMx, KS103_TTL_REGISTER_DEFAULT);
 		_delay_us(50);
-		uart_tx_byte(device->COMx, 0x0a);	// Range command
+		uart_tx_byte(device->COMx, 0x0f);	// Range command
 	}
 	ks103_init_flag = true;
 	

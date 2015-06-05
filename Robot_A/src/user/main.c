@@ -36,7 +36,7 @@ int main(void)
   robocon_init();
   
   system_start(1200);
-
+	
 	menu_add("Your program", robocon_main);
 	menu_add("Position test", position_test);
 	menu_add("Motor test", motor_test);

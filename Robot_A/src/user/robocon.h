@@ -30,8 +30,15 @@
 
 #define	SERVING_LED_GPIO			((GPIO*) &PD2)
 #define	US_AUTO_LED_GPIO			((GPIO*) &PE5)
-#define	ANGLE_LOCK_LED_GPIO		((GPIO*) &PC12)
+#define	ANGLE_LOCK_LED_GPIO		((GPIO*) &PE3)
+#define	AUTO_SERVE_LED_GPIO		((GPIO*) &PC12)
 
+#define	FLASH_SHUTTLE_DROP_DELAY_OFFSET			0
+#define	FLASH_SERVING_HIT_SPEED_OFFSET			1 
+#define	FLASH_WHEEL_BASE_SPEED_MODE_OFFSET	2
+#define	FLASH_ABS_ANGLE_MODE_OFFSET					3
+
+#define	AUTO_SERVE_PRE_DELAY								7000		// 7000 ms
 void robocon_init(void);
 void robocon_main(void);
 

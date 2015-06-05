@@ -116,7 +116,7 @@ void wheel_base_init(void)
 	*/
 void wheel_base_set_speed_mode(u8 s)
 {
-	if (s <= 9) {
+	if (s < WHEEL_BASE_SPEED_MODE_COUNT) {
 		wheel_base_speed_mode = s;
 	}
 }

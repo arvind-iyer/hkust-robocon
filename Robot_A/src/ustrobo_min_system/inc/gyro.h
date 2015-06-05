@@ -6,6 +6,8 @@
 #include "delay.h"
 //#include "debug.h"
 #include "approx_math.h"
+#include <stdbool.h> 
+
 
 #define MENU_ADD_GYRO_TEST menu_add(5, "Position Test", position_test)
 
@@ -43,6 +45,7 @@ const POSITION* get_pos(void);	// Get the position ({x, y, angle})
 const POSITION* get_pos_raw(void);
 
 void gyro_init(void);
+bool gyro_get_available(void);
 void gyro_rx_handler(u8 rx_data);
 void gyro_pos_update(void);		//update gyro values only when auto-update function is disabled in gyro
 u8 gyro_cal(void);	//callibrate gyro

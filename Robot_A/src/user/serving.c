@@ -11,6 +11,7 @@ static u32 cali_start_full_ticks = 0;
 static u32 cali_lock_full_ticks = 0;
 
 static s32 serving_encoder_target = 0;
+static s32 prev_switch_pressed_encoder_val = 0;
 static s32 cali_encoder_target = 0;
 static u32 serving_start_hitting_full_ticks = 0;
 static u32 serving_stop_hitting_full_ticks = 0;
@@ -152,12 +153,23 @@ void serving_cali_update(void)
 		case SERVING_CALI_START:
 			valve_set(0);
 			cali_start_full_ticks = get_full_ticks();
+			u32 encoder_pos_to_switch = p_mod(get_encoder_value(SERVING_MOTOR) - prev_switch_pressed_encoder_val, SERVING_MOTOR_ENCODER_CYCLE);
 			if (get_serving_calibrated() || get_serving_switch()) {
 				cali_state = SERVING_CALI_UNCALI;
+			} else if (prev_switch_pressed_encoder_val != 0 && encoder_pos_to_switch < SERVING_MOTOR_ENCODER_CYCLE * 1 / 2) {
+				cali_state = SERVING_CALI_REPRESS_SWITCH;
 			} else {
 				cali_state = SERVING_CALI_TO_SWITCH;
 			}
 			serving_cali_update();
+		break;
+		
+		case SERVING_CALI_REPRESS_SWITCH:
+			if (!get_serving_switch()) {
+				motor_set_vel(SERVING_MOTOR, SERVING_REPRESS_SPEED, SERVING_REPRESS_MODE);
+			} else {
+				cali_state = SERVING_CALI_UNCALI;
+			}	
 		break;
 		
 		case SERVING_CALI_UNCALI:
@@ -190,6 +202,7 @@ void serving_cali_update(void)
 				++cont_on;
 				
 				if (cont_on >= SERVING_CALI_SWITCH_ON_COUNT) {
+					prev_switch_pressed_encoder_val = get_encoder_value(SERVING_MOTOR);
 					cali_encoder_target = get_encoder_value(SERVING_MOTOR) + SERVING_CALI_ENCODER_AFTER_SWITCH;
 					cali_state = SERVING_CALI_SWITCH_PRESSED;
 					serving_cali_update();
@@ -369,6 +382,7 @@ u16 get_shuttle_drop_delay(void)
 
 void set_shuttle_drop_delay(u16 delay_ms)
 {
+	if (delay_ms > 999) {return;}
 	shuttle_drop_delay_ms = delay_ms;
 }
 
@@ -379,6 +393,7 @@ s16 get_serving_hit_speed(void)
 
 void set_serving_hit_speed(s16 speed)
 {
+	if (speed < -2000 || speed > 2000) {return;}
 	serving_hit_speed = speed;
 }
 

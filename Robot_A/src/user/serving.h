@@ -11,6 +11,8 @@
 #include "gpio.h"
 #include "stm32f10x_tim.h"
 #include "can_motor.h"
+#include "approx_math.h"
+
 
 #define	SERVING_SWITCH_GPIO		((GPIO*) (&PE11))
 
@@ -22,12 +24,16 @@
 #define	SERVING_IRQn_Handler		void TIM4_IRQHandler(void)
 //#define	SERVING_SHUTTLECOCK_DROPPING_TIME				(500 * 10)	// 500ms
 
-#define	SERVING_MOTOR						MOTOR5
-#define	SERVING_MOTOR_ACC				150
+#define	SERVING_MOTOR													MOTOR5
+#define	SERVING_MOTOR_ACC											150
+#define	SERVING_MOTOR_ENCODER_CYCLE						28000				
 
-#define	SERVING_UNCALI_SPEED									130								/*!< Uncalibration motor speed */
-#define	SERVING_UNCALI_MODE										OPEN_LOOP			/*!< Uncalibration motor mode */
-#define	SERVING_UNCALI_SWITCH_OFF_COUNT				10							/*!< Count of the switch off, to prevent bouncing */
+#define	SERVING_REPRESS_SPEED									200
+#define	SERVING_REPRESS_MODE									OPEN_LOOP
+
+#define	SERVING_UNCALI_SPEED									20							/*!< Uncalibration motor speed */
+#define	SERVING_UNCALI_MODE										CLOSE_LOOP				/*!< Uncalibration motor mode */
+#define	SERVING_UNCALI_SWITCH_OFF_COUNT				3								/*!< Count of the switch off, to prevent bouncing */
 
 #define	SERVING_CALI_SPEED										-8							/*!< Calibration motor speed (when switch is off) */
 #define	SERVING_CALI_MODE											CLOSE_LOOP			/*!< Calibration motor mode  (when switch is off)*/
@@ -39,17 +45,18 @@
 #define	SERVING_CALI_TIMEOUT									4000						/*!< Stop calibrating after the timeout (ms) */
 
 
-#define	SERVING_SHUTTLE_DROP_DELAY_DEFAULT		320							/*!< Default value of the shuttle drop delay in ms */
-#define	SERVING_HIT_SPEED_DEFAULT							-1500						/*!< Default motor speed for hitting */
+#define	SERVING_SHUTTLE_DROP_DELAY_DEFAULT		340							/*!< Default value of the shuttle drop delay in ms */
+#define	SERVING_HIT_SPEED_DEFAULT							-1700						/*!< Default motor speed for hitting */
 #define	SERVING_HIT_MODE											OPEN_LOOP				/*!< Motor mode for hitting */
-#define	SERVING_HIT_ENCODER_DIFF							24000						/*!< The encoder value diff, that the hitting will stop */
-#define	SERVING_HIT_TIMEOUT										500						/*!< Stop serving after the timeout (ms) */
+#define	SERVING_HIT_ENCODER_DIFF							15000						/*!< The encoder value diff, that the hitting will stop */
+#define	SERVING_HIT_TIMEOUT										800						/*!< Stop serving after the timeout (ms) */
 
-#define	SERVING_HIT_STOP_DELAY								1500							/*!< The delay (in ms) after hitting */
+#define	SERVING_HIT_STOP_DELAY								600							/*!< The delay (in ms) after hitting */
 
 typedef enum {
 	SERVING_CALI_NULL,								/*!< No calibration is ongoing */
 	SERVING_CALI_START,								/*!< Calibration starts */
+	SERVING_CALI_REPRESS_SWITCH,			/*!< Re-press the button if the encoder value is in the other half cycle */
 	SERVING_CALI_UNCALI,							/*!< Uncalibrate if it was calibrated or the switch is pressed */
 	SERVING_CALI_TO_SWITCH,						/*!< Motor moves until the switch is on */
 	SERVING_CALI_SWITCH_PRESSED,			/*!< The switch is detected as on */

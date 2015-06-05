@@ -11,7 +11,7 @@
 
 
 #define	UPPER_RACKET_HIT_DELAY				500			/*!< The time that the hit last (valve-on time), in ms */
-#define	UPPER_RACKET_POST_DELAY				1000		/*!< The time that CANNOT re-hit after a hit*/
+#define	UPPER_RACKET_POST_DELAY				700		 /*!< The time that CANNOT re-hit after a hit*/
 
 
 void upper_racket_init(void);

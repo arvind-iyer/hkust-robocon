@@ -42,7 +42,13 @@ static const GPIO* buttons[BUTTON_COUNT] = {
 	BUTTON_JS2_CENTER_GPIO,
 #endif
 	BUTTON_1_GPIO,
-	BUTTON_2_GPIO
+	BUTTON_2_GPIO,
+	
+	/** Extra button **/
+	BUTTON_CALIBRATE_GPIO,
+	BUTTON_AUTO_SERVE_GPIO,
+	
+	
 };
 
 static u16 button_pressed_count[BUTTON_COUNT + XBC_BUTTON_COUNTS];
@@ -117,6 +123,9 @@ void button_update(void)
     
 		if (button_pressed_flag) {
 			++button_pressed_count[i];
+			if (button_pressed_count[i] >= 255) {
+				button_pressed_count[i] = 128; 
+			}
 			button_released_count[i] = 0;
 		} else {
 			if (button_pressed_count[i] != 0) {

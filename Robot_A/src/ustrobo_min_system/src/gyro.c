@@ -26,6 +26,10 @@ void gyro_init(void)
 	uart_rx_init(GYRO_UART,gyro_rx_handler);
 }
 
+bool gyro_get_available(void)
+{
+	return gyro_available;
+}
 
 /**
 	* @brief Get the position object

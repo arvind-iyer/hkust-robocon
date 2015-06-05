@@ -1,6 +1,6 @@
 #include "us_auto.h"
 
-u32 last_detection_full_ticks = 0;
+static u32 last_detection_full_ticks = 0;
 static US_AUTO_RESPONSE response = US_AUTO_NULL;
 static u16 us_detection = 0;
 static u32 last_e_stop_full_ticks = 0;
@@ -19,59 +19,70 @@ void us_auto_update(void)
 	u8 consecutive_count = 0;
 	u16 min_val = 9999;
 	
-	for (u8 i = 0; i < US_AUTO_DEVICE_COUNT; ++i) {
-		u16 val = us_get_distance(i);
-		
-		if (val >= US_DETECT_RANGE_MIN && val <= US_DETECT_RANGE_MAX) {
-			// Detected
-			++consecutive_count;
-			if (val < min_val) {
-				min_val = val;
-			}
+
+	static const u8 front_bar[] = US_AUTO_FRONT_BAR;
+	static const u8 upper_bar[] = US_AUTO_UPPER_BAR;
+	static const u8 front_bar_noise[] = US_AUTO_FRONT_BAR_NOISE;
+	
+	u8 consective_count = 0;
+	for (u8 i = 0; i < sizeof(front_bar) / sizeof(u8); ++i) {
+		u16 val = us_get_distance(front_bar[i]);
+		if (val >= 100 && val <= 1500) {
+			++consective_count;
 		} else {
-			consecutive_count = 0;
-			//min_val = 9999;
+			consective_count = 0;
 		}
 		
-		if (consecutive_count >= 2) {
+		if (consective_count >= 2) {
 			detection_flag = true;
-			//break;
+			break;
 		}
 	}
 	
-	// Checking... 
+	
+	for (u8 i = 0; i < sizeof(upper_bar) / sizeof(u8); ++i) {
+		u16 val = us_get_distance(upper_bar[i]);
+		if (val >= 10 && val <= 1000) {
+			detection_flag = true;
+			break;
+		}
+	}
+	
+	u8 noise_count = 0;
+	for (u8 i = 0; i < sizeof(front_bar_noise) / sizeof(u8); ++i) {
+		u16 val = us_get_distance(front_bar_noise[i]);
+		if (val >= 10 && val <= 1500) {
+			// Noise
+			++noise_count;
+			detection_flag = true;
+		}
+	}
+	
 	if (detection_flag) {
-		us_detection = min_val;
-	
-		if (!last_detection_full_ticks) {
-			// Raising
+		if (noise_count >= 1) {
+			response = US_AUTO_E_STOP_HIT;
+			last_e_stop_full_ticks = get_full_ticks();
+		} else if (last_detection_full_ticks && last_detection_full_ticks + US_DETECT_PROTECTION_TIME_MS <= get_full_ticks()) {
+			// On for too long
+			//response = US_AUTO_E_STOP_HIT;
+			//last_detection_full_ticks = get_full_ticks();
+			//last_e_stop_full_ticks = get_full_ticks();
+		} else if (!last_detection_full_ticks) {
+			response = US_AUTO_HIT;
 			last_detection_full_ticks = get_full_ticks();
-			if (last_e_stop_full_ticks + US_DETECT_E_STOP_CONT_MS <= get_full_ticks()) {
-				response = US_AUTO_HIT;
-			} else {
-				// E-stop not cooled down
-				response = US_AUTO_E_STOP_HIT;
-				last_e_stop_full_ticks = get_full_ticks();
-			}
-			
 		} else {
-			// Check if the sensor is on for too long
-			if (last_detection_full_ticks + US_DETECT_PROTECTION_TIME_MS <= get_full_ticks()) {
-				// Stop
-				response = US_AUTO_E_STOP_HIT;
-				last_e_stop_full_ticks = get_full_ticks();
-			} else {
-				// On
-				response = US_AUTO_HITTING;
-			}
-		}
+			response = US_AUTO_HITTING;
+		}	
 	} else {
-		// falling
-		if (last_detection_full_ticks) {
-			last_detection_full_ticks = 0;
-			response = US_AUTO_NULL;
-		}
+		response = US_AUTO_NULL; 
+		last_detection_full_ticks = 0;
 	}
+	
+	
+	if (last_e_stop_full_ticks + US_DETECT_E_STOP_CONT_MS > get_full_ticks()) {
+		response = US_AUTO_E_STOP_HIT;
+	}
+		
 }
 
 u16 us_get_detection_val(void)
