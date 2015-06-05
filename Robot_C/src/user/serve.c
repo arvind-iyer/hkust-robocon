@@ -5,7 +5,7 @@
 //racket variables
 static s32 SERVE_CAL_VEL = -220 ;		
 static s32 SERVE_HIT_VEL = 1300;			//can be changed by controller
-static u32 SERVE_DELAY = 290;			// can be changed by controller
+static u32 SERVE_DELAY = 295;			// can be changed by controller
 
 static s32 init_encoder_reading = 8000;	// will be kept updating according to the switch. Encoder value at switch location.
 
