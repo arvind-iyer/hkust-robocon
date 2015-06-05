@@ -1,4 +1,7 @@
 #include "robocon.h"
+// relative movement: always move to front regardless the angle
+#define absolute_angle
+
 //#include "log.h"
 
 //system values
@@ -55,13 +58,19 @@ bool robot_xbc_controls(void)
 //	int cosine = vx / Sqrt(vx*vx + vy*vy);
 //	int sine = vy / Sqrt(vx*vx + vy*vy);
 	
-	int dx = vx;
-	int dy = vy;
 	// Scalar Speed limit
 	if (h > XBC_JOY_SCALE) {
-		dx = vx*XBC_JOY_SCALE / h;
-		dy = vy*XBC_JOY_SCALE / h;
+		vx = vx*XBC_JOY_SCALE / h;
+		vy = vy*XBC_JOY_SCALE / h;
 	}
+	s32 dx = vx;
+	s32 dy = vy;
+	#ifdef absolute_angle
+	int current_angle = get_pos()->angle;
+	dy = (vy * int_cos(current_angle) + vx * int_sin(current_angle)) / 10000;
+	dx = (- vy * int_sin(current_angle) + vx * int_cos(current_angle)) / 10000;
+	#endif
+	
 	// Spining velocity
   int omega = (xbc_get_joy(XBC_JOY_RT)-xbc_get_joy(XBC_JOY_LT))/5;
 	const int speed_factor = 10;

@@ -40,8 +40,8 @@ static const u16 SPEED_MODES[10] =	// In percentage (20 = 20%)
 // Wheel base motors acceleration (CONSTANT, to be configured upon startup)
 #define	WHEEL_BASE_BR_ACC											ROBOT=='C'?75:80		// Bottom-right wheel
 #define	WHEEL_BASE_BL_ACC										  ROBOT=='C'?75:80// Bottom-left wheel
-#define	WHEEL_BASE_TL_ACC											ROBOT=='C'?100:100 // Top-left wheel
-#define	WHEEL_BASE_TR_ACC											ROBOT=='C'?100:100 		// Top-right wheel
+#define	WHEEL_BASE_TL_ACC											ROBOT=='C'?75:80 // Top-left wheel
+#define	WHEEL_BASE_TR_ACC											ROBOT=='C'?75:80 		// Top-right wheel
 
 #define XY_BR_SCALE 100
 #define XY_BL_SCALE 100

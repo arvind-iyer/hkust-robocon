@@ -36,7 +36,7 @@ s32 pid_maintain_angle(void)
 		dw += 3600;
 	}	
 	
-	w = dw / 3;
+	w = dw * 3 / 10;
 	//Setting velocity to be minimum magnitude of 19 and max of 50
 	
 	//Add integral factor
@@ -50,7 +50,7 @@ s32 pid_maintain_angle(void)
 	w+=wi/32;
 	
 	if (Abs(dw) >= 10) {
-		w = Abs(w) < 15? w*15/Abs(w) : w;
+		w = Abs(w) < 10? w*10/Abs(w) : w;
 		w = Abs(w) > 70 ? w*70/Abs(w) : w;
 	} else {
 		w = 0;
