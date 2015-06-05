@@ -128,7 +128,7 @@ void racket_update(void) {
 	
 	if (underarm_daa_order == 1 && current_time >= underarm_daa_order_time) {
 		GPIO_WriteBit(GPIOE, GPIO_Pin_Underarm, Bit_SET);
-		FAIL_MUSIC;
+		//FAIL_MUSIC;
 	} else if (current_time > (underarm_daa_order_time + UNDERARM_HOLD_MS) && underarm_daa_order == 0) {
 		GPIO_WriteBit(GPIOE, GPIO_Pin_Underarm, Bit_RESET);
 	}

@@ -23,6 +23,7 @@ extern const MUSIC_NOTE SPEED_10[];
 
 extern const MUSIC_NOTE SIDE_CONTROL_ON_SOUND[];
 extern const MUSIC_NOTE SIDE_CONTROL_OFF_SOUND[];
+extern const MUSIC_NOTE SIDE_CONTROL_LEFT_SOUND[];
 
 #define	SUCCESSFUL_MUSIC			buzzer_play_song(SUCCESSFUL_SOUND, 100, 0)
 #define	FAIL_MUSIC 						buzzer_play_song(FAIL_SOUND, 120, 100)

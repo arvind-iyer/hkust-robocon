@@ -8,6 +8,10 @@
 
 #define ANALOG_SPEED 100
 
+#define SIDE_NORMAL 0
+#define SIDE_RIGHT  1
+#define SIDE_LEFT   2
+
 #define BUTTON_PS4_L1				BUTTON_XBC_LB
 #define PS4_JOY_L2					XBC_JOY_LT
 #define BUTTON_PS4_R1				BUTTON_XBC_RB
@@ -29,6 +33,10 @@
 #define BUTTON_PS4_PS				BUTTON_XBC_XBOX
 #define	BUTTON_PS4_L3				BUTTON_XBC_L_JOY
 #define	BUTTON_PS4_R3				BUTTON_XBC_R_JOY
+#define PS4_JOY_LX					XBC_JOY_LX
+#define PS4_JOY_LY					XBC_JOY_LY
+#define PS4_JOY_RX					XBC_JOY_RX
+#define PS4_JOY_RY					XBC_JOY_RY
 // Buttons Redirect
 #define BUTTON_PS4_UP				BUTTON_XBC_N
 #define BUTTON_PS4_DOWN			BUTTON_XBC_S
@@ -39,6 +47,7 @@
 #define	BUTTON_PS4_HOME			BUTTON_XBC_XBOX
 
 void button_event_update(void);
-bool button_event_is_side_control(void);
+u8 button_event_get_side_control(void);
+u32 button_event_get_l_analog_magnitude(void);
 
 #endif
