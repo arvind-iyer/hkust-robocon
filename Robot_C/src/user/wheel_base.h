@@ -38,10 +38,10 @@ static const u16 SPEED_MODES[10] =	// In percentage (20 = 20%)
 #define	WHEEL_BASE_DEFAULT_SPEED_MODE					3			// from 0 to 9
 
 // Wheel base motors acceleration (CONSTANT, to be configured upon startup)
-#define	WHEEL_BASE_BR_ACC											ROBOT=='C'?75:80		// Bottom-right wheel
-#define	WHEEL_BASE_BL_ACC										  ROBOT=='C'?75:80// Bottom-left wheel
-#define	WHEEL_BASE_TL_ACC											ROBOT=='C'?75:80 // Top-left wheel
-#define	WHEEL_BASE_TR_ACC											ROBOT=='C'?75:80 		// Top-right wheel
+#define	WHEEL_BASE_BR_ACC											ROBOT=='C'?75:500		// Bottom-right wheel
+#define	WHEEL_BASE_BL_ACC										  ROBOT=='C'?75:500// Bottom-left wheel
+#define	WHEEL_BASE_TL_ACC											ROBOT=='C'?75:500 // Top-left wheel
+#define	WHEEL_BASE_TR_ACC											ROBOT=='C'?75:500 		// Top-right wheel
 
 #define XY_BR_SCALE 100
 #define XY_BL_SCALE 100
@@ -70,6 +70,7 @@ u8 wheel_base_get_speed_mode(void);
 void wheel_base_tx_acc(void);
 void wheel_base_set_vel(s32 x, s32 y, s32 w);
 WHEEL_BASE_VEL wheel_base_get_vel(void);
+WHEEL_BASE_VEL wheel_base_get_tar_vel(void);
 char wheel_base_bluetooth_get_last_char(void);
 void wheel_base_update(void);
 void wheel_base_positioning_auto(void);

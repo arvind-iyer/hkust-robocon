@@ -8,7 +8,7 @@
 #define XBC_JOY_COUNT           6
 #define XBC_JOY_DEADZONE_MIN    ((s16) 6000)
 #define XBC_JOY_DEADZONE_MAX    ((s16) 32000)
-#define XBC_JOY_SCALE           175  // Self-defined scale
+#define XBC_JOY_SCALE           165  // Self-defined scale
 
 typedef enum {
   XBC_JOY_LT,         // 1-byte
