@@ -69,10 +69,7 @@ void serve_update(void)
 	led_control(LED_D2, (LED_STATE) !gpio_read_input(&PC6));
 	if (nec_get_msg(0)->address==0x40 && nec_get_msg(0)->command==0x01 && !hitting && !calibrate_in_process && !serve_hit_queued)
 	{
-		auto_serve_queued=1;
-		if (!calibrated){serve_calibrate();}
-		else {serve_start();
-		auto_serve_queued=0;}
+		start_auto_serve();
 	}
 	if (auto_serve_queued && calibrated)
 	{
@@ -133,7 +130,7 @@ void serve_update(void)
 	}
 	if (calibrate_in_process &&init_encoder_is_set && get_encoder_value(RACKET)>init_encoder_reading-2000 )
 	{
-		motor_set_vel(RACKET, SERVE_CAL_VEL+30, OPEN_LOOP);
+		motor_set_vel(RACKET, SERVE_CAL_VEL, OPEN_LOOP);
 		//log("*enc st cal",get_encoder_value(RACKET));
 	}
 	
@@ -200,7 +197,7 @@ void serve_hit(void)
 		hitting = 1;
 		calibrated=0;
 		serve_hit_queued=0;
-		motor_set_vel(RACKET, SERVE_HIT_VEL, OPEN_LOOP);	//racket calibrate function takes a direct control over the motor
+		motor_set_vel(RACKET, SERVE_HIT_VEL/10,CLOSE_LOOP);	//racket calibrate function takes a direct control over the motor
 		serve_hit_start_time = get_full_ticks();
 	}
 	
@@ -212,14 +209,26 @@ void fake_serve_start(void)
 		hitting=1;
 		calibrated=0;
 		serve_hit_queued=0;
-		motor_set_vel(RACKET,SERVE_HIT_VEL,OPEN_LOOP);
+		motor_set_vel(RACKET,SERVE_HIT_VEL/10,CLOSE_LOOP);
 		serve_hit_start_time=get_full_ticks();
 		
 	}
 	
 }
 
-
+void start_auto_serve(void)	// auto calibration before serve.
+{
+	if (!hitting && !calibrate_in_process && !serve_hit_queued)
+	{
+		auto_serve_queued=1;
+		if (!calibrated){serve_calibrate();}
+		else {serve_start();
+		auto_serve_queued=0;}
+		
+	}
+	
+	
+}
 /*************getter and setter functions ***********************/
 
 void serve_change_delay(s16 val)

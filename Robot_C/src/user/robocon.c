@@ -23,6 +23,13 @@ bool turn_timer_started = 0;
 
 // enabling sensors by button.
 bool sensors_activated = 0;
+bool emergency_serve_button_pressed=0;
+
+// emergency serve activated
+bool emergency_serve_activated = 0;
+u32 emergency_serve_start_time=0;
+bool remove_robot_sequence_started=0;
+u32 remove_robot_start_time=0;
 
 u16 prev_vels[50] = { 0 };
 u16 vel_index = 0;
@@ -32,6 +39,7 @@ s32 angle = 0;
 
 bool robot_xbc_controls(void)
 {
+	
 	//Update Button Data
 	button_update();
 	/*
@@ -111,8 +119,8 @@ bool robot_xbc_controls(void)
 	
 	}
 	*/
-	
-	wheel_base_set_vel(dx, dy, dw);
+	if (!remove_robot_sequence_started)
+		wheel_base_set_vel(dx, dy, dw);
 
 	//Get acceleration modifiers for each wheel
 	
@@ -225,6 +233,8 @@ void robot_d_function_controls(void)
 	{
 		serve_free();
 	}
+	
+	/*manual pneumatic trigger*/
 	if (serve_pneu_button_enabled && gpio_read_input(&PE5))
 	{
 		serve_pneu_button_enabled=0;
@@ -233,6 +243,41 @@ void robot_d_function_controls(void)
 	if (!gpio_read_input(&PE5))
 	{
 		serve_pneu_button_enabled=1;
+	}
+	
+	/*emergency auto serve*/
+	if (!emergency_serve_activated && gpio_read_input(&PE3))//on press
+	{
+		emergency_serve_button_pressed=1;
+		emergency_serve_activated=0;
+	}
+	if (emergency_serve_button_pressed && !gpio_read_input(&PE3))//on release
+	{
+		emergency_serve_start_time=get_full_ticks();
+		emergency_serve_button_pressed=0;
+		emergency_serve_activated=1;
+		log("emergency",0);
+	}
+	if (emergency_serve_activated && emergency_serve_start_time+6000<get_full_ticks())//autoserve after 6 secs
+	{
+		start_auto_serve();
+	}
+	if (emergency_serve_activated && emergency_serve_start_time+7000<get_full_ticks())	// remove robot after serve
+	{
+		log("remove",get_full_ticks());
+		//SUCCESSFUL_SOUND;
+		remove_robot_sequence_started=1;
+		wheel_base_set_vel(80,0,0);
+	}
+	if (emergency_serve_activated && emergency_serve_start_time+8200<get_full_ticks())//remove robot complete
+	{
+		serve_free();
+		log("removed",get_full_ticks());
+		buzzer_play_song(BIRTHDAY_SONG, 120, 0);
+		remove_robot_sequence_started=0;
+		emergency_serve_activated=0;
+		wheel_base_set_vel(3,0,0);
+		wheel_base_update();
 	}
 	
 	/**
@@ -352,7 +397,7 @@ static void handle_bluetooth_input(void)
 
 void robocon_main(void)
 {
-	motor_set_acceleration(RACKET, 3000);
+	motor_set_acceleration(RACKET, 5000);
   // Send the acceleration data
 	wheel_base_tx_acc();
 	serve_free();
@@ -363,6 +408,7 @@ void robocon_main(void)
 	
 	gpio_init(&PE11, GPIO_Speed_10MHz, GPIO_Mode_IPU, 1);	// Mechanical switch ROBOT D Gen2
 	gpio_init(&PE5, GPIO_Speed_10MHz, GPIO_Mode_IPU, 1);	// Shuttlecock Holder button for ROBOT D Gen2
+	gpio_init(&PE3, GPIO_Speed_10MHz, GPIO_Mode_IPU, 1);	// Emergency serve button for ROBOT D Gen2
 
 	gpio_init(&PA4,GPIO_Speed_50MHz, GPIO_Mode_IPD,1);		// laser sensor
 	gpio_init(&PA6,GPIO_Speed_50MHz, GPIO_Mode_IPD,1);	// laser sensor grid 2
