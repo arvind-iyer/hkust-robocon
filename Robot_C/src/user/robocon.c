@@ -46,10 +46,11 @@ bool robot_xbc_controls(void)
 	
 	
 	//int dw = (xbc_get_joy(XBC_JOY_RT)-xbc_get_joy(XBC_JOY_LT))/5;
+	//Get angle speed based on target_angle
 	int dw = pid_maintain_angle();
 
 
-	
+	//Set x and y vel according to analog stick input
 	
 	int vx = xbc_get_joy(XBC_JOY_LX);
 	int vy = xbc_get_joy(XBC_JOY_LY);
@@ -65,6 +66,7 @@ bool robot_xbc_controls(void)
 	}
 	s32 dx = vx;
 	s32 dy = vy;
+	//Use rotation matrix to control the robots by absolute coordinates not relative
 	#ifdef absolute_angle
 	int current_angle = get_pos()->angle;
 	dy = (vy * int_cos(current_angle) + vx * int_sin(current_angle)) / 10000;
@@ -73,7 +75,7 @@ bool robot_xbc_controls(void)
 	
 	// Spining velocity
   int omega = (xbc_get_joy(XBC_JOY_RT)-xbc_get_joy(XBC_JOY_LT))/5;
-	const int speed_factor = 10;
+	const int speed_factor = ROBOT=='C'?6:10;
   static int accumulated_omega = 0;
 	static int target_angle = 0;
 
@@ -89,11 +91,12 @@ bool robot_xbc_controls(void)
 	} else if (target_angle > 3599) {
 		target_angle -= 3600;
 	}
-
+	
 	wheel_base_set_target_pos((POSITION){get_pos()->x, get_pos()->y, target_angle});
 
 	
 	/*
+	//To use Right thumbstick to control angle
 	if(!(xbc_get_joy(XBC_JOY_RX) == 0 && xbc_get_joy(XBC_JOY_RY) == 0))
 	{
 		angle = int_arc_tan2(xbc_get_joy(XBC_JOY_RY), xbc_get_joy(XBC_JOY_RX));
@@ -117,12 +120,13 @@ bool robot_xbc_controls(void)
 	for (int i = 0; i < sizeof(prev_vels)/sizeof(prev_vels[0]); i++)
 	acc_mod += (prev_vels[i] > 0 ? (prev_vels[i]) : 1);
 	
+	//Get acceleration modifiers for each wheel
 	u16 bl = WHEEL_BASE_BL_ACC,
 			br = WHEEL_BASE_BR_ACC,
 			tl = WHEEL_BASE_TL_ACC,
 			tr = WHEEL_BASE_TR_ACC;
 	
-	 
+	 //Set wheel accelerations
 	motor_set_acceleration(MOTOR_BOTTOM_RIGHT,(acc_mod * br)/100);
 	motor_set_acceleration(MOTOR_BOTTOM_LEFT,(acc_mod * bl)/100);
 	motor_set_acceleration(MOTOR_TOP_LEFT,(acc_mod * tl)/100);
