@@ -127,10 +127,10 @@ bool robot_xbc_controls(void)
 			tr = WHEEL_BASE_TR_ACC;
 	
 	 //Set wheel accelerations
-	motor_set_acceleration(MOTOR_BOTTOM_RIGHT,(acc_mod * br)/100);
-	motor_set_acceleration(MOTOR_BOTTOM_LEFT,(acc_mod * bl)/100);
-	motor_set_acceleration(MOTOR_TOP_LEFT,(acc_mod * tl)/100);
-	motor_set_acceleration(MOTOR_TOP_RIGHT, (acc_mod * tr)/100);
+//		motor_set_acceleration(MOTOR_BOTTOM_RIGHT,(acc_mod * br)/100);
+//		motor_set_acceleration(MOTOR_BOTTOM_LEFT,(acc_mod * bl)/100);
+//		motor_set_acceleration(MOTOR_TOP_LEFT,(acc_mod * tl)/100);
+//		motor_set_acceleration(MOTOR_TOP_RIGHT, (acc_mod * tr)/100);
 	
 	//y = r*cos(theta)
 	//x = r*sin(theta)
@@ -407,9 +407,7 @@ void robocon_main(void)
 			}
 			if (!force_terminate) {
 				// wheel_base update
-				if (ticks_img % 5 == 1) {
-					wheel_base_update();
-				}
+				wheel_base_update();
 			} else {
 				wheel_base_set_vel(0, 0, 0);
 				motor_set_vel(MOTOR_BOTTOM_RIGHT, 0, OPEN_LOOP);
