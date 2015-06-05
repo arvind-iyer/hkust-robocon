@@ -13,6 +13,8 @@ static bool use_xbc_input = false;
 static bool force_terminate = false;
 static u16 prev_ticks=-1;
 static u16 turn_timer=-1;
+static int accumulated_omega = 0;
+static int target_angle = 0;
 
 static u16 tick_skip_count=0;
 
@@ -46,9 +48,6 @@ bool robot_xbc_controls(void)
 	
 	
 	//int dw = (xbc_get_joy(XBC_JOY_RT)-xbc_get_joy(XBC_JOY_LT))/5;
-	//Get angle speed based on target_angle
-	int dw = pid_maintain_angle();
-
 
 	//Set x and y vel according to analog stick input
 	
@@ -76,8 +75,7 @@ bool robot_xbc_controls(void)
 	// Spining velocity
   int omega = (xbc_get_joy(XBC_JOY_RT)-xbc_get_joy(XBC_JOY_LT))/5;
 	const int speed_factor = ROBOT=='C'?6:10;
-  static int accumulated_omega = 0;
-	static int target_angle = 0;
+
 
   accumulated_omega += omega % speed_factor;
   int incremental = accumulated_omega / speed_factor;
@@ -94,6 +92,8 @@ bool robot_xbc_controls(void)
 	
 	wheel_base_set_target_pos((POSITION){get_pos()->x, get_pos()->y, target_angle});
 
+	//Get angle speed based on target_angle
+	int dw = pid_maintain_angle();
 	
 	/*
 	//To use Right thumbstick to control angle
@@ -113,18 +113,8 @@ bool robot_xbc_controls(void)
 	*/
 	
 	wheel_base_set_vel(dx, dy, dw);
-	
-	prev_vels[(vel_index++)%(sizeof(prev_vels)/sizeof(prev_vels[0]))] = (Sqrt(Sqr(Abs(dx)) + Sqr(Abs(dy))+ Sqr(Abs(dw))))/20;
-	
-	acc_mod = 0;
-	for (int i = 0; i < sizeof(prev_vels)/sizeof(prev_vels[0]); i++)
-	acc_mod += (prev_vels[i] > 0 ? (prev_vels[i]) : 1);
-	
+
 	//Get acceleration modifiers for each wheel
-	u16 bl = WHEEL_BASE_BL_ACC,
-			br = WHEEL_BASE_BR_ACC,
-			tl = WHEEL_BASE_TL_ACC,
-			tr = WHEEL_BASE_TR_ACC;
 	
 	 //Set wheel accelerations
 //		motor_set_acceleration(MOTOR_BOTTOM_RIGHT,(acc_mod * br)/100);
@@ -213,6 +203,11 @@ void robot_d_function_controls(void)
 	else if(button_pressed(BUTTON_XBC_X))//Not essential
 		serve_calibrate();
 	// change serve varibales
+	
+	if (button_pressed(BUTTON_XBC_RB)) {
+		gyro_pos_set(get_pos()->x, get_pos()->y, 0);
+		accumulated_omega = target_angle = 0;
+	}
 	
 	if (button_pressed(BUTTON_XBC_N) && button_pressed(BUTTON_XBC_Y))
 		serve_change_delay(1);
