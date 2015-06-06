@@ -81,3 +81,18 @@ void upper_racket_update(void)
 	} 
 }
 
+
+UPPER_RACKET_MODE upper_racket_get_mode(void)
+{
+	if (racket_pre_ticks != 0) {
+		return UPPER_RACKET_PRE_HIT;
+	} else if (racket_hit_ticks != 0) {
+		return UPPER_RACKET_HITTING;
+	} else if (racket_post_ticks != 0) {
+		return UPPER_RACKET_POST_HIT;
+	}	else {
+		return UPPER_RACKET_NULL;
+	}
+}
+
+

@@ -14,7 +14,7 @@ static bool us_auto_mode = false;
 static bool angle_lock_mode = false;
 static bool abs_angle_mode = false;
 static bool auto_serve_mode = false;
-static u32 auto_serve_timer = 0;
+static u32 auto_serve_time = 0;
 
 
 /**
@@ -24,6 +24,12 @@ static void robocon_get_xbc(void)
 {
 	// Processing wheel base velocity
 	u8 speed_mode = wheel_base_get_speed_mode();
+	
+	if (get_serving_hit_state() >= SERVING_START && get_serving_hit_state() <= SERVING_RACKET_HITTING) {
+		// Stop mode during serve
+		speed_mode = 0;
+	}
+	
 	u16 speed_ratio = SPEED_MODES[speed_mode];
 	
 	s32 x_vel = xbc_get_joy(XBC_JOY_LX);
@@ -36,8 +42,12 @@ static void robocon_get_xbc(void)
 	s16 w_vel = xbc_get_joy(XBC_JOY_RT) - xbc_get_joy(XBC_JOY_LT);
 	
 	
-	x_vel = speed_ratio * x_vel / 1000;
-	y_vel = speed_ratio * y_vel / 1000;
+	
+	//s32 scalar = Sqrt(x_vel * x_vel + y_vel * y_vel);
+	//s32 scalar_max = (XBC_JOY_SCALE * 14142) / 10000;		// Sqrt(2) divided
+	
+	x_vel = speed_ratio * x_vel / XBC_JOY_SCALE;
+	y_vel = speed_ratio * y_vel / XBC_JOY_SCALE;
 	w_vel = speed_ratio * w_vel / 255 / 2;
 	
 	// Angle PID later
@@ -84,6 +94,7 @@ static void robocon_get_xbc(void)
 			abs_angle_mode = true;
 		} else {
 			gyro_pos_set(get_pos()->x, get_pos()->y, 0);
+			angle_lock_ignore(200);
 		}
 		buzzer_control_note(2, 100, NOTE_C, 8);
 	}
@@ -139,13 +150,13 @@ static void robocon_get_xbc(void)
 		if (auto_serve_mode) {
 			// Off
 			auto_serve_mode = false;
-			auto_serve_timer = 0;
-			buzzer_control_note(1, 500, NOTE_D, 7);
+			auto_serve_time = 0;
+			buzzer_control_note(1, 500, NOTE_D, 6);
 		} else {
 			// On
 			auto_serve_mode = true;
-			auto_serve_timer = AUTO_SERVE_PRE_DELAY;
-			buzzer_control_note(1, 200, NOTE_D, 7);
+			auto_serve_time = get_full_ticks();
+			buzzer_control_note(1, 500, NOTE_D, 7);
 		}
 	}
 	
@@ -227,13 +238,17 @@ void robocon_init(void)
 	
 	gpio_init(SERVING_LED_GPIO, GPIO_Speed_2MHz, GPIO_Mode_Out_PP, 1);
 	gpio_init(US_AUTO_LED_GPIO, GPIO_Speed_2MHz, GPIO_Mode_Out_PP, 1);
-	gpio_init(ANGLE_LOCK_LED_GPIO, GPIO_Speed_2MHz, GPIO_Mode_Out_PP, 1);
+	//gpio_init(ANGLE_LOCK_LED_GPIO, GPIO_Speed_2MHz, GPIO_Mode_Out_PP, 1);
 	gpio_init(AUTO_SERVE_LED_GPIO, GPIO_Speed_2MHz, GPIO_Mode_Out_PP, 1);
+	gpio_init(GYRO_LED_GPIO, GPIO_Speed_2MHz, GPIO_Mode_Out_PP, 1);
+	gpio_init(UPPER_RACKET_GPIO, GPIO_Speed_2MHz, GPIO_Mode_Out_PP, 1);
 	
-	gpio_write(SERVING_LED_GPIO, 1);
-	gpio_write(US_AUTO_LED_GPIO, 1);
-	gpio_write(ANGLE_LOCK_LED_GPIO, 1);
-	gpio_write(AUTO_SERVE_LED_GPIO, 1);
+	gpio_write(SERVING_LED_GPIO, (BitAction) 1);
+	gpio_write(US_AUTO_LED_GPIO, (BitAction) 1);
+	//gpio_write(ANGLE_LOCK_LED_GPIO, 1);
+	gpio_write(AUTO_SERVE_LED_GPIO, (BitAction) 1);
+	gpio_write(GYRO_LED_GPIO, (BitAction) 1);
+	gpio_write(UPPER_RACKET_GPIO, (BitAction) 1);
 	
 	
 	serving_mode = false;
@@ -305,57 +320,69 @@ void robocon_main(void)
 				
 				if (angle_lock_mode) {
 					if (angle_lock_ignored()) {
-						gpio_write(ANGLE_LOCK_LED_GPIO, (BitAction) (get_ticks() % 200 <= 100)); 
+						gpio_write(GYRO_LED_GPIO, (BitAction) (get_ticks() % 250 < 125)); 
 					} else {
-						gpio_write(ANGLE_LOCK_LED_GPIO, 1);
+						gpio_write(GYRO_LED_GPIO, (BitAction) 1);
 					}
+				} else if (!gyro_get_available()) {
+					gpio_write(GYRO_LED_GPIO, (BitAction) (get_ticks() % 100 <= 50));
 				} else {
-					gpio_write(ANGLE_LOCK_LED_GPIO, 0);
+					gpio_write(GYRO_LED_GPIO, (BitAction) 0);
 				}
 				if (!angle_lock_mode) {angle_lock_ignore(200); }
+				
+				if (serving_mode) {
+					angle_lock_ignore(200);
+				}
+				
 				robocon_get_xbc();
 				
 				// Auto-serve update
 				if (auto_serve_mode) {
-					if (auto_serve_timer > 20) {
-						auto_serve_timer -= 20;
-						
-						if (auto_serve_timer % 1000 == 0) {
-							buzzer_control_note(1, 200, NOTE_G, 7);
-						}
-						
-						if (auto_serve_timer < 3000 && auto_serve_timer % 1000 == 500) {
-							buzzer_control_note(1, 200, NOTE_G, 6);
-						}
-					} else {
-						// Serve
-						serving_hit_start(); 
-						auto_serve_timer = 0;
+					u32 time_used = get_full_ticks() - auto_serve_time;
+					
+					if (time_used >= AUTO_SERVE_PRE_DELAY) {
+						serving_hit_start();
 						auto_serve_mode = false;
+						serving_mode = false;
+						auto_serve_time = 0;
+						buzzer_control_note(1, 500, NOTE_D, 7);
+					} else {
+						u32 time_left = AUTO_SERVE_PRE_DELAY - time_used;
+						if (time_left % 1000 < 50) {
+							buzzer_control_note(1, 200, NOTE_D, 7); 
+						}
+						
+						if (time_left < 3000 && time_left % 1000 >= 475 && time_left % 1000 <= 525) {
+							buzzer_control_note(1, 200, NOTE_D, 6);
+						}
 					}
+					
+					
 				}
 				
 				// LED indicator
 				if (get_serving_cali_state() != SERVING_CALI_NULL) {
-					gpio_write(SERVING_LED_GPIO, ticks_img % 500 < 250);
+					gpio_write(SERVING_LED_GPIO, (BitAction) (ticks_img % 500 < 250));
 				} else if (get_serving_hit_state() != SERVING_NULL) {
 					gpio_write(SERVING_LED_GPIO, 1);
 				} else if (serving_mode && get_serving_calibrated()) {
-					gpio_write(SERVING_LED_GPIO, ticks_img % 125 < 62);
+					gpio_write(SERVING_LED_GPIO, (BitAction) (ticks_img % 125 < 62));
 				} else {
 					gpio_write(SERVING_LED_GPIO, 0);
 				}
 				
-				if (auto_serve_mode) {
-					if (auto_serve_timer >= 5000) {
-						gpio_write(SERVING_LED_GPIO, 1); 
-					} else if (auto_serve_timer >= 3000) {
-						gpio_write(SERVING_LED_GPIO, ticks_img % 500 < 250);
+				if (auto_serve_mode && get_full_ticks() - auto_serve_time < AUTO_SERVE_PRE_DELAY) {
+					u32 time_left = AUTO_SERVE_PRE_DELAY - (get_full_ticks() - auto_serve_time);
+					if (time_left >= 5000) {
+						gpio_write(AUTO_SERVE_LED_GPIO, 1); 
+					} else if (time_left >= 3000) {
+						gpio_write(AUTO_SERVE_LED_GPIO, ticks_img % 500 < 250);
 					} else {
-						gpio_write(SERVING_LED_GPIO, ticks_img % 250 < 125);
+						gpio_write(AUTO_SERVE_LED_GPIO, ticks_img % 250 < 125);
 					}
 				} else {
-					gpio_write(SERVING_LED_GPIO, 0);
+					gpio_write(AUTO_SERVE_LED_GPIO, 0);
 				}
 				
 				if (us_auto_mode) {
@@ -396,28 +423,46 @@ void robocon_main(void)
 				}
 				
 				
+			
+			
+			
+				if (upper_racket_get_mode() == UPPER_RACKET_PRE_HIT) {
+					gpio_write(UPPER_RACKET_GPIO, ticks_img % 200 < 100);
+				} else if (upper_racket_get_mode() == UPPER_RACKET_HITTING) {
+					gpio_write(UPPER_RACKET_GPIO, 1);
+				} else if (upper_racket_get_mode() == UPPER_RACKET_POST_HIT) {
+					gpio_write(UPPER_RACKET_GPIO, ticks_img % 100 < 50);
+				} else if (serving_mode) {
+					gpio_write(UPPER_RACKET_GPIO, ticks_img % 250 < 125);
+				}	else {
+					gpio_write(UPPER_RACKET_GPIO, 0); 
+				}
+			
 			}
 			
 			if (ticks_img % 50 == 7) {
 				// Every 50 ms (20 Hz)
 				/** Warning: try not to do many things after tft_update(), as it takes time **/
 
-				WHEEL_BASE_VEL vel = wheel_base_get_vel();
+				WHEEL_BASE_VEL vel_real = wheel_base_get_vel_real(), 
+					vel_target = wheel_base_get_vel_target();
+					
 				tft_clear();
 				draw_top_bar();
 
-				tft_prints(0, 1, "V:(%3d,%3d,%3d)", vel.x, vel.y, vel.w);
-				tft_prints(0, 2, "Speed: %d", wheel_base_get_speed_mode());
+				tft_prints(0, 1, "(%3d,%3d,%3d)", vel_target.x, vel_target.y, vel_target.w);
+				tft_prints(0, 2, "(%3d,%3d,%3d)", vel_real.x, vel_real.y, vel_real.w);
+				tft_prints(0, 3, "Speed: %d", wheel_base_get_speed_mode());
 				if (gyro_get_available()) {
-					tft_prints(0, 3, "(%-4d,%-4d,%-4d)", get_pos()->x, get_pos()->y,get_pos()->angle);
+					tft_prints(0, 4, "(%-4d,%-4d,%-4d)", get_pos()->x, get_pos()->y,get_pos()->angle);
 				} else {
-					tft_prints(0, 3, "[(%-4d,%-4d,%-4d)]", get_pos()->x, get_pos()->y, get_pos()->angle);
+					tft_prints(0, 4, "[(%-4d,%-4d,%-4d)]", get_pos()->x, get_pos()->y, get_pos()->angle);
 				}
-				tft_prints(0, 4, "%s", abs_angle_mode ? "[ABSOLUTE]" : "Relative");
-				tft_prints(0, 5, "State: (%d,%d)", get_serving_cali_state(), get_serving_hit_state());
+				tft_prints(0, 5, "%s", abs_angle_mode ? "[ABSOLUTE]" : "Relative");
+				tft_prints(0, 6, "State: (%d,%d)", get_serving_cali_state(), get_serving_hit_state());
 				
-				tft_prints(0, 6, get_serving_calibrated() ? "CALI" : "[NOT CAL!]"); 
-				tft_prints(10, 6, get_serving_switch() ? "SW": "--");
+				//tft_prints(0, 6, get_serving_calibrated() ? "CALI" : "[NOT CAL!]"); 
+				//tft_prints(10, 6, get_serving_switch() ? "SW": "--");
 				s32 target_encoder = 0;
 				if (get_serving_cali_state() != SERVING_CALI_NULL) {
 					target_encoder = get_serving_cali_encoder_target();
@@ -433,7 +478,7 @@ void robocon_main(void)
 					if (dist == 0) {
 						tft_prints(i, 8, "+");
 					} else if (dist < 1000) {
-						tft_prints(i, 8, "%d", dist / 100);
+						tft_prints(i, 8, "%d", (dist / 100) % 10);
 					} else {
 						tft_prints(i, 8, "+");
 					}

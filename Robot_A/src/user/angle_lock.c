@@ -1,4 +1,5 @@
 #include "angle_lock.h"
+#include "gyro.h"
 
 s16 angle_prev = 0;
 s16 angle_target = 0;
@@ -15,7 +16,7 @@ void angle_lock_init(void)
 
 bool angle_lock_ignored(void)
 {
-	return get_full_ticks() <= angle_lock_ignore_until_ticks;
+	return !gyro_get_available() || get_full_ticks() <= angle_lock_ignore_until_ticks;
 }
 
 void angle_lock_update(void)

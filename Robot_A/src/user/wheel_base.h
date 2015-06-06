@@ -26,20 +26,25 @@
 #define	WHEEL_BASE_W_VEL_RATIO								-700		//	-70.0%
 #define	WHEEL_BASE_SPEED_MODE_COUNT						16
 
-static const u16 SPEED_MODES[WHEEL_BASE_SPEED_MODE_COUNT] =	// In percentage (20 = 20%)
+static const u32 SPEED_MODES[WHEEL_BASE_SPEED_MODE_COUNT] =	// In percentage (20 = 20%)
 {
-	0, 20, 40, 60, 80, 100, 120, 140, 160, 180, 200, 220, 240, 260, 280, 300
+	0, 200, 400, 600, 800, 1000, 1200, 1400, 1600, 1800, 2000, 2200, 2400, 2600, 2800, 3000
 };
 
 // Initialized value
-#define WHEEL_BASE_DEFAULT_ACC								200
+// #define WHEEL_BASE_DEFAULT_ACC							200
 #define	WHEEL_BASE_DEFAULT_SPEED_MODE					6			// from 0 to 9
 
+#define	WHEEL_BASE_XY_ACC											70
+#define	WHEEL_BASE_W_ACC											50
+
+#define	WHEEL_BASE_SPEED_SCALE_DOWN						10
+
 // Wheel base motors acceleration (CONSTANT, to be configured upon startup)
-#define	WHEEL_BASE_BR_ACC											250		// Bottom-right wheel
-#define	WHEEL_BASE_BL_ACC										  250		// Bottom-left wheel
-#define	WHEEL_BASE_TL_ACC											250		// Top-left wheel
-#define	WHEEL_BASE_TR_ACC											250 		// Top-right wheel
+#define	WHEEL_BASE_BR_ACC											400		// Bottom-right wheel
+#define	WHEEL_BASE_BL_ACC										  400		// Bottom-left wheel
+#define	WHEEL_BASE_TL_ACC											400		// Top-left wheel
+#define	WHEEL_BASE_TR_ACC											400 		// Top-right wheel
 
 typedef struct {
 	s32 x;
@@ -64,7 +69,8 @@ void wheel_base_set_speed_mode(u8 s);
 u8 wheel_base_get_speed_mode(void);
 void wheel_base_tx_acc(void);
 void wheel_base_set_vel(s32 x, s32 y, s32 w);
-WHEEL_BASE_VEL wheel_base_get_vel(void);
+WHEEL_BASE_VEL wheel_base_get_vel_target(void);
+WHEEL_BASE_VEL wheel_base_get_vel_real(void);
 char wheel_base_bluetooth_get_last_char(void);
 void wheel_base_update(void);
 void wheel_base_tx_position(void);

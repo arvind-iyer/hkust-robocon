@@ -9,7 +9,7 @@
 #define	ANGLE_LOCK_THRESHOLD		30				// 3.0 degrees
 #define	ANGLE_LOCK_LIMIT				150				// 20.0 degrees
 
-#define	ANGLE_LOCK_Kp						100			// Scaled by 100
+#define	ANGLE_LOCK_Kp						180			// Scaled by 100
 
 
 void angle_lock_init(void);

@@ -32,7 +32,7 @@ static void can_xbc_mb_decoding(CanRxMsg msg)
       break;
       
       case CAN_XBC_BASE+1:
-        if (msg.DLC == 5) {
+        if (msg.DLC == 5 || msg.DLC == 6) {
           xbc_joy[XBC_JOY_RX] = msg.Data[0] + (msg.Data[1] << 8); 
           xbc_joy[XBC_JOY_RY] = msg.Data[2] + (msg.Data[3] << 8);
           last_can_connection = get_full_ticks();
