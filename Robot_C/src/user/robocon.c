@@ -110,6 +110,7 @@ bool robot_xbc_controls(void)
 	if (!remove_robot_sequence_started)
 		wheel_base_set_vel(vx, vy, vw);
 	
+	robot_cd_common_function();
 	if (ROBOT=='C')
 	 	robot_c_function_controls();
 	if (ROBOT=='D')
@@ -120,11 +121,19 @@ bool robot_xbc_controls(void)
 
 void robot_c_function_controls(void)
 {
+	/* Sensor is not in use now
 	// enable sensors
 	if(button_pressed(BUTTON_XBC_RB))
 		sensors_activated=1;
 	else
 		sensors_activated=0;
+	*/
+	
+	if (button_pressed(BUTTON_XBC_E)) {
+		++accel_rate;
+	} else if (button_pressed(BUTTON_XBC_W)){
+		--accel_rate;
+	}
 	
 	//Racket Hit
 	if(button_pressed(BUTTON_XBC_B))
@@ -139,12 +148,11 @@ void robot_c_function_controls(void)
 	//	plus_y();
 	//if(button_pressed(BUTTON_XBC_Y))
 	//	minus_y();
-	
 }
 
-void robot_d_function_controls(void)
+static void robot_cd_common_function(void)
 {
-  if (button_pressed(BUTTON_XBC_XBOX)) {
+	if (button_pressed(BUTTON_XBC_XBOX)) {
 		// forced terminate everything when pressed.
 		// Stop spinning
 		target_angle = get_pos()->angle;
@@ -160,6 +168,14 @@ void robot_d_function_controls(void)
 		remove_robot_sequence_started = force_terminate = false;
 	}
 	
+	if (button_pressed(BUTTON_XBC_RB)) {
+		gyro_pos_set(get_pos()->x, get_pos()->y, 0);
+		accumulated_omega = target_angle = 0;
+	}	
+}
+
+void robot_d_function_controls(void)
+{
 	//Racket Hit
 	if(button_pressed(BUTTON_XBC_A))
 		racket_hit();
@@ -171,11 +187,6 @@ void robot_d_function_controls(void)
 	else if(button_pressed(BUTTON_XBC_X))//Not essential
 		serve_calibrate();
 	// change serve varibales
-	
-	if (button_pressed(BUTTON_XBC_RB)) {
-		gyro_pos_set(get_pos()->x, get_pos()->y, 0);
-		accumulated_omega = target_angle = 0;
-	}
 	
 	if (button_pressed(BUTTON_XBC_N) && button_pressed(BUTTON_XBC_Y))
 		serve_change_delay(1);
@@ -467,21 +478,18 @@ void robocon_main(void)
 				
 				u8 connect = xbc_get_connection() == XBC_DISCONNECTED ? 0 : 1;
 				
-				if(ROBOT=='C')
-				{ 
-						tft_prints(0,3,"Angle: %d", angle);
-				}
-				else
-				{
+				if (ROBOT == 'D') {
 					tft_prints(0,2,"Encoder: %d", get_encoder_value(RACKET));
 					tft_prints(0,3,"Serve_delay: %d",serve_get_delay());
 					tft_prints(0,4,"Racket: %d", serve_get_vel());
-          tft_prints(0,5,"Target: %d", wheel_base_get_target_pos().angle);
-					tft_prints(0,6,"Angle: %d", get_pos()->angle);
-					tft_prints(0,7,"accel rate: %d", accel_rate);
-					if (force_terminate) {
-						tft_prints(0,8, "STOP!");
-					}
+				}
+				
+				tft_prints(0,5,"Target: %d", wheel_base_get_target_pos().angle);
+				tft_prints(0,6,"Angle: %d", get_pos()->angle);
+				tft_prints(0,7,"accel rate: %d", accel_rate);
+				
+				if (force_terminate) {
+					tft_prints(0,8, "STOP!");
 				}
 					 
         

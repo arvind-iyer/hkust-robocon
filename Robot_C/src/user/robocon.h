@@ -18,7 +18,7 @@
 #include "encoder.h"
 #include "ultrasonic_mb.h"
   //'C' or 'D'
-#define ROBOT 'D'
+#define ROBOT 'C'
 
 
 /*** Optional ***/
@@ -42,10 +42,11 @@
 #define BR_ACC_FAC			ROBOT=='C'?50:27 
 #define BL_ACC_FAC			ROBOT=='C'?50:27 
 
+static void robot_cd_common_function(void);
 bool is_force_terminate(void);
 void robocon_main(void);
-void robot_c_function_controls(void);
-void robot_d_function_controls(void);
+static void robot_c_function_controls(void);
+static void robot_d_function_controls(void);
 bool robot_xbc_controls(void);
 //bool get_xbc_input_allowed(void);
 //void set_xbc_input_allowed(bool);
