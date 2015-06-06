@@ -8,18 +8,17 @@
 static u16 ticks_img 	= (u16)-1;
 static u32 last_sent_OS_time = 0;
 static bool key_trigger_enable = true;
-static bool servo_released = false;
-static bool use_xbc_input = false;
-static bool force_terminate = false;
 static u16 prev_ticks=-1;
-static u16 turn_timer=-1;
+// Omega PID relevant.
 static int accumulated_omega = 0;
 static int target_angle = 0;
 
 static u16 tick_skip_count=0;
 
+// Enable flag.
 bool serve_pneu_button_enabled=1;
 bool turn_timer_started = 0;
+static bool force_terminate = false;
 
 // enabling sensors by button.
 bool sensors_activated = 0;
@@ -31,11 +30,12 @@ u32 emergency_serve_start_time=0;
 bool remove_robot_sequence_started=0;
 u32 remove_robot_start_time=0;
 
-u16 prev_vels[50] = { 0 };
-u16 vel_index = 0;
-u16 acc_mod = 0;
-
 s32 angle = 0;
+
+bool is_force_terminate(void)
+{
+	return force_terminate;
+}
 
 bool robot_xbc_controls(void)
 {
@@ -44,53 +44,57 @@ bool robot_xbc_controls(void)
 	button_update();
 	/*
 	* Left Analog - Move(Analog)
-	* Gamepad Buttons - Move(Digital) - Speed depends on speed_mode
+	* Y + Gamepad Buttons - serve delay and motor speed tunning
+	* Gamepad (Left and right) - acceleration factor.
+	* XBOX - force stop the Robot, for emergency usage
 	* LT - CCW Turning(Analog)
 	* RT - CW Turning(Analog)
 	* A - Racket Hit
-	* RB - Increase Movement Speed
-	* LB - Decrease Movement Speed
+	* B - Serve
+	* X - Calibrate
+	* RB - Reset Gyro (robot D), sensor enable (robot C)
+	* LB + B - Fake serve
 	* 
 	*/
+	
 	//Analog Movement
-	
-	
-	//int dw = (xbc_get_joy(XBC_JOY_RT)-xbc_get_joy(XBC_JOY_LT))/5;
-
 	//Set x and y vel according to analog stick input
+	int raw_vx = xbc_get_joy(XBC_JOY_LX);
+	int raw_vy = xbc_get_joy(XBC_JOY_LY);
 	
-	int vx = xbc_get_joy(XBC_JOY_LX);
-	int vy = xbc_get_joy(XBC_JOY_LY);
-	
-	int h = Sqrt(vx*vx + vy*vy);
-//	int cosine = vx / Sqrt(vx*vx + vy*vy);
-//	int sine = vy / Sqrt(vx*vx + vy*vy);
+	int h = Sqrt(Sqr(raw_vx)+ Sqr(raw_vy));
 	
 	// Scalar Speed limit
 	if (h > XBC_JOY_SCALE) {
-		vx = vx*XBC_JOY_SCALE / h;
-		vy = vy*XBC_JOY_SCALE / h;
+		raw_vx = raw_vx*XBC_JOY_SCALE / h;
+		raw_vy = raw_vy*XBC_JOY_SCALE / h;
 	}
-	s32 dx = vx;
-	s32 dy = vy;
+	
+	// Set output x and y.
+	s32 vx = raw_vx;
+	s32 vy = raw_vy;
+	
 	//Use rotation matrix to control the robots by absolute coordinates not relative
 	#ifdef absolute_angle
 	int current_angle = get_pos()->angle;
-	dy = (vy * int_cos(current_angle) + vx * int_sin(current_angle)) / 10000;
-	dx = (- vy * int_sin(current_angle) + vx * int_cos(current_angle)) / 10000;
+	// All sin and cos are multiplied by 10000, so we divide it for output.
+	vx = (- raw_vy * int_sin(current_angle) + raw_vx * int_cos(current_angle)) / 10000;
+	vy = (raw_vy * int_cos(current_angle) + raw_vx * int_sin(current_angle)) / 10000;
 	#endif
 	
 	// Spining velocity
   int omega = (xbc_get_joy(XBC_JOY_RT)-xbc_get_joy(XBC_JOY_LT))/5;
 	const int speed_factor = ROBOT=='C'?6:10;
 
-
+	// Accumulated the floating value
   accumulated_omega += omega % speed_factor;
   int incremental = accumulated_omega / speed_factor;
   if (incremental != 0) {
     target_angle += incremental;
     accumulated_omega -= incremental * speed_factor; 
   }
+	
+	// changing target angle with int value.
 	target_angle += omega / speed_factor;
 	if (target_angle < 0) {
 		target_angle += 3600;
@@ -100,64 +104,17 @@ bool robot_xbc_controls(void)
 	
 	wheel_base_set_target_pos((POSITION){get_pos()->x, get_pos()->y, target_angle});
 
-	//Get angle speed based on target_angle
-	int dw = pid_maintain_angle();
+	// Get angular speed based on target_angle
+	int vw = pid_maintain_angle();
 	
-	/*
-	//To use Right thumbstick to control angle
-	if(!(xbc_get_joy(XBC_JOY_RX) == 0 && xbc_get_joy(XBC_JOY_RY) == 0))
-	{
-		angle = int_arc_tan2(xbc_get_joy(XBC_JOY_RY), xbc_get_joy(XBC_JOY_RX));
-		angle = angle - 90;
-		if(angle < 0)
-			angle = 360 + angle;
-		angle = 360 - angle;
-		if(angle == 360)
-			angle = 0;
-		
-		wheel_base_set_target_pos((POSITION){get_pos()->x, get_pos()->y, 10*angle});
-	
-	}
-	*/
 	if (!remove_robot_sequence_started)
-		wheel_base_set_vel(dx, dy, dw);
-
-	//Get acceleration modifiers for each wheel
-	
-	 //Set wheel accelerations
-//		motor_set_acceleration(MOTOR_BOTTOM_RIGHT,(acc_mod * br)/100);
-//		motor_set_acceleration(MOTOR_BOTTOM_LEFT,(acc_mod * bl)/100);
-//		motor_set_acceleration(MOTOR_TOP_LEFT,(acc_mod * tl)/100);
-//		motor_set_acceleration(MOTOR_TOP_RIGHT, (acc_mod * tr)/100);
-	
-	//y = r*cos(theta)
-	//x = r*sin(theta)
-	
-		
-	/*
-	80 = up
-	81= down
-	4D = right
-	51 = left
-	*/
-	//Function Keys 
+		wheel_base_set_vel(vx, vy, vw);
 	
 	if (ROBOT=='C')
 	 	robot_c_function_controls();
 	if (ROBOT=='D')
 		robot_d_function_controls();
 	
-	
-	//RB and LB
-	/*if(button_released(BUTTON_XBC_LB) > 15)
-	{
-		wheel_base_set_speed_mode(wheel_base_get_speed_mode() - 1);
-	}
-	else if(button_released(BUTTON_XBC_RB) >  15)
-	{
-		wheel_base_set_speed_mode(wheel_base_get_speed_mode() + 1);
-	}	
-	*/
 	return true;
 }
 
@@ -187,18 +144,21 @@ void robot_c_function_controls(void)
 
 void robot_d_function_controls(void)
 {
-  if (button_hold(BUTTON_XBC_XBOX, 10, 1)) {
-    force_terminate = true;
+  if (button_pressed(BUTTON_XBC_XBOX)) {
+		// forced terminate everything when pressed.
+		// Stop spinning
+		target_angle = get_pos()->angle;
+		accumulated_omega = 0;
+		// Stop Motor.
+		remove_robot_sequence_started = force_terminate = true;
+		wheel_base_set_vel(0, 0, 0);
+		// Serving part reset.
+		serve_free();
+		// Ignore other button.
     return;
   } else if (button_released(BUTTON_XBC_XBOX)) {
-    force_terminate = false;
-  }
-  
-	// enable sensors
-	if(button_pressed(BUTTON_XBC_RB))
-		sensors_activated=1;
-	else
-		sensors_activated=0;
+		remove_robot_sequence_started = force_terminate = false;
+	}
 	
 	//Racket Hit
 	if(button_pressed(BUTTON_XBC_A))
@@ -227,7 +187,12 @@ void robot_d_function_controls(void)
 	else if (button_pressed(BUTTON_XBC_E) && button_pressed(BUTTON_XBC_Y))
 		serve_change_vel(2);
 		//minus_x();
-	
+	// acceleration rate tunning.
+	else if (button_pressed(BUTTON_XBC_E)) {
+		++accel_rate;
+	} else if (button_pressed(BUTTON_XBC_W)){
+		--accel_rate;
+	}
 	
 	if (button_pressed(BUTTON_XBC_START))
 	{
@@ -446,17 +411,8 @@ void robocon_main(void)
           return;
         }
 			}
-			if (!force_terminate) {
-				// wheel_base update
-				wheel_base_update();
-			} else {
-				wheel_base_set_vel(0, 0, 0);
-				motor_set_vel(MOTOR_BOTTOM_RIGHT, 0, OPEN_LOOP);
-				motor_set_vel(MOTOR_BOTTOM_LEFT, 0, OPEN_LOOP);
-				motor_set_vel(MOTOR_TOP_RIGHT, 0, OPEN_LOOP);
-				motor_set_vel(MOTOR_TOP_LEFT, 0, OPEN_LOOP);
-				serve_free();
-			}
+			// wheel_base update every milisecond
+			wheel_base_update();
 				
 			if (ticks_img % 250 == 1) {
 				// Every 250 ms (4 Hz)
@@ -513,7 +469,6 @@ void robocon_main(void)
 				
 				if(ROBOT=='C')
 				{ 
-						tft_prints(0,2,"Acc: %d", acc_mod);
 						tft_prints(0,3,"Angle: %d", angle);
 				}
 				else
@@ -523,6 +478,10 @@ void robocon_main(void)
 					tft_prints(0,4,"Racket: %d", serve_get_vel());
           tft_prints(0,5,"Target: %d", wheel_base_get_target_pos().angle);
 					tft_prints(0,6,"Angle: %d", get_pos()->angle);
+					tft_prints(0,7,"accel rate: %d", accel_rate);
+					if (force_terminate) {
+						tft_prints(0,8, "STOP!");
+					}
 				}
 					 
         

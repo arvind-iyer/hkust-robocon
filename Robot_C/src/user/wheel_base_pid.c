@@ -36,8 +36,8 @@ s32 pid_maintain_angle(void)
 		dw += 3600;
 	}	
 	
+	// omega due to angle error (P value)
 	w = dw * 3 / 10;
-	//Setting velocity to be minimum magnitude of 19 and max of 50
 	
 	//Add integral factor
 	integ_dw_list[integ_dw_index++] = dw;
@@ -47,8 +47,10 @@ s32 pid_maintain_angle(void)
 	{
 		wi+=integ_dw_list[i];
 	}
+	// omega due to I value. (w is PI control now)
 	w+=wi/32;
 	
+	// Dead zone and velocity limit.
 	if (Abs(dw) >= 10) {
 		w = Abs(w) < 10? w*10/Abs(w) : w;
 		w = Abs(w) > 70 ? w*70/Abs(w) : w;

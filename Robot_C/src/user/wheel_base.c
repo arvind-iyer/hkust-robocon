@@ -16,7 +16,7 @@ static POSITION target_pos = {0, 0, 0};
 //static PID wheel_base_pid = {0, 0, 0};
 
 static WHEEL_BASE_VEL wheel_base_target = {0, 0, 0};
-
+int accel_rate = 1414; // 1414 for rough ground, 1000 for 3142 ground without skidding
 
 /**
 	* @brief Handler for the bluetooth RX with id 0x4?
@@ -123,8 +123,6 @@ void wheel_base_init(void)
 	//PID on at beginning
 	wheel_base_set_target_pos(wheel_base_get_target_pos());
 	wheel_base_pid_on();
-	
-	
 }
 
 /**
@@ -213,6 +211,38 @@ u8 wheel_base_vel_diff(void)
 }
 
 /**
+	*	@brief 	Update the velocity vector of x and y with respect to its direction. (private function)
+	*	@param 	accumulate: either pointer of accumulate.x or accumulate.y 
+						target_vector: either wheel_base_target.x or wheel_base_target.y
+						curr_vector: either pointer of wheel_base_vel.x or wheel_base_vel.y
+						mag_of_vector_diff: the magnitude of vector difference
+	*	@retval None
+	*/
+static void wheel_base_xy_update(int* accumulate, const int target_vector, int* curr_vector, const int mag_of_vector_diff)
+{
+	if (target_vector - *curr_vector > 2) {
+		// Increase current vector with respect to its magnitude by accel_rate value each milisecond.
+		(*curr_vector) += (Abs(target_vector - *curr_vector) * accel_rate / 1000) / mag_of_vector_diff;
+		(*accumulate) += (Abs(target_vector - *curr_vector) * accel_rate / 1000) % mag_of_vector_diff;
+	} else if (target_vector - *curr_vector < 2) {
+		// Decrease current vector with respect to its magnitude by accel_rate value each milisecond.
+		(*curr_vector) -= (Abs(target_vector - *curr_vector) * accel_rate / 1000) / mag_of_vector_diff;
+		(*accumulate) -= (Abs(target_vector - *curr_vector) * accel_rate / 1000) % mag_of_vector_diff;
+	} else {
+		// Directly reach target vector if difference is small.
+		(*curr_vector) = target_vector;
+	}
+	
+	// Add up the remainder value, just simulate floating-point like.
+	if (Abs(*accumulate) > mag_of_vector_diff) {
+		int increment = (*accumulate) / mag_of_vector_diff;
+		(*accumulate) -= increment * mag_of_vector_diff;
+		(*curr_vector) += increment;
+	}
+}
+
+
+/**
 	* @brief Update the wheel base speed through CAN transmission. (TO BE CALLED REGULARLY)
 	* @param None.
 	* @retval None.
@@ -226,16 +256,13 @@ void wheel_base_update(void)
     */
 	int mod = ROBOT=='C'?-1:1;
 	
-	s32 tar_speed = Sqrt(Sqr(wheel_base_get_tar_vel().x) + Sqr(wheel_base_get_tar_vel().y));
-	s32 cur_x = wheel_base_get_vel().x;
-	s32 cur_y = wheel_base_get_vel().y;
-	s32 curr_speed = Sqrt(Sqr(cur_x) + Sqr(cur_y));
-	s32 diff_vector = Sqrt(Sqr(cur_x - wheel_base_get_tar_vel().x) + Sqr(wheel_base_get_tar_vel().y - cur_y));
-	
+	// Acceleration profile relevant variable.
 	static u16 prev_vels[50] = { 0 };
 	static u16 vel_index = 0;
+	// Floating point simulation variable.
 	static WHEEL_BASE_VEL accumulate = {0, 0, 0};
 	
+	// Acceleration profile, ranging from 50 to 400. (with 165 speed)
 	if (get_ticks() % 10 == 0) {
 		prev_vels[(vel_index++)%(sizeof(prev_vels)/sizeof(prev_vels[0]))] = (Sqrt(Sqr(Abs(wheel_base_get_tar_vel().x)) + Sqr(Abs(wheel_base_get_tar_vel().y))+ Sqr(Abs(wheel_base_get_tar_vel().w))))/20;
 	}
@@ -244,58 +271,40 @@ void wheel_base_update(void)
 	for (int i = 0; i < sizeof(prev_vels)/sizeof(prev_vels[0]); i++) {
 		acc_mod += (prev_vels[i] > 0 ? (prev_vels[i]) : 1);
 	}
-		
+	// Accelerate according to the acceleration profile
 	if (get_ticks() % (1000 / acc_mod) == 0) {
-		// x, y accel
-		if (wheel_base_get_tar_vel().x - wheel_base_vel.x > 2) {
-			wheel_base_vel.x += Abs(wheel_base_get_tar_vel().x - cur_x) * 1414 / 1000 / diff_vector;
-			accumulate.x += (Abs(wheel_base_get_tar_vel().x - cur_x) * 1414 / 1000) % diff_vector;
-		} else if (wheel_base_get_tar_vel().x - wheel_base_vel.x < 2) {
-			wheel_base_vel.x -= Abs(wheel_base_get_tar_vel().x - cur_x) * 1414 / 1000 / diff_vector;
-			accumulate.x -= (Abs(wheel_base_get_tar_vel().x - cur_x) * 1414 / 1000) % diff_vector;
-		} else {
-			wheel_base_vel.x = wheel_base_get_tar_vel().x;
+		s32 mag_vector_diff = Sqrt(Sqr(wheel_base_get_vel().x - wheel_base_get_tar_vel().x) + Sqr(wheel_base_get_tar_vel().y - wheel_base_get_vel().y));
+		// x, y accel with respect to magnitudue of vector difference.
+		if (mag_vector_diff > 0) {
+			wheel_base_xy_update(&(accumulate.x), wheel_base_get_tar_vel().x, &(wheel_base_vel.x), mag_vector_diff);
+			wheel_base_xy_update(&(accumulate.y), wheel_base_get_tar_vel().y, &(wheel_base_vel.y), mag_vector_diff);
 		}
-		
-		if (Abs(accumulate.x) > diff_vector) {
-			int increment = accumulate.x / diff_vector;
-			accumulate.x -= increment * diff_vector;
-			wheel_base_vel.x += increment;
-		}
-
-		
-		if (wheel_base_get_tar_vel().y - wheel_base_vel.y > 2) {
-			wheel_base_vel.y += Abs(wheel_base_get_tar_vel().y - cur_y) * 1414 / 1000 / diff_vector;
-			accumulate.y += (Abs(wheel_base_get_tar_vel().y - cur_y) * 1414 / 1000) % diff_vector;
-		} else if (wheel_base_get_tar_vel().y - wheel_base_vel.y < 2) {
-			wheel_base_vel.y -= Abs(wheel_base_get_tar_vel().y - cur_y) * 1414 / 1000 / diff_vector;
-			accumulate.y -= (Abs(wheel_base_get_tar_vel().y - cur_y) * 1414 / 1000) % diff_vector;
-		} else {
-			wheel_base_vel.y = wheel_base_get_tar_vel().y;
-		}
-		
-		if (Abs(accumulate.y) > diff_vector) {
-			int increment = accumulate.y / diff_vector;
-			accumulate.y -= increment * diff_vector;
-			wheel_base_vel.y += increment;
-		}
-		
-		// Angle accel
-//		if (wheel_base_get_tar_vel().w > wheel_base_vel.w) {
-//			++wheel_base_vel.w;
-//		} else if (wheel_base_get_tar_vel().w < wheel_base_vel.w) {
-//			--wheel_base_vel.w;
-//		} else {
-//			wheel_base_vel.w = wheel_base_get_tar_vel().w;
-//		}
 	}
-	wheel_base_vel.w = wheel_base_get_tar_vel().w;
-
-	motor_set_vel(MOTOR_BOTTOM_RIGHT, (WHEEL_BASE_XY_VEL_RATIO * (wheel_base_vel.x + mod*wheel_base_vel.y) / 1000 + WHEEL_BASE_W_VEL_RATIO * wheel_base_vel.w / 1000), wheel_base_close_loop_flag);
-	motor_set_vel(MOTOR_BOTTOM_LEFT,  (WHEEL_BASE_XY_VEL_RATIO * (wheel_base_vel.x - mod*wheel_base_vel.y) / 1000 + WHEEL_BASE_W_VEL_RATIO * wheel_base_vel.w / 1000), wheel_base_close_loop_flag);
-	motor_set_vel(MOTOR_TOP_LEFT,			(WHEEL_BASE_XY_VEL_RATIO * (-wheel_base_vel.x - wheel_base_vel.y) / 1000 + WHEEL_BASE_W_VEL_RATIO * wheel_base_vel.w / 1000), wheel_base_close_loop_flag);
-	motor_set_vel(MOTOR_TOP_RIGHT,		(WHEEL_BASE_XY_VEL_RATIO * (-wheel_base_vel.x + wheel_base_vel.y) / 1000 + WHEEL_BASE_W_VEL_RATIO * wheel_base_vel.w / 1000), wheel_base_close_loop_flag);
-
+	
+	// Angular velocity acceleration
+	if (get_ticks() % 2 == 0) {
+		if (wheel_base_vel.w < wheel_base_get_tar_vel().w) {
+			++wheel_base_vel.w;
+		} else if (wheel_base_vel.w > wheel_base_get_tar_vel().w) {
+			--wheel_base_vel.w;
+		} else {
+			wheel_base_vel.w = wheel_base_get_tar_vel().w;
+		}
+	}
+	
+	if (is_force_terminate()) {
+		motor_set_vel(MOTOR_BOTTOM_RIGHT, 0, OPEN_LOOP);
+		motor_set_vel(MOTOR_BOTTOM_LEFT, 0, OPEN_LOOP);
+		motor_set_vel(MOTOR_TOP_LEFT, 0, OPEN_LOOP);
+		motor_set_vel(MOTOR_TOP_RIGHT, 0, OPEN_LOOP);
+	} else {
+		// Output the velocity value to motor.
+		motor_set_vel(MOTOR_BOTTOM_RIGHT, (WHEEL_BASE_XY_VEL_RATIO * (wheel_base_vel.x + mod*wheel_base_vel.y) / 1000 + WHEEL_BASE_W_VEL_RATIO * wheel_base_vel.w / 1000), wheel_base_close_loop_flag);
+		motor_set_vel(MOTOR_BOTTOM_LEFT,  (WHEEL_BASE_XY_VEL_RATIO * (wheel_base_vel.x - mod*wheel_base_vel.y) / 1000 + WHEEL_BASE_W_VEL_RATIO * wheel_base_vel.w / 1000), wheel_base_close_loop_flag);
+		motor_set_vel(MOTOR_TOP_LEFT,			(WHEEL_BASE_XY_VEL_RATIO * (-wheel_base_vel.x - wheel_base_vel.y) / 1000 + WHEEL_BASE_W_VEL_RATIO * wheel_base_vel.w / 1000), wheel_base_close_loop_flag);
+		motor_set_vel(MOTOR_TOP_RIGHT,		(WHEEL_BASE_XY_VEL_RATIO * (-wheel_base_vel.x + wheel_base_vel.y) / 1000 + WHEEL_BASE_W_VEL_RATIO * wheel_base_vel.w / 1000), wheel_base_close_loop_flag);
+	}
+	// Record the velocity.
 	wheel_base_vel_prev.x = wheel_base_vel.x;
 	wheel_base_vel_prev.y = wheel_base_vel.y;
 	wheel_base_vel_prev.w = wheel_base_vel.w;

@@ -42,7 +42,7 @@
 #define BR_ACC_FAC			ROBOT=='C'?50:27 
 #define BL_ACC_FAC			ROBOT=='C'?50:27 
 
-
+bool is_force_terminate(void);
 void robocon_main(void);
 void robot_c_function_controls(void);
 void robot_d_function_controls(void);
