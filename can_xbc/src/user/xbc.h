@@ -7,8 +7,17 @@
 #include "tft.h"
 #include "ticks.h"
 
-#define XBC_DATA_RAW_COUNT    20
-#define XBC_DATA_COUNT        13
+#define XBC_DATA_RAW_COUNT    				20
+#define XBC_DATA_COUNT        				13		/** EXCLUDE BACK BUTTONS **/
+
+#define	XBC_BACK_BUTTON_DATA_COUNT		1
+
+#define	BUTTON_P0		((GPIO*) &PC6)
+#define	BUTTON_P1		((GPIO*) &PC9)
+#define	BUTTON_P6		((GPIO*) &PC7)
+#define	BUTTON_P7		((GPIO*) &PC8)
+
+
 
 #define CAN_XBC_BASE                0x90
 #define CAN_XBC_MB_TX_LCD_ID        0x100
@@ -30,6 +39,7 @@ typedef struct {
 
 void xbc_rx_init(void);
 u8 get_xbc_data(u8 i);
+void xbc_back_button_init(void);
 void xbc_tx_data(void);
 void xbc_loop(void);
 u8 xbc_rx_get_connection(void);

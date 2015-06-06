@@ -33,7 +33,8 @@ int main(void)
   //led_control(LED_D1, LED_ON);
   //led_control(LED_D2, LED_ON);
   
-  
+	xbc_back_button_init();
+	
   bool connection = false;
   
  //xbc_config(1);
@@ -84,7 +85,8 @@ int main(void)
           xbc_rx_lcd_update_predicate = xbc_rx_lcd_update();  // This line run first as it prints
         }
         
-        if (!usb_connection || !xbc_rx_lcd_update_predicate) { 
+        if (!usb_connection || !xbc_rx_lcd_update_predicate || !gpio_read_input(BUTTON_P0)) { 
+					tft_clear();
           tft_prints(0, 0, "[XBOX Controller]");
           tft_prints(0, 1, "Time: %d.%02d", get_seconds(), get_ticks() / 10);
           tft_prints(0, 2, "USB state: ");
@@ -93,7 +95,7 @@ int main(void)
           tft_prints(11, 2, "%d", usb_get_state()); 
           tft_set_text_color(tmp_color); 
           u32 tmp_time = xbc_get_last_rx_time_ms();
-          tft_prints(0, 3, "Last RX: %d.%02d", tmp_time / 1000, (tmp_time % 1000) / 100);
+          tft_prints(0, 3, "Last RX: %d.%02d", tmp_time / 1000, (tmp_time % 1000) / 10);
           tft_prints(0, 4, "XBC_DATA (hex)");
           
           tmp_color = tft_get_text_color();

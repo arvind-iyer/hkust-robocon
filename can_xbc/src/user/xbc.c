@@ -56,23 +56,42 @@ void xbc_rx_init(void)
 
 u8 get_xbc_data(u8 i) 
 {
-    if (i >= XBC_DATA_COUNT) {return 0;}
-    else {return xbc_data[i];}
+    if (i >= XBC_DATA_COUNT + XBC_BACK_BUTTON_DATA_COUNT) {return 0;}
+    
+		if (i < XBC_DATA_COUNT) {return xbc_data[i];}
+		else if (i >= XBC_DATA_COUNT) {
+			u8 data = 0;
+			data |= ((!gpio_read_input(BUTTON_P0) & 0x01) << 0);
+			data |= ((!gpio_read_input(BUTTON_P1) & 0x01) << 1);
+			data |= ((!gpio_read_input(BUTTON_P6) & 0x01) << 2);
+			data |= ((!gpio_read_input(BUTTON_P7) & 0x01) << 3);
+			return data;
+		}
+}
+
+void xbc_back_button_init(void)
+{
+  /* BUTTON INIT */
+	gpio_init(BUTTON_P0, GPIO_Speed_2MHz, GPIO_Mode_IPU, 1);
+	gpio_init(BUTTON_P1, GPIO_Speed_2MHz, GPIO_Mode_IPU, 1);
+	gpio_init(BUTTON_P6, GPIO_Speed_2MHz, GPIO_Mode_IPU, 1);
+	gpio_init(BUTTON_P7, GPIO_Speed_2MHz, GPIO_Mode_IPU, 1);
 }
 
 void xbc_tx_data(void)
 {
   if (usb_connected()) {
-    CAN_MESSAGE msg[XBC_DATA_COUNT / 8 + (XBC_DATA_COUNT % 8 > 0)] = {{.length = 0}};
+		const u8 data_count = XBC_DATA_COUNT + XBC_BACK_BUTTON_DATA_COUNT;
+    CAN_MESSAGE msg[data_count / 8 + (data_count % 8 > 0)] = {{.length = 0}};
 
     msg[0].length = 0; 
     
-    for (u8 i = 0, id = 0; i < XBC_DATA_COUNT; ++i) {
+    for (u8 i = 0, id = 0; i < XBC_DATA_COUNT + XBC_BACK_BUTTON_DATA_COUNT; ++i) {
       if (i == 8) {
         ++id;
         msg[id].length = 0;
       }
-      msg[id].data[i % 8] = xbc_data[i];
+      msg[id].data[i % 8] = get_xbc_data(i);
       msg[id].length++;
       msg[id].id = CAN_XBC_BASE + id;
     }

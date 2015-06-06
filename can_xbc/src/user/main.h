@@ -36,4 +36,15 @@
 #include "buzzer_song.h"
 
 
+/*
+#define P0		GPIO_Pin_6	//PC   <-- sw reset keys
+#define P1 		GPIO_Pin_9	//PC
+#define P7		GPIO_Pin_8	//PC
+#define P2		GPIO_Pin_12  //PA  <-- sw reset keys
+#define P5		GPIO_Pin_12	//PC
+#define P6		GPIO_Pin_7	//PC
+*/
+
+
+
 #endif /* __MAIN_H */
