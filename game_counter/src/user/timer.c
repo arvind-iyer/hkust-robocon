@@ -1,4 +1,6 @@
 #include "timer.h"
+#include <math.h>
+#include <stdlib.h>
 
 static bool clock_mode = false;
 static u32 timer_off_idle_ms = 0;
@@ -480,6 +482,6 @@ void lottery_draw(void)
 {	
 	if (!timer_on_flag) {
 		lottery_time_left = LOTTERY_TIME;
-		lottery_result = (get_ticks() % 20 < 10);
+		lottery_result = get_ticks() < 500; 
 	}
 }

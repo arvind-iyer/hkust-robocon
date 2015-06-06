@@ -1,5 +1,5 @@
 #include "main.h"
-
+#include <stdlib.h>
 u16 ticks_img = (u16)-1;
 u8 game_mode = 0;
 
@@ -25,6 +25,9 @@ int main(void)
   //buzzer_control(1, 1000);
   buzzer_play_song(MARIO_BEGIN, 60, 0);
   
+	srand(get_full_ticks());
+	//int r = rand();
+
   while (1) {
     if (ticks_img != get_ticks()) {
       ticks_img = get_ticks();
