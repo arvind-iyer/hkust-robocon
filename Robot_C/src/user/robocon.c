@@ -119,36 +119,6 @@ bool robot_xbc_controls(void)
 	return true;
 }
 
-void robot_c_function_controls(void)
-{
-	/* Sensor is not in use now
-	// enable sensors
-	if(button_pressed(BUTTON_XBC_RB))
-		sensors_activated=1;
-	else
-		sensors_activated=0;
-	*/
-	
-	if (button_pressed(BUTTON_XBC_E)) {
-		++accel_rate;
-	} else if (button_pressed(BUTTON_XBC_W)){
-		--accel_rate;
-	}
-	
-	//Racket Hit
-	if(button_pressed(BUTTON_XBC_B))
-		racket_hit();
-	if(button_pressed(BUTTON_XBC_A))
-		racket_down_hit();
-	//if(button_pressed(BUTTON_XBC_RB))
-	//	plus_x();
-	//if(button_pressed(BUTTON_XBC_LB))
-	//	minus_x();
-	//if(button_pressed(BUTTON_XBC_X))
-	//	plus_y();
-	//if(button_pressed(BUTTON_XBC_Y))
-	//	minus_y();
-}
 
 static void robot_cd_common_function(void)
 {
@@ -172,6 +142,37 @@ static void robot_cd_common_function(void)
 		gyro_pos_set(get_pos()->x, get_pos()->y, 0);
 		accumulated_omega = target_angle = 0;
 	}	
+}
+
+void robot_c_function_controls(void)
+{
+	/* Sensor is not in use now
+	// enable sensors
+	if(button_pressed(BUTTON_XBC_RB))
+		sensors_activated=1;
+	else
+		sensors_activated=0;
+	*/
+	
+	if (button_pressed(BUTTON_XBC_E) && accel_rate < 1732) {
+		++accel_rate;
+	} else if (button_pressed(BUTTON_XBC_W) && accel_rate > 707){
+		--accel_rate;
+	}
+	
+	//Racket Hit
+	if(button_pressed(BUTTON_XBC_B))
+		racket_hit();
+	if(button_pressed(BUTTON_XBC_A))
+		racket_down_hit();
+	//if(button_pressed(BUTTON_XBC_RB))
+	//	plus_x();
+	//if(button_pressed(BUTTON_XBC_LB))
+	//	minus_x();
+	//if(button_pressed(BUTTON_XBC_X))
+	//	plus_y();
+	//if(button_pressed(BUTTON_XBC_Y))
+	//	minus_y();
 }
 
 void robot_d_function_controls(void)
@@ -199,9 +200,9 @@ void robot_d_function_controls(void)
 		serve_change_vel(2);
 		//minus_x();
 	// acceleration rate tunning.
-	else if (button_pressed(BUTTON_XBC_E)) {
+	else if (button_pressed(BUTTON_XBC_E) && accel_rate < 1732) {
 		++accel_rate;
-	} else if (button_pressed(BUTTON_XBC_W)){
+	} else if (button_pressed(BUTTON_XBC_W) && accel_rate > 707){
 		--accel_rate;
 	}
 	

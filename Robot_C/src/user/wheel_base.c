@@ -220,17 +220,15 @@ u8 wheel_base_vel_diff(void)
 	*/
 static void wheel_base_xy_update(int* accumulate, const int target_vector, int* curr_vector, const int mag_of_vector_diff)
 {
-	if (target_vector - *curr_vector > 2) {
-		// Increase current vector with respect to its magnitude by accel_rate value each milisecond.
-		(*curr_vector) += (Abs(target_vector - *curr_vector) * accel_rate / 1000) / mag_of_vector_diff;
-		(*accumulate) += (Abs(target_vector - *curr_vector) * accel_rate / 1000) % mag_of_vector_diff;
-	} else if (target_vector - *curr_vector < 2) {
-		// Decrease current vector with respect to its magnitude by accel_rate value each milisecond.
-		(*curr_vector) -= (Abs(target_vector - *curr_vector) * accel_rate / 1000) / mag_of_vector_diff;
-		(*accumulate) -= (Abs(target_vector - *curr_vector) * accel_rate / 1000) % mag_of_vector_diff;
+	if (Abs(target_vector - *curr_vector) > 2) {
+		// Increase or decrease current vector with respect to its magnitude by accel_rate value each milisecond.
+		(*curr_vector) += ((target_vector - *curr_vector) * accel_rate / 1000) / mag_of_vector_diff;
+		(*accumulate) += ((target_vector - *curr_vector) * accel_rate / 1000) % mag_of_vector_diff;
 	} else {
 		// Directly reach target vector if difference is small.
 		(*curr_vector) = target_vector;
+		(*accumulate) = 0;
+		return;
 	}
 	
 	// Add up the remainder value, just simulate floating-point like.
@@ -240,7 +238,6 @@ static void wheel_base_xy_update(int* accumulate, const int target_vector, int* 
 		(*curr_vector) += increment;
 	}
 }
-
 
 /**
 	* @brief Update the wheel base speed through CAN transmission. (TO BE CALLED REGULARLY)
