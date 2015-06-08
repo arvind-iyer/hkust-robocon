@@ -47,7 +47,7 @@ void racket_update(void);
 
 void racket_delayed_hit(int delay);
 void racket_down_hit(void);
- void racket_hit(void);
+ void racket_hit(u32 hit_time);
 void racket_pneumatic_set(bool);
 void racket_pneumatic_2_set(bool);
 

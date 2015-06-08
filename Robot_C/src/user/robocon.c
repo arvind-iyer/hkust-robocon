@@ -161,8 +161,10 @@ void robot_c_function_controls(void)
 	}
 	
 	//Racket Hit
-	if(button_pressed(BUTTON_XBC_B))
-		racket_hit();
+	if(button_pressed(BUTTON_XBC_LB) && button_pressed(BUTTON_XBC_B))
+		racket_hit(70);
+	else if(button_pressed(BUTTON_XBC_B))
+		racket_hit(500);
 	if(button_pressed(BUTTON_XBC_A))
 		racket_down_hit();
 	//if(button_pressed(BUTTON_XBC_RB))
@@ -178,8 +180,10 @@ void robot_c_function_controls(void)
 void robot_d_function_controls(void)
 {
 	//Racket Hit
-	if(button_pressed(BUTTON_XBC_A))
-		racket_hit();
+	if(button_pressed(BUTTON_XBC_LB) && button_pressed(BUTTON_XBC_A))
+		racket_hit(70);
+	else if(button_pressed(BUTTON_XBC_A))
+		racket_hit(500);
 	//Calibrate
 	else if (button_pressed(BUTTON_XBC_LB) && button_pressed(BUTTON_XBC_B))
 		fake_serve_start();
@@ -263,7 +267,7 @@ void robot_d_function_controls(void)
 	*/
 	if (nec_get_msg(0)->address==0x40 && nec_get_msg(0)->command==0x05)
 	{
-		racket_hit();
+		racket_hit(500);
 	}
 }
 
@@ -280,7 +284,7 @@ static void handle_bluetooth_input(void)
 		switch (wheel_base_bluetooth_get_last_char())
 		{
 			case 'k':
-				racket_hit();
+				racket_hit(500);
 			break;
 			case 'j':
 				if (ROBOT=='C')
