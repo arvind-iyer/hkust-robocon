@@ -3,7 +3,7 @@
 
 
 //racket variables
-static s32 SERVE_CAL_VEL = -220 ;		
+static s32 SERVE_CAL_VEL = -260 ;		
 static s32 SERVE_HIT_VEL = 1300;			//can be changed by controller
 static u32 SERVE_DELAY = 280;			// can be changed by controller
 
@@ -142,7 +142,7 @@ void serve_update(void)
 		calibrated=1;
 		hitting=0;
 		calibrate_in_process=0;
-		motor_set_vel(RACKET, SERVE_CAL_VEL+50, OPEN_LOOP);
+		motor_set_vel(RACKET, SERVE_CAL_VEL+100, OPEN_LOOP);
 		//racket_lock();
 		//init_encoder_reading = get_encoder_value(RACKET);
 		log("*tim st cal",get_full_ticks() - serve_start_time);

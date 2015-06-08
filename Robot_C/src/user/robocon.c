@@ -29,6 +29,7 @@ bool emergency_serve_activated = 0;
 u32 emergency_serve_start_time=0;
 bool remove_robot_sequence_started=0;
 u32 remove_robot_start_time=0;
+bool emergency_serve_hitting=0;
 
 s32 angle = 0;
 
@@ -107,8 +108,17 @@ bool robot_xbc_controls(void)
 	// Get angular speed based on target_angle
 	int vw = pid_maintain_angle();
 	
-	if (!remove_robot_sequence_started)
+	if (!emergency_serve_activated)
 		wheel_base_set_vel(vx, vy, vw);
+	if (emergency_serve_activated && (raw_vx!=0 || raw_vy!=0 || omega!=0))	// cancel emergency serve
+	{
+		//SUCCESSFUL_SOUND;
+		if (!emergency_serve_hitting)
+		{
+			serve_free();
+		}
+		emergency_serve_activated=0;
+	}
 	
 	robot_cd_common_function();
 	if (ROBOT=='C')
@@ -238,19 +248,23 @@ void robot_d_function_controls(void)
 		emergency_serve_button_pressed=0;
 		emergency_serve_activated=1;
 		log("emergency",0);
+		serve_calibrate();
+		emergency_serve_hitting=0;
 	}
 	if (emergency_serve_activated && emergency_serve_start_time+6000<get_full_ticks())//autoserve after 6 secs
 	{
 		start_auto_serve();
+		emergency_serve_hitting=1;
 	}
 	if (emergency_serve_activated && emergency_serve_start_time+7000<get_full_ticks())	// remove robot after serve
 	{
 		log("remove",get_full_ticks());
 		//SUCCESSFUL_SOUND;
 		remove_robot_sequence_started=1;
-		wheel_base_set_vel(80,0,0);
+		wheel_base_set_vel(100,0,0);
+		emergency_serve_hitting=0;
 	}
-	if (emergency_serve_activated && emergency_serve_start_time+8200<get_full_ticks())//remove robot complete
+	if (emergency_serve_activated && emergency_serve_start_time+8100<get_full_ticks())//remove robot complete
 	{
 		serve_free();
 		log("removed",get_full_ticks());
@@ -259,6 +273,7 @@ void robot_d_function_controls(void)
 		emergency_serve_activated=0;
 		wheel_base_set_vel(3,0,0);
 		wheel_base_update();
+		
 	}
 	
 	/**
