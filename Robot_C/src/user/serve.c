@@ -8,6 +8,7 @@ static s32 SERVE_HIT_VEL = 1300;			//can be changed by controller
 static u32 SERVE_DELAY = 280;			// can be changed by controller
 
 static s32 init_encoder_reading = 8000;	// will be kept updating according to the switch. Encoder value at switch location.
+u32 prev_encoder_reading=0;
 
 // timer and encoder variables
 static u32 serve_start_time=0;
@@ -31,6 +32,8 @@ bool is_released=0;	// pneumatic for serve
 // AUTO SERVE VARIABLES
 bool auto_serve_queued = 0;			// when you press auto-serve
 
+// Encoder_state
+bool encoder_failed=0;
 
 
 // private functions
@@ -40,7 +43,10 @@ void racket_lock()
 {
 	hitting=0;
 	calibrate_in_process=0;
-	motor_lock(RACKET);
+	if (!encoder_failed)
+		motor_lock(RACKET);
+	else
+		motor_set_vel(RACKET, SERVE_CAL_VEL+100, OPEN_LOOP);
 	//log("motor_lock",1);
 }
 
@@ -66,8 +72,8 @@ void serve_update(void)
 	/**
 	*			Auto_serve start mechanism
 	*/
-	led_control(LED_D2, (LED_STATE) !gpio_read_input(&PC6));
-	if (nec_get_msg(0)->address==0x40 && nec_get_msg(0)->command==0x01 && !hitting && !calibrate_in_process && !serve_hit_queued)
+	//led_control(LED_D2, (LED_STATE) !gpio_read_input(&PC6));
+	if (!hitting && nec_get_msg(0)->address==0x40 && nec_get_msg(0)->command==0x01 && !calibrate_in_process && !serve_hit_queued)
 	{
 		start_auto_serve();
 	}
@@ -93,9 +99,9 @@ void serve_update(void)
 	*		Serve termination mechanisms
 	*/
 	// while hitting, check for encoder value or time and stop.
-	if ( hitting && init_encoder_is_set && (get_encoder_value(RACKET) <= init_encoder_reading+ENCODER_THRESHOLD/* ||get_full_ticks()>=serve_hit_start_time+SERVE_HIT_TIMEOUT+100-(SERVE_HIT_VEL/5)*/))
+	if ( hitting && init_encoder_is_set && !encoder_failed && (get_encoder_value(RACKET) <= init_encoder_reading+ENCODER_THRESHOLD/* ||get_full_ticks()>=serve_hit_start_time+SERVE_HIT_TIMEOUT+100-(SERVE_HIT_VEL/5)*/))
 	{
-		FAIL_MUSIC;
+		//FAIL_MUSIC;
 		//motor_set_vel(RACKET, 0, OPEN_LOOP);
 		hitting=0;
 		calibrate_in_process=0;
@@ -106,7 +112,7 @@ void serve_update(void)
 	// after SERVE_HIT_TIMEOUT, stop motor
 	if (hitting && get_full_ticks()>=serve_hit_start_time+SERVE_HIT_TIMEOUT)
 	{
-		FAIL_MUSIC;
+		//FAIL_MUSIC;
 		hitting=0;
 		calibrate_in_process=0;
 		calibrated=0;
@@ -114,6 +120,39 @@ void serve_update(void)
 		log("*!tim st hit",get_full_ticks() - serve_start_time);
 	}
 
+	/**
+	* Mechanisms to detect encoder failure during serve
+	*/
+	if ((hitting || calibrate_in_process) && get_full_ticks()%20==0 && ((hitting && get_full_ticks()<=serve_hit_start_time+(SERVE_HIT_TIMEOUT*5)/4)||calibrate_in_process) )
+	{
+		if (!encoder_failed)
+		{
+			if (prev_encoder_reading==get_encoder_value(RACKET))
+			{
+				encoder_failed=1;
+				if (hitting)
+				{
+					motor_set_vel(RACKET,(SERVE_HIT_VEL*11)/10,OPEN_LOOP);
+				}
+				FAIL_MUSIC;
+			}
+		}
+		else
+		{
+			if (prev_encoder_reading!=get_encoder_value(RACKET))
+			{
+				encoder_failed=0;
+				CLICK_MUSIC;
+			}
+			
+		}
+		prev_encoder_reading=get_encoder_value(RACKET);
+		
+		
+	}
+	
+	
+	
 	/**
 	*		Calibration termination mechanisms
 	*/
@@ -127,11 +166,6 @@ void serve_update(void)
 		//ONLY UPDATE ENCODER VALUE IF RACKET HITS SWITCH
 		init_encoder_reading = get_encoder_value(RACKET);
 		log("*!sw st cal",get_encoder_value(RACKET));
-	}
-	if (calibrate_in_process &&init_encoder_is_set && get_encoder_value(RACKET)>init_encoder_reading-2000 )
-	{
-		motor_set_vel(RACKET, SERVE_CAL_VEL, OPEN_LOOP);
-		//log("*enc st cal",get_encoder_value(RACKET));
 	}
 	
 	// if calibration doesn't stop 1.5 seconds, FORCE STOP CALIBRATION, and register current encoder value as init encoder value.
@@ -197,7 +231,10 @@ void serve_hit(void)
 		hitting = 1;
 		calibrated=0;
 		serve_hit_queued=0;
-		motor_set_vel(RACKET, SERVE_HIT_VEL/10,CLOSE_LOOP);	//racket calibrate function takes a direct control over the motor
+		if (!encoder_failed)
+			motor_set_vel(RACKET, SERVE_HIT_VEL/10,CLOSE_LOOP);	//racket calibrate function takes a direct control over the motor
+		else
+			motor_set_vel(RACKET,(SERVE_HIT_VEL*21)/20,OPEN_LOOP);
 		serve_hit_start_time = get_full_ticks();
 	}
 	
@@ -209,7 +246,10 @@ void fake_serve_start(void)
 		hitting=1;
 		calibrated=0;
 		serve_hit_queued=0;
-		motor_set_vel(RACKET,SERVE_HIT_VEL/10,CLOSE_LOOP);
+		if (!encoder_failed)
+			motor_set_vel(RACKET, SERVE_HIT_VEL/10,CLOSE_LOOP);	//racket calibrate function takes a direct control over the motor
+		else
+			motor_set_vel(RACKET,(SERVE_HIT_VEL*21)/20,OPEN_LOOP);
 		serve_hit_start_time=get_full_ticks();
 		
 	}

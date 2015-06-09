@@ -251,31 +251,33 @@ void robot_d_function_controls(void)
 		serve_calibrate();
 		emergency_serve_hitting=0;
 	}
-	if (emergency_serve_activated && emergency_serve_start_time+6000<get_full_ticks())//autoserve after 6 secs
+	if (emergency_serve_activated)
 	{
-		start_auto_serve();
-		emergency_serve_hitting=1;
+		if (emergency_serve_start_time+6000<get_full_ticks() && emergency_serve_start_time+6300>get_full_ticks())//autoserve after 6 secs
+		{
+			start_auto_serve();
+			emergency_serve_hitting=1;
+		}
+		if (emergency_serve_start_time+7000<get_full_ticks())	// remove robot after serve
+		{
+			log("remove",get_full_ticks());
+			//SUCCESSFUL_SOUND;
+			remove_robot_sequence_started=1;
+			wheel_base_set_vel(100,0,0);
+			emergency_serve_hitting=0;
+		}
+		if (emergency_serve_start_time+8100<get_full_ticks())//remove robot complete
+		{
+			serve_free();
+			log("removed",get_full_ticks());
+			buzzer_play_song(BIRTHDAY_SONG, 120, 0);
+			remove_robot_sequence_started=0;
+			emergency_serve_activated=0;
+			wheel_base_set_vel(0,0,0);
+			wheel_base_update();
+			
+		}
 	}
-	if (emergency_serve_activated && emergency_serve_start_time+7000<get_full_ticks())	// remove robot after serve
-	{
-		log("remove",get_full_ticks());
-		//SUCCESSFUL_SOUND;
-		remove_robot_sequence_started=1;
-		wheel_base_set_vel(100,0,0);
-		emergency_serve_hitting=0;
-	}
-	if (emergency_serve_activated && emergency_serve_start_time+8100<get_full_ticks())//remove robot complete
-	{
-		serve_free();
-		log("removed",get_full_ticks());
-		buzzer_play_song(BIRTHDAY_SONG, 120, 0);
-		remove_robot_sequence_started=0;
-		emergency_serve_activated=0;
-		wheel_base_set_vel(3,0,0);
-		wheel_base_update();
-		
-	}
-	
 	/**
 	* NEC controls
 	
@@ -421,7 +423,7 @@ void robocon_main(void)
 	while (1) {
 		if (ticks_img != get_ticks()) {
 			if (prev_ticks!=ticks_img-1)
-				tick_skip_count+=1;
+				tick_skip_count+=1;//(ticks_img-1-prev_ticks);
 			prev_ticks=ticks_img;
 			
 			ticks_img = get_ticks();
@@ -445,12 +447,12 @@ void robocon_main(void)
 			// wheel_base update every milisecond
 			wheel_base_update();
 				
-			if (ticks_img % 250 == 1) {
+			/*if (ticks_img % 250 == 1) {
 				// Every 250 ms (4 Hz)
 				//battery_adc_update();
 				//send_string_s("hello\n", 6);
 				send_string("hi");
-			}
+			}*/
 			
 			
 			if (get_seconds() % 10 == 2 && ticks_img == 2) {
@@ -506,13 +508,14 @@ void robocon_main(void)
 				
 				tft_prints(0,5,"Target: %d", wheel_base_get_target_pos().angle);
 				tft_prints(0,6,"Angle: %d", get_pos()->angle);
-				tft_prints(0,7,"accel rate: %d", accel_booster);
+				//tft_prints(0,7,"accel rate: %d", accel_booster);
+				tft_prints(0,7,"skipTick: %d",tick_skip_count);
 				
 				if (force_terminate) {
 					tft_prints(0,8, "STOP!");
 				}
 					 
-        
+        //log_update();
 				tft_update();
 			}
 			
