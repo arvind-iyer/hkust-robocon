@@ -53,7 +53,7 @@ bool robot_xbc_controls(void)
 	* A - Racket Hit
 	* B - Serve
 	* X - Calibrate
-	* RB - Reset Gyro (robot D), sensor enable (robot C)
+	* RB - Reset Gyro
 	* LB + B - Fake serve
 	* 
 	*/
@@ -108,7 +108,7 @@ bool robot_xbc_controls(void)
 	// Get angular speed based on target_angle
 	int vw = pid_maintain_angle();
 	
-	if (!emergency_serve_activated)
+	if (!emergency_serve_activated && !force_terminate)
 		wheel_base_set_vel(vx, vy, vw);
 	if (emergency_serve_activated && (raw_vx!=0 || raw_vy!=0 || omega!=0))	// cancel emergency serve
 	{
@@ -138,14 +138,14 @@ static void robot_cd_common_function(void)
 		target_angle = get_pos()->angle;
 		accumulated_omega = 0;
 		// Stop Motor.
-		remove_robot_sequence_started = force_terminate = true;
+		force_terminate = true;
 		wheel_base_set_vel(0, 0, 0);
 		// Serving part reset.
 		serve_free();
 		// Ignore other button.
     return;
   } else if (button_released(BUTTON_XBC_XBOX)) {
-		remove_robot_sequence_started = force_terminate = false;
+		force_terminate = false;
 	}
 	
 	if (button_pressed(BUTTON_XBC_RB)) {
@@ -164,10 +164,10 @@ void robot_c_function_controls(void)
 		sensors_activated=0;
 	*/
 	
-	if (button_pressed(BUTTON_XBC_E) && accel_rate < 1732) {
-		++accel_rate;
-	} else if (button_pressed(BUTTON_XBC_W) && accel_rate > 707){
-		--accel_rate;
+	if (button_pressed(BUTTON_XBC_E) && accel_booster < 1732) {
+		++accel_booster;
+	} else if (button_pressed(BUTTON_XBC_W) && accel_booster > 707){
+		--accel_booster;
 	}
 	
 	//Racket Hit
@@ -214,10 +214,10 @@ void robot_d_function_controls(void)
 		serve_change_vel(2);
 		//minus_x();
 	// acceleration rate tunning.
-	else if (button_pressed(BUTTON_XBC_E) && accel_rate < 1732) {
-		++accel_rate;
-	} else if (button_pressed(BUTTON_XBC_W) && accel_rate > 707){
-		--accel_rate;
+	else if (button_pressed(BUTTON_XBC_E) && accel_booster < 1732) {
+		++accel_booster;
+	} else if (button_pressed(BUTTON_XBC_W) && accel_booster > 707){
+		--accel_booster;
 	}
 	
 	if (button_pressed(BUTTON_XBC_START))
@@ -506,7 +506,7 @@ void robocon_main(void)
 				
 				tft_prints(0,5,"Target: %d", wheel_base_get_target_pos().angle);
 				tft_prints(0,6,"Angle: %d", get_pos()->angle);
-				tft_prints(0,7,"accel rate: %d", accel_rate);
+				tft_prints(0,7,"accel rate: %d", accel_booster);
 				
 				if (force_terminate) {
 					tft_prints(0,8, "STOP!");

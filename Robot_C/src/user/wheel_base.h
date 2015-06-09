@@ -61,7 +61,7 @@ static const MOTOR_ID
 	MOTOR_TOP_LEFT 				= ROBOT=='C'?MOTOR1:MOTOR3,		//changed from MOTOR3				//MOTOR1 for C
 	MOTOR_TOP_RIGHT 			= ROBOT=='C'?MOTOR4:MOTOR4;		//changed from MOTOR4				// MOTOR2 for C
 
-extern int accel_rate;
+extern int accel_booster;
 
 void wheel_base_init(void);
 void wheel_base_set_speed_mode(u8 s);
