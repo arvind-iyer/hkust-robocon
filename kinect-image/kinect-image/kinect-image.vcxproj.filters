@@ -27,12 +27,21 @@
     <ClInclude Include="kinect2_grabber.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="calibration_processing.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="point_cloud_tracking.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="stdafx.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="kinect-image.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="calibration_processing.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
