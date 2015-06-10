@@ -6,12 +6,15 @@
 #include "gyro.h"
 #include "approx_math.h"
 
-#define	ANGLE_LOCK_THRESHOLD		30				// 3.0 degrees
-#define	ANGLE_LOCK_LIMIT				150				// 20.0 degrees
-
-#define	ANGLE_LOCK_Kp						180			// Scaled by 100
+#define	ANGLE_LOCK_THRESHOLD		10				// 1.0 degrees
 
 
+#define	ANGLE_LOCK_Kp						220			// Scaled by 100
+#define	ANGLE_LOCK_Kp_LIMIT			120			// 12.0 degrees
+
+#define	ANGLE_LOCK_Ki						2			// Scaled by 100
+#define	ANGLE_LOCK_Ki_SAMPLE		20			
+	
 void angle_lock_init(void);
 bool angle_lock_ignored(void);
 void angle_lock_update(void);

@@ -35,16 +35,16 @@ static const u32 SPEED_MODES[WHEEL_BASE_SPEED_MODE_COUNT] =	// In percentage (20
 // #define WHEEL_BASE_DEFAULT_ACC							200
 #define	WHEEL_BASE_DEFAULT_SPEED_MODE					6			// from 0 to 9
 
-#define	WHEEL_BASE_XY_ACC											70
-#define	WHEEL_BASE_W_ACC											50
+#define	WHEEL_BASE_XY_ACC											20
+#define	WHEEL_BASE_W_ACC											25
 
 #define	WHEEL_BASE_SPEED_SCALE_DOWN						10
 
 // Wheel base motors acceleration (CONSTANT, to be configured upon startup)
-#define	WHEEL_BASE_BR_ACC											400		// Bottom-right wheel
-#define	WHEEL_BASE_BL_ACC										  400		// Bottom-left wheel
-#define	WHEEL_BASE_TL_ACC											400		// Top-left wheel
-#define	WHEEL_BASE_TR_ACC											400 		// Top-right wheel
+#define	WHEEL_BASE_BR_ACC											800		// Bottom-right wheel
+#define	WHEEL_BASE_BL_ACC										  800		// Bottom-left wheel
+#define	WHEEL_BASE_TL_ACC											800		// Top-left wheel
+#define	WHEEL_BASE_TR_ACC											800 		// Top-right wheel
 
 typedef struct {
 	s32 x;

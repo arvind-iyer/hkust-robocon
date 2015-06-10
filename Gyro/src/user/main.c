@@ -103,10 +103,13 @@ void USART3_IRQHandler(void)
 		uart_buf_rec++;
 		uart_cnt = 5;
 		gyro_state = 1;
+		
+		USART_ClearFlag(USART3,USART_FLAG_RXNE);
+		USART_ClearITPendingBit(USART3,USART_IT_RXNE);
+	
 	}
 	
-	//USART_ClearFlag(USART3,USART_FLAG_RXNE);
-	//USART_ClearITPendingBit(USART3,USART_IT_RXNE);
+
 }
 
 void uart_update(void)

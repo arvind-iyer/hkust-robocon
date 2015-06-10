@@ -10,11 +10,23 @@
 
 static u16 ticks_img 	= (u16)-1;
 static bool serving_mode = false;
+static u8 serving_id = 0;
 static bool us_auto_mode = false;
 static bool angle_lock_mode = false;
 static bool abs_angle_mode = false;
 static bool auto_serve_mode = false;
+
 static u32 auto_serve_time = 0;
+
+static s32 xbc_joy_scale(s32 val)
+{
+	if (val >= 0) {
+		return val * val / XBC_JOY_SCALE;
+	} else {
+		return -val * val / XBC_JOY_SCALE;
+	}
+	//return val * val * val / XBC_JOY_SCALE / XBC_JOY_SCALE;
+}
 
 
 /**
@@ -32,8 +44,8 @@ static void robocon_get_xbc(void)
 	
 	u16 speed_ratio = SPEED_MODES[speed_mode];
 	
-	s32 x_vel = xbc_get_joy(XBC_JOY_LX);
-	s32 y_vel = xbc_get_joy(XBC_JOY_LY);
+	s32 x_vel = xbc_joy_scale(xbc_get_joy(XBC_JOY_LX));
+	s32 y_vel = xbc_joy_scale(xbc_get_joy(XBC_JOY_LY));
 	
 	if (abs_angle_mode) {
 		xy_rotate((s32*) &x_vel, (s32*) &y_vel, get_pos()->angle);
@@ -55,6 +67,12 @@ static void robocon_get_xbc(void)
 		if (w_vel == 0) {
 			// Angle lock
 			w_vel = angle_lock_get_mv();
+			// Limit the angle pid
+			if (w_vel > 300) {
+				w_vel = 300;
+			} else if (w_vel < -300) {
+				w_vel = -300;
+			}
 		} else {
 			// Ignore the angle lock for a while
 			angle_lock_ignore(500);
@@ -285,13 +303,17 @@ void robocon_main(void)
 		if (ticks_img != get_ticks()) {
 			ticks_img = get_ticks();
 			
-			if (ticks_img % 10 == 0) {
+			// Every ms
+			angle_lock_update();
+			
+			if (ticks_img % 5 == 0) {
+				wheel_base_pid_update();
+				wheel_base_update();
+			}
+				
+			if (ticks_img % 10 == 1) {
 				// Every 10 ms (100 Hz)
 				bluetooth_update();
-        wheel_base_pid_update();
-				wheel_base_update();
-				
-				
 				serving_update();
 				upper_racket_update();
 			}
@@ -305,7 +327,7 @@ void robocon_main(void)
 			
 			if (ticks_img % 100 == 3) {
 				// Every 100 ms (10 Hz)
-				wheel_base_tx_position();
+				//wheel_base_tx_position();
 			}
 			
 			if (ticks_img % 500 == 4) {
@@ -315,7 +337,7 @@ void robocon_main(void)
 			if (ticks_img % 20 == 5) {		// 50Hz
 				button_update();
 				us_auto_update();
-				angle_lock_update();
+				
 				
 				
 				if (angle_lock_mode) {
@@ -325,7 +347,7 @@ void robocon_main(void)
 						gpio_write(GYRO_LED_GPIO, (BitAction) 1);
 					}
 				} else if (!gyro_get_available()) {
-					gpio_write(GYRO_LED_GPIO, (BitAction) (get_ticks() % 100 <= 50));
+					gpio_write(GYRO_LED_GPIO, (BitAction) (get_ticks() % 100 <= 20));
 				} else {
 					gpio_write(GYRO_LED_GPIO, (BitAction) 0);
 				}

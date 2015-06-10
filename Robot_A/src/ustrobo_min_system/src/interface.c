@@ -198,7 +198,7 @@ void draw_top_bar(void)
 	
   if (get_seconds() % 10 < 5) {
 		
-    draw_battery_icon(temp_voltage/10);
+    //draw_battery_icon(temp_voltage/10);
   } else {
     tft_prints(tft_get_max_x_char() - 7, 0, "%2d.%d%cC%c", temp_battery / 10, temp_battery % 10, 248, 10);
   }
