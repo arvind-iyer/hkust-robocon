@@ -27,17 +27,16 @@ int main(void)
   //mb1240_init();
   xbc_mb_init(XBC_BLUETOOTH_FIRST); 
 	wheel_base_init();
-	sensor_init();
 	us_mb_init();
+	gamepad_led_init();
 	
-  //ultrasonic_init();
   //nec_init();
   /** For debugging **/
   // uart_init(COM1, 115200);
   // uart_printf_enable(COM1);
 	
-	special_char_handler_init();
-	racket_init();  
+	// special_char_handler_init();
+	racket_init();
   
   system_start(1200);
   

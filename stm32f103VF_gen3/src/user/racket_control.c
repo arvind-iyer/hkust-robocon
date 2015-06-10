@@ -39,31 +39,11 @@ void underarm_lok_la(void) {
 	}
 }
 
-void sensor_init(void) {/*
-	RCC_APB2PeriphClockCmd(RCC_APB2Periph_GPIOA, ENABLE);
-	GPIO_InitTypeDef GPIO_InitStructure;
-
-	GPIO_InitStructure.GPIO_Mode = GPIO_Mode_IPD;
-	GPIO_InitStructure.GPIO_Speed = GPIO_Speed_50MHz;
-	GPIO_InitStructure.GPIO_Pin = IR_Sensor_1_Pin | IR_Sensor_2_Pin | IR_Sensor_3_Pin;
-	GPIO_Init(GPIOA, &GPIO_InitStructure);
-	
-	
-	RCC_APB2PeriphClockCmd(RCC_APB2Periph_GPIOC, ENABLE);
-
-	GPIO_InitStructure.GPIO_Mode = GPIO_Mode_IPD;
-	GPIO_InitStructure.GPIO_Speed = GPIO_Speed_50MHz;
-	GPIO_InitStructure.GPIO_Pin = IR_Sensor_4_Pin;
-	GPIO_Init(GPIOC, &GPIO_InitStructure);*/
-}
-
 void sensor_on(void) {
-	FAIL_MUSIC;
 	use_sensor = 1;
 }
 
 void sensor_off(void) {
-	FAIL_MUSIC;
 	use_sensor = 0;
 }
 
@@ -77,25 +57,19 @@ void sensor_decrease_delay(void) {
 }
 
 void sensor_update(void) {
-	/* if ((us_get_distance(0) > 0 && us_get_distance(0) < 480) || (us_get_distance(1) > 0 && us_get_distance(1) < 480)) {
-		// Underarm sensors
-		if (use_sensor == 1 && underarm_daa_order == 0) {
-			SUCCESSFUL_MUSIC;
-			underarm_daa_order = 1; 
-			underarm_daa_order_time = get_full_ticks() + 200;
-		}
-	} */
-
 	if (
-		(us_get_distance(2) > 0 && us_get_distance(2) < 823) ||
-		(us_get_distance(4) > 0 && us_get_distance(4) < 823)
+		(us_get_distance(0) > 0 && us_get_distance(0) < 333) ||	// 低左
+		(us_get_distance(5) > 0 && us_get_distance(5) < 333) || // 低中
+		(us_get_distance(1) > 0 && us_get_distance(1) < 333)    // 低右
 	) {
-		// Forehand sensors
-		if (use_sensor == 1 && forehand_daa_order == 0) {
-			SUCCESSFUL_MUSIC;
-			forehand_daa_order = 1;
-			forehand_daa_order_time = get_full_ticks() + (sensor_delay/10);
+		GPIO_WriteBit(GPIOD, GPIO_Pin_2, Bit_SET);		// Red on
+		GPIO_WriteBit(GPIOC, GPIO_Pin_12, Bit_SET);	// Green on
+		if (use_sensor == 1) {
+			underarm_daa_la();
 		}
+	} else {
+		GPIO_WriteBit(GPIOD, GPIO_Pin_2, Bit_RESET);		// Red off
+		GPIO_WriteBit(GPIOC, GPIO_Pin_12, Bit_RESET);	// Green off
 	}
 }
 
@@ -120,7 +94,6 @@ void racket_update(void) {
 	current_time = get_full_ticks();
 	
 	if (forehand_daa_order == 1 && current_time >= forehand_daa_order_time) {
-		FAIL_MUSIC;
 		GPIO_WriteBit(GPIOE, GPIO_Pin_Forehand, Bit_SET);
 	} else if (current_time > (forehand_daa_order_time + FOREHAND_HOLD_MS) && forehand_daa_order == 0) {
 		GPIO_WriteBit(GPIOE, GPIO_Pin_Forehand, Bit_RESET);
@@ -128,7 +101,6 @@ void racket_update(void) {
 	
 	if (underarm_daa_order == 1 && current_time >= underarm_daa_order_time) {
 		GPIO_WriteBit(GPIOE, GPIO_Pin_Underarm, Bit_SET);
-		//FAIL_MUSIC;
 	} else if (current_time > (underarm_daa_order_time + UNDERARM_HOLD_MS) && underarm_daa_order == 0) {
 		GPIO_WriteBit(GPIOE, GPIO_Pin_Underarm, Bit_RESET);
 	}

@@ -6,8 +6,11 @@ static u32 home_holding_count = 0;
 static u32 start_and_select_holding_count = 0;
 static u32 select_and_l1_holding_count = 0;
 static u32 l1_and_cross_holding_count = 0;
+static u32 r1_and_cross_holding_count = 0;
+static u32 triangle_holding_count = 0;
 static bool speed_button_released_before = false;
 static bool underarm_reverse = false;
+static bool chetaudaaidang = false;
 
 static u16 speed_ratio;
 static s32 axis_speed;
@@ -32,6 +35,22 @@ s32 button_event_trigger_value_conversion(s16 trigger_value) {
 void button_event_wheel_base_set_vel(s32 x, s32 y, s32 w) {
 	wheel_base_set_vel(x, y, w);
 	wheel_base_vel_last_update_refresh();
+}
+
+void gamepad_led_init(void) {
+	GPIO_InitTypeDef GPIO_InitStructure;
+	RCC_APB2PeriphClockCmd(RCC_APB2Periph_GPIOC, ENABLE);
+	GPIO_InitStructure.GPIO_Mode = GPIO_Mode_Out_PP;
+	GPIO_InitStructure.GPIO_Speed = GPIO_Speed_50MHz;
+	GPIO_InitStructure.GPIO_Pin = GPIO_Pin_12;
+	GPIO_Init(GPIOC, &GPIO_InitStructure);
+	RCC_APB2PeriphClockCmd(RCC_APB2Periph_GPIOD, ENABLE);
+	GPIO_InitStructure.GPIO_Pin = GPIO_Pin_2 | GPIO_Pin_9;
+	GPIO_Init(GPIOD, &GPIO_InitStructure);
+	GPIO_WriteBit(GPIOD, GPIO_Pin_2, Bit_RESET);		// Red off
+	GPIO_WriteBit(GPIOD, GPIO_Pin_9, Bit_RESET);		// 車頭燈
+	GPIO_WriteBit(GPIOC, GPIO_Pin_12, Bit_RESET);	// Green off
+	
 }
 
 void button_event_update(void)
@@ -62,6 +81,30 @@ void button_event_update(void)
 		l1_and_cross_holding_count += 1;
 	} else {
 		l1_and_cross_holding_count = 0;
+	}
+		
+	if (button_pressed(BUTTON_PS4_R1) && button_pressed(BUTTON_PS4_CROSS)) {
+		r1_and_cross_holding_count += 1;
+	} else {
+		r1_and_cross_holding_count = 0;
+	}
+	
+	if (button_pressed(BUTTON_PS4_TRIANGLE)) {
+		triangle_holding_count += 1;
+	} else {
+		triangle_holding_count = 0;
+	}
+	
+	if (button_pressed(BUTTON_PS4_L1)) {
+		// GPIO_WriteBit(GPIOD, GPIO_Pin_2, Bit_SET);
+	} else {
+		// GPIO_WriteBit(GPIOD, GPIO_Pin_2, Bit_RESET);
+	}
+	
+	if (button_pressed(BUTTON_PS4_R1)) {
+		// GPIO_WriteBit(GPIOC, GPIO_Pin_12, Bit_SET);
+	} else {
+		// GPIO_WriteBit(GPIOC, GPIO_Pin_12, Bit_RESET);
 	}
 	
 	angle_speed = axis_speed * button_event_trigger_value_conversion(xbc_get_joy(PS4_JOY_R2) - xbc_get_joy(PS4_JOY_L2)) / 255;
@@ -122,6 +165,15 @@ void button_event_update(void)
 		}
 		
 		button_event_wheel_base_set_vel(x_speed, y_speed, angle_speed);
+	}
+	
+	if (triangle_holding_count == 1) {
+		chetaudaaidang = !chetaudaaidang;
+		if (chetaudaaidang) {
+			GPIO_WriteBit(GPIOD, GPIO_Pin_9, Bit_SET);
+		} else {
+			GPIO_WriteBit(GPIOD, GPIO_Pin_9, Bit_RESET);
+		}
 	}
 	
 	if (home_holding_count == 1 || start_and_select_holding_count == 1 ) {
@@ -206,22 +258,27 @@ void button_event_update(void)
 		underarm_reverse = !underarm_reverse;
 	}
 	
+	if (r1_and_cross_holding_count >= 1) {
+		sensor_on();
+	} else {
+		sensor_off();		
+		if (button_pressed(BUTTON_XBC_A)) {
+			if (underarm_reverse == false)
+				underarm_daa_la();
+			else
+				underarm_lok_la();
+		} else {
+			if (underarm_reverse == false)
+				underarm_lok_la();
+			else
+				underarm_daa_la();
+		}
+	} 
+	
 	if (button_pressed(BUTTON_XBC_X)) {
 		forehand_daa_la();
 	} else {
 		forehand_lok_la();
-	}
-	
-	if (button_pressed(BUTTON_XBC_A)) {
-		if (underarm_reverse == false)
-			underarm_daa_la();
-		else
-			underarm_lok_la();
-	} else {
-		if (underarm_reverse == false)
-			underarm_lok_la();
-		else
-			underarm_daa_la();
 	}
 	
 }

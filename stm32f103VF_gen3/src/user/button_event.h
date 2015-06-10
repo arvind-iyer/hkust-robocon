@@ -46,6 +46,7 @@
 #define BUTTON_PS4_SELECT		BUTTON_XBC_BACK
 #define	BUTTON_PS4_HOME			BUTTON_XBC_XBOX
 
+void gamepad_led_init(void);
 void button_event_update(void);
 u8 button_event_get_side_control(void);
 u32 button_event_get_l_analog_magnitude(void);

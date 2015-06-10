@@ -22,7 +22,6 @@
 #define UNDERARM_HOLD_MS	300
 
 // Sensor functions
-void sensor_init(void);
 void sensor_update(void);
 void sensor_on(void);
 void sensor_off(void);
