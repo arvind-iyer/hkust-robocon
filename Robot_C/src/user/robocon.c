@@ -8,7 +8,7 @@
 static u16 ticks_img 	= (u16)-1;
 static u32 last_sent_OS_time = 0;
 static bool key_trigger_enable = true;
-static u16 prev_ticks=-1;
+//static u16 prev_ticks=-1;
 // Omega PID relevant.
 static int accumulated_omega = 0;
 static int target_angle = 0;
@@ -32,6 +32,8 @@ u32 remove_robot_start_time=0;
 bool emergency_serve_hitting=0;
 
 s32 angle = 0;
+const u16 MAX_ACCEL_BOOST = 2236;
+const u16 MIN_ACCEL_BOOST = 707;
 
 bool is_force_terminate(void)
 {
@@ -164,9 +166,9 @@ void robot_c_function_controls(void)
 		sensors_activated=0;
 	*/
 	
-	if (button_pressed(BUTTON_XBC_E) && accel_booster < 1732) {
+	if (button_pressed(BUTTON_XBC_E) && accel_booster < MAX_ACCEL_BOOST) {
 		++accel_booster;
-	} else if (button_pressed(BUTTON_XBC_W) && accel_booster > 707){
+	} else if (button_pressed(BUTTON_XBC_W) && accel_booster > MIN_ACCEL_BOOST){
 		--accel_booster;
 	}
 	
@@ -214,9 +216,9 @@ void robot_d_function_controls(void)
 		serve_change_vel(2);
 		//minus_x();
 	// acceleration rate tunning.
-	else if (button_pressed(BUTTON_XBC_E) && accel_booster < 1732) {
+	else if (button_pressed(BUTTON_XBC_E) && accel_booster < MAX_ACCEL_BOOST) {
 		++accel_booster;
-	} else if (button_pressed(BUTTON_XBC_W) && accel_booster > 707){
+	} else if (button_pressed(BUTTON_XBC_W) && accel_booster > MIN_ACCEL_BOOST){
 		--accel_booster;
 	}
 	
@@ -422,15 +424,15 @@ void robocon_main(void)
 	
 	while (1) {
 		if (ticks_img != get_ticks()) {
-			if (prev_ticks!=ticks_img-1)
-				tick_skip_count+=1;//(ticks_img-1-prev_ticks);
-			prev_ticks=ticks_img;
+//			if (prev_ticks!=ticks_img-1)
+//				tick_skip_count+=1;//(ticks_img-1-prev_ticks);
+//			prev_ticks=ticks_img;
 			
 			ticks_img = get_ticks();
 			//if (ticks_img%2 == 1)
 			//{
-				if (sensors_activated && !serve_prioritized())
-					sensors_update();			// only update sensors when serve is not prioritized.
+//				if (sensors_activated && !serve_prioritized())
+//					sensors_update();			// only update sensors when serve is not prioritized.
 				//racket_update();
 			//}
 			if (ticks_img % 10 == 0) {
@@ -455,20 +457,20 @@ void robocon_main(void)
 			}*/
 			
 			
-			if (get_seconds() % 10 == 2 && ticks_img == 2) {
-				// Every 10 seconds (0.1 Hz)
-				battery_regular_check();
-			}
+//			if (get_seconds() % 10 == 2 && ticks_img == 2) {
+//				// Every 10 seconds (0.1 Hz)
+//				battery_regular_check();
+//			}
 
 			
-			if (ticks_img % 100 == 3 && !serve_prioritized()) {
-				// Every 100 ms (10 Hz)
-				wheel_base_tx_position();
-			}
-			
-			if (ticks_img % 500 == 4 && !serve_prioritized()) {
-				led_control(LED_D3, (LED_STATE) (ticks_img == 0));
-			}
+//			if (ticks_img % 100 == 3 && !serve_prioritized()) {
+//				// Every 100 ms (10 Hz)
+//				wheel_base_tx_position();
+//			}
+//			
+//			if (ticks_img % 500 == 4 && !serve_prioritized()) {
+//				led_control(LED_D3, (LED_STATE) (ticks_img == 0));
+//			}
 			
 			if (ticks_img % 50 == 5 && !serve_prioritized()) {
 				//wheel_base_joystick_control();
@@ -485,21 +487,9 @@ void robocon_main(void)
 
 				WHEEL_BASE_VEL vel = wheel_base_get_vel();
 				tft_clear();
-				draw_top_bar();
 
 				tft_prints(0, 1, "V:(%3d,%3d,%3d)", vel.x, vel.y, vel.w);
 				//tft_prints(0, 2, "Speed: %d", wheel_base_get_speed_mode());
-				char s[3] = {wheel_base_bluetooth_get_last_char(), '\0'};
-        if (s[0] == '[' || s[0] == ']') {
-          // Replace "[" and "]" as "\[" and "\]"
-          s[1] = s[0];
-          s[0] = '\\';
-        }
-				
-				
-				
-				u8 connect = xbc_get_connection() == XBC_DISCONNECTED ? 0 : 1;
-				
 				if (ROBOT == 'D') {
 					tft_prints(0,2,"Encoder: %d", get_encoder_value(RACKET));
 					tft_prints(0,3,"Serve_delay: %d",serve_get_delay());
@@ -508,8 +498,8 @@ void robocon_main(void)
 				
 				tft_prints(0,5,"Target: %d", wheel_base_get_target_pos().angle);
 				tft_prints(0,6,"Angle: %d", get_pos()->angle);
-				//tft_prints(0,7,"accel rate: %d", accel_booster);
-				tft_prints(0,7,"skipTick: %d",tick_skip_count);
+				tft_prints(0,7,"accel rate: %d", accel_booster);
+//				tft_prints(0,7,"skipTick: %d",tick_skip_count);
 				
 				if (force_terminate) {
 					tft_prints(0,8, "STOP!");
