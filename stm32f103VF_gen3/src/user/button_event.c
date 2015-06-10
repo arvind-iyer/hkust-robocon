@@ -10,7 +10,7 @@ static u32 r1_and_cross_holding_count = 0;
 static u32 triangle_holding_count = 0;
 static bool speed_button_released_before = false;
 static bool underarm_reverse = false;
-static bool chetaudaaidang = false;
+static u8 chetaudaaidang = 0;
 
 static u16 speed_ratio;
 static s32 axis_speed;
@@ -107,6 +107,13 @@ void button_event_update(void)
 		// GPIO_WriteBit(GPIOC, GPIO_Pin_12, Bit_RESET);
 	}
 	
+	if (button_pressed(BUTTON_PS4_L3)) {
+		buzzer_play_song(BIRTHDAY_SONG, 135, 0);
+	}
+	if (button_pressed(BUTTON_PS4_R3)) {
+		buzzer_play_song(NEW_SUPER_MARIO_BROS, 150, 0);
+	}
+	
 	angle_speed = axis_speed * button_event_trigger_value_conversion(xbc_get_joy(PS4_JOY_R2) - xbc_get_joy(PS4_JOY_L2)) / 255;
 	
 	x_speed = 0;
@@ -168,12 +175,12 @@ void button_event_update(void)
 	}
 	
 	if (triangle_holding_count == 1) {
-		chetaudaaidang = !chetaudaaidang;
-		if (chetaudaaidang) {
-			GPIO_WriteBit(GPIOD, GPIO_Pin_9, Bit_SET);
-		} else {
-			GPIO_WriteBit(GPIOD, GPIO_Pin_9, Bit_RESET);
-		}
+		chetaudaaidang = (chetaudaaidang + 1) % 3;
+	}
+	if (chetaudaaidang == 1 || chetaudaaidang == 2 && (get_full_ticks() / 100) % 2 == 1) {
+		GPIO_WriteBit(GPIOD, GPIO_Pin_9, Bit_SET);
+	} else {
+		GPIO_WriteBit(GPIOD, GPIO_Pin_9, Bit_RESET);
 	}
 	
 	if (home_holding_count == 1 || start_and_select_holding_count == 1 ) {

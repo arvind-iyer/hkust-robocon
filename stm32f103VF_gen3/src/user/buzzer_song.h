@@ -25,6 +25,8 @@ extern const MUSIC_NOTE SIDE_CONTROL_ON_SOUND[];
 extern const MUSIC_NOTE SIDE_CONTROL_OFF_SOUND[];
 extern const MUSIC_NOTE SIDE_CONTROL_LEFT_SOUND[];
 
+extern const MUSIC_NOTE NEW_SUPER_MARIO_BROS[];
+
 #define	SUCCESSFUL_MUSIC			buzzer_play_song(SUCCESSFUL_SOUND, 100, 0)
 #define	FAIL_MUSIC 						buzzer_play_song(FAIL_SOUND, 120, 100)
 #define	CLICK_MUSIC						buzzer_play_song(CLICK, 50, 0)
