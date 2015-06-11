@@ -138,6 +138,7 @@ void draw_battery_icon(u16 batt)
 		batt_boundary = WHITE;
 		batt = 126;
 	}
+	return;
 	
 	/* Convert battery level (110 to 126) to the pixel range (0 to 13) */ 
 	batt_w = (batt > 126 ? 13 : batt < 110 ? 0 : (batt-110)*13/16);
@@ -197,8 +198,7 @@ void draw_top_bar(void)
 	}
 	
   if (get_seconds() % 10 < 5) {
-		
-    //draw_battery_icon(temp_voltage/10);
+		draw_battery_icon(temp_voltage/10);
   } else {
     tft_prints(tft_get_max_x_char() - 7, 0, "%2d.%d%cC%c", temp_battery / 10, temp_battery % 10, 248, 10);
   }

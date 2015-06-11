@@ -178,6 +178,18 @@ static void robocon_get_xbc(void)
 		}
 	}
 	
+	/*** Serve set ***/
+	if (button_pressed(BUTTON_XBC_LB) == 1) {
+		set_serving_set(0);
+		CLICK_MUSIC;
+	}
+	
+	if (button_pressed(BUTTON_XBC_RB) == 1) {
+		set_serving_set(1);
+		CLICK_MUSIC;
+	}
+	
+	
 	/*** Shuttle drop delay -- ***/
 	if (button_pressed(BUTTON_XBC_W) == 1 || button_hold(BUTTON_XBC_W, 20, 1)) {
 		u16 delay = get_shuttle_drop_delay();
@@ -242,6 +254,21 @@ static void robocon_get_xbc(void)
 		write_flash(FLASH_SERVING_HIT_SPEED_OFFSET, get_serving_hit_speed());
 		write_flash(FLASH_WHEEL_BASE_SPEED_MODE_OFFSET, wheel_base_get_speed_mode());
 		write_flash(FLASH_ABS_ANGLE_MODE_OFFSET, abs_angle_mode); 
+		write_flash(FLASH_ANGLE_LOCK_MODE_OFFSET, angle_lock_mode);
+		
+		u8 tmp_set = get_serving_set();
+		write_flash(FLASH_SERVING_SET_OFFSET, tmp_set);
+		
+		set_serving_set(0);
+		write_flash(FLASH_SHUTTLE_DROP_DELAY_OFFSET, get_shuttle_drop_delay());
+		write_flash(FLASH_SERVING_HIT_SPEED_OFFSET, get_serving_hit_speed());
+
+		set_serving_set(1);
+		write_flash(FLASH_SHUTTLE_DROP_DELAY_2_OFFSET, get_shuttle_drop_delay());
+		write_flash(FLASH_SERVING_HIT_SPEED_2_OFFSET, get_serving_hit_speed());
+		
+		set_serving_set(tmp_set);
+		
 		buzzer_control_note(5, 100, NOTE_C, 8);
 	}
 }
@@ -275,6 +302,7 @@ void robocon_init(void)
 	abs_angle_mode = false;
 	
 	// Get flash
+	set_serving_set(0);
 	if (read_flash(FLASH_SHUTTLE_DROP_DELAY_OFFSET) != -1) {
 		set_shuttle_drop_delay(read_flash(FLASH_SHUTTLE_DROP_DELAY_OFFSET));
 	}
@@ -282,6 +310,20 @@ void robocon_init(void)
 	if (read_flash(FLASH_SERVING_HIT_SPEED_OFFSET) != -1) {
 		set_serving_hit_speed(read_flash(FLASH_SERVING_HIT_SPEED_OFFSET));
 	}
+	
+	set_serving_set(1);
+	if (read_flash(FLASH_SHUTTLE_DROP_DELAY_2_OFFSET) != -1) {
+		set_shuttle_drop_delay(read_flash(FLASH_SHUTTLE_DROP_DELAY_2_OFFSET));
+	}
+	
+	if (read_flash(FLASH_SERVING_HIT_SPEED_2_OFFSET) != -1) {
+		set_serving_hit_speed(read_flash(FLASH_SERVING_HIT_SPEED_2_OFFSET));
+	}
+
+	if (read_flash(FLASH_SERVING_SET_OFFSET) != -1) {
+		set_serving_set(read_flash(FLASH_SERVING_SET_OFFSET));
+	}	
+	
 	
 	if (read_flash(FLASH_WHEEL_BASE_SPEED_MODE_OFFSET) != -1) {
 		wheel_base_set_speed_mode(read_flash(FLASH_WHEEL_BASE_SPEED_MODE_OFFSET));
@@ -292,6 +334,13 @@ void robocon_init(void)
 			abs_angle_mode = read_flash(FLASH_ABS_ANGLE_MODE_OFFSET);
 		}
 	}
+	
+	if (read_flash(FLASH_ANGLE_LOCK_MODE_OFFSET) != -1) {
+		if (read_flash(FLASH_ANGLE_LOCK_MODE_OFFSET) == 0 || read_flash(FLASH_ANGLE_LOCK_MODE_OFFSET) == 1) {
+			angle_lock_mode = read_flash(FLASH_ANGLE_LOCK_MODE_OFFSET);
+		}
+	}
+	
 	
 	
 }
@@ -305,7 +354,9 @@ void robocon_main(void)
 			
 			// Every ms
 			angle_lock_update();
-			
+			serving_update();
+			upper_racket_update();
+				
 			if (ticks_img % 5 == 0) {
 				wheel_base_pid_update();
 				wheel_base_update();
@@ -314,8 +365,7 @@ void robocon_main(void)
 			if (ticks_img % 10 == 1) {
 				// Every 10 ms (100 Hz)
 				bluetooth_update();
-				serving_update();
-				upper_racket_update();
+
 			}
 
 			
@@ -493,7 +543,8 @@ void robocon_main(void)
 				}
 				//tft_prints(0, 6, "%d->%d", get_serving_encoder(), target_encoder);
 				
-				tft_prints(0, 7, "Serve:%d,%d", get_shuttle_drop_delay(), get_serving_hit_speed());
+				//tft_prints(0, 7, "Serve:%d,%d", get_shuttle_drop_delay(), get_serving_hit_speed());
+				tft_prints(0, 7, "S%d:%d,%d", get_serving_set(), get_shuttle_drop_delay(), get_serving_hit_speed());
 				
 				for (u8 i = 0; i < US_AUTO_DEVICE_COUNT; ++i) {
 					u16 dist = us_get_distance(i);

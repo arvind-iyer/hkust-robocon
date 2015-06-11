@@ -5,8 +5,9 @@
 static u8 valve_state = 0;
 static volatile SERVING_HIT_STATE serving_hit_state = SERVING_NULL;
 static SERVING_CALI_STATE cali_state = SERVING_CALI_NULL;
-static u16 shuttle_drop_delay_ms = SERVING_SHUTTLE_DROP_DELAY_DEFAULT;
-static s16 serving_hit_speed = SERVING_HIT_SPEED_DEFAULT;
+static u8 serving_current_set = 0;
+static u16 shuttle_drop_delay_ms[SERVING_SET_COUNT] = {SERVING_SHUTTLE_DROP_DELAY_DEFAULT};
+static s16 serving_hit_speed[SERVING_SET_COUNT] = {SERVING_HIT_SPEED_DEFAULT};
 static u32 cali_start_full_ticks = 0;
 static u32 cali_lock_full_ticks = 0;
 
@@ -252,7 +253,7 @@ void serving_hit_update(void)
 		case SERVING_START:
 			valve_set(1);
 			serving_hit_state = SERVING_SHUTTLECOCK_DROPPED;
-			TIM_SetCompare1(SERVING_TIM, shuttle_drop_delay_ms * 10);		// Set CC1 CCR Value
+			TIM_SetCompare1(SERVING_TIM, shuttle_drop_delay_ms[serving_current_set] * 10);		// Set CC1 CCR Value
 			TIM_SetCounter(SERVING_TIM, 1);										// Reset counter
 			TIM_Cmd(SERVING_TIM, ENABLE);
 			TIM_ITConfig(SERVING_TIM, TIM_IT_CC1, ENABLE);		// Interrupt for CC1
@@ -304,7 +305,7 @@ void serving_hit_update(void)
 				}
 				serving_start_hitting_full_ticks = 0;
 			} else {
-				motor_set_vel(SERVING_MOTOR, serving_hit_speed, OPEN_LOOP);
+				motor_set_vel(SERVING_MOTOR, serving_hit_speed[serving_current_set], OPEN_LOOP);
 			}
 		}
 		break;
@@ -368,6 +369,20 @@ void serving_uncalibrate(void)
 	serving_calibrated = false;
 }
 
+
+u8 get_serving_set(void)
+{
+	return serving_current_set;
+}
+
+void set_serving_set(u8 i)
+{
+	if (i >= SERVING_SET_COUNT || serving_hit_state != SERVING_NULL) {
+		return;
+	}
+	serving_current_set = i;
+}
+
 u8 get_serving_switch(void)
 {
 	//#warning SWITCH GPIO FLIPPED
@@ -377,24 +392,24 @@ u8 get_serving_switch(void)
 
 u16 get_shuttle_drop_delay(void)
 {
-	return shuttle_drop_delay_ms;
+	return shuttle_drop_delay_ms[serving_current_set];
 }
 
 void set_shuttle_drop_delay(u16 delay_ms)
 {
 	if (delay_ms > 999) {return;}
-	shuttle_drop_delay_ms = delay_ms;
+	shuttle_drop_delay_ms[serving_current_set] = delay_ms;
 }
 
 s16 get_serving_hit_speed(void)
 {
-	return serving_hit_speed;
+	return serving_hit_speed[serving_current_set];
 }
 
 void set_serving_hit_speed(s16 speed)
 {
 	if (speed < -2000 || speed > 2000) {return;}
-	serving_hit_speed = speed;
+	serving_hit_speed[serving_current_set] = speed;
 }
 
 SERVING_CALI_STATE get_serving_cali_state(void)
@@ -416,7 +431,7 @@ SERVING_IRQn_Handler
 		if (serving_hit_state == SERVING_SHUTTLECOCK_DROPPED) {
 			serving_hit_state = SERVING_RACKET_START_HITTING;
 			#warning
-			motor_set_vel(SERVING_MOTOR, serving_hit_speed, SERVING_HIT_MODE);
+			motor_set_vel(SERVING_MOTOR, serving_hit_speed[serving_current_set], SERVING_HIT_MODE);
 			serving_update();
 			buzzer_control_note(2, 100, NOTE_A, 7);
 			//TIM_SetCounter(SERVING_TIM, 0);										// Reset counter

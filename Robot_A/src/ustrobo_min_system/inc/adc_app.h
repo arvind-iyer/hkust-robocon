@@ -18,6 +18,7 @@
 
 #define BATTERY_ADC_CHANNEL         ADC_Channel_10
 
+#define LASER_ADC_CHANNEL      	   ADC_Channel_14
 
 /*** TEMPERATURE SENSOR ***/
 #define SAMPLE_TEMP_VAL_1             200 // x10
@@ -36,6 +37,6 @@ void battery_init(void);
 s16 get_voltage(void);
 BATTERY_CHECK_RESULT battery_check(void);
 s16 get_temperature(void);
-
+u32 get_sensor(void);
 
 #endif  /** __ADC_APP_H **/

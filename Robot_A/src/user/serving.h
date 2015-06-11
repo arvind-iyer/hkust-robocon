@@ -24,6 +24,8 @@
 #define	SERVING_IRQn_Handler		void TIM4_IRQHandler(void)
 //#define	SERVING_SHUTTLECOCK_DROPPING_TIME				(500 * 10)	// 500ms
 
+#define	SERVING_SET_COUNT											2			// 2 sets of serving
+
 #define	SERVING_MOTOR													MOTOR5
 #define	SERVING_MOTOR_ACC											150
 #define	SERVING_MOTOR_ENCODER_CYCLE						28000				
@@ -33,11 +35,11 @@
 
 #define	SERVING_UNCALI_SPEED									20							/*!< Uncalibration motor speed */
 #define	SERVING_UNCALI_MODE										CLOSE_LOOP				/*!< Uncalibration motor mode */
-#define	SERVING_UNCALI_SWITCH_OFF_COUNT				3								/*!< Count of the switch off, to prevent bouncing */
+#define	SERVING_UNCALI_SWITCH_OFF_COUNT				30								/*!< Count of the switch off, to prevent bouncing */
 
 #define	SERVING_CALI_SPEED										-8							/*!< Calibration motor speed (when switch is off) */
 #define	SERVING_CALI_MODE											CLOSE_LOOP			/*!< Calibration motor mode  (when switch is off)*/
-#define	SERVING_CALI_SWITCH_ON_COUNT					10							/*!< Count of the switch on, to prevent bouncing */
+#define	SERVING_CALI_SWITCH_ON_COUNT					100							/*!< Count of the switch on, to prevent bouncing */
 #define	SERVING_CALI_ENCODER_AFTER_SWITCH			1200						/*!< Calibration motor speed (when switch is on) */
 #define	SERVING_CALI_AFTER_SWITCH_SPEED				-3							/*!< Calibration motor mode  (when switch is on) */
 #define	SERVING_CALI_AFTER_SWITCH_MODE				CLOSE_LOOP			/*!< Calibration motor mode  (when switch is on) */
@@ -81,6 +83,9 @@ void serving_update(void);
 s32 get_serving_encoder(void);
 s32 get_serving_cali_encoder_target(void);
 s32 get_serving_hit_encoder_target(void);
+
+u8 get_serving_set(void);
+void set_serving_set(u8 i);
 
 bool get_serving_calibrated(void);
 void serving_uncalibrate(void);
