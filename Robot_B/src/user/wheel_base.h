@@ -1,6 +1,7 @@
 #ifndef __WHEEL_BASE_H
 #define __WHEEL_BASE_H
 
+#include <stdbool.h>
 #include "stm32f10x.h"
 #include "can_motor.h"
 #include "bluetooth.h"
@@ -25,9 +26,9 @@
 // Wheel-base speed related
 #define	WHEEL_BASE_XY_VEL_RATIO								707		//  Last tested value: 1000 (100.0%) with SPEED_MODES stepping value 10
 #define	WHEEL_BASE_W_VEL_RATIO								-500	//	Last tested value: -500 (-80.0%)
-static const u16 SPEED_MODES[11] =	// In percentage (20 = 20%)
+static const u16 SPEED_MODES[10] =	// In percentage (20 = 20%)
 {
-	0, 15, 30, 45, 60, 75, 90, 105, 120, 135, 150
+	0, 20, 40, 60, 80, 100, 120, 140, 160, 180
 };
 
 // Initialized value
@@ -70,8 +71,6 @@ s32 wheel_base_get_vel_top_left(void);
 s32 wheel_base_get_vel_top_right(void);
 s32 wheel_base_get_vel_bottom_left(void);
 s32 wheel_base_get_vel_bottom_right(void);
-s32 wheel_base_get_acc_x(void);
-s32 wheel_base_get_acc_y(void);
 void wheel_base_update(void);
 void wheel_base_tx_position(void);
 

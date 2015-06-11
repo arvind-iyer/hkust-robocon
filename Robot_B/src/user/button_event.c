@@ -50,21 +50,16 @@ void gamepad_led_init(void) {
 	GPIO_WriteBit(GPIOD, GPIO_Pin_2, Bit_RESET);		// Red off
 	GPIO_WriteBit(GPIOD, GPIO_Pin_9, Bit_RESET);		// 車頭燈
 	GPIO_WriteBit(GPIOC, GPIO_Pin_12, Bit_RESET);	// Green off
-	
 }
 
 void button_event_update(void)
 {
-	// Wheel Base
-	/* u16 */ speed_ratio = SPEED_MODES[wheel_base_get_speed_mode()];
-	/* s32 */ axis_speed = ANALOG_SPEED * speed_ratio / 100;
-	/* s32 */ diagonal_speed = ANALOG_SPEED * 707 / 1000 * speed_ratio / 100;
-	
+	// Button holding count START
 	if (button_pressed(BUTTON_XBC_XBOX)) {
 		home_holding_count += 1;
 	} else {
 		home_holding_count = 0;
-	}	
+	}
 	if (button_pressed(BUTTON_PS4_SELECT) && button_pressed(BUTTON_PS4_START)) {
 		start_and_select_holding_count += 1;
 	} else {
@@ -94,7 +89,36 @@ void button_event_update(void)
 	} else {
 		triangle_holding_count = 0;
 	}
+	// Button holding count END
+
+	//Analog Movement
+	//Set x and y vel according to analog stick input
+	int raw_vx = xbc_get_joy(XBC_JOY_LX);
+	int raw_vy = xbc_get_joy(XBC_JOY_LY);
 	
+	int h = Sqrt(Sqr(raw_vx)+ Sqr(raw_vy));
+	
+	// Scalar Speed limit
+	if (h > XBC_JOY_SCALE) {
+		raw_vx = raw_vx*XBC_JOY_SCALE / h;
+		raw_vy = raw_vy*XBC_JOY_SCALE / h;
+	}
+	
+	// Set output x and y.
+	s32 vx = raw_vx;
+	s32 vy = raw_vy;
+	
+	// Original Code
+	if (triangle_holding_count == 1) {
+		chetaudaaidang = (chetaudaaidang + 1) % 3;
+	}
+	if (chetaudaaidang == 1 || (chetaudaaidang == 2 && (get_full_ticks() / 100) % 2 == 1)) {
+		GPIO_WriteBit(GPIOD, GPIO_Pin_9, Bit_SET);
+	} else {
+		GPIO_WriteBit(GPIOD, GPIO_Pin_9, Bit_RESET);
+	}
+	
+	// Button event START
 	if (button_pressed(BUTTON_PS4_L1)) {
 		// GPIO_WriteBit(GPIOD, GPIO_Pin_2, Bit_SET);
 	} else {
@@ -113,90 +137,12 @@ void button_event_update(void)
 	if (button_pressed(BUTTON_PS4_R3)) {
 		buzzer_play_song(NEW_SUPER_MARIO_BROS, 150, 0);
 	}
-	
-	angle_speed = axis_speed * button_event_trigger_value_conversion(xbc_get_joy(PS4_JOY_R2) - xbc_get_joy(PS4_JOY_L2)) / 255;
-	
-	x_speed = 0;
-	y_speed = 0;
-	
-	l_analog_magnitude = Sqrt(Sqr(xbc_get_joy(PS4_JOY_LX)) + Sqr(xbc_get_joy(PS4_JOY_LY)));
-	
-	if (button_pressed(BUTTON_PS4_CIRCLE)) {
-		// 減速至零
-		button_event_wheel_base_set_vel(0, 0, 0);
-	} else {
-		if ( xbc_get_joy(PS4_JOY_LX) != 0 || xbc_get_joy(PS4_JOY_LY) != 0 ) {
-			x_speed = axis_speed * xbc_get_joy(PS4_JOY_LX) / 1000;
-			y_speed = axis_speed * xbc_get_joy(PS4_JOY_LY) / 1000;
-		} else if (button_pressed(BUTTON_PS4_UP)) {
-			// Forward 前
-			// x_speed = 0;
-			y_speed = axis_speed;
-		} else if (button_pressed(BUTTON_PS4_DOWN)) {
-			// Backward 後
-			// x_speed = 0;
-			y_speed = -axis_speed;
-		} else if (button_pressed(BUTTON_PS4_LEFT)) {
-			// Left 左
-			x_speed = -axis_speed;
-			// y_speed = 0;
-		} else if (button_pressed(BUTTON_PS4_RIGHT)) {
-			// Right 右
-			x_speed = axis_speed;
-			// y_speed = 0;
-		} else if (button_pressed(BUTTON_PS4_NW)) {
-			// Left-Forward 左前
-			x_speed = -diagonal_speed;
-			y_speed = diagonal_speed;
-		} else if (button_pressed(BUTTON_PS4_SW)) {
-			// Left-Backward 左後
-			x_speed = -diagonal_speed;
-			y_speed = -diagonal_speed;
-		} else if (button_pressed(BUTTON_PS4_NE)) {
-			// Right-Forward 右前
-			x_speed = diagonal_speed;
-			y_speed = diagonal_speed;
-		} else if (button_pressed(BUTTON_PS4_SE)) {
-			// Right-Backward 右後
-			x_speed = diagonal_speed;
-			y_speed = -diagonal_speed;
-		}
-		
-		temp_s32 = y_speed;
-		if (side_control == SIDE_RIGHT) {
-			y_speed = x_speed;
-			x_speed = -temp_s32;
-		} else if (side_control == SIDE_LEFT) {
-			y_speed = -x_speed;
-			x_speed = temp_s32;
-		}
-		
-		button_event_wheel_base_set_vel(x_speed, y_speed, angle_speed);
-	}
-	
-	if (triangle_holding_count == 1) {
-		chetaudaaidang = (chetaudaaidang + 1) % 3;
-	}
-	if (chetaudaaidang == 1 || chetaudaaidang == 2 && (get_full_ticks() / 100) % 2 == 1) {
-		GPIO_WriteBit(GPIOD, GPIO_Pin_9, Bit_SET);
-	} else {
-		GPIO_WriteBit(GPIOD, GPIO_Pin_9, Bit_RESET);
-	}
-	
-	if (home_holding_count == 1 || start_and_select_holding_count == 1 ) {
-		if (side_control == SIDE_NORMAL) {
-			side_control = SIDE_RIGHT;
-			buzzer_play_song(SIDE_CONTROL_ON_SOUND, 120, 0);
-		} else {
-			side_control = SIDE_NORMAL;
-			buzzer_play_song(SIDE_CONTROL_OFF_SOUND, 120, 0);
-		}
-	}
+	// Button event END
 	
 	// Speed mode adjustment
 	if ( speed_button_released_before && (button_pressed(BUTTON_XBC_START) || button_pressed(BUTTON_XBC_BACK) ) ) {
 		u8 speed_mode = wheel_base_get_speed_mode();
-		if ( button_pressed(BUTTON_XBC_START) && speed_mode < 10 ) {
+		if ( button_pressed(BUTTON_XBC_START) && speed_mode < 9 ) {
 			speed_mode += 1;
 		} else if ( button_pressed(BUTTON_XBC_BACK) && speed_mode > 0 ) {
 			speed_mode -= 1;
@@ -233,15 +179,24 @@ void button_event_update(void)
 			case 9:
 				buzzer_play_song(SPEED_9, 200, 0);
 				break;
-			case 10:
-				buzzer_play_song(SPEED_10, 200, 0);
-				break;
 			default:
 				FAIL_MUSIC;
 		}
 		speed_button_released_before = false;
 	} else if( !button_pressed(BUTTON_XBC_START) && !button_pressed(BUTTON_XBC_BACK) ) {
 		speed_button_released_before = true;
+	}
+	
+	
+	// Holding event START
+	if (home_holding_count == 1 || start_and_select_holding_count == 1 ) {
+		if (side_control == SIDE_NORMAL) {
+			side_control = SIDE_RIGHT;
+			buzzer_play_song(SIDE_CONTROL_ON_SOUND, 120, 0);
+		} else {
+			side_control = SIDE_NORMAL;
+			buzzer_play_song(SIDE_CONTROL_OFF_SOUND, 120, 0);
+		}
 	}
 	
 	//sensor_off();

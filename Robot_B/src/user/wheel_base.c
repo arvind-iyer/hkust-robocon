@@ -5,15 +5,25 @@ static WHEEL_BASE_VEL wheel_base_vel = {0, 0, 0},
 static const CLOSE_LOOP_FLAG wheel_base_close_loop_flag = CLOSE_LOOP;
 static u8 wheel_base_speed_mode = WHEEL_BASE_DEFAULT_SPEED_MODE;
 static u32 wheel_base_bluetooth_vel_last_update = 0;
+static char wheel_base_bluetooth_last_char = 0;
+static u32 wheel_base_bluetooth_char_last_update = 0;
 static u32 wheel_base_last_can_tx = 0;
-
-static int wheel_base_acc = 300;		
 
 static u8 wheel_base_pid_flag = 0;
 static POSITION target_pos = {0, 0, 0};
 static PID wheel_base_pid = {0, 0, 0};
 
-static s32 x_wheel_base_acc, y_wheel_base_acc;
+static WHEEL_BASE_VEL wheel_base_target = {0, 0, 0};
+static bool force_terminate = false;
+
+
+// Global variable for friction tunning
+int accel_booster = 1414; // 1414 for rough ground, 1000 for 3142 ground without skidding (prescaled by 1000)
+
+bool is_force_terminate(void)
+{
+	return force_terminate;
+}
 
 /**
 	* @brief Handler for the bluetooth RX with id 0x4?
@@ -79,13 +89,28 @@ static void wheel_base_auto_bluetooth_decode(u8 id, u8 length, u8* data)
 }
 
 /**
+  * @brief Handler for wheel base character decoding
+  */
+static void wheel_base_char_bluetooth_decode(u8 id, u8 length, u8* data)
+{
+  switch (id) {
+    case BLUETOOTH_WHEEL_BASE_CHAR_ID:
+      if (length == 1) {
+        wheel_base_bluetooth_char_last_update = get_full_ticks();
+        wheel_base_bluetooth_last_char = data[0];
+      }
+    break;
+  }
+}
+
+/**
 	* @brief Initialization of wheel base, including bluetooth rx filter, and all related variables
 	*/
 void wheel_base_init(void)
 {
 	bluetooth_rx_add_filter(BLUETOOTH_WHEEL_BASE_VEL_ID, 0xF0, wheel_base_bluetooth_decode);
-  bluetooth_rx_add_filter(BLUETOOTH_WHEEL_BASE_AUTO_POS_ID, 0xF0, wheel_base_auto_bluetooth_decode);
-	// bluetooth_rx_add_filter(BLUETOOTH_WHEEL_BASE_CHAR_ID, 0xFF, wheel_base_char_bluetooth_decode);
+	bluetooth_rx_add_filter(BLUETOOTH_WHEEL_BASE_AUTO_POS_ID, 0xF0, wheel_base_auto_bluetooth_decode);
+	bluetooth_rx_add_filter(BLUETOOTH_WHEEL_BASE_CHAR_ID, 0xFF, wheel_base_char_bluetooth_decode);
 	wheel_base_vel.x = wheel_base_vel.y = wheel_base_vel.w = 0;
 	wheel_base_bluetooth_vel_last_update = 0;
 	wheel_base_last_can_tx = 0;
@@ -99,7 +124,7 @@ void wheel_base_init(void)
 	*/
 void wheel_base_set_speed_mode(u8 s)
 {
-	if (s <= 10) {
+	if (s <= 9) {
 		wheel_base_speed_mode = s;
 	}
 }
@@ -153,6 +178,16 @@ WHEEL_BASE_VEL wheel_base_get_vel(void)
 }
 
 /**
+	* @brief Get wheel base target velocity
+	* @param None.
+	* @retval Target wheel base velocity.
+	*/
+WHEEL_BASE_VEL wheel_base_get_tar_vel(void)
+{
+	return wheel_base_target;
+}
+
+/**
 	* @brief Check if the wheel base velocity is different from the previous one
 	* @param None
 	* @retval True if there is any different
@@ -162,14 +197,44 @@ u8 wheel_base_vel_diff(void)
 	return wheel_base_vel.x != wheel_base_vel_prev.x || wheel_base_vel.y != wheel_base_vel_prev.y || wheel_base_vel.w != wheel_base_vel_prev.w;
 }
 
-s32 simulate_acceleration(s32 current_vel, s32 target_vel, s32 wheel_base_accel) {
-	if (target_vel <= (current_vel + wheel_base_accel) && target_vel >= (current_vel - wheel_base_accel)) {
-		return target_vel;
+/**
+	*	@brief 	Update the velocity vecto	r of x and y with respect to its direction. (private function)
+	*	@param 	accumulate: Pointer of the vector of accumulated variable that used to simluate floating point
+						target_vector: The vector of target velocity you set
+						curr_vector: The vector of current velocity of the robot
+						mag_of_vector_diff: The magnitude of vector difference
+						curr_accel: Our acceleration rate (prescaled by 1000, by converting sec to ms)
+						boost: True if boost acceleration due to friction, False if no need.
+	*	@retval None
+	*/
+static void wheel_base_vector_update(s32* accumulate, const s32 target_vector, s32* curr_vector, const int mag_of_vector_diff, const int curr_accel, bool boost)
+{
+	const u16 ACCEL_PRESCALAR = 1000;
+	s32 adjusted_accel_rate = curr_accel;
+	s32 adjusted_prescalar = ACCEL_PRESCALAR * mag_of_vector_diff;
+	
+	// Boost up accel rate if it is boosted
+	if (boost) {
+		adjusted_accel_rate =  curr_accel * accel_booster / 1000;
 	}
-	if (target_vel > current_vel + wheel_base_accel) {
-		return current_vel + wheel_base_accel;
+	
+	if (Abs(target_vector - *curr_vector) * ACCEL_PRESCALAR > adjusted_accel_rate) {
+		// Increase or decrease current vector with respect to its magnitude by accel_booster value each milisecond.
+		(*curr_vector) += ((target_vector - *curr_vector) * adjusted_accel_rate) / adjusted_prescalar;
+		(*accumulate) += ((target_vector - *curr_vector) * adjusted_accel_rate) % adjusted_prescalar;
+	} else {
+		// Directly reach target vector if difference is small.
+		(*curr_vector) = target_vector;
+		(*accumulate) = 0;
+		return;
 	}
-	return current_vel - wheel_base_accel;
+	
+	// Add up the remainder value, just simulate floating-point like.
+	if (Abs(*accumulate) > adjusted_prescalar) {
+		int increment = (*accumulate) / adjusted_prescalar;
+		(*accumulate) -= increment * adjusted_prescalar;
+		(*curr_vector) += increment;
+	}
 }
 
 /**
@@ -182,35 +247,80 @@ void wheel_base_update() {
     * TODO1: Use wheel_base_set_vel(x,y,w) to control the FOUR wheel base motor
     * TODO2: If there is not any Bluetooth RX data after BLUETOOTH_WHEEL_BASE_TIMEOUT, stop the motors
     */
+	
+	// Acceleration profile relevant variable.
+	static u16 prev_vels[50] = { 0 };
+	static u16 vel_index = 0;
+	// Floating point simulation variable.
+	static WHEEL_BASE_VEL accumulate = {0, 0, 0};
+	
+	// Constant boolean for acceleration booster
+	const bool xy_boost_accel = true;
+	const bool spin_no_boost_accel = false;
+	
+	// Acceleration profile, ranging from 50 to 400. (with 165 speed)
+	if (get_ticks() % 10 == 0) {
+		prev_vels[(vel_index++)%(sizeof(prev_vels)/sizeof(prev_vels[0]))] =
+					(Sqrt(Sqr(Abs(wheel_base_get_tar_vel().x)) + Sqr(Abs(wheel_base_get_tar_vel().y))+ Sqr(Abs(wheel_base_get_tar_vel().w))))/20;
+	}
+	
+	// Acceleration variable
+	u16 acceleration = 0;		// xy acceleration
+	const u16 alpha = 512;	// angular acceleration
 
+	for (int i = 0; i < sizeof(prev_vels)/sizeof(prev_vels[0]); i++) {
+		acceleration += (prev_vels[i] > 0 ? (prev_vels[i]) : 1);
+	}
+	
+	// Accelerate according to the acceleration profile
+	s32 mag_vector_diff = Sqrt(Sqr(wheel_base_get_vel().x - wheel_base_get_tar_vel().x) + Sqr(wheel_base_get_tar_vel().y - wheel_base_get_vel().y));
+	s32 diff_omega = Abs(wheel_base_vel.w - wheel_base_get_tar_vel().w);
+	
+	// x, y accel with respect to magnitudue of vector difference.
+	if (mag_vector_diff > 0) {
+		wheel_base_vector_update(&(accumulate.x), wheel_base_get_tar_vel().x, &(wheel_base_vel.x), mag_vector_diff, acceleration, xy_boost_accel);
+		wheel_base_vector_update(&(accumulate.y), wheel_base_get_tar_vel().y, &(wheel_base_vel.y), mag_vector_diff, acceleration, xy_boost_accel);
+	}
+	// Angular velocity acceleration
+	if (diff_omega > 0) {
+		wheel_base_vector_update(&(accumulate.w), wheel_base_get_tar_vel().w, &(wheel_base_vel.w), diff_omega, alpha, spin_no_boost_accel);
+	}
+	
+	// Decide whether update to motor 
+	if (is_force_terminate()) {
+		mvbr = 0;
+		mvbl = 0;
+		mvtl = 0;
+		mvtr = 0;
+		motor_set_vel(MOTOR_BOTTOM_RIGHT, 0, OPEN_LOOP);
+		motor_set_vel(MOTOR_BOTTOM_LEFT, 0, OPEN_LOOP);
+		motor_set_vel(MOTOR_TOP_LEFT, 0, OPEN_LOOP);
+		motor_set_vel(MOTOR_TOP_RIGHT, 0, OPEN_LOOP);
+	} else {
+		mvbr = (WHEEL_BASE_XY_VEL_RATIO * (wheel_base_vel.x + wheel_base_vel.y) / 1000 + WHEEL_BASE_W_VEL_RATIO * wheel_base_vel.w / 1000);
+		mvbl = (WHEEL_BASE_XY_VEL_RATIO * (wheel_base_vel.x - wheel_base_vel.y) / 1000 + WHEEL_BASE_W_VEL_RATIO * wheel_base_vel.w / 1000);
+		mvtl = (WHEEL_BASE_XY_VEL_RATIO * (-wheel_base_vel.x - wheel_base_vel.y) / 1000 + WHEEL_BASE_W_VEL_RATIO * wheel_base_vel.w / 1000);
+		mvtr = (WHEEL_BASE_XY_VEL_RATIO * (-wheel_base_vel.x + wheel_base_vel.y) / 1000 + WHEEL_BASE_W_VEL_RATIO * wheel_base_vel.w / 1000);
+		// Output the velocity value to motor.
+		motor_set_vel(MOTOR_BOTTOM_RIGHT, mvbr, wheel_base_close_loop_flag);
+		motor_set_vel(MOTOR_BOTTOM_LEFT,  mvbl, wheel_base_close_loop_flag);
+		motor_set_vel(MOTOR_TOP_LEFT,			mvtl, wheel_base_close_loop_flag);
+		motor_set_vel(MOTOR_TOP_RIGHT,		mvtr, wheel_base_close_loop_flag);
+	}
+	
+	// Record the velocity.
+	wheel_base_vel_prev.x = wheel_base_vel.x;
+	wheel_base_vel_prev.y = wheel_base_vel.y;
+	wheel_base_vel_prev.w = wheel_base_vel.w;
+
+	
+	// Old wheel base
+	/*
 	if(wheel_base_get_pid_flag() == 0) {
 		if ( (get_full_ticks() - wheel_base_bluetooth_vel_last_update) > BLUETOOTH_WHEEL_BASE_TIMEOUT) {
 			wheel_base_set_vel(0, 0, 0);
 		}
 	}
-	
-	/* if (wheel_base_vel_diff()) {
-		int x_error = abs(wheel_base_vel.x);
-		int y_error = abs(wheel_base_vel.y);
-		if (x_error==0)		x_error = 1;
-		if (y_error==0)		y_error = 1;
-		
-		if (x_error > y_error) {
-			x_wheel_base_acc = wheel_base_acc;
-			y_wheel_base_acc = wheel_base_acc * y_error / x_error;
-		} else {
-			x_wheel_base_acc = wheel_base_acc * x_error / y_error;
-			y_wheel_base_acc = wheel_base_acc;
-		}
-		wheel_base_vel_prev.x = simulate_acceleration(wheel_base_vel_prev.x, wheel_base_vel.x, x_wheel_base_acc);
-		wheel_base_vel_prev.y = simulate_acceleration(wheel_base_vel_prev.y, wheel_base_vel.y, y_wheel_base_acc);
-		wheel_base_vel_prev.w = simulate_acceleration(wheel_base_vel_prev.w, wheel_base_vel.w, wheel_base_acc);
-	}	
-	
-	mvtl = ((-wheel_base_vel_prev.y - wheel_base_vel_prev.x) * WHEEL_BASE_XY_VEL_RATIO + wheel_base_vel_prev.w * WHEEL_BASE_W_VEL_RATIO) / 1000;
-	mvtr = ((wheel_base_vel_prev.y - wheel_base_vel_prev.x) * WHEEL_BASE_XY_VEL_RATIO + wheel_base_vel_prev.w * WHEEL_BASE_W_VEL_RATIO) / 1000;
-	mvbl = ((-wheel_base_vel_prev.y  + wheel_base_vel_prev.x) * WHEEL_BASE_XY_VEL_RATIO	+ wheel_base_vel_prev.w * WHEEL_BASE_W_VEL_RATIO) / 1000;
-	mvbr = ((wheel_base_vel_prev.y + wheel_base_vel_prev.x) * WHEEL_BASE_XY_VEL_RATIO + wheel_base_vel_prev.w * WHEEL_BASE_W_VEL_RATIO) / 1000; */
 	
 	mvtl = ((-wheel_base_vel.y - wheel_base_vel.x) * WHEEL_BASE_XY_VEL_RATIO + wheel_base_vel.w * WHEEL_BASE_W_VEL_RATIO) / 1000;
 	mvtr = ((wheel_base_vel.y - wheel_base_vel.x) * WHEEL_BASE_XY_VEL_RATIO + wheel_base_vel.w * WHEEL_BASE_W_VEL_RATIO) / 1000;
@@ -232,7 +342,7 @@ void wheel_base_update() {
 	motor_set_vel(
 		MOTOR_BOTTOM_RIGHT,
 		mvbr,
-		wheel_base_close_loop_flag);
+		wheel_base_close_loop_flag); */
 	
 }
 
@@ -319,6 +429,4 @@ s32 wheel_base_get_vel_top_left(void) { return mvtl; }
 s32 wheel_base_get_vel_top_right(void) { return mvtr; }
 s32 wheel_base_get_vel_bottom_left(void) { return mvbl; }
 s32 wheel_base_get_vel_bottom_right(void) { return mvbr; }
-s32 wheel_base_get_acc_x(void) { return x_wheel_base_acc; }
-s32 wheel_base_get_acc_y(void) { return y_wheel_base_acc; }
 
