@@ -5,6 +5,7 @@
 #include "angle_lock.h"
 #include "flash.h"
 #include "approx_math.h"
+#include "angle_variance.h"
 
 #include <stdbool.h>
 
@@ -353,19 +354,23 @@ void robocon_main(void)
 			ticks_img = get_ticks();
 			
 			// Every ms
-			angle_lock_update();
 			serving_update();
 			upper_racket_update();
-				
+			angle_lock_update();
+			
 			if (ticks_img % 5 == 0) {
 				wheel_base_pid_update();
 				wheel_base_update();
+				angle_variance_update();
 			}
 				
 			if (ticks_img % 10 == 1) {
 				// Every 10 ms (100 Hz)
 				bluetooth_update();
-
+			}
+			
+			if (ticks_img % 4 == 1) {
+				angle_variance_update();
 			}
 
 			
@@ -541,11 +546,13 @@ void robocon_main(void)
 				} else if (get_serving_hit_state() != SERVING_NULL) {
 					target_encoder = get_serving_hit_encoder_target();
 				}
-				//tft_prints(0, 6, "%d->%d", get_serving_encoder(), target_encoder);
+				tft_prints(0, 7, "%d->%d", get_serving_encoder(), target_encoder);
 				
 				//tft_prints(0, 7, "Serve:%d,%d", get_shuttle_drop_delay(), get_serving_hit_speed());
-				tft_prints(0, 7, "S%d:%d,%d", get_serving_set(), get_shuttle_drop_delay(), get_serving_hit_speed());
+				tft_prints(0, 8, "S%d:%d,%d", get_serving_set(), get_shuttle_drop_delay(), get_serving_hit_speed());
 				
+				tft_prints(0, 9, "AV:%d", get_angle_variance());
+				/*
 				for (u8 i = 0; i < US_AUTO_DEVICE_COUNT; ++i) {
 					u16 dist = us_get_distance(i);
 					if (dist == 0) {
@@ -572,6 +579,7 @@ void robocon_main(void)
 				}
 				
 				tft_prints(5, 9, "%d", us_get_detection_val());
+				*/
 				
 				//tft_prints(0, 4, "%s", wheel_base_get_pid_flag() ? "[AUTO]" : "MANUAL");
 				/*tft_prints(0, 5, "(%-4d,%-4d,%-4d)", wheel_base_get_target_pos().x, wheel_base_get_target_pos().y, wheel_base_get_target_pos().angle);

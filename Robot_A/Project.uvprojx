@@ -458,6 +458,11 @@
               <FileType>1</FileType>
               <FilePath>.\src\user\flash.c</FilePath>
             </File>
+            <File>
+              <FileName>angle_variance.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\src\user\angle_variance.c</FilePath>
+            </File>
           </Files>
         </Group>
         <Group>
