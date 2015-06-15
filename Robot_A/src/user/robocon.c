@@ -38,7 +38,7 @@ static void robocon_get_xbc(void)
 	// Processing wheel base velocity
 	u8 speed_mode = wheel_base_get_speed_mode();
 	
-	if (get_serving_hit_state() >= SERVING_START && get_serving_hit_state() <= SERVING_RACKET_HITTING) {
+	if (get_serving_hit_state() >= SERVING_PRE_DELAY && get_serving_hit_state() <= SERVING_RACKET_HITTING) {
 		// Stop mode during serve
 		speed_mode = 0;
 	}

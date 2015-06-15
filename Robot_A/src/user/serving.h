@@ -47,6 +47,9 @@
 #define	SERVING_CALI_TIMEOUT									4000						/*!< Stop calibrating after the timeout (ms) */
 
 
+#define	SERVING_PRE_DELAY_MAX									500
+#define	SERVING_ANGLE_VARIANCE_MAX						2
+
 #define	SERVING_SHUTTLE_DROP_DELAY_DEFAULT		340							/*!< Default value of the shuttle drop delay in ms */
 #define	SERVING_HIT_SPEED_DEFAULT							-1700						/*!< Default motor speed for hitting */
 #define	SERVING_HIT_MODE											OPEN_LOOP				/*!< Motor mode for hitting */
@@ -67,6 +70,7 @@ typedef enum {
 
 typedef enum {
 	SERVING_NULL = 0,									/*!< No serving is ongoing */
+	SERVING_PRE_DELAY,
 	SERVING_START,										/*!< Serving starts */
 	SERVING_SHUTTLECOCK_DROPPED,			/*!< Shuttlecock is dropped */
 	SERVING_RACKET_START_HITTING,			/*!< The motor starts moving */

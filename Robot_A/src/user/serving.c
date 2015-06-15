@@ -1,7 +1,7 @@
 #include "serving.h"
 #include "buzzer_song.h"
 #include <stdbool.h>
-
+#include "angle_variance.h"
 static u8 valve_state = 0;
 static volatile SERVING_HIT_STATE serving_hit_state = SERVING_NULL;
 static SERVING_CALI_STATE cali_state = SERVING_CALI_NULL;
@@ -16,6 +16,8 @@ static s32 prev_switch_pressed_encoder_val = 0;
 static s32 cali_encoder_target = 0;
 static u32 serving_start_hitting_full_ticks = 0;
 static u32 serving_stop_hitting_full_ticks = 0;
+
+static u32 serving_start_full_ticks = 0;
 
 static bool serving_calibrated = false;
 
@@ -86,6 +88,11 @@ void serving_init(void)
 	
 	cali_start_full_ticks = 0;
 	
+	for (u8 i = 0; i < SERVING_SET_COUNT; ++i) {
+		shuttle_drop_delay_ms[i] = SERVING_SHUTTLE_DROP_DELAY_DEFAULT;
+		serving_hit_speed[i] = SERVING_HIT_SPEED_DEFAULT;
+	}	
+	
 }
 
 /**
@@ -111,8 +118,9 @@ bool serving_cali_start(void)
 bool serving_hit_start(void)
 {
 	if (cali_state == SERVING_CALI_NULL && serving_hit_state == SERVING_NULL) {
-		serving_hit_state = SERVING_START;
+		serving_hit_state = SERVING_PRE_DELAY;
 		serving_calibrated = false;
+		serving_start_full_ticks = get_full_ticks();
 		serving_update();
 		return true;
 	} else {
@@ -250,6 +258,16 @@ void serving_hit_update(void)
 			// Not calibrating currenty
 		break;
 		
+		case SERVING_PRE_DELAY:
+			if (serving_start_full_ticks == 0 || serving_start_full_ticks + SERVING_PRE_DELAY_MAX < get_ticks() || get_angle_variance() <= SERVING_ANGLE_VARIANCE_MAX) {
+				// Timeout OR angle stable, continue to start serve
+				serving_start_full_ticks = 0;
+				serving_hit_state = SERVING_START;
+				serving_update();
+				buzzer_control_note(1, 100, NOTE_G, 6);
+			}
+		break;
+		
 		case SERVING_START:
 			valve_set(1);
 			serving_hit_state = SERVING_SHUTTLECOCK_DROPPED;
@@ -260,6 +278,7 @@ void serving_hit_update(void)
 			TIM_ClearFlag(SERVING_TIM, TIM_IT_CC1);
 			TIM_ClearITPendingBit(SERVING_TIM, TIM_IT_CC1);
 		
+			buzzer_control_note(1, 500, NOTE_G, 7);
 			serving_hit_state = SERVING_SHUTTLECOCK_DROPPED;
 		break;
 		
@@ -397,7 +416,7 @@ u16 get_shuttle_drop_delay(void)
 
 void set_shuttle_drop_delay(u16 delay_ms)
 {
-	if (delay_ms > 999) {return;}
+	if (delay_ms > 999 || delay_ms == 0) {return;}
 	shuttle_drop_delay_ms[serving_current_set] = delay_ms;
 }
 
@@ -408,7 +427,7 @@ s16 get_serving_hit_speed(void)
 
 void set_serving_hit_speed(s16 speed)
 {
-	if (speed < -2000 || speed > 2000) {return;}
+	if (speed < -2000 || speed > 2000 || speed == 0) {return;}
 	serving_hit_speed[serving_current_set] = speed;
 }
 
