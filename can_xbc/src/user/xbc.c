@@ -172,6 +172,8 @@ void xbc_loop(void)
           }
         }
         
+				u8 last_data =  ch376_read_data();
+				uart_tx(COM1, "%x", last_data);
         phase ^= USB_PHASING_MASK;
 				CHECK_USB_BUFF(phase);
         

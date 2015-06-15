@@ -35,6 +35,8 @@ int main(void)
   
 	xbc_back_button_init();
 	
+	uart_init(COM1, 115200);
+	
   bool connection = false;
   
  //xbc_config(1);

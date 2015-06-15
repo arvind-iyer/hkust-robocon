@@ -1,4 +1,5 @@
 #include "usb_api.h"
+#include "usart.h"
 
 #define TARGET_ADDRESS 0x00 
 #define CONFIGURE_VALUE 0x00
@@ -244,14 +245,44 @@ u8 usb_main_loop()
 	
 	case USB_STATE_CONFIGURED :
 		is_usb_ready = 1;
-		if ((get_ticks() % UPDATE_TIME) == 0) //every 20ms
-		{		
-			if (usb_test_connection() == CH376_USB_INT_DISCONNECT)
-			{	
-			//	//printf("17\r\n");
+		/*
+		if ((get_ticks() % 200) == 12) {
+			u8 data = ch376_check_exist(0x12);
+			//printf("%X\n", usb_get_status());
+			if ((data | 0x12) == 0xFF) {
 				_state = USB_STATE_NOT_INIT;
 			}
 		}
+		*/
+		
+		if ((get_ticks() % UPDATE_TIME) == 0) //every 20ms
+		{		
+			u8 data; 
+			if ((data = usb_test_connection()) == CH376_USB_INT_DISCONNECT)
+			{	
+				
+			//	//printf("17\r\n");
+				_state = USB_STATE_NOT_INIT;
+			}
+			
+			static u8 tx_data = 0x00;
+			++tx_data;
+			
+			data = ch376_check_exist(tx_data);
+			if ((data | tx_data) != 0xFF && data != 0) {
+				//_state = USB_STATE_NOT_INIT;
+			}
+
+			
+
+			//uart_tx(COM1, "%X\n", data);
+			 
+			//
+			break;
+			
+		}
+		
+
 		break;
 		
 	case USB_STATE_TKN_X :

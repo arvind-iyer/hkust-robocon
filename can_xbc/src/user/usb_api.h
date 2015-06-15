@@ -21,7 +21,7 @@
 //#define EXIST_DATA					0xA5
 
 #define USB_CHECK_TIME			20
-#define UPDATE_TIME 			20
+#define UPDATE_TIME 			100
 
 /**
  *	Retry Times	
