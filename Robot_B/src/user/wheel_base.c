@@ -20,11 +20,6 @@ static bool force_terminate = false;
 // Global variable for friction tunning
 int accel_booster = 1414; // 1414 for rough ground, 1000 for 3142 ground without skidding (prescaled by 1000)
 
-bool is_force_terminate(void)
-{
-	return force_terminate;
-}
-
 /**
 	* @brief Handler for the bluetooth RX with id 0x4?
 	* @param id: ID of the RX package
@@ -312,38 +307,6 @@ void wheel_base_update() {
 	wheel_base_vel_prev.x = wheel_base_vel.x;
 	wheel_base_vel_prev.y = wheel_base_vel.y;
 	wheel_base_vel_prev.w = wheel_base_vel.w;
-
-	
-	// Old wheel base
-	/*
-	if(wheel_base_get_pid_flag() == 0) {
-		if ( (get_full_ticks() - wheel_base_bluetooth_vel_last_update) > BLUETOOTH_WHEEL_BASE_TIMEOUT) {
-			wheel_base_set_vel(0, 0, 0);
-		}
-	}
-	
-	mvtl = ((-wheel_base_vel.y - wheel_base_vel.x) * WHEEL_BASE_XY_VEL_RATIO + wheel_base_vel.w * WHEEL_BASE_W_VEL_RATIO) / 1000;
-	mvtr = ((wheel_base_vel.y - wheel_base_vel.x) * WHEEL_BASE_XY_VEL_RATIO + wheel_base_vel.w * WHEEL_BASE_W_VEL_RATIO) / 1000;
-	mvbl = ((-wheel_base_vel.y  + wheel_base_vel.x) * WHEEL_BASE_XY_VEL_RATIO	+ wheel_base_vel.w * WHEEL_BASE_W_VEL_RATIO) / 1000;
-	mvbr = ((wheel_base_vel.y + wheel_base_vel.x) * WHEEL_BASE_XY_VEL_RATIO + wheel_base_vel.w * WHEEL_BASE_W_VEL_RATIO) / 1000;
-	
-	motor_set_vel(
-		MOTOR_TOP_LEFT,
-		mvtl,
-		wheel_base_close_loop_flag);
-	motor_set_vel(
-		MOTOR_TOP_RIGHT,
-		mvtr,
-		wheel_base_close_loop_flag);
-	motor_set_vel(
-		MOTOR_BOTTOM_LEFT,
-		mvbl,
-		wheel_base_close_loop_flag);
-	motor_set_vel(
-		MOTOR_BOTTOM_RIGHT,
-		mvbr,
-		wheel_base_close_loop_flag); */
-	
 }
 
 /**

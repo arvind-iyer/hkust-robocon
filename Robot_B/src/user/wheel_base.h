@@ -8,6 +8,7 @@
 #include "ticks.h"
 #include "gyro.h"
 #include "wheel_base_pid.h"
+#include "button_event.h"
 
 // Protocol
 #define	BLUETOOTH_WHEEL_BASE_VEL_ID	    			0x40    // RX

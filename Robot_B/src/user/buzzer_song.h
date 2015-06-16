@@ -6,7 +6,6 @@
 extern const MUSIC_NOTE START_UP[];
 extern const MUSIC_NOTE SUCCESSFUL_SOUND[];
 extern const MUSIC_NOTE FAIL_SOUND[];
-extern const MUSIC_NOTE BIRTHDAY_SONG[];
 extern const MUSIC_NOTE CLICK[];
 
 extern const MUSIC_NOTE SPEED_0[];
@@ -19,12 +18,12 @@ extern const MUSIC_NOTE SPEED_6[];
 extern const MUSIC_NOTE SPEED_7[];
 extern const MUSIC_NOTE SPEED_8[];
 extern const MUSIC_NOTE SPEED_9[];
-extern const MUSIC_NOTE SPEED_10[];
-
-extern const MUSIC_NOTE SIDE_CONTROL_ON_SOUND[];
-extern const MUSIC_NOTE SIDE_CONTROL_OFF_SOUND[];
+extern const MUSIC_NOTE SIDE_CONTROL_NORMAL_SOUND[];
 extern const MUSIC_NOTE SIDE_CONTROL_LEFT_SOUND[];
+extern const MUSIC_NOTE SIDE_CONTROL_RIGHT_SOUND[];
 
+extern const MUSIC_NOTE BIRTHDAY_SONG[];
+extern const MUSIC_NOTE MARRIAGE_D_AMOUR[];
 extern const MUSIC_NOTE NEW_SUPER_MARIO_BROS[];
 
 #define	SUCCESSFUL_MUSIC			buzzer_play_song(SUCCESSFUL_SOUND, 100, 0)

@@ -1,13 +1,7 @@
 #include "button_event.h"
 
-static u8   side_control = SIDE_RIGHT;
+static u8  side_control = SIDE_NORMAL;
 
-static u32 home_holding_count = 0;
-static u32 start_and_select_holding_count = 0;
-static u32 select_and_l1_holding_count = 0;
-static u32 l1_and_cross_holding_count = 0;
-static u32 r1_and_cross_holding_count = 0;
-static u32 triangle_holding_count = 0;
 static bool speed_button_released_before = false;
 static bool underarm_reverse = false;
 static u8 chetaudaaidang = 0;
@@ -20,6 +14,12 @@ static s32 x_speed;
 static s32 y_speed;
 static s32 temp_s32;
 static u32 l_analog_magnitude;
+
+// Omega PID relevant.
+static int accumulated_omega = 0;
+static int target_angle = 0;
+
+static bool force_terminate = false;
 
 // This "trigger" means LT (L2 for PS4) & RT (R2 for PS4)
 s32 button_event_trigger_value_conversion(s16 trigger_value) {
@@ -52,45 +52,7 @@ void gamepad_led_init(void) {
 	GPIO_WriteBit(GPIOC, GPIO_Pin_12, Bit_RESET);	// Green off
 }
 
-void button_event_update(void)
-{
-	// Button holding count START
-	if (button_pressed(BUTTON_XBC_XBOX)) {
-		home_holding_count += 1;
-	} else {
-		home_holding_count = 0;
-	}
-	if (button_pressed(BUTTON_PS4_SELECT) && button_pressed(BUTTON_PS4_START)) {
-		start_and_select_holding_count += 1;
-	} else {
-		start_and_select_holding_count = 0;
-	}
-	
-	if (button_pressed(BUTTON_PS4_SELECT) && button_pressed(BUTTON_PS4_L1)) {
-		select_and_l1_holding_count += 1;
-	} else {
-		select_and_l1_holding_count = 0;
-	}
-	
-	if (button_pressed(BUTTON_PS4_L1) && button_pressed(BUTTON_PS4_CROSS)) {
-		l1_and_cross_holding_count += 1;
-	} else {
-		l1_and_cross_holding_count = 0;
-	}
-		
-	if (button_pressed(BUTTON_PS4_R1) && button_pressed(BUTTON_PS4_CROSS)) {
-		r1_and_cross_holding_count += 1;
-	} else {
-		r1_and_cross_holding_count = 0;
-	}
-	
-	if (button_pressed(BUTTON_PS4_TRIANGLE)) {
-		triangle_holding_count += 1;
-	} else {
-		triangle_holding_count = 0;
-	}
-	// Button holding count END
-
+void gamepad_wheel_base() {
 	//Analog Movement
 	//Set x and y vel according to analog stick input
 	int raw_vx = xbc_get_joy(XBC_JOY_LX);
@@ -100,44 +62,45 @@ void button_event_update(void)
 	
 	// Scalar Speed limit
 	if (h > XBC_JOY_SCALE) {
-		raw_vx = raw_vx*XBC_JOY_SCALE / h;
-		raw_vy = raw_vy*XBC_JOY_SCALE / h;
+		raw_vx = raw_vx * XBC_JOY_SCALE / h;
+		raw_vy = raw_vy * XBC_JOY_SCALE / h;
 	}
 	
 	// Set output x and y.
 	s32 vx = raw_vx;
 	s32 vy = raw_vy;
 	
-	// Original Code
-	if (triangle_holding_count == 1) {
-		chetaudaaidang = (chetaudaaidang + 1) % 3;
-	}
-	if (chetaudaaidang == 1 || (chetaudaaidang == 2 && (get_full_ticks() / 100) % 2 == 1)) {
-		GPIO_WriteBit(GPIOD, GPIO_Pin_9, Bit_SET);
-	} else {
-		GPIO_WriteBit(GPIOD, GPIO_Pin_9, Bit_RESET);
+	int omega = (xbc_get_joy(XBC_JOY_RT)-xbc_get_joy(XBC_JOY_LT)) / 5;
+	const int speed_factor = 8;
+	
+	accumulated_omega += omega % speed_factor;
+	int incremental = accumulated_omega / speed_factor;
+	if (incremental != 0) {
+		target_angle += incremental;
+		accumulated_omega -= incremental * speed_factor;
 	}
 	
-	// Button event START
-	if (button_pressed(BUTTON_PS4_L1)) {
-		// GPIO_WriteBit(GPIOD, GPIO_Pin_2, Bit_SET);
-	} else {
-		// GPIO_WriteBit(GPIOD, GPIO_Pin_2, Bit_RESET);
+	// changing target angle with int value.
+	target_angle += omega / speed_factor;
+	if (target_angle < 0) {
+		target_angle += 3600;
+	} else if (target_angle > 3599) {
+		target_angle -= 3600;
 	}
 	
-	if (button_pressed(BUTTON_PS4_R1)) {
-		// GPIO_WriteBit(GPIOC, GPIO_Pin_12, Bit_SET);
-	} else {
-		// GPIO_WriteBit(GPIOC, GPIO_Pin_12, Bit_RESET);
-	}
+	wheel_base_set_target_pos((POSITION){get_pos()->x, get_pos()->y, target_angle});
 	
-	if (button_pressed(BUTTON_PS4_L3)) {
-		buzzer_play_song(BIRTHDAY_SONG, 135, 0);
+	// Get angular speed based on target_angle
+	int vw = pid_maintain_angle();
+	
+	if (!force_terminate) {
+		wheel_base_set_vel(vx,vy,vw);
 	}
-	if (button_pressed(BUTTON_PS4_R3)) {
-		buzzer_play_song(NEW_SUPER_MARIO_BROS, 150, 0);
-	}
-	// Button event END
+}
+
+void button_event_update(void)
+{
+	gamepad_wheel_base();
 	
 	// Speed mode adjustment
 	if ( speed_button_released_before && (button_pressed(BUTTON_XBC_START) || button_pressed(BUTTON_XBC_BACK) ) ) {
@@ -187,62 +150,61 @@ void button_event_update(void)
 		speed_button_released_before = true;
 	}
 	
-	
-	// Holding event START
-	if (home_holding_count == 1 || start_and_select_holding_count == 1 ) {
-		if (side_control == SIDE_NORMAL) {
-			side_control = SIDE_RIGHT;
-			buzzer_play_song(SIDE_CONTROL_ON_SOUND, 120, 0);
-		} else {
+	// SELECT function keys
+	if (button_pressed(BUTTON_PS4_SELECT)>=1) {
+		// SELECT + L1 + R1
+		if (button_pressed(BUTTON_PS4_L1)>=1 && button_pressed(BUTTON_PS4_R1)>=1) {
 			side_control = SIDE_NORMAL;
-			buzzer_play_song(SIDE_CONTROL_OFF_SOUND, 120, 0);
+			buzzer_play_song(SIDE_CONTROL_NORMAL_SOUND, 120, 0);
+		}
+		// SELECT + L1
+		else if (button_pressed(BUTTON_PS4_L1)==1) {
+			side_control = SIDE_LEFT;
+			buzzer_play_song(SIDE_CONTROL_LEFT_SOUND, 120, 0);
+		}
+		// SELECT + R1
+		else if (button_pressed(BUTTON_PS4_R1)==1) {
+			side_control = SIDE_RIGHT;
+			buzzer_play_song(SIDE_CONTROL_RIGHT_SOUND, 120, 0);
 		}
 	}
-	
-	//sensor_off();
-	//sensor_on();
-	if (select_and_l1_holding_count == 1) {
-		side_control = SIDE_LEFT;
-		buzzer_play_song(SIDE_CONTROL_LEFT_SOUND, 120, 0);
+	// L1 function keys
+	else if (button_pressed(BUTTON_PS4_L1) >= 1) {
+		// L1 + X
+		if (button_pressed(BUTTON_PS4_CROSS) == 1)
+			underarm_reverse = !underarm_reverse;
 	}
-	
-	if ((button_pressed(BUTTON_XBC_Y) && button_pressed(BUTTON_XBC_B)) == false) {
-		if (button_pressed(BUTTON_XBC_Y)) {
-			sensor_decrease_delay();
-		} else if (button_pressed(BUTTON_XBC_B)) {
-			sensor_increase_delay();
-		}
-	}
-	
-	// Rackets & sensors
-	
-	if (l1_and_cross_holding_count == 1) {
-		underarm_reverse = !underarm_reverse;
-	}
-	
-	if (r1_and_cross_holding_count >= 1) {
-		sensor_on();
-	} else {
-		sensor_off();		
-		if (button_pressed(BUTTON_XBC_A)) {
+	// Single button (except force_terminate())
+	else {
+		// CROSS
+		if (button_pressed(BUTTON_PS4_CROSS) >= 1) {
 			if (underarm_reverse == false)
 				underarm_daa_la();
 			else
 				underarm_lok_la();
+		}
+		// SQUARE
+		if (button_pressed(BUTTON_PS4_SQUARE) >= 1) {
+			forehand_daa_la();
 		} else {
-			if (underarm_reverse == false)
-				underarm_lok_la();
-			else
-				underarm_daa_la();
+			forehand_lok_la();
 		}
-	} 
-	
-	if (button_pressed(BUTTON_XBC_X)) {
-		forehand_daa_la();
-	} else {
-		forehand_lok_la();
+		// TRIANGLE
+		if (button_pressed(BUTTON_PS4_TRIANGLE) == 1) {
+			chetaudaaidang = (chetaudaaidang + 1) % 3;
+		}
+		// CIRCLE
+		if (button_pressed(BUTTON_PS4_CIRCLE) == 1) {
+			force_terminate = 1;
+		}
 	}
 	
+	
+	if (chetaudaaidang == 1 || (chetaudaaidang == 2 && (get_full_ticks() / 100) % 2 == 1)) {
+		GPIO_WriteBit(GPIOD, GPIO_Pin_9, Bit_SET);
+	} else {
+		GPIO_WriteBit(GPIOD, GPIO_Pin_9, Bit_RESET);
+	}
 }
 
 u8 button_event_get_side_control(void) {
@@ -251,4 +213,8 @@ u8 button_event_get_side_control(void) {
 
 u32 button_event_get_l_analog_magnitude(void) {
 	return l_analog_magnitude;
+}
+
+bool is_force_terminate(void) {
+	return force_terminate;
 }
