@@ -22,9 +22,24 @@
 #define XBC_B		0x2000
 #define XBC_X		0x4000
 #define XBC_Y		0x8000
+#define XINPUT_GUIDE_BUTTON 0x0400
 
 namespace {
 	bool running = true;
+
+	typedef struct
+	{
+		unsigned long eventCount;
+		WORD                                wButtons;
+		BYTE                                bLeftTrigger;
+		BYTE                                bRightTrigger;
+		SHORT                               sThumbLX;
+		SHORT                               sThumbLY;
+		SHORT                               sThumbRX;
+		SHORT                               sThumbRY;
+	} XINPUT_GAMEPAD_SECRET;
+
+	int(__stdcall *secret_get_gamepad) (int, XINPUT_GAMEPAD_SECRET*);
 }
 
 // Now, the XInput Library
@@ -38,8 +53,9 @@ namespace {
 	{
 	private:
 		XINPUT_STATE _controller_state;
-		int _controller_num;
 	public:
+		int _controller_num;
+
 		CXBOXController(int player_number) : _controller_num(player_number - 1) {};
 		XINPUT_STATE GetState() {
 				// Zeroise the state
@@ -84,8 +100,20 @@ void terminate_thread()
 
 UINT __cdecl xbox_write_thread(LPVOID app_ptr)
 {
+	TCHAR xinput_dll_path[MAX_PATH];
+	GetSystemDirectory(xinput_dll_path, sizeof(xinput_dll_path));
+	wcscat(xinput_dll_path, _T("\\xinput1_4.dll"));
+	HINSTANCE xinput_dll = LoadLibrary(xinput_dll_path);
+	if (xinput_dll) {
+		OutputDebugString(_T("DLL loaded\n"));
+		secret_get_gamepad = reinterpret_cast<int(__stdcall *) (int, XINPUT_GAMEPAD_SECRET*)>(GetProcAddress(xinput_dll, (LPCSTR)100));
+	}
+	else {
+		OutputDebugString(_T("DLL failed to load\n"));
+	}
 	SerialIO** serial = static_cast<SerialIO**>(app_ptr);
 	CXBOXController* controller = nullptr;
+
 	// wait for xbox to be connected
 	while (running) {
 		while (controller == nullptr && running)
@@ -212,6 +240,19 @@ UINT __cdecl xbox_write_thread(LPVOID app_ptr)
 						AfxGetApp()->GetMainWnd()->PostMessage(UWM_PRINT_OUTPUT_FROM_WRITE, 0, (LPARAM)new std::basic_string<TCHAR>(string_to_write.str()));
 					}
 					xbc_digital |= XBC_START;
+				}
+
+				XINPUT_GAMEPAD_SECRET g;
+				secret_get_gamepad(controller->_controller_num, &g);
+
+				if (g.wButtons & XINPUT_GUIDE_BUTTON)
+				{
+					std::basic_ostringstream<TCHAR> string_to_write;
+					string_to_write << _T("Sent XBOX: XBOX BUTTON");
+					if (AfxGetApp() && (CMainFrame*)AfxGetApp()->GetMainWnd()) {
+						AfxGetApp()->GetMainWnd()->PostMessage(UWM_PRINT_OUTPUT_FROM_WRITE, 0, (LPARAM)new std::basic_string<TCHAR>(string_to_write.str()));
+					}
+					xbc_digital |= XBC_XBOX;
 				}
 				if (x.wButtons & XINPUT_GAMEPAD_A)
 				{
