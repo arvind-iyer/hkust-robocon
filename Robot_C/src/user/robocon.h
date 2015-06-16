@@ -36,7 +36,6 @@
 #include "log.h"
 #include "nec_mb.h"
 #include "send_debug_data.h"
-#include "flash.h"
 
 #define TR_ACC_FAC			ROBOT=='C'?50:54
 #define TL_ACC_FAC			ROBOT=='C'?50:63 			

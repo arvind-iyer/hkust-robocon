@@ -47,8 +47,5 @@
 *._ia
 *.__i
 
-# Jlink log
+#Jlink log
 JLinkLog.txt
-
-# Mac Junk
-.DS_Store
