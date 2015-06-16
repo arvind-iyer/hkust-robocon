@@ -18,36 +18,22 @@
 #include <limits>
 #include <cmath>
 #include <tuple>
+#include <fstream>
+#include <Shlwapi.h>
 
 namespace {
-	float min_y_cutoff = 5.0f;
-	float max_y_cutoff = std::numeric_limits<float>::infinity();
-	float net_angle = 0.0f;
 	bool calibration_mode = true;
 	bool calibration_edge_trigger = true;
 	bool tracking_mode = false;
 
-	std::vector<Eigen::Vector4d> cluster_cloud_centroids;
-
-	std::pair<pcl::PointXYZ, pcl::PointXYZ> create_net_line_endpoints() {
-		pcl::PointXYZ start_point = pcl::PointXYZ(1.07f, 0.23f, 1.83f);
-
-		pcl::PointXYZ end_point = pcl::PointXYZ(-0.89f, -0.57f, 7.51f);
-		return std::make_pair(start_point, end_point);
+	std::pair<pcl::PointXYZ, pcl::PointXYZ> create_line_endpoints(pcl::PointXYZ start, pcl::PointXYZ end) {
+		return std::make_pair(start, end);
 	}
 
-	std::pair<pcl::PointXYZ, pcl::PointXYZ> create_pole_line_endpoints() {
-		pcl::PointXYZ start_point = pcl::PointXYZ(-0.89f, -0.57f, 7.51f);
-
-		pcl::PointXYZ end_point = pcl::PointXYZ(-0.88f, -2.09f, 7.29f);
-
-		return std::make_pair(start_point, end_point);
-	}
-
-	std::pair<pcl::PointXYZ, pcl::PointXYZ> net_line = create_net_line_endpoints();
-	std::pair<pcl::PointXYZ, pcl::PointXYZ> pole_line = create_pole_line_endpoints();
+	std::pair<pcl::PointXYZ, pcl::PointXYZ> net_line = std::pair<pcl::PointXYZ, pcl::PointXYZ>();
+	std::pair<pcl::PointXYZ, pcl::PointXYZ> pole_line = std::pair<pcl::PointXYZ, pcl::PointXYZ>();
 	Eigen::Matrix3f coord_conversion_matrix = Eigen::Matrix3f();
-	Eigen::Affine3d transformation;
+	Eigen::Affine3d transformation = Eigen::Affine3d::Identity();
 }
 
 template <class Interface>
@@ -183,6 +169,66 @@ pcl::PolygonMesh generate_quad_mesh(pcl::PointCloud<pcl::PointXYZRGBA>::Ptr& clo
 	return mesh;
 }
 
+enum class Point_Color {green, white, yellow, grey};
+
+inline void create_quad(std::vector<pcl::Vertices>& v, int v1, int v2, int v3, int v4)
+{
+	pcl::Vertices vertex;
+	vertex.vertices.push_back(v1);
+	vertex.vertices.push_back(v2);
+	vertex.vertices.push_back(v3);
+	v.push_back(vertex);
+
+	pcl::Vertices vertex2;
+	vertex2.vertices.push_back(v2);
+	vertex2.vertices.push_back(v3);
+	vertex2.vertices.push_back(v4);
+	v.push_back(vertex2);
+}
+
+inline pcl::PointXYZRGBA create_point(float x, float y, float z, Point_Color color)
+{
+	pcl::PointXYZRGBA point;
+	point.x = x;
+	point.y = y;
+	point.z = z;
+
+	switch (color) {
+	case Point_Color::green:
+		point.r = 0;
+		point.g = 102;
+		point.b = 0;
+		point.a = 255;
+		break;
+	case Point_Color::white:
+		point.r = 255;
+		point.g = 255;
+		point.b = 255;
+		point.a = 255;
+		break;
+	case Point_Color::yellow:
+		point.r = 255;
+		point.g = 255;
+		point.b = 0;
+		point.a = 255;
+		break;
+	case Point_Color::grey:
+		point.r = 192;
+		point.g = 192;
+		point.b = 192;
+		point.a = 255;
+		break;
+	default:
+		point.r = 0;
+		point.g = 0;
+		point.b = 0;
+		point.a = 255;
+		break;
+	}
+
+	return point;
+}
+
 void add_game_field_shapes(pcl::visualization::PCLVisualizer& viewer)
 {
 	// net
@@ -212,6 +258,256 @@ void add_game_field_shapes(pcl::visualization::PCLVisualizer& viewer)
 	// field
 
 	pcl::PointCloud<pcl::PointXYZRGBA>::Ptr field_cloud(new pcl::PointCloud<pcl::PointXYZRGBA>);
+
+	// left right down up
+
+	// lvl 0 segment 0
+	field_cloud->points.push_back(create_point(-3050.0f, 0, 0, Point_Color::white));
+	field_cloud->points.push_back(create_point(3050.0f, 0, 0, Point_Color::white));
+	field_cloud->points.push_back(create_point(-3050.0f, 40.0f, 0, Point_Color::white));
+	field_cloud->points.push_back(create_point(3050.0f, 40.0f, 0, Point_Color::white));
+
+	// lvl 1 segment 0
+	// -3050 40 (point 2)
+	field_cloud->points.push_back(create_point(-3010.0f, 40.0f, 0, Point_Color::white));
+	field_cloud->points.push_back(create_point(-3050.0f, 760.0f, 0, Point_Color::white));
+	field_cloud->points.push_back(create_point(-3010.0f, 760.0f, 0, Point_Color::white));
+
+	// lvl 1 segment 1
+	field_cloud->points.push_back(create_point(-3010.0f, 40.0f, 0, Point_Color::green));
+	field_cloud->points.push_back(create_point(-2590.0f, 40.0f, 0, Point_Color::green));
+	field_cloud->points.push_back(create_point(-3010.0f, 760.0f, 0, Point_Color::green));
+	field_cloud->points.push_back(create_point(-2590.0f, 760.0f, 0, Point_Color::green));
+
+	// lvl 1 segment 2
+	field_cloud->points.push_back(create_point(-2590.0f, 40.0f, 0, Point_Color::white));
+	field_cloud->points.push_back(create_point(-2550.0f, 40.0f, 0, Point_Color::white));
+	field_cloud->points.push_back(create_point(-2590.0f, 760.0f, 0, Point_Color::white));
+	field_cloud->points.push_back(create_point(-2550.0f, 760.0f, 0, Point_Color::white));
+
+	// lvl 1 segment 3
+	field_cloud->points.push_back(create_point(-2550.0f, 40.0f, 0, Point_Color::green));
+	field_cloud->points.push_back(create_point(-20.0f, 40.0f, 0, Point_Color::green));
+	field_cloud->points.push_back(create_point(-2550.0f, 760.0f, 0, Point_Color::green));
+	field_cloud->points.push_back(create_point(-20.0f, 760.0f, 0, Point_Color::green));
+
+	// lvl 1 segment 4
+	field_cloud->points.push_back(create_point(-20.0f, 40.0f, 0, Point_Color::white));
+	field_cloud->points.push_back(create_point(20.0f, 40.0f, 0, Point_Color::white));
+	field_cloud->points.push_back(create_point(-20.0f, 760.0f, 0, Point_Color::white));
+	field_cloud->points.push_back(create_point(20.0f, 760.0f, 0, Point_Color::white));
+
+	// lvl 1 segment 5
+	field_cloud->points.push_back(create_point(20.0f, 40.0f, 0, Point_Color::green));
+	field_cloud->points.push_back(create_point(2550.0f, 40.0f, 0, Point_Color::green));
+	field_cloud->points.push_back(create_point(20.0f, 760.0f, 0, Point_Color::green));
+	field_cloud->points.push_back(create_point(2550.0f, 760.0f, 0, Point_Color::green));
+
+	// lvl 1 segment 6
+	field_cloud->points.push_back(create_point(2550.0f, 40.0f, 0, Point_Color::white));
+	field_cloud->points.push_back(create_point(2590.0f, 40.0f, 0, Point_Color::white));
+	field_cloud->points.push_back(create_point(2550.0f, 760.0f, 0, Point_Color::white));
+	field_cloud->points.push_back(create_point(2590.0f, 760.0f, 0, Point_Color::white));
+
+	// lvl 1 segment 7
+	field_cloud->points.push_back(create_point(2590.0f, 40.0f, 0, Point_Color::green));
+	field_cloud->points.push_back(create_point(3010.0f, 40.0f, 0, Point_Color::green));
+	field_cloud->points.push_back(create_point(2590.0f, 760.0f, 0, Point_Color::green));
+	field_cloud->points.push_back(create_point(3010.0f, 760.0f, 0, Point_Color::green));
+
+	// lvl 1 segment 8
+	field_cloud->points.push_back(create_point(3010.0f, 40.0f, 0, Point_Color::white));
+	// 3050 40 (point 3)
+	field_cloud->points.push_back(create_point(3010.0f, 760.0f, 0, Point_Color::white));
+	field_cloud->points.push_back(create_point(3050.0f, 760.0f, 0, Point_Color::white));
+
+	// lvl 2 segment 0
+	// -3050 760 (point 5)
+	// 3050, 760 (point 37)
+	field_cloud->points.push_back(create_point(-3050.0f, 800.0f, 0, Point_Color::white));
+	field_cloud->points.push_back(create_point(3050.0f, 800.0f, 0, Point_Color::white)); // point 39
+
+	// lvl 3 segment 0
+	// -3050, 800 (point 38)
+	field_cloud->points.push_back(create_point(-3010.0f, 800.0f, 0, Point_Color::white));
+	field_cloud->points.push_back(create_point(-3050.0f, 4680.0f, 0, Point_Color::white));
+	field_cloud->points.push_back(create_point(-3010.0f, 4680.0f, 0, Point_Color::white));
+
+	// lvl 3 segment 1
+	field_cloud->points.push_back(create_point(-3010.0f, 800.0f, 0, Point_Color::green));
+	field_cloud->points.push_back(create_point(-2590.0f, 800.0f, 0, Point_Color::green));
+	field_cloud->points.push_back(create_point(-3010.0f, 4680.0f, 0, Point_Color::green));
+	field_cloud->points.push_back(create_point(-2590.0f, 4680.0f, 0, Point_Color::green));
+
+	// lvl 3 segment 2
+	field_cloud->points.push_back(create_point(-2590.0f, 800.0f, 0, Point_Color::white));
+	field_cloud->points.push_back(create_point(-2550.0f, 800.0f, 0, Point_Color::white));
+	field_cloud->points.push_back(create_point(-2590.0f, 4680.0f, 0, Point_Color::white));
+	field_cloud->points.push_back(create_point(-2550.0f, 4680.0f, 0, Point_Color::white));
+
+	// lvl 3 segment 3
+	field_cloud->points.push_back(create_point(-2550.0f, 800.0f, 0, Point_Color::green));
+	field_cloud->points.push_back(create_point(-20.0f, 800.0f, 0, Point_Color::green));
+	field_cloud->points.push_back(create_point(-2550.0f, 4680.0f, 0, Point_Color::green));
+	field_cloud->points.push_back(create_point(-20.0f, 4680.0f, 0, Point_Color::green));
+
+	// lvl 3 segment 4
+	field_cloud->points.push_back(create_point(-20.0f, 800.0f, 0, Point_Color::white));
+	field_cloud->points.push_back(create_point(20.0f, 800.0f, 0, Point_Color::white));
+	field_cloud->points.push_back(create_point(-20.0f, 4680.0f, 0, Point_Color::white));
+	field_cloud->points.push_back(create_point(20.0f, 4680.0f, 0, Point_Color::white));
+
+	// lvl 3 segment 5a
+	field_cloud->points.push_back(create_point(20.0f, 800.0f, 0, Point_Color::green));
+	field_cloud->points.push_back(create_point(2550.0f, 800.0f, 0, Point_Color::green));
+	field_cloud->points.push_back(create_point(20.0f, 1505.0f, 0, Point_Color::green)); // point 61
+	field_cloud->points.push_back(create_point(2550.0f, 1505.0f, 0, Point_Color::green));
+
+	// lvl 3 segment 5b
+	// 20, 1505 (point 61)
+	field_cloud->points.push_back(create_point(550.0f, 1505.0f, 0, Point_Color::green));
+	field_cloud->points.push_back(create_point(20.0f, 2755.0f, 0, Point_Color::green));
+	field_cloud->points.push_back(create_point(550.0f, 2755.0f, 0, Point_Color::green));
+
+	// lvl 3 segment 5c (yellow zone)
+	field_cloud->points.push_back(create_point(550.0f, 1505.0f, 0, Point_Color::yellow));
+	field_cloud->points.push_back(create_point(2550.0f, 1505.0f, 0, Point_Color::yellow));
+	field_cloud->points.push_back(create_point(550.0f, 2755.0f, 0, Point_Color::yellow));
+	field_cloud->points.push_back(create_point(2550.0f, 2755.0f, 0, Point_Color::yellow));
+
+	// lvl 3 segment 5d
+	// 20, 2755 (point 64)
+	field_cloud->points.push_back(create_point(2550.0f, 2755.0f, 0, Point_Color::green));
+	field_cloud->points.push_back(create_point(20.0f, 4680.0f, 0, Point_Color::green));
+	field_cloud->points.push_back(create_point(2550.0f, 4680.0f, 0, Point_Color::green));
+
+	// lvl 3 segment 6
+	field_cloud->points.push_back(create_point(2550.0f, 800.0f, 0, Point_Color::white));
+	field_cloud->points.push_back(create_point(2590.0f, 800.0f, 0, Point_Color::white));
+	field_cloud->points.push_back(create_point(2550.0f, 4680.0f, 0, Point_Color::white));
+	field_cloud->points.push_back(create_point(2590.0f, 4680.0f, 0, Point_Color::white));
+
+	// lvl 3 segment 7
+
+	field_cloud->points.push_back(create_point(2590.0f, 800.0f, 0, Point_Color::green));
+	field_cloud->points.push_back(create_point(3010.0f, 800.0f, 0, Point_Color::green));
+	field_cloud->points.push_back(create_point(2590.0f, 4680.0f, 0, Point_Color::green));
+	field_cloud->points.push_back(create_point(3010.0f, 4680.0f, 0, Point_Color::green));
+
+	// lvl 3 segment 8
+	field_cloud->points.push_back(create_point(3010.0f, 800.0f, 0, Point_Color::white));
+	// 3050, 800 (point 39)
+	field_cloud->points.push_back(create_point(3010.0f, 4680.0f, 0, Point_Color::white));
+	field_cloud->points.push_back(create_point(3050.0f, 4680.0f, 0, Point_Color::white)); // point 83
+
+	// lvl 4 segment 0
+	// -3050, 4680 (point 41)
+	// 3050, 4680 (point 83)
+	field_cloud->points.push_back(create_point(-3050.0f, 4720.0f, 0, Point_Color::white));
+	field_cloud->points.push_back(create_point(3050.0f, 4720.0f, 0, Point_Color::white));
+
+	// lvl 5 segment 0
+	// -3050, 4720 (point 84)
+	field_cloud->points.push_back(create_point(-3010.0f, 4720.0f, 0, Point_Color::white));
+	field_cloud->points.push_back(create_point(-3050.0f, 6680.0f, 0, Point_Color::white));
+	field_cloud->points.push_back(create_point(-3010.0f, 6680.0f, 0, Point_Color::white));
+
+	// lvl 5 segment 1
+	field_cloud->points.push_back(create_point(-3010.0f, 4720.0f, 0, Point_Color::green));
+	field_cloud->points.push_back(create_point(-2590.0f, 4720.0f, 0, Point_Color::green));
+	field_cloud->points.push_back(create_point(-3010.0f, 6680.0f, 0, Point_Color::green));
+	field_cloud->points.push_back(create_point(-2590.0f, 6680.0f, 0, Point_Color::green));
+
+	// lvl 5 segment 2
+	field_cloud->points.push_back(create_point(-2590.0f, 4720.0f, 0, Point_Color::white));
+	field_cloud->points.push_back(create_point(-2550.0f, 4720.0f, 0, Point_Color::white));
+	field_cloud->points.push_back(create_point(-2590.0f, 6680.0f, 0, Point_Color::white));
+	field_cloud->points.push_back(create_point(-2550.0f, 6680.0f, 0, Point_Color::white));
+
+	// lvl 5 segment 3
+	field_cloud->points.push_back(create_point(-2550.0f, 4720.0f, 0, Point_Color::green));
+	field_cloud->points.push_back(create_point(2550.0f, 4720.0f, 0, Point_Color::green));
+	field_cloud->points.push_back(create_point(-2550.0f, 6680.0f, 0, Point_Color::green));
+	field_cloud->points.push_back(create_point(2550.0f, 6680.0f, 0, Point_Color::green));
+
+	// lvl 5 segment 4
+	field_cloud->points.push_back(create_point(2550.0f, 4720.0f, 0, Point_Color::white));
+	field_cloud->points.push_back(create_point(2590.0f, 4720.0f, 0, Point_Color::white));
+	field_cloud->points.push_back(create_point(2550.0f, 6680.0f, 0, Point_Color::white));
+	field_cloud->points.push_back(create_point(2590.0f, 6680.0f, 0, Point_Color::white));
+
+	// lvl 5 segment 5
+	field_cloud->points.push_back(create_point(2590.0f, 4720.0f, 0, Point_Color::green));
+	field_cloud->points.push_back(create_point(3010.0f, 4720.0f, 0, Point_Color::green));
+	field_cloud->points.push_back(create_point(2590.0f, 6680.0f, 0, Point_Color::green));
+	field_cloud->points.push_back(create_point(3010.0f, 6680.0f, 0, Point_Color::green));
+
+	// lvl 5 segment 6
+	field_cloud->points.push_back(create_point(3010.0f, 4720.0f, 0, Point_Color::white));
+	// 3050, 4720 (point 85)
+	field_cloud->points.push_back(create_point(3010.0f, 6680.0f, 0, Point_Color::white));
+	field_cloud->points.push_back(create_point(3050.0f, 6680.0f, 0, Point_Color::white)); //point 111
+
+	// lvl 6 segment 0 (aka the net)
+
+	// -3050, 6680 (point 87)
+	// 3050, 6680 (point 111)
+	field_cloud->points.push_back(create_point(-3050.0f, 6720.0f, 0, Point_Color::white));
+	field_cloud->points.push_back(create_point(3050.0f, 6720.0f, 0, Point_Color::white));
+
+	// lvl 7 segment 0
+	// grey
+	field_cloud->points.push_back(create_point(-3050.0f, 6720.0f, 0, Point_Color::grey));
+	field_cloud->points.push_back(create_point(3050.0f, 6720.0f, 0, Point_Color::grey));
+	field_cloud->points.push_back(create_point(-3050.0f, 13400.0f, 0, Point_Color::grey));
+	field_cloud->points.push_back(create_point(3050.0f, 13400.0f, 0, Point_Color::grey));
+
+	std::vector<pcl::Vertices> polygon;
+	create_quad(polygon, 0, 1, 2, 3);
+	create_quad(polygon, 2, 4, 5, 6);
+	create_quad(polygon, 7, 8, 9, 10);
+	create_quad(polygon, 11, 12, 13, 14);
+	create_quad(polygon, 15, 16, 17, 18);
+	create_quad(polygon, 19, 20, 21, 22);
+	create_quad(polygon, 23, 24, 25, 26);
+	create_quad(polygon, 27, 28, 29, 30);
+	create_quad(polygon, 31, 32, 33, 34);
+	create_quad(polygon, 35, 3, 36, 37);
+	create_quad(polygon, 5, 37, 38, 39);
+	create_quad(polygon, 38, 40, 41, 42);
+	create_quad(polygon, 43, 44, 45, 46);
+	create_quad(polygon, 47, 48, 49, 50);
+	create_quad(polygon, 51, 52, 53, 54);
+	create_quad(polygon, 55, 56, 57, 58);
+	create_quad(polygon, 59, 60, 61, 62);
+	create_quad(polygon, 61, 63, 64, 65);
+	create_quad(polygon, 66, 67, 68, 69);
+	create_quad(polygon, 64, 70, 71, 72);
+	create_quad(polygon, 73, 74, 75, 76);
+	create_quad(polygon, 77, 78, 79, 80);
+	create_quad(polygon, 81, 39, 82, 83);
+	create_quad(polygon, 41, 83, 84, 85);
+	create_quad(polygon, 84, 86, 87, 88);
+	create_quad(polygon, 89, 90, 91, 92);
+	create_quad(polygon, 93, 94, 95, 96);
+	create_quad(polygon, 97, 98, 99, 100);
+	create_quad(polygon, 101, 102, 103, 104);
+	create_quad(polygon, 105, 106, 107, 108);
+	create_quad(polygon, 109, 85, 110, 111);
+	create_quad(polygon, 87, 111, 112, 113);
+	create_quad(polygon, 114, 115, 116, 117);
+
+	pcl::PolygonMesh field_mesh;
+	pcl::PCLPointCloud2 field_cloud2;
+	pcl::toPCLPointCloud2(*field_cloud, field_cloud2);
+
+	field_mesh.cloud = field_cloud2;
+	field_mesh.polygons = polygon;
+
+	viewer.addPolygonMesh(field_mesh, "field mesh");
+
+	/*
+
 	pcl::PointXYZRGBA field_near_left;
 	field_near_left.x = -3050.0f; field_near_left.y = 0.0f; field_near_left.z = 0.0f;
 	field_near_left.r = 255; field_near_left.g = 255; field_near_left.b = 255; field_near_left.a = 255;
@@ -233,6 +529,10 @@ void add_game_field_shapes(pcl::visualization::PCLVisualizer& viewer)
 	field_cloud->points.push_back(field_far_left);
 
 	viewer.addPolygonMesh(generate_quad_mesh(field_cloud), "field mesh");
+
+	*/
+
+	/*
 
 	// near yellow zone
 	
@@ -260,10 +560,7 @@ void add_game_field_shapes(pcl::visualization::PCLVisualizer& viewer)
 
 	viewer.addPolygonMesh(generate_quad_mesh(near_yellow_zone_cloud), "near yellow zone mesh");
 	
-
-	// far yellow zone
-
-	// 
+	*/
 
 }
 
@@ -364,6 +661,53 @@ void mouse_callback(const pcl::visualization::MouseEvent& event, void*)
 
 int _tmain(int argc, _TCHAR* argv[])
 {
+	// change to correct directory and load points into program from file if they exist
+	TCHAR path[MAX_PATH] = { 0 };
+	GetModuleFileName(NULL, path, MAX_PATH);
+	PathRemoveFileSpec(path);
+	SetCurrentDirectory(path);
+
+	// read in data from file
+	{
+		std::ifstream file;
+		file.open("saved_points.txt");
+		std::vector<float> point_vector;
+
+		if (file.is_open()) {
+			OutputDebugString(_T("Loading saved points\n"));
+			std::string line;
+			while (std::getline(file, line)) {
+				point_vector.push_back(std::stof(line));
+			}
+		}
+		// add default points if loading fails;
+		if (point_vector.size() != 9) {
+			point_vector.clear();
+
+			// point 1
+			point_vector.push_back(0.94f);
+			point_vector.push_back(0.32f);
+			point_vector.push_back(1.99f);
+
+			// point 2
+			point_vector.push_back(-2.16f);
+			point_vector.push_back(-0.07f);
+			point_vector.push_back(7.13f);
+
+			// point 3
+			point_vector.push_back(-2.21f);
+			point_vector.push_back(-1.59f);
+			point_vector.push_back(6.99f);
+		}
+
+		pcl::PointXYZ pt1(point_vector[0], point_vector[1], point_vector[2]);
+		pcl::PointXYZ pt2(point_vector[3], point_vector[4], point_vector[5]);
+		pcl::PointXYZ pt3(point_vector[6], point_vector[7], point_vector[8]);
+
+		net_line = create_line_endpoints(pt1, pt2);
+		pole_line = create_line_endpoints(pt2, pt3);
+	}
+
 	// Create Sensor Instance
 	IKinectSensor* pSensor;
 	HRESULT hResult = S_OK;
@@ -509,6 +853,27 @@ int _tmain(int argc, _TCHAR* argv[])
 	}
 
 	// End Processing
+
+	// write out data
+	{
+		std::ofstream file;
+		file.open("saved_points.txt");
+
+		file << net_line.first.x << std::endl;
+		file << net_line.first.y << std::endl;
+		file << net_line.first.z << std::endl;
+
+		file << net_line.second.x << std::endl;
+		file << net_line.second.y << std::endl;
+		file << net_line.second.z << std::endl;
+
+		file << pole_line.second.x << std::endl;
+		file << pole_line.second.y << std::endl;
+		file << pole_line.second.z << std::endl;
+
+		OutputDebugString(_T("Saving points\n"));
+	}
+
 	SafeRelease( pColorSource );
 	SafeRelease( pDepthSource );
 	SafeRelease( pColorReader );

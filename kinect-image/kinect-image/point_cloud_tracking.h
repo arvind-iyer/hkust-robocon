@@ -19,11 +19,16 @@
 #include <gsl/gsl_blas.h>
 #include <gsl/gsl_multifit_nlin.h>
 
+const static int SHUTTLE_POINTS_MAX = 200;
+const static int SHUTTLE_POINTS_MIN = 5;
+const static int SHUTTLE_TOLERANCE = 50;
+
 class point_cloud_tracking
 {
 private:
 	static pcl::EuclideanClusterExtraction<pcl::PointXYZ> ec;
 	static int prev_cloud_number;
+	static int prev_centroid_number;
 	static std::vector<pcl::PointCloud<pcl::PointXYZ>::Ptr> clouds;
 	const static std::vector<std::tuple<unsigned char, unsigned char, unsigned char>> color_vector;
 	static bool fast_image_processing_enabled;
@@ -38,7 +43,12 @@ private:
 	static inline void generate_clusters(pcl::PointCloud<pcl::PointXYZ>::Ptr& point_cloud)
 	{
 		clouds.clear();
+
 		// Creating the KdTree object for the search method of the extraction
+		if (point_cloud->empty()) {
+			return;
+		}
+
 		ec.getSearchMethod()->setInputCloud(point_cloud);
 
 		std::vector<pcl::PointIndices> cluster_indices;
@@ -230,7 +240,12 @@ public:
 
 					// height filter
 					// lower bound (filters anything below the net)
-					if (point_vector(2) < 1570.0) { return false; }
+					// if (point_vector(2) < 1570.0) { return false; }
+					// net filter
+					if (point_vector(0) < 6720.0 && point_vector(0) > 6680.0 && point_vector(2) < 1570.0)
+					{
+						return false;
+					}
 
 					// upper bound (filter ceiling - not needed for actual competition)
 					if (point_vector(2) > 2700.0) { return false; }
@@ -243,62 +258,68 @@ public:
 					continue;
 				}
 
-				// add points to centroids within a cubic bounding box of 7 cm side length
+				// add points to centroids within a cubic bounding box
 				for (auto& i : cluster_cloud_centroids)
 				{
-					if (std::abs(point_vector.x() - i.first.x()) < 200.0 && std::abs(point_vector.z() - i.first.x()) < 200.0 && (point_vector.y() - i.first.y() < 500.0 && point_vector.y() - i.first.y() > -200.0)) {
+					if (std::abs(point_vector.x() - i.first.x()) < 400.0 && std::abs(point_vector.z() - i.first.z()) < 400.0 && (point_vector.y() - i.first.y() < 200.0 && point_vector.y() - i.first.y() > -1500.0)) {
 						i.second->push_back(pcl::PointXYZ(point_vector.x(), point_vector.y(), point_vector.z()));
 					}
 				}
 				//cloud->push_back(pcl::PointXYZ(point_vector.x(), point_vector.y(), point_vector.z()));
 			}
+		}
 
-			if (cluster_cloud_centroids.empty()) {
-				// tracking has failed
-				OutputDebugString(_T("Tracking has failed\n"));
-				viewer.removeShape("sphere");
-				fast_image_processing_enabled = false;
-				return true;
+		for (auto i = cluster_cloud_centroids.begin(); i != cluster_cloud_centroids.end();)
+		{
+			if (i->second->points.size() < 4) {
+				i = cluster_cloud_centroids.erase(i);
+				continue;
+			}
+			i->second->height = 1;
+			i->second->width = static_cast<uint32_t>(i->second->points.size());
+			i->second->is_dense = true;
+			Eigen::Vector4d center = Eigen::Vector4d::Identity();
+			pcl::compute3DCentroid(*i->second, center);
+			i->second->clear();
+
+			// check if y-displacement is positive, and remove tracking cluster if it is
+
+			const double epsilon = 0.01;
+
+			if (center.y() - i->first.y() > 0.0 || (std::abs(center.x() - 0.0) < epsilon && std::abs(center.y() - 0.0) < epsilon && std::abs(center.z() - 0.0) < epsilon && std::abs(center.w() - 0.0) < epsilon)) {
+				i = cluster_cloud_centroids.erase(i);
+				continue;
 			}
 
-			for (auto i = cluster_cloud_centroids.begin(); i != cluster_cloud_centroids.end();)
-			{
-				i->second->height = 1;
-				i->second->width = static_cast<uint32_t>(i->second->points.size());
-				i->second->is_dense = true;
-				Eigen::Vector4d center = Eigen::Vector4d::Identity();
-				pcl::compute3DCentroid(*i->second, center);
-				i->second->clear();
+			// OutputDebugString((_T("Center y difference: ") + std::to_wstring(center.y() - i->first.y()) + _T("\n")).c_str());
 
-				// check if y-displacement is positive, and remove tracking cluster if it is
+			// if it is not positive, push it into the equation fitter and update the center
+			i->first = center;
+			++i;
+		}
 
-				const double epsilon = 0.01;
+		for (int i = prev_centroid_number; i > cluster_cloud_centroids.size(); --i)
+		{
+			viewer.removeShape("sphere" + std::to_string(i));
+		}
 
-				if (center.y() - i->first.y() > 0.0 || (std::abs(center.x() - 0.0) < epsilon && std::abs(center.y() - 0.0) < epsilon && std::abs(center.z() - 0.0) < epsilon && std::abs(center.w() - 0.0) < epsilon)) {
-					i = cluster_cloud_centroids.erase(i);
-					continue;
-				}
-
-				OutputDebugString((_T("Center y difference: ") + std::to_wstring(center.y() - i->first.y()) + _T("\n")).c_str());
-
-				// if it is not positive, push it into the equation fitter and update the center
-				i->first = center;
-				++i;
-			}
-
-			if (cluster_cloud_centroids.size() == 1) {
-				if (!viewer.updateSphere(pcl::PointXYZ(cluster_cloud_centroids.back().first.x(), cluster_cloud_centroids.back().first.y(), cluster_cloud_centroids.back().first.z()), 200, 0.5, 0.5, 0.5, "sphere"))
+		if (cluster_cloud_centroids.size() > 0) {
+			int j = 0;
+			for (auto i = cluster_cloud_centroids.begin(); i != cluster_cloud_centroids.end(); ++i) {
+				if (!viewer.updateSphere(pcl::PointXYZ(i->first.x(), i->first.y(), i->first.z()), 200, 0.5, 0.5, 0.5, "sphere" + std::to_string(j + 1)))
 				{
-					viewer.addSphere(pcl::PointXYZ(cluster_cloud_centroids.back().first.x(), cluster_cloud_centroids.back().first.y(), cluster_cloud_centroids.back().first.z()), 200, 0.5, 0.5, 0.5, "sphere");
+					viewer.addSphere(pcl::PointXYZ(i->first.x(), i->first.y(), i->first.z()), 200, 0.5, 0.5, 0.5, "sphere" + std::to_string(j + 1));
 				}
+				++j;
 			}
+		}
 
-			if (cluster_cloud_centroids.empty()) {
-				// tracking has failed
-				OutputDebugString(_T("Tracking has failed\n"));
-				viewer.removeShape("sphere");
-				fast_image_processing_enabled = false;
-			}
+		prev_centroid_number = static_cast<int>(cluster_cloud_centroids.size());
+
+		if (cluster_cloud_centroids.empty()) {
+			// tracking has failed
+			// OutputDebugString(_T("Tracking has failed\n"));
+			fast_image_processing_enabled = false;
 		}
 
 		return true;
@@ -321,14 +342,13 @@ public:
 		for (auto &i : clouds) {
 			pcl::visualization::PointCloudColorHandlerCustom<pcl::PointXYZ> single_color(i, std::get<0>(color_vector[j % 3]), std::get<1>(color_vector[j % 3]), std::get<2>(color_vector[j % 3]));
 			
-			
 			viewer.removeShape("cube" + std::to_string(j));
-			viewer.addCube(cluster_cloud_centroids.back().first.x() - 200.0, 
-				cluster_cloud_centroids.back().first.x() + 200.0,
-				cluster_cloud_centroids.back().first.y() - 200.0, 
-				cluster_cloud_centroids.back().first.y() + 500.0,
-				cluster_cloud_centroids.back().first.z() - 200.0,
-				cluster_cloud_centroids.back().first.z() + 200.0,
+			viewer.addCube(cluster_cloud_centroids.back().first.x() - 400.0, 
+				cluster_cloud_centroids.back().first.x() + 400.0,
+				cluster_cloud_centroids.back().first.y() - 700.0, 
+				cluster_cloud_centroids.back().first.y() + 200.0,
+				cluster_cloud_centroids.back().first.z() - 400.0,
+				cluster_cloud_centroids.back().first.z() + 400.0,
 				std::get<0>(color_vector[j % 3]),
 				std::get<1>(color_vector[j % 3]),
 				std::get<2>(color_vector[j % 3]),
@@ -372,16 +392,19 @@ public:
 
 bool point_cloud_tracking::fast_image_processing_enabled = false;
 int point_cloud_tracking::prev_cloud_number = -1;
+int point_cloud_tracking::prev_centroid_number = 0;
+
 const std::vector<std::tuple<unsigned char, unsigned char, unsigned char>> point_cloud_tracking::color_vector = {
 	std::make_tuple(0, 255, 0), std::make_tuple(255, 0, 0), std::make_tuple(0, 0, 255)
 };
+
 std::vector<pcl::PointCloud<pcl::PointXYZ>::Ptr> point_cloud_tracking::clouds = std::vector<pcl::PointCloud<pcl::PointXYZ>::Ptr>();
 std::list<std::pair<Eigen::Vector4d, pcl::PointCloud<pcl::PointXYZ>::Ptr>> point_cloud_tracking::cluster_cloud_centroids = std::list<std::pair<Eigen::Vector4d, pcl::PointCloud<pcl::PointXYZ>::Ptr>>();
 pcl::EuclideanClusterExtraction<pcl::PointXYZ> point_cloud_tracking::ec = [] {
 	pcl::EuclideanClusterExtraction<pcl::PointXYZ> ec;
-	ec.setClusterTolerance(50); // 5 cm
-	ec.setMinClusterSize(5);
-	ec.setMaxClusterSize(200);
+	ec.setClusterTolerance(SHUTTLE_TOLERANCE); // 5 cm
+	ec.setMinClusterSize(SHUTTLE_POINTS_MIN);
+	ec.setMaxClusterSize(SHUTTLE_POINTS_MAX);
 	ec.setSearchMethod(pcl::search::KdTree<pcl::PointXYZ>::Ptr(new pcl::search::KdTree<pcl::PointXYZ>()));
 	return ec;
 }();
