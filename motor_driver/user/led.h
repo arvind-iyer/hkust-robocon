@@ -22,4 +22,8 @@ typedef enum {
 
 void led_control(LED led, LED_STATE state);
 void led_init(void);
+void life_signal(void);
+void encoder_malfunction_warning_signal(void);
+void motor_overspeed_signal(void);
+
 #endif

@@ -134,7 +134,7 @@ void PendSV_Handler(void)
   */
 void SysTick_Handler(void)
 {
-	motor_control(2000, 65, 3000);
+	motor_control(64*PID_Prescalar, 12*PID_Prescalar/10, 24*PID_Prescalar);		// Ki should be 1.2
 }
 
 /******************************************************************************/

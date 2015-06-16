@@ -28,7 +28,6 @@ typedef enum {
 void motor_init(void);
 void motion_set_motor(s32 compare);
 void motor_set_pwm(s32 pwm);
-
-extern bool FULL_SPEED_LIMIT;
+bool is_overspeed(void);
 
 #endif	// MOTOR_H

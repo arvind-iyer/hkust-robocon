@@ -2,7 +2,7 @@
   ******************************************************************************
   * @file    main.c
   * @author  William LEE
-  * @date    20-January-2015
+  * @date    09-June-2015
   * @brief   This file run the main part of motor driver.
   ******************************************************************************
   * @attention
@@ -18,22 +18,6 @@
 
 static u16 ticks_img = 65535;	//trivial value
 
-/**
-	* @brief 		Ensure the mcu is operating by flashing led light
-  * @param	  None
-  * @retval 	None
-	*/
-void life_signal(void)
-{
-	if (get_seconds() % 2) {
-		led_control(LED_1, LED_ON);
-		led_control(LED_2, LED_OFF);
-	} else {
-		led_control(LED_1, LED_OFF);
-		led_control(LED_2, LED_ON);
-	}
-}
-
 int main(void)
 {
 	/** initialization **/
@@ -45,8 +29,6 @@ int main(void)
 	can_init();
 	can_rx_init();
 	can_motor_init();
-	uart_init(COM1, 115200);
-	uart_printf_enable(COM1);
 	/** end of init **/
 
 	while (true) {
@@ -54,12 +36,10 @@ int main(void)
 			ticks_img = get_ticks();
 			/** 1000Hz, can be higher by using systicks instead **/
 			encoder_update();
-			/** Depends on acceleration value to accelerate **/
-			if (ticks_img % (1000 / get_current_accel()) == 0) {
-				velocity_update();
-			}
+			/** Accelerate for every milisecond if motor not reach our velocity setting**/
+			velocity_update();
 			/** end of motor control **/
-			if (ticks_img % 100 == 0) {
+			if (ticks_img % 5 == 0) {
 				send_encoder(get_encoder());
 			}
 			
@@ -67,10 +47,12 @@ int main(void)
 			debug();
 #else							// Normal execute mode, led show life signal.
 			/** flahsing led light to show mcu still working **/
-			if (!FULL_SPEED_LIMIT) {
-				life_signal();
+			if (!is_encoder_working()) {
+        encoder_malfunction_warning_signal();
+      } else if (is_overspeed()) {
+				motor_overspeed_signal();
 			} else {
-				led_control(LED_BOTH, LED_ON);
+				life_signal();
 			}
 #endif
 		}

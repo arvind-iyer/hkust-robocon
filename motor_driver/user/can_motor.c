@@ -137,7 +137,7 @@ void motor_cmd_decoding(CanRxMsg msg)
 				// velocity or pwm control.
 				s32 velocity = n_bytes_to_one(fragment_vel, VEL_SIZE);
 				// Ignore if same velocity is sent.
-				if (velocity != get_target_vel() || loop_flag != get_curr_loop_flag()) {
+				if (velocity != get_target_vel() || loop_flag == OPEN_LOOP) {
 					(loop_flag == CLOSE_LOOP) ? set_velocity(velocity) : set_pwm(velocity);
 				}
 			}
@@ -153,7 +153,19 @@ void motor_cmd_decoding(CanRxMsg msg)
 			}
 			break;
 		case CAN_MOTOR_POS_CMD:
-			// Coming Soon.
+			if (msg.DLC == CAN_MOTOR_POS_LENGTH) {
+				const u8 SPD_SIZE = 2;
+				const u8 POS_SIZE = 4;
+				u8 fragment_pos[POS_SIZE] = {0};
+				u8 fragment_spd[SPD_SIZE] = {0};
+				for (u8 i = 0; i < POS_SIZE; ++i) {
+					if (i < SPD_SIZE) {
+						fragment_pos[i] = msg.Data[i+1];
+					}
+					fragment_pos[i] = msg.Data[i+3];
+				}
+				set_pos(n_bytes_to_one(fragment_pos, POS_SIZE), n_bytes_to_one(fragment_spd, SPD_SIZE));
+			}
 			break;
 		case CAN_MOTOR_LOCK_CMD:
 			if (msg.DLC == CAN_MOTOR_LOCK_LENGTH) {

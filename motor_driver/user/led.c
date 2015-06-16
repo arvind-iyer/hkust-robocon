@@ -3,7 +3,7 @@
   * @file    led.c
   * @author  William LEE
   * @version V3.5.0
-  * @date    24-January-2015
+  * @date    09-June-2015
   * @brief   This file provides the led control.
   ******************************************************************************
   * @attention
@@ -45,3 +45,44 @@ void led_control(LED led, LED_STATE state)
 
 	GPIO_WriteBit(LED_GPIOx, (u16) led_gpio_pin, (BitAction) state);
 }
+
+/**
+	* @brief 		Ensure the mcu is operating by flashing led light
+  * @param	  None
+  * @retval 	None
+	*/
+void life_signal(void)
+{
+	if (get_seconds() % 2) {
+		led_control(LED_1, LED_ON);
+		led_control(LED_2, LED_OFF);
+	} else {
+		led_control(LED_1, LED_OFF);
+		led_control(LED_2, LED_ON);
+	}
+}
+
+/**
+  * @brief  Warning signal, encoder is not working
+  * @param  None
+  * @retval None
+  */
+void encoder_malfunction_warning_signal(void)
+{
+  if (get_ticks() < 250 || get_ticks() > 750) {
+    led_control(LED_BOTH, LED_ON);
+  } else {
+    led_control(LED_BOTH, LED_OFF);
+  }
+}
+
+/**
+  * @brief  Warning signal, motor is overspeed
+  * @param  None
+  * @retval None
+  */
+void motor_overspeed_signal(void)
+{
+	led_control(LED_BOTH, LED_ON);
+}
+

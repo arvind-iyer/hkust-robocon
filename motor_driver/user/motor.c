@@ -3,7 +3,7 @@
   * @file    motor.c
   * @author  William LEE
   * @version V3.5.0
-  * @date    24-January-2015
+  * @date    09-June-2015
   * @brief   This file provides the use of motor (pwm and direction).
   ******************************************************************************
   * @attention
@@ -81,6 +81,16 @@ static void set_dir(DIRECTION dir)
 		GPIO_SetBits(MOTOR_DIR_GPIOx,MOTOR_DIR2_Pin);
 		GPIO_ResetBits(MOTOR_DIR_GPIOx,MOTOR_DIR1_Pin);
 	}
+}
+
+/**
+	* @brief Check whether the motor reach overspeed limit
+	* @param None
+  * @retval True for overspeed and False for otherwise.
+	*/
+bool is_overspeed(void)
+{
+	return FULL_SPEED_LIMIT;
 }
 
 /**
