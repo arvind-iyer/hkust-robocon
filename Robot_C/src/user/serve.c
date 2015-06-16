@@ -281,6 +281,16 @@ void serve_change_vel(s16 val)
 	SERVE_HIT_VEL+=val;
 }
 
+void serve_set_delay(s16 delay)
+{
+	SERVE_DELAY = delay;
+}
+
+void serve_set_vel(s16 vel)
+{
+	SERVE_HIT_VEL = vel;
+}
+
 s32 serve_get_vel(void)
 {
 	return SERVE_HIT_VEL;

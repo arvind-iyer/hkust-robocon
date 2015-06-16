@@ -32,8 +32,23 @@ u32 remove_robot_start_time=0;
 bool emergency_serve_hitting=0;
 
 s32 angle = 0;
+// bound const
 const u16 MAX_ACCEL_BOOST = 2236;
 const u16 MIN_ACCEL_BOOST = 707;
+const u16 MAX_DELAY = 1000;
+const u16 MIN_DELAY = 50;
+const u16 MAX_VEL = 1800;
+const u16 MIN_VEL = 800;
+
+// default const
+const u16 DEFAULT_ACCEL_BOOST = 1414;
+const u16 DEFAULT_VEL = 1300;
+const u16 DEFAULT_DELAY = 280;
+
+
+const u16 ACCELBOOSTER_OFFSET = 0;
+const u16 SERVE_VEL_OFFSET = 1;
+const u16 SERVE_DELAY_OFFSET = 2;
 
 bool is_force_terminate(void)
 {
@@ -50,6 +65,7 @@ bool robot_xbc_controls(void)
 	* Y + Gamepad Buttons - serve delay and motor speed tunning
 	* Gamepad (Left and right) - acceleration factor.
 	* XBOX - force stop the Robot, for emergency usage
+	* start - force stop for Robot C, which cannot use XBOX button
 	* LT - CCW Turning(Analog)
 	* RT - CW Turning(Analog)
 	* A - Racket Hit
@@ -165,11 +181,30 @@ void robot_c_function_controls(void)
 	else
 		sensors_activated=0;
 	*/
+	if (button_pressed(BUTTON_XBC_START) == 3) {
+		force_terminate = !force_terminate;
+  }
+	
+	if (force_terminate) {
+		// forced terminate everything when pressed.
+		// Stop spinning
+		target_angle = get_pos()->angle;
+		accumulated_omega = 0;
+		// Stop Motor.
+		wheel_base_set_vel(0, 0, 0);
+		// Serving part reset.
+		serve_free();
+		// Ignore other button.
+    return;
+	}
+	
 	
 	if (button_pressed(BUTTON_XBC_E) && accel_booster < MAX_ACCEL_BOOST) {
 		++accel_booster;
 	} else if (button_pressed(BUTTON_XBC_W) && accel_booster > MIN_ACCEL_BOOST){
 		--accel_booster;
+	} else if (button_released(BUTTON_XBC_E) || (button_released(BUTTON_XBC_W))) {
+		write_flash(ACCELBOOSTER_OFFSET, accel_booster);
 	}
 	
 	//Racket Hit
@@ -205,14 +240,14 @@ void robot_d_function_controls(void)
 		serve_calibrate();
 	// change serve varibales
 	
-	if (button_pressed(BUTTON_XBC_N) && button_pressed(BUTTON_XBC_Y))
+	if (button_pressed(BUTTON_XBC_N) && button_pressed(BUTTON_XBC_Y) && serve_get_delay() < MAX_DELAY)
 		serve_change_delay(1);
-	else if (button_pressed(BUTTON_XBC_S) && button_pressed(BUTTON_XBC_Y))
+	else if (button_pressed(BUTTON_XBC_S) && button_pressed(BUTTON_XBC_Y) && serve_get_delay() > MIN_DELAY)
 		serve_change_delay(-1);
-	else if (button_pressed(BUTTON_XBC_W) && button_pressed(BUTTON_XBC_Y))
+	else if (button_pressed(BUTTON_XBC_W) && button_pressed(BUTTON_XBC_Y) && serve_get_vel() > MIN_VEL)
 		serve_change_vel(-2);
 		//plus_x();
-	else if (button_pressed(BUTTON_XBC_E) && button_pressed(BUTTON_XBC_Y))
+	else if (button_pressed(BUTTON_XBC_E) && button_pressed(BUTTON_XBC_Y) && serve_get_vel() < MAX_VEL)
 		serve_change_vel(2);
 		//minus_x();
 	// acceleration rate tunning.
@@ -220,6 +255,11 @@ void robot_d_function_controls(void)
 		++accel_booster;
 	} else if (button_pressed(BUTTON_XBC_W) && accel_booster > MIN_ACCEL_BOOST){
 		--accel_booster;
+	} else if (button_released(BUTTON_XBC_E) == 1 || (button_released(BUTTON_XBC_W)) == 1) {
+		write_flash(ACCELBOOSTER_OFFSET, accel_booster);
+		write_flash(SERVE_VEL_OFFSET, serve_get_vel());
+	} else if (button_released(BUTTON_XBC_N) == 1 || (button_released(BUTTON_XBC_S)) == 1) {
+		write_flash(SERVE_DELAY_OFFSET, serve_get_delay());
 	}
 	
 	if (button_pressed(BUTTON_XBC_START))
@@ -421,6 +461,31 @@ void robocon_main(void)
 	wheel_base_set_target_pos((POSITION){get_pos()->x, get_pos()->y, 0}); 
 	
 	log("XBC=",xbc_get_connection());
+	// Read from flash
+	accel_booster = read_flash(ACCELBOOSTER_OFFSET);
+	
+	if (ROBOT == 'D') {
+		serve_set_vel(read_flash(SERVE_VEL_OFFSET));
+		serve_set_delay(read_flash(SERVE_DELAY_OFFSET));
+	}
+	// if no memory, set to default value and save it
+	if (accel_booster < MIN_ACCEL_BOOST || accel_booster > MAX_ACCEL_BOOST) {
+		accel_booster = DEFAULT_ACCEL_BOOST;
+		write_flash(ACCELBOOSTER_OFFSET, accel_booster);
+	}
+	if (ROBOT == 'D') {
+		if (serve_get_vel() < MIN_VEL || serve_get_vel() > MAX_VEL) {
+			serve_set_vel(DEFAULT_VEL);
+			write_flash(SERVE_VEL_OFFSET, serve_get_vel());
+
+		}
+		
+		if (serve_get_delay() < MIN_DELAY || serve_get_delay() > MAX_DELAY) {
+			serve_set_delay(DEFAULT_DELAY);
+			write_flash(SERVE_DELAY_OFFSET, serve_get_delay());
+		}
+	}
+	
 	
 	while (1) {
 		if (ticks_img != get_ticks()) {
@@ -448,6 +513,7 @@ void robocon_main(void)
 			}
 			// wheel_base update every milisecond
 			wheel_base_update();
+			
 				
 			/*if (ticks_img % 250 == 1) {
 				// Every 250 ms (4 Hz)

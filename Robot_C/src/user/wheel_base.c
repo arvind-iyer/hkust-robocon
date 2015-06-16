@@ -18,7 +18,7 @@ static POSITION target_pos = {0, 0, 0};
 static WHEEL_BASE_VEL wheel_base_target = {0, 0, 0};
 
 // Global variable for friction tunning
-int accel_booster = 1414; // 1414 for rough ground, 1000 for 3142 ground without skidding (prescaled by 1000)
+int accel_booster; // 1414 for rough ground, 1000 for 3142 ground without skidding (prescaled by 1000)
 
 /**
 	* @brief Handler for the bluetooth RX with id 0x4?
