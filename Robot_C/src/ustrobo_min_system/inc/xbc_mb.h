@@ -3,8 +3,6 @@
 
 #include "stm32f10x.h"
 
-
-
 #define XBC_JOY_COUNT           6
 #define XBC_JOY_DEADZONE_MIN    ((s16) 6000)
 #define XBC_JOY_DEADZONE_MAX    ((s16) 32000)
