@@ -18,6 +18,7 @@
 #include <gsl/gsl_vector.h>
 #include <gsl/gsl_blas.h>
 #include <gsl/gsl_multifit_nlin.h>
+#include <unsupported/Eigen/NonLinearOptimization>
 
 const static int SHUTTLE_POINTS_MAX = 200;
 const static int SHUTTLE_POINTS_MIN = 5;
