@@ -26,21 +26,21 @@
 
 // Wheel-base speed related
 #define	WHEEL_BASE_XY_VEL_RATIO								707		//  Last tested value: 1000 (100.0%) with SPEED_MODES stepping value 10
-#define	WHEEL_BASE_W_VEL_RATIO								-500	//	Last tested value: -500 (-80.0%)
+#define	WHEEL_BASE_W_VEL_RATIO								-350	//	Last tested value: -500 (-80.0%)
 static const u16 SPEED_MODES[10] =	// In percentage (20 = 20%)
 {
-	0, 20, 40, 60, 80, 100, 120, 140, 160, 180
+	0, 10, 20, 30, 40, 50, 60, 70, 80, 90
 };
 
 // Initialized value
-#define WHEEL_BASE_DEFAULT_ACC								200
-#define	WHEEL_BASE_DEFAULT_SPEED_MODE					1			// from 0 to 9
+#define WHEEL_BASE_DEFAULT_ACC								300
+#define	WHEEL_BASE_DEFAULT_SPEED_MODE					3			// from 0 to 9
 
 // Wheel base motors acceleration (CONSTANT, to be configured upon startup)
-#define	WHEEL_BASE_BR_ACC											200		// Bottom-right wheel
-#define	WHEEL_BASE_BL_ACC										  200		// Bottom-left wheel
-#define	WHEEL_BASE_TL_ACC											200		// Top-left wheel
-#define	WHEEL_BASE_TR_ACC											200 		// Top-right wheel
+#define	WHEEL_BASE_BR_ACC											1000		// Bottom-right wheel
+#define	WHEEL_BASE_BL_ACC											1000		// Bottom-left wheel
+#define	WHEEL_BASE_TL_ACC											1000		// Top-left wheel
+#define	WHEEL_BASE_TR_ACC											1000		// Top-right wheel
 
 typedef struct {
 	s32 x;

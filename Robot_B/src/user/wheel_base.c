@@ -157,9 +157,9 @@ void wheel_base_tx_acc(void)
 	*/
 void wheel_base_set_vel(s32 x, s32 y, s32 w)
 {
-	wheel_base_vel.x = x;
-	wheel_base_vel.y = y;
-	wheel_base_vel.w = w;
+	wheel_base_target.x = x;
+	wheel_base_target.y = y;
+	wheel_base_target.w = w;
 }
 
 /**
@@ -204,7 +204,7 @@ u8 wheel_base_vel_diff(void)
 	*/
 static void wheel_base_vector_update(s32* accumulate, const s32 target_vector, s32* curr_vector, const int mag_of_vector_diff, const int curr_accel, bool boost)
 {
-	const u16 ACCEL_PRESCALAR = 1000;
+	const u16 ACCEL_PRESCALAR = 100;
 	s32 adjusted_accel_rate = curr_accel;
 	s32 adjusted_prescalar = ACCEL_PRESCALAR * mag_of_vector_diff;
 	
@@ -250,13 +250,13 @@ void wheel_base_update() {
 	static WHEEL_BASE_VEL accumulate = {0, 0, 0};
 	
 	// Constant boolean for acceleration booster
-	const bool xy_boost_accel = true;
-	const bool spin_no_boost_accel = false;
+	const bool xy_boost_accel = true;	// Boost up acceleration for x and y.
+	const bool spin_no_boost_accel = false;	// NO Boost up acceleration for spining.
+
 	
 	// Acceleration profile, ranging from 50 to 400. (with 165 speed)
 	if (get_ticks() % 10 == 0) {
-		prev_vels[(vel_index++)%(sizeof(prev_vels)/sizeof(prev_vels[0]))] =
-					(Sqrt(Sqr(Abs(wheel_base_get_tar_vel().x)) + Sqr(Abs(wheel_base_get_tar_vel().y))+ Sqr(Abs(wheel_base_get_tar_vel().w))))/20;
+		prev_vels[(vel_index++)%(sizeof(prev_vels)/sizeof(prev_vels[0]))] = (Sqrt(Sqr(wheel_base_get_tar_vel().x) + Sqr(wheel_base_get_tar_vel().y)+ Sqr(wheel_base_get_tar_vel().w)))/20;
 	}
 	
 	// Acceleration variable
@@ -302,6 +302,7 @@ void wheel_base_update() {
 		motor_set_vel(MOTOR_TOP_LEFT,			mvtl, wheel_base_close_loop_flag);
 		motor_set_vel(MOTOR_TOP_RIGHT,		mvtr, wheel_base_close_loop_flag);
 	}
+	
 	
 	// Record the velocity.
 	wheel_base_vel_prev.x = wheel_base_vel.x;

@@ -57,7 +57,7 @@ void sensor_decrease_delay(void) {
 }
 
 void sensor_update(void) {
-	if (
+	/* if (
 		(us_get_distance(0) > 0 && us_get_distance(0) < 333) ||	// 低左
 		(us_get_distance(5) > 0 && us_get_distance(5) < 333) || // 低中
 		(us_get_distance(1) > 0 && us_get_distance(1) < 333)    // 低右
@@ -70,7 +70,7 @@ void sensor_update(void) {
 	} else {
 		GPIO_WriteBit(GPIOD, GPIO_Pin_2, Bit_RESET);		// Red off
 		GPIO_WriteBit(GPIOC, GPIO_Pin_12, Bit_RESET);	// Green off
-	}
+	} */
 }
 
 u32 get_sensor_delay(void) {

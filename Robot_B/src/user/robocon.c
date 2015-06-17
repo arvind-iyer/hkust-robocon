@@ -10,7 +10,6 @@ void robocon_main(void) {
 		if (ticks_img != get_ticks()) {
 			ticks_img = get_ticks();
 			
-			sensor_update();
 			
 			if (ticks_img % 10 == 0) {
 				// Every 10 ms (100 Hz)
@@ -18,7 +17,7 @@ void robocon_main(void) {
 				button_update();
 				button_event_update();
 				wheel_base_pid_update();
-				wheel_base_update();
+			wheel_base_update();
 				racket_update();
 			}
 			
@@ -51,7 +50,7 @@ void robocon_main(void) {
 
 				WHEEL_BASE_VEL vel = wheel_base_get_vel();
 				tft_clear();
-				draw_top_bar();
+				//draw_top_bar();
 
 				tft_prints(0, 1, "V:(%3d,%3d,%3d)", vel.x, vel.y, vel.w);
 				tft_prints(0, 2, "Speed: %d", wheel_base_get_speed_mode());
@@ -65,7 +64,6 @@ void robocon_main(void) {
 				tft_prints(0, 8, "  L  <[%4d]>  R ", button_event_get_l_analog_magnitude());
 				tft_prints(0, 9, "(%4d) B  (%4d)", wheel_base_get_vel_bottom_left(), wheel_base_get_vel_bottom_right());
 				tft_update();
-				NVIC_EnableIRQ(EXTI15_10_IRQn);
 			}
 		}
 	}	
