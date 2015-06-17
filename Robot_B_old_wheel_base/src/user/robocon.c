@@ -60,6 +60,8 @@ void robocon_main(void) {
 					(button_event_get_side_control() == SIDE_RIGHT ? "[RIGHT SIDE CTRL]" : "[LEFT SIDE CTRL]")
 				);
 				
+				tft_prints(0, 5, "ADC: %d", get_sensor());
+				
 				tft_prints(0, 7, "(%4d)  F (%4d)", wheel_base_get_vel_top_left(), wheel_base_get_vel_top_right());
 				tft_prints(0, 8, "  L  <[%4d]>  R ", button_event_get_l_analog_magnitude());
 				tft_prints(0, 9, "(%4d) B  (%4d)", wheel_base_get_vel_bottom_left(), wheel_base_get_vel_bottom_right());

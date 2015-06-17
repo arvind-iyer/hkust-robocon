@@ -44,3 +44,13 @@ s16 get_temperature(void)
   //return get_adc_value(BATTERY_ADC_CHANNEL);
   return (s16)(TEMP_SLOPEx100*(s16)(val - SAMPLE_TEMP_ADC_1) / 100 + SAMPLE_TEMP_VAL_1);
 }
+
+u32 get_sensor(void)
+{
+  u32 val = get_adc_value(LASER_ADC_CHANNEL); 
+  if (val == ADC_CHANNEL_UNUSED_VALUE || val == 0) {
+    return 0;
+  }
+  //return get_adc_value(BATTERY_ADC_CHANNEL);
+  return (s16)val;
+}

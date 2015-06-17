@@ -1,6 +1,6 @@
 #include "adc.h"
 
-#define ADC1_CHANNEL_COUNT      2
+#define ADC1_CHANNEL_COUNT      3
 
 static u32 ADC1_Value[ADC1_CHANNEL_COUNT];
 
@@ -19,7 +19,7 @@ static u32* ADC_Channel_Value[ADC_CHANNEL_COUNT] = {
   0,                /* Channel 11 */
   0,                /* Channel 12 */
   0,                /* Channel 13 */
-  0,                /* Channel 14 */
+  &ADC1_Value[2],   /* Channel 14 */
   0,                /* Channel 15 */
   &ADC1_Value[1],   /* Channel 16 */
   0                 /* Channel 17 */
@@ -69,6 +69,7 @@ void adc_init(void)
     /* ADC1 regular channels configuration */ 
     ADC_RegularChannelConfig(ADC1, ADC_Channel_10, 1, ADC_SampleTime_239Cycles5);    
     ADC_RegularChannelConfig(ADC1, ADC_Channel_16, 2, ADC_SampleTime_239Cycles5);
+		ADC_RegularChannelConfig(ADC1, ADC_Channel_14, 3, ADC_SampleTime_239Cycles5);
     /* Enable ADC1 DMA */
     ADC_DMACmd(ADC1, ENABLE);
 
@@ -105,5 +106,3 @@ u32 get_adc_value(u8 channel)
     return *(ADC_Channel_Value[channel]);
   }
 }
-
-

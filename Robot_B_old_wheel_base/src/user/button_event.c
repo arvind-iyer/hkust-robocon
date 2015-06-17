@@ -108,10 +108,10 @@ void button_event_update(void)
 	}
 	
 	if (button_pressed(BUTTON_PS4_L3)) {
-		buzzer_play_song(BIRTHDAY_SONG, 135, 0);
+		//buzzer_play_song(BIRTHDAY_SONG, 135, 0);
 	}
 	if (button_pressed(BUTTON_PS4_R3)) {
-		buzzer_play_song(NEW_SUPER_MARIO_BROS, 150, 0);
+		//buzzer_play_song(NEW_SUPER_MARIO_BROS, 150, 0);
 	}
 	
 	angle_speed = axis_speed * button_event_trigger_value_conversion(xbc_get_joy(PS4_JOY_R2) - xbc_get_joy(PS4_JOY_L2)) / 255;
