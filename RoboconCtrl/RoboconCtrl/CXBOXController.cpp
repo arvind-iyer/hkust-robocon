@@ -13,8 +13,8 @@
 #define XBC_RIGHT	0x0008
 #define XBC_START	0x0010
 #define XBC_BACK	0x0020
-#define XBC_L_JOY	0x0080
-#define XBC_R_JOY	0x0040
+#define XBC_L_JOY	0x0040
+#define XBC_R_JOY	0x0080
 #define XBC_LB		0x0100
 #define XBC_RB		0x0200
 #define XBC_XBOX	0x0400

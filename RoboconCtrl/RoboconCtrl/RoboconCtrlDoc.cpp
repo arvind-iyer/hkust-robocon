@@ -50,7 +50,7 @@ BOOL CRoboconCtrlDoc::OnNewDocument()
 
 void CRoboconCtrlDoc::SetTitle(LPCTSTR lpszTitle)
 {
-	CDocument::SetTitle(_T("Main Control Panel v2.8"));
+	CDocument::SetTitle(_T("Main Control Panel v3.1"));
 }
 
 #ifdef SHARED_HANDLERS
