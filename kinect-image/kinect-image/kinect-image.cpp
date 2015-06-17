@@ -137,15 +137,15 @@ inline bool point_filtering(Eigen::Vector3d& point_vector, float x, float y, flo
 		return false;
 	}
 
-	// upper bound (filter ceiling - not needed for actual competition)
-	if (point_vector(2) > 2700.0) {
+	// bound filtering
+	if (point_vector(0) > 3050.0 || point_vector(0) < -3050.0) {
 		return false;
 	}
 
-	// y-axis filter (filters walls - probably not needed for actual competition)
-	if (point_vector(1) > 9500.0) {
+	if (point_vector(1) > 8000.0 || point_vector(1) < 0.0) {
 		return false;
 	}
+
 	return true;
 }
 
@@ -623,6 +623,14 @@ void keyboard_callback(const pcl::visualization::KeyboardEvent& event, void*)
 			}
 			calibration_edge_trigger = true;
 		}
+
+		switch (event.getKeyCode()) {
+			case '-': point_cloud_tracking::decrease_max(); break;
+			case '=': point_cloud_tracking::increase_max(); break;
+			case '_': point_cloud_tracking::decrease_min(); break;
+			case '+': point_cloud_tracking::increase_min(); break;
+		}
+
 		if (calibration_mode) {
 			switch (event.getKeyCode()) {
 				case 'j': net_line.first.x -= 0.01f; break;

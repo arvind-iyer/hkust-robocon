@@ -20,8 +20,8 @@
 #include <gsl/gsl_multifit_nlin.h>
 #include <unsupported/Eigen/NonLinearOptimization>
 
-const static int SHUTTLE_POINTS_MAX = 200;
-const static int SHUTTLE_POINTS_MIN = 5;
+static int SHUTTLE_POINTS_MAX = 100;
+static int SHUTTLE_POINTS_MIN = 10;
 const static int SHUTTLE_TOLERANCE = 50;
 
 class point_cloud_tracking
@@ -206,6 +206,25 @@ public:
 	point_cloud_tracking() {};
 	~point_cloud_tracking() {};
 
+	static inline void increase_max() {
+		std::cout << SHUTTLE_POINTS_MAX << std::endl;
+		++SHUTTLE_POINTS_MAX;
+	}
+
+	static inline void decrease_max() {
+		std::cout << SHUTTLE_POINTS_MAX << std::endl;
+		--SHUTTLE_POINTS_MAX;
+	}
+
+	static inline void increase_min() {
+		std::cout << SHUTTLE_POINTS_MIN << std::endl;
+		++SHUTTLE_POINTS_MIN;
+	}
+
+	static inline void decrease_min() {
+		std::cout << SHUTTLE_POINTS_MIN << std::endl;
+		--SHUTTLE_POINTS_MIN;
+	}
 
 	static inline bool icp_depth_image_processing(pcl::PointCloud<pcl::PointXYZ>::Ptr& cloud, std::vector<UINT16>& depthBuffer, ICoordinateMapper*& pCoordinateMapper, int depthWidth, int depthHeight, pcl::visualization::PCLVisualizer& viewer, Eigen::Affine3d& transformation)
 	{
@@ -242,19 +261,30 @@ public:
 					// height filter
 					// lower bound (filters anything below the net)
 					// if (point_vector(2) < 1570.0) { return false; }
+
+					// floor filter
+					if (point_vector(2) < 10.0) {
+						return false;
+					}
+
 					// net filter
-					if (point_vector(0) < 6720.0 && point_vector(0) > 6680.0 && point_vector(2) < 1570.0)
+					if (point_vector(1) < 6710.0 && point_vector(1) > 6690.0 && point_vector(2) < 1570.0)
 					{
 						return false;
 					}
 
 					// upper bound (filter ceiling - not needed for actual competition)
-					if (point_vector(2) > 2700.0) { return false; }
+					//if (point_vector(2) > 2700.0) { return false; }
 
 					// y-axis filter (filters walls - probably not needed for actual competition)
-					if (point_vector(1) > 9500.0) { return false; }
+					//if (point_vector(1) > 9500.0) { return false; }
 
-					return true; }())
+					// bound filtering
+					if (point_vector(0) > 3050.0 || point_vector(0) < -3050.0) { return false; }
+					if (point_vector(1) > 13400.0 || point_vector(1) < 0.0) { return false; }
+
+					return true; 
+					}())
 				{
 					continue;
 				}
@@ -262,7 +292,10 @@ public:
 				// add points to centroids within a cubic bounding box
 				for (auto& i : cluster_cloud_centroids)
 				{
-					if (std::abs(point_vector.x() - i.first.x()) < 400.0 && std::abs(point_vector.z() - i.first.z()) < 400.0 && (point_vector.y() - i.first.y() < 200.0 && point_vector.y() - i.first.y() > -1500.0)) {
+					if (std::abs(point_vector.x() - i.first.x()) < 400.0 && 
+						std::abs(point_vector.z() - i.first.z()) < 800.0 && 
+						(point_vector.y() - i.first.y() < 200.0 && 
+						point_vector.y() - i.first.y() > -1700.0)) {
 						i.second->push_back(pcl::PointXYZ(point_vector.x(), point_vector.y(), point_vector.z()));
 					}
 				}
@@ -307,9 +340,9 @@ public:
 		if (cluster_cloud_centroids.size() > 0) {
 			int j = 0;
 			for (auto i = cluster_cloud_centroids.begin(); i != cluster_cloud_centroids.end(); ++i) {
-				if (!viewer.updateSphere(pcl::PointXYZ(i->first.x(), i->first.y(), i->first.z()), 200, 0.5, 0.5, 0.5, "sphere" + std::to_string(j + 1)))
+				if (!viewer.updateSphere(pcl::PointXYZ(i->first.x(), i->first.y(), i->first.z()), 100, 0.5, 0.5, 0.5, "sphere" + std::to_string(j + 1)))
 				{
-					viewer.addSphere(pcl::PointXYZ(i->first.x(), i->first.y(), i->first.z()), 200, 0.5, 0.5, 0.5, "sphere" + std::to_string(j + 1));
+					viewer.addSphere(pcl::PointXYZ(i->first.x(), i->first.y(), i->first.z()), 100, 0.5, 0.5, 0.5, "sphere" + std::to_string(j + 1));
 				}
 				++j;
 			}
@@ -346,10 +379,10 @@ public:
 			viewer.removeShape("cube" + std::to_string(j));
 			viewer.addCube(cluster_cloud_centroids.back().first.x() - 400.0, 
 				cluster_cloud_centroids.back().first.x() + 400.0,
-				cluster_cloud_centroids.back().first.y() - 700.0, 
+				cluster_cloud_centroids.back().first.y() - 1700.0, 
 				cluster_cloud_centroids.back().first.y() + 200.0,
-				cluster_cloud_centroids.back().first.z() - 400.0,
-				cluster_cloud_centroids.back().first.z() + 400.0,
+				cluster_cloud_centroids.back().first.z() - 600.0,
+				cluster_cloud_centroids.back().first.z() + 600.0,
 				std::get<0>(color_vector[j % 3]),
 				std::get<1>(color_vector[j % 3]),
 				std::get<2>(color_vector[j % 3]),
