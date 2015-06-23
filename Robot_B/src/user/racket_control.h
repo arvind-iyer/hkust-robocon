@@ -4,7 +4,6 @@
 #include "stm32f10x.h"
 #include "can_motor.h"
 #include "ticks.h"
-#include "special_char_handler.h"
 #include "stdbool.h"
 #include "buzzer_song.h"
 #include "ultrasonic_mb.h"
@@ -15,8 +14,9 @@
 #define IR_Sensor_3_Pin GPIO_Pin_7 // A7
 #define IR_Sensor_4_Pin GPIO_Pin_4 // C4
 
-#define GPIO_Pin_Forehand GPIO_Pin_13
-#define GPIO_Pin_Underarm GPIO_Pin_12
+#define GPIO_Pin_Forehand   GPIO_Pin_13
+#define GPIO_Pin_Forehand_2 GPIO_Pin_14		// Backup pin
+#define GPIO_Pin_Underarm   GPIO_Pin_12
 
 #define FOREHAND_HOLD_MS	300
 #define UNDERARM_HOLD_MS	300

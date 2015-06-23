@@ -28,7 +28,6 @@
 
 #include "wheel_base.h"
 #include "wheel_base_pid.h"
-#include "special_char_handler.h"
 #include "racket_control.h"
 #include "button_event.h"
 

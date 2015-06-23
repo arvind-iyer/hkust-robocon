@@ -5,6 +5,7 @@
 #include "buzzer_song.h"
 #include "racket_control.h"
 #include "wheel_base.h"
+#include "adc_app.h"
 
 #define ANALOG_SPEED 100
 
@@ -49,7 +50,6 @@
 void gamepad_led_init(void);
 void button_event_update(void);
 u8 button_event_get_side_control(void);
-u32 button_event_get_l_analog_magnitude(void);
 bool is_force_terminate(void);
 
 #endif

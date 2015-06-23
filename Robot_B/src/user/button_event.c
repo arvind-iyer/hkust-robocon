@@ -1,19 +1,8 @@
 #include "button_event.h"
 
-static u8  side_control = SIDE_NORMAL;
+static u8  side_control = SIDE_LEFT;
 
-static bool speed_button_released_before = false;
 static bool underarm_reverse = false;
-static u8 chetaudaaidang = 0;
-
-static u16 speed_ratio;
-static s32 axis_speed;
-static s32 diagonal_speed;
-static s32 angle_speed;
-static s32 x_speed;
-static s32 y_speed;
-static s32 temp_s32;
-static u32 l_analog_magnitude;
 
 // Omega PID relevant.
 static int accumulated_omega = 0;
@@ -37,6 +26,12 @@ void button_event_wheel_base_set_vel(s32 x, s32 y, s32 w) {
 	wheel_base_vel_last_update_refresh();
 }
 
+bool is_near_the_net(void) {
+	WHEEL_BASE_VEL velocity = wheel_base_get_vel();
+	s32 velocity_y = velocity.y;
+	return (get_sensor() < 700);
+}
+
 void gamepad_led_init(void) {
 	GPIO_InitTypeDef GPIO_InitStructure;
 	RCC_APB2PeriphClockCmd(RCC_APB2Periph_GPIOC, ENABLE);
@@ -45,18 +40,68 @@ void gamepad_led_init(void) {
 	GPIO_InitStructure.GPIO_Pin = GPIO_Pin_12;
 	GPIO_Init(GPIOC, &GPIO_InitStructure);
 	RCC_APB2PeriphClockCmd(RCC_APB2Periph_GPIOD, ENABLE);
-	GPIO_InitStructure.GPIO_Pin = GPIO_Pin_2 | GPIO_Pin_9;
+	GPIO_InitStructure.GPIO_Pin = GPIO_Pin_2;
 	GPIO_Init(GPIOD, &GPIO_InitStructure);
 	GPIO_WriteBit(GPIOD, GPIO_Pin_2, Bit_RESET);		// Red off
-	GPIO_WriteBit(GPIOD, GPIO_Pin_9, Bit_RESET);		// 車頭燈
 	GPIO_WriteBit(GPIOC, GPIO_Pin_12, Bit_RESET);	// Green off
 }
 
 void gamepad_wheel_base() {
 	//Analog Movement
 	//Set x and y vel according to analog stick input
-	int raw_vx = xbc_get_joy(XBC_JOY_LX);
-	int raw_vy = xbc_get_joy(XBC_JOY_LY);
+	int raw_vx, raw_vy, raw_temp;
+	if (button_pressed(BUTTON_PS4_N) || button_pressed(BUTTON_PS4_S) ||
+		  button_pressed(BUTTON_PS4_W) || button_pressed(BUTTON_PS4_E) ||
+			button_pressed(BUTTON_PS4_NW) || button_pressed(BUTTON_PS4_NE) ||
+			button_pressed(BUTTON_PS4_SW) || button_pressed(BUTTON_PS4_SE)
+	) {
+		raw_vx = 0;
+		raw_vy = 0;
+		if (button_pressed(BUTTON_PS4_N))
+			raw_vy = 255;
+		else if (button_pressed(BUTTON_PS4_S))
+			raw_vy = -255;
+		else if (button_pressed(BUTTON_PS4_W))
+			raw_vx = -255;
+		else if (button_pressed(BUTTON_PS4_E))
+			raw_vx = 255;
+		else if (button_pressed(BUTTON_PS4_NW)) {
+			raw_vy = 180;
+			raw_vx = -180;
+		}
+		else if (button_pressed(BUTTON_PS4_NE)) {
+			raw_vy = 180;
+			raw_vx = 180;
+		}
+		else if (button_pressed(BUTTON_PS4_SW)) {
+			raw_vy = -180;
+			raw_vx = -180;
+		}
+		else if (button_pressed(BUTTON_PS4_SE)) {
+			raw_vy = -180;
+			raw_vx = 180;
+		}
+		if (side_control == SIDE_LEFT) {
+			raw_temp = raw_vx;
+			raw_vx = raw_vy;
+			raw_vy = -raw_temp;
+		} else if (side_control == SIDE_RIGHT) {
+			raw_temp = raw_vx;
+			raw_vx = -raw_vy;
+			raw_vy = raw_temp;
+		}
+	} else {
+		if (side_control == SIDE_LEFT) {
+			raw_vx = xbc_get_joy(XBC_JOY_LY);
+			raw_vy = -xbc_get_joy(XBC_JOY_LX);
+		} else if (side_control == SIDE_RIGHT) {
+			raw_vx = -xbc_get_joy(XBC_JOY_LY);
+			raw_vy = xbc_get_joy(XBC_JOY_LX);
+		} else {
+			raw_vx = xbc_get_joy(XBC_JOY_LX);
+			raw_vy = xbc_get_joy(XBC_JOY_LY);
+		}
+	}
 	
 	int h = Sqrt(Sqr(raw_vx)+ Sqr(raw_vy));
 	
@@ -71,7 +116,7 @@ void gamepad_wheel_base() {
 	s32 vy = raw_vy;
 	
 	int omega = (xbc_get_joy(XBC_JOY_RT)-xbc_get_joy(XBC_JOY_LT)) / 5;
-	const int speed_factor = 8;
+	const int speed_factor = 10;
 	
 	accumulated_omega += omega % speed_factor;
 	int incremental = accumulated_omega / speed_factor;
@@ -94,6 +139,15 @@ void gamepad_wheel_base() {
 	int vw = pid_maintain_angle();
 	
 	if (!force_terminate) {
+		if (is_near_the_net()) {
+			GPIO_WriteBit(GPIOD, GPIO_Pin_2, Bit_SET);		// Red on
+		} else {
+			GPIO_WriteBit(GPIOD, GPIO_Pin_2, Bit_RESET);		// Red off
+		}
+		
+		if (get_sensor() < 700 && vy > 0) {
+			vy = 0;
+		}
 		wheel_base_set_vel(vx,vy,vw);
 	}
 }
@@ -101,54 +155,6 @@ void gamepad_wheel_base() {
 void button_event_update(void)
 {
 	gamepad_wheel_base();
-	
-	// Speed mode adjustment
-	if ( speed_button_released_before && (button_pressed(BUTTON_XBC_START) || button_pressed(BUTTON_XBC_BACK) ) ) {
-		u8 speed_mode = wheel_base_get_speed_mode();
-		if ( button_pressed(BUTTON_XBC_START) && speed_mode < 9 ) {
-			speed_mode += 1;
-		} else if ( button_pressed(BUTTON_XBC_BACK) && speed_mode > 0 ) {
-			speed_mode -= 1;
-		}
-		wheel_base_set_speed_mode(speed_mode);
-		switch(speed_mode) {
-			case 0:
-				buzzer_play_song(SPEED_0, 200, 0);
-				break;
-			case 1:
-				buzzer_play_song(SPEED_1, 200, 0);
-				break;
-			case 2:
-				buzzer_play_song(SPEED_2, 200, 0);
-				break;
-			case 3:
-				buzzer_play_song(SPEED_3, 200, 0);
-				break;
-			case 4:
-				buzzer_play_song(SPEED_4, 200, 0);
-				break;
-			case 5:
-				buzzer_play_song(SPEED_5, 200, 0);
-				break;
-			case 6:
-				buzzer_play_song(SPEED_6, 200, 0);
-				break;
-			case 7:
-				buzzer_play_song(SPEED_7, 200, 0);
-				break;
-			case 8:
-				buzzer_play_song(SPEED_8, 200, 0);
-				break;
-			case 9:
-				buzzer_play_song(SPEED_9, 200, 0);
-				break;
-			default:
-				FAIL_MUSIC;
-		}
-		speed_button_released_before = false;
-	} else if( !button_pressed(BUTTON_XBC_START) && !button_pressed(BUTTON_XBC_BACK) ) {
-		speed_button_released_before = true;
-	}
 	
 	// SELECT function keys
 	if (button_pressed(BUTTON_PS4_SELECT)>=1) {
@@ -182,6 +188,11 @@ void button_event_update(void)
 				underarm_daa_la();
 			else
 				underarm_lok_la();
+		} else {
+			if (underarm_reverse == false)
+				underarm_lok_la();
+			else
+				underarm_daa_la();
 		}
 		// SQUARE
 		if (button_pressed(BUTTON_PS4_SQUARE) >= 1) {
@@ -190,29 +201,13 @@ void button_event_update(void)
 			forehand_lok_la();
 		}
 		// TRIANGLE
-		if (button_pressed(BUTTON_PS4_TRIANGLE) == 1) {
-			chetaudaaidang = (chetaudaaidang + 1) % 3;
-		}
+		
 		// CIRCLE
-		if (button_pressed(BUTTON_PS4_CIRCLE) == 1) {
-			force_terminate = 1;
-		}
-	}
-	
-	
-	if (chetaudaaidang == 1 || (chetaudaaidang == 2 && (get_full_ticks() / 100) % 2 == 1)) {
-		GPIO_WriteBit(GPIOD, GPIO_Pin_9, Bit_SET);
-	} else {
-		GPIO_WriteBit(GPIOD, GPIO_Pin_9, Bit_RESET);
 	}
 }
 
 u8 button_event_get_side_control(void) {
 	return side_control;
-}
-
-u32 button_event_get_l_analog_magnitude(void) {
-	return l_analog_magnitude;
 }
 
 bool is_force_terminate(void) {

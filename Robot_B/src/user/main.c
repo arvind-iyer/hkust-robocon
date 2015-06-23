@@ -35,7 +35,9 @@ int main(void)
   // uart_init(COM1, 115200);
   // uart_printf_enable(COM1);
 	
-	// special_char_handler_init();
+	ultrasonic_init();
+	
+	
 	racket_init();
   
   system_start(1200);

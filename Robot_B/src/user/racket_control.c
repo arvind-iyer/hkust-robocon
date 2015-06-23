@@ -84,19 +84,19 @@ void racket_init(void) {
 
 	GPIO_InitStructure.GPIO_Mode = GPIO_Mode_Out_PP;
 	GPIO_InitStructure.GPIO_Speed = GPIO_Speed_2MHz;
-	GPIO_InitStructure.GPIO_Pin = GPIO_Pin_Forehand | GPIO_Pin_Underarm;
+	GPIO_InitStructure.GPIO_Pin = GPIO_Pin_Forehand | GPIO_Pin_Forehand_2 | GPIO_Pin_Underarm;
 	GPIO_Init(GPIOE, &GPIO_InitStructure);
 	
-	GPIO_WriteBit(GPIOE, GPIO_Pin_Forehand | GPIO_Pin_Underarm, Bit_RESET);
+	GPIO_WriteBit(GPIOE, GPIO_Pin_Forehand | GPIO_Pin_Forehand_2 | GPIO_Pin_Underarm, Bit_RESET);
 }
 
 void racket_update(void) {
 	current_time = get_full_ticks();
 	
 	if (forehand_daa_order == 1 && current_time >= forehand_daa_order_time) {
-		GPIO_WriteBit(GPIOE, GPIO_Pin_Forehand, Bit_SET);
+		GPIO_WriteBit(GPIOE, GPIO_Pin_Forehand | GPIO_Pin_Forehand_2, Bit_SET);
 	} else if (current_time > (forehand_daa_order_time + FOREHAND_HOLD_MS) && forehand_daa_order == 0) {
-		GPIO_WriteBit(GPIOE, GPIO_Pin_Forehand, Bit_RESET);
+		GPIO_WriteBit(GPIOE, GPIO_Pin_Forehand | GPIO_Pin_Forehand_2, Bit_RESET);
 	}
 	
 	if (underarm_daa_order == 1 && current_time >= underarm_daa_order_time) {
