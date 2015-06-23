@@ -43,7 +43,7 @@ const u16 MIN_VEL = 800;
 // default const
 const u16 DEFAULT_ACCEL_BOOST = 1414;
 const u16 DEFAULT_VEL = 1300;
-const u16 DEFAULT_DELAY = 280;
+const u16 DEFAULT_DELAY = 270;
 
 
 const u16 ACCELBOOSTER_OFFSET = 0;
@@ -100,6 +100,20 @@ bool robot_xbc_controls(void)
 	vx = (- raw_vy * int_sin(current_angle) + raw_vx * int_cos(current_angle)) / 10000;
 	vy = (raw_vy * int_cos(current_angle) + raw_vx * int_sin(current_angle)) / 10000;
 	#endif
+	
+	// Violation prevention
+	if (ROBOT == 'C') {
+		const int allowed_speed = XBC_JOY_SCALE / 3;
+		if (vy > 0 && is_force_stop() && is_force_decel()) {
+			// Force stop
+			vy = 0;
+      FAIL_MUSIC;
+		}	else if (vy > allowed_speed && is_force_decel()) {
+			// Force decel
+			vy = vy * allowed_speed / XBC_JOY_SCALE;
+      CLICK_MUSIC;
+		}
+	}
 	
 	// Spining velocity
   int omega = (xbc_get_joy(XBC_JOY_RT)-xbc_get_joy(XBC_JOY_LT))/5;
@@ -169,6 +183,7 @@ static void robot_cd_common_function(void)
 	if (button_pressed(BUTTON_XBC_RB)) {
 		gyro_pos_set(get_pos()->x, get_pos()->y, 0);
 		accumulated_omega = target_angle = 0;
+		wheel_base_tx_acc();
 	}	
 }
 
@@ -195,15 +210,20 @@ void robot_c_function_controls(void)
 		// Serving part reset.
 		serve_free();
 		// Ignore other button.
+		FAIL_MUSIC;
     return;
 	}
 	
+	if (button_pressed(BUTTON_XBC_LB) == 3) {
+		CLICK_MUSIC;
+		gyro_cal();
+	}
 	
 	if (button_pressed(BUTTON_XBC_E) && accel_booster < MAX_ACCEL_BOOST) {
 		++accel_booster;
 	} else if (button_pressed(BUTTON_XBC_W) && accel_booster > MIN_ACCEL_BOOST){
 		--accel_booster;
-	} else if (button_released(BUTTON_XBC_E) || (button_released(BUTTON_XBC_W))) {
+	} else if (button_released(BUTTON_XBC_E) == 1|| (button_released(BUTTON_XBC_W)) == 1) {
 		write_flash(ACCELBOOSTER_OFFSET, accel_booster);
 	}
 	
@@ -295,12 +315,13 @@ void robot_d_function_controls(void)
 	}
 	if (emergency_serve_activated)
 	{
-		if (emergency_serve_start_time+6000<get_full_ticks() && emergency_serve_start_time+6300>get_full_ticks())//autoserve after 6 secs
+		const int AUTO_SERVE_DELAY = 10000;	// 10 seconds
+		if (emergency_serve_start_time+AUTO_SERVE_DELAY<get_full_ticks() && emergency_serve_start_time+AUTO_SERVE_DELAY+300>get_full_ticks())//autoserve after 6 secs
 		{
 			start_auto_serve();
 			emergency_serve_hitting=1;
 		}
-		if (emergency_serve_start_time+7000<get_full_ticks())	// remove robot after serve
+		if (emergency_serve_start_time+(1000 + AUTO_SERVE_DELAY)<get_full_ticks())	// remove robot after serve
 		{
 			log("remove",get_full_ticks());
 			//SUCCESSFUL_SOUND;
@@ -308,7 +329,7 @@ void robot_d_function_controls(void)
 			wheel_base_set_vel(100,0,0);
 			emergency_serve_hitting=0;
 		}
-		if (emergency_serve_start_time+8100<get_full_ticks())//remove robot complete
+		if (emergency_serve_start_time+(AUTO_SERVE_DELAY+2100)<get_full_ticks())//remove robot complete
 		{
 			serve_free();
 			log("removed",get_full_ticks());
@@ -560,7 +581,11 @@ void robocon_main(void)
 					tft_prints(0,2,"Encoder: %d", get_encoder_value(RACKET));
 					tft_prints(0,3,"Serve_delay: %d",serve_get_delay());
 					tft_prints(0,4,"Racket: %d", serve_get_vel());
-				}
+				} else {
+          tft_prints(0,2,"Decel: %d", is_force_decel());
+          tft_prints(0,3,"Stop: %d", is_force_stop());
+          
+        }
 				
 				tft_prints(0,5,"Target: %d", wheel_base_get_target_pos().angle);
 				tft_prints(0,6,"Angle: %d", get_pos()->angle);
