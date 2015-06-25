@@ -25,11 +25,6 @@ void robocon_main(void) {
 				// Every 10 seconds (0.1 Hz)
 				battery_regular_check();
 			}
-
-			if (ticks_img % 100 == 3) {
-				// Every 100 ms (10 Hz)
-				wheel_base_tx_position();
-			}
 			
 			if (ticks_img % 500 == 4) {
 				led_control(LED_D3, (LED_STATE) (ticks_img == 0));
@@ -42,8 +37,8 @@ void robocon_main(void) {
 				}
 			}
 			
-			if (ticks_img % 50 == 7) {
-				// Every 50 ms (20 Hz)
+			if (ticks_img % 200 == 7) {
+				// Every 200 ms (5 Hz)
 				/** Warning: try not to do many things after tft_update(), as it takes time **/
 
 				WHEEL_BASE_VEL vel = wheel_base_get_vel();
