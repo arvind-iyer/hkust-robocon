@@ -50,6 +50,9 @@
 void gamepad_led_init(void);
 void button_event_update(void);
 u8 button_event_get_side_control(void);
+
 bool is_force_terminate(void);
+s32 get_brake_velocity(void);
+u32 get_brake_position(void);
 
 #endif

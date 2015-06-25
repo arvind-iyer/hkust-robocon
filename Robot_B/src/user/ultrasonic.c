@@ -10,5 +10,5 @@ void ultrasonic_init(void)
 	GPIO_InitStructure.GPIO_Pin = GPIO_Pin_Ultrasonic;
 	GPIO_Init(GPIOE, &GPIO_InitStructure);
 	
-	GPIO_WriteBit(GPIOE, GPIO_Pin_Ultrasonic, Bit_RESET);
+	GPIO_WriteBit(GPIOE, GPIO_Pin_Ultrasonic, Bit_SET);
 }

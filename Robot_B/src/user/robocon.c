@@ -5,11 +5,11 @@ static u16 ticks_img 	= (u16)-1;
 void robocon_main(void) {
   // Send the acceleration data
 	wheel_base_tx_acc();
-
-	for (; ; ) {
+	GPIO_WriteBit(GPIOC, GPIO_Pin_12, Bit_SET); // Green on
+	
+	while (1) {
 		if (ticks_img != get_ticks()) {
 			ticks_img = get_ticks();
-			
 			
 			if (ticks_img % 10 == 0) {
 				// Every 10 ms (100 Hz)
@@ -17,17 +17,15 @@ void robocon_main(void) {
 				button_update();
 				button_event_update();
 				wheel_base_pid_update();
-			wheel_base_update();
+				wheel_base_update();
 				racket_update();
 			}
-			
-			
+
 			if (get_seconds() % 10 == 2 && ticks_img == 2) {
 				// Every 10 seconds (0.1 Hz)
 				battery_regular_check();
 			}
 
-			
 			if (ticks_img % 100 == 3) {
 				// Every 100 ms (10 Hz)
 				wheel_base_tx_position();
@@ -53,13 +51,11 @@ void robocon_main(void) {
 				//draw_top_bar();
 
 				tft_prints(0, 1, "V:(%3d,%3d,%3d)", vel.x, vel.y, vel.w);
-				tft_prints(0, 2, "Speed: %d", wheel_base_get_speed_mode());
-				tft_prints(0, 3, "(?,?,%-4d)", get_pos()->angle);
-				//tft_prints(0, 4, "%s", button_event_get_side_control() == SIDE_NORMAL ? "NORMAL CTRL" : 
-				//	(button_event_get_side_control() == SIDE_RIGHT ? "[RIGHT SIDE CTRL]" : "[LEFT SIDE CTRL]")
-				//);
-				
-				tft_prints(0, 5, "%s", is_force_terminate() ? "   [FORCE]" : "");
+				//tft_prints(0, 2, "Speed: %d", wheel_base_get_speed_mode());
+				tft_prints(0, 2, "(?,?,%-4d)", get_pos()->angle);
+				tft_prints(0, 3, "BP: %d", get_brake_position());
+				tft_prints(0, 4, "BV: %d", get_brake_velocity());
+				tft_prints(0, 5, "%s", is_force_terminate() ? "     [Force]" : "");
 				tft_prints(0, 6, "ADC: %d", get_sensor());
 				tft_prints(0, 7, "(%4d)  F (%4d)", wheel_base_get_vel_top_left(), wheel_base_get_vel_top_right());
 				tft_prints(0, 8, "  L          R ");

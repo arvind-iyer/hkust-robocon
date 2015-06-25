@@ -14,11 +14,10 @@ static POSITION target_pos = {0, 0, 0};
 static PID wheel_base_pid = {0, 0, 0};
 
 static WHEEL_BASE_VEL wheel_base_target = {0, 0, 0};
-static bool force_terminate = false;
 
 
 // Global variable for friction tunning
-int accel_booster = 1414; // 1414 for rough ground, 1000 for 3142 ground without skidding (prescaled by 1000)
+int accel_booster = 1732; // 1414 for rough ground, 1000 for 3142 ground without skidding (prescaled by 1000)
 
 /**
 	* @brief Handler for the bluetooth RX with id 0x4?
@@ -105,7 +104,7 @@ void wheel_base_init(void)
 {
 	bluetooth_rx_add_filter(BLUETOOTH_WHEEL_BASE_VEL_ID, 0xF0, wheel_base_bluetooth_decode);
 	bluetooth_rx_add_filter(BLUETOOTH_WHEEL_BASE_AUTO_POS_ID, 0xF0, wheel_base_auto_bluetooth_decode);
-	bluetooth_rx_add_filter(BLUETOOTH_WHEEL_BASE_CHAR_ID, 0xFF, wheel_base_char_bluetooth_decode);
+	// bluetooth_rx_add_filter(BLUETOOTH_WHEEL_BASE_CHAR_ID, 0xFF, wheel_base_char_bluetooth_decode);
 	wheel_base_vel.x = wheel_base_vel.y = wheel_base_vel.w = 0;
 	wheel_base_bluetooth_vel_last_update = 0;
 	wheel_base_last_can_tx = 0;

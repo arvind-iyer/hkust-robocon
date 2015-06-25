@@ -409,19 +409,24 @@
           <GroupName>src</GroupName>
           <Files>
             <File>
+              <FileName>button_event.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\src\user\button_event.c</FilePath>
+            </File>
+            <File>
               <FileName>buzzer_song.c</FileName>
               <FileType>1</FileType>
               <FilePath>.\src\user\buzzer_song.c</FilePath>
             </File>
             <File>
-              <FileName>approx_math.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>.\src\ustrobo_min_system\src\approx_math.c</FilePath>
-            </File>
-            <File>
               <FileName>main.c</FileName>
               <FileType>1</FileType>
               <FilePath>.\src\user\main.c</FilePath>
+            </File>
+            <File>
+              <FileName>racket_control.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\src\user\racket_control.c</FilePath>
             </File>
             <File>
               <FileName>robocon.c</FileName>
@@ -439,21 +444,6 @@
               <FilePath>.\src\user\wheel_base_pid.c</FilePath>
             </File>
             <File>
-              <FileName>mb1240.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>.\src\user\mb1240.c</FilePath>
-            </File>
-            <File>
-              <FileName>button_event.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>.\src\user\button_event.c</FilePath>
-            </File>
-            <File>
-              <FileName>racket_control.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>.\src\user\racket_control.c</FilePath>
-            </File>
-            <File>
               <FileName>ultrasonic.c</FileName>
               <FileType>1</FileType>
               <FilePath>.\src\user\ultrasonic.c</FilePath>
@@ -463,6 +453,11 @@
         <Group>
           <GroupName>ustrobo</GroupName>
           <Files>
+            <File>
+              <FileName>approx_math.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\src\ustrobo_min_system\src\approx_math.c</FilePath>
+            </File>
             <File>
               <FileName>bluetooth_xbc_mb.c</FileName>
               <FileType>1</FileType>

@@ -30,6 +30,7 @@
 #include "wheel_base_pid.h"
 #include "racket_control.h"
 #include "button_event.h"
+#include "ultrasonic.h"
 
 
 void robocon_main(void);

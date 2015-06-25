@@ -2,9 +2,6 @@
 #include "buzzer_song.h"
 #include "delay.h"
 
-static u8   use_sensor = 0;
-static u32  sensor_delay = 1500;
-
 static u32  current_time = 0;
 
 static u8   forehand_daa_order = 0;
@@ -37,44 +34,6 @@ void underarm_lok_la(void) {
 	if (get_full_ticks() > (underarm_daa_order_time + 100)) {
 		underarm_daa_order = 0;
 	}
-}
-
-void sensor_on(void) {
-	use_sensor = 1;
-}
-
-void sensor_off(void) {
-	use_sensor = 0;
-}
-
-void sensor_increase_delay(void) {
-	sensor_delay++;
-}
-
-void sensor_decrease_delay(void) {
-	if (sensor_delay > 0)
-		sensor_delay--;
-}
-
-void sensor_update(void) {
-	/* if (
-		(us_get_distance(0) > 0 && us_get_distance(0) < 333) ||	// 低左
-		(us_get_distance(5) > 0 && us_get_distance(5) < 333) || // 低中
-		(us_get_distance(1) > 0 && us_get_distance(1) < 333)    // 低右
-	) {
-		GPIO_WriteBit(GPIOD, GPIO_Pin_2, Bit_SET);		// Red on
-		GPIO_WriteBit(GPIOC, GPIO_Pin_12, Bit_SET);	// Green on
-		if (use_sensor == 1) {
-			underarm_daa_la();
-		}
-	} else {
-		GPIO_WriteBit(GPIOD, GPIO_Pin_2, Bit_RESET);		// Red off
-		GPIO_WriteBit(GPIOC, GPIO_Pin_12, Bit_RESET);	// Green off
-	} */
-}
-
-u32 get_sensor_delay(void) {
-	return sensor_delay / 10;
 }
 
 void racket_init(void) {

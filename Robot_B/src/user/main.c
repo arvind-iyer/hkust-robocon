@@ -24,10 +24,9 @@ int main(void)
   can_motor_init();
 	
 	bluetooth_init();
-  //mb1240_init();
   xbc_mb_init(XBC_BLUETOOTH_FIRST); 
 	wheel_base_init();
-	us_mb_init();
+	// us_mb_init();
 	gamepad_led_init();
 	
   //nec_init();
@@ -36,7 +35,6 @@ int main(void)
   // uart_printf_enable(COM1);
 	
 	ultrasonic_init();
-	
 	
 	racket_init();
   

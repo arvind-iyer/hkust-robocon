@@ -3,12 +3,16 @@
 static u8  side_control = SIDE_LEFT;
 
 static bool underarm_reverse = false;
+static bool detect_net = false;
 
 // Omega PID relevant.
 static int accumulated_omega = 0;
 static int target_angle = 0;
 
 static bool force_terminate = false;
+
+static s32 brake_velocity = 0;
+static u32 brake_position = 0;
 
 // This "trigger" means LT (L2 for PS4) & RT (R2 for PS4)
 s32 button_event_trigger_value_conversion(s16 trigger_value) {
@@ -26,10 +30,10 @@ void button_event_wheel_base_set_vel(s32 x, s32 y, s32 w) {
 	wheel_base_vel_last_update_refresh();
 }
 
-bool is_near_the_net(void) {
+bool is_net_near(void) {
 	WHEEL_BASE_VEL velocity = wheel_base_get_vel();
-	s32 velocity_y = velocity.y;
-	return (get_sensor() < 700);
+	// s32 velocity_y = velocity.y;
+	return (get_sensor() < 1200);
 }
 
 void gamepad_led_init(void) {
@@ -42,8 +46,8 @@ void gamepad_led_init(void) {
 	RCC_APB2PeriphClockCmd(RCC_APB2Periph_GPIOD, ENABLE);
 	GPIO_InitStructure.GPIO_Pin = GPIO_Pin_2;
 	GPIO_Init(GPIOD, &GPIO_InitStructure);
-	GPIO_WriteBit(GPIOD, GPIO_Pin_2, Bit_RESET);		// Red off
-	GPIO_WriteBit(GPIOC, GPIO_Pin_12, Bit_RESET);	// Green off
+	GPIO_WriteBit(GPIOD, GPIO_Pin_2, Bit_RESET);  // Red off
+	GPIO_WriteBit(GPIOC, GPIO_Pin_12, Bit_RESET); // Green off
 }
 
 void gamepad_wheel_base() {
@@ -139,13 +143,17 @@ void gamepad_wheel_base() {
 	int vw = pid_maintain_angle();
 	
 	if (!force_terminate) {
-		if (is_near_the_net()) {
-			GPIO_WriteBit(GPIOD, GPIO_Pin_2, Bit_SET);		// Red on
+		if (is_net_near()) {
+			GPIO_WriteBit(GPIOD, GPIO_Pin_2, Bit_SET);    // Red on
 		} else {
-			GPIO_WriteBit(GPIOD, GPIO_Pin_2, Bit_RESET);		// Red off
+			GPIO_WriteBit(GPIOD, GPIO_Pin_2, Bit_RESET);  // Red off
 		}
 		
-		if (get_sensor() < 700 && vy > 0) {
+		if ((get_sensor() < 1200 || button_pressed(BUTTON_PS4_R1)) && vy > 0 && detect_net == true) {
+			if (button_pressed(BUTTON_PS4_R1) == 1) {
+				brake_position = get_sensor();
+				brake_velocity = vy;
+			}
 			vy = 0;
 		}
 		wheel_base_set_vel(vx,vy,vw);
@@ -173,14 +181,35 @@ void button_event_update(void)
 			side_control = SIDE_RIGHT;
 			buzzer_play_song(SIDE_CONTROL_RIGHT_SOUND, 120, 0);
 		}
+		// SELECT + START
+		else if (button_pressed(BUTTON_PS4_START)==1) {
+		}
 	}
 	// L1 function keys
 	else if (button_pressed(BUTTON_PS4_L1) >= 1) {
+		// L1 + R1 + SQUARE + X
+		if (button_pressed(BUTTON_PS4_R1) && button_pressed(BUTTON_PS4_CROSS) && button_pressed(BUTTON_PS4_SQUARE)) {
+			force_terminate = true;
+		}
 		// L1 + X
-		if (button_pressed(BUTTON_PS4_CROSS) == 1)
+		else if (button_pressed(BUTTON_PS4_CROSS) == 1)
 			underarm_reverse = !underarm_reverse;
+		// L1 + SQUARE (same as SQUARE without L1)
+		if (button_pressed(BUTTON_PS4_SQUARE) >= 1) {
+			forehand_daa_la();
+		} else {
+			forehand_lok_la();
+		}
+		// L1 + TRIANGLE
+		if (button_pressed(BUTTON_PS4_TRIANGLE) == 1) {
+			detect_net = !detect_net;
+			if (detect_net)
+				GPIO_WriteBit(GPIOC, GPIO_Pin_12, Bit_RESET); // Green off
+			else
+				GPIO_WriteBit(GPIOC, GPIO_Pin_12, Bit_SET);   // Green on
+		}
 	}
-	// Single button (except force_terminate())
+	// Single button
 	else {
 		// CROSS
 		if (button_pressed(BUTTON_PS4_CROSS) >= 1) {
@@ -212,4 +241,12 @@ u8 button_event_get_side_control(void) {
 
 bool is_force_terminate(void) {
 	return force_terminate;
+}
+
+s32 get_brake_velocity(void) {
+	return brake_velocity;
+}
+
+u32 get_brake_position(void) {
+	return brake_position;
 }
