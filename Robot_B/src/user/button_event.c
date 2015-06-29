@@ -4,7 +4,7 @@ static u8  side_control = SIDE_LEFT;
 
 static bool underarm_reverse = false;
 static bool detect_net = false;
-
+static bool pid_angle_enable = true;
 // Omega PID relevant.
 static int accumulated_omega = 0;
 static int target_angle = 0;
@@ -31,9 +31,9 @@ void button_event_wheel_base_set_vel(s32 x, s32 y, s32 w) {
 }
 
 bool is_net_near(void) {
-	WHEEL_BASE_VEL velocity = wheel_base_get_vel();
+	//WHEEL_BASE_VEL velocity = wheel_base_get_vel();
 	// s32 velocity_y = velocity.y;
-	return (get_sensor() < 1200);
+	return (get_sensor() < 1400);
 }
 
 void gamepad_led_init(void) {
@@ -141,7 +141,10 @@ void gamepad_wheel_base() {
 	
 	// Get angular speed based on target_angle
 	int vw = pid_maintain_angle();
-	
+	if (!pid_angle_enable) {
+		vw = 0;
+	}
+		
 	if (!force_terminate) {
 		if (is_net_near()) {
 			GPIO_WriteBit(GPIOD, GPIO_Pin_2, Bit_SET);    // Red on
@@ -149,7 +152,7 @@ void gamepad_wheel_base() {
 			GPIO_WriteBit(GPIOD, GPIO_Pin_2, Bit_RESET);  // Red off
 		}
 		
-		if ((get_sensor() < 1200 || button_pressed(BUTTON_PS4_R1)) && vy > 0 && detect_net == true) {
+		if (get_sensor() < 1400 && vy > 0 && detect_net == true || button_pressed(BUTTON_PS4_R1)) {
 			if (button_pressed(BUTTON_PS4_R1) == 1) {
 				brake_position = get_sensor();
 				brake_velocity = vy;
@@ -190,6 +193,20 @@ void button_event_update(void)
 		// L1 + R1 + SQUARE + X
 		if (button_pressed(BUTTON_PS4_R1) && button_pressed(BUTTON_PS4_CROSS) && button_pressed(BUTTON_PS4_SQUARE)) {
 			force_terminate = true;
+		}
+		// L1 + R1 + START
+		else if (button_pressed(BUTTON_PS4_R1) >= 1 && button_pressed(BUTTON_PS4_START) == 1) {
+			if (wheel_base_get_accel_booster() == 1732) {
+				wheel_base_set_accel_booster(1414);
+				GPIO_WriteBit(GPIOC, GPIO_Pin_12, Bit_SET); // Green off
+			} else {
+				wheel_base_set_accel_booster(1732);
+				GPIO_WriteBit(GPIOC, GPIO_Pin_12, Bit_SET); // Green on
+			}
+		}
+		// L1 + R1 + CIRCLE
+		else if (button_pressed(BUTTON_PS4_R1) >= 1 && button_pressed(BUTTON_PS4_CIRCLE) == 1) {
+			pid_angle_enable = !pid_angle_enable;
 		}
 		// L1 + X
 		else if (button_pressed(BUTTON_PS4_CROSS) == 1)

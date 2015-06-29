@@ -88,5 +88,7 @@ void wheel_base_vel_last_update_refresh(void);
 void wheel_base_override_change_speed(void);
 void wheel_base_override_set_vel(s32 x, s32 y);
 
+void wheel_base_set_accel_booster(int);
+int wheel_base_get_accel_booster(void);
 
 #endif	/* __WHEEL_BASE_H */

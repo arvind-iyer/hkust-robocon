@@ -392,4 +392,9 @@ s32 wheel_base_get_vel_top_left(void) { return mvtl; }
 s32 wheel_base_get_vel_top_right(void) { return mvtr; }
 s32 wheel_base_get_vel_bottom_left(void) { return mvbl; }
 s32 wheel_base_get_vel_bottom_right(void) { return mvbr; }
-
+void wheel_base_set_accel_booster(int num) {
+	accel_booster = num;
+}
+int wheel_base_get_accel_booster(void) {
+	return accel_booster;
+}
