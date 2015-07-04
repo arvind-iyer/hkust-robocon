@@ -72,7 +72,7 @@ int main(void)
 				}
 			}
 			
-			if (ticks_img % 50 == 4) {
+			if (ticks_img % 10 == 4) {
 				for (u8 i = 0; i < NEC_DEVICE_COUNT; ++i) {
 					nec_can_tx(i);
 				}

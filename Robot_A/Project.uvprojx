@@ -463,6 +463,11 @@
               <FileType>1</FileType>
               <FilePath>.\src\user\angle_variance.c</FilePath>
             </File>
+            <File>
+              <FileName>net_sensor.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\src\user\net_sensor.c</FilePath>
+            </File>
           </Files>
         </Group>
         <Group>

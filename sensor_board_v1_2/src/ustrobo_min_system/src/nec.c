@@ -204,7 +204,7 @@ void nec_printf(void)
 		}
 	}
 	
-}
+}	
 
 void nec_update(void)
 {

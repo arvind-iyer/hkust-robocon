@@ -35,7 +35,7 @@ static const u32 SPEED_MODES[WHEEL_BASE_SPEED_MODE_COUNT] =	// In percentage (20
 // #define WHEEL_BASE_DEFAULT_ACC							200
 #define	WHEEL_BASE_DEFAULT_SPEED_MODE					6			// from 0 to 9
 
-#define	WHEEL_BASE_XY_ACC											20
+#define	WHEEL_BASE_XY_ACC											28
 #define	WHEEL_BASE_W_ACC											25
 
 #define	WHEEL_BASE_SPEED_SCALE_DOWN						10

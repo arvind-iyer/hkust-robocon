@@ -6,7 +6,8 @@
 #include "flash.h"
 #include "approx_math.h"
 #include "angle_variance.h"
-
+#include "adc_app.h"
+#include "net_sensor.h"
 #include <stdbool.h>
 
 static u16 ticks_img 	= (u16)-1;
@@ -16,6 +17,7 @@ static bool us_auto_mode = false;
 static bool angle_lock_mode = false;
 static bool abs_angle_mode = false;
 static bool auto_serve_mode = false;
+static bool e_stop_mode = false;
 
 static u32 auto_serve_time = 0;
 
@@ -41,16 +43,23 @@ static void robocon_get_xbc(void)
 	if (get_serving_hit_state() >= SERVING_PRE_DELAY && get_serving_hit_state() <= SERVING_RACKET_HITTING) {
 		// Stop mode during serve
 		speed_mode = 0;
+	} else if (button_pressed(BUTTON_XBC_RB) > 2) { 
+		// Slow speed mode
+		speed_mode = 1;
 	}
 	
 	u16 speed_ratio = SPEED_MODES[speed_mode];
 	
+	
+	
 	s32 x_vel = xbc_joy_scale(xbc_get_joy(XBC_JOY_LX));
 	s32 y_vel = xbc_joy_scale(xbc_get_joy(XBC_JOY_LY));
 	
+	/*
 	if (abs_angle_mode) {
 		xy_rotate((s32*) &x_vel, (s32*) &y_vel, get_pos()->angle);
 	}
+	*/
 	
 	s16 w_vel = xbc_get_joy(XBC_JOY_RT) - xbc_get_joy(XBC_JOY_LT);
 	
@@ -80,8 +89,39 @@ static void robocon_get_xbc(void)
 		}
 	}
 	
+	/*** Sensor, stop robot moving forward when object is closed ***/
+	u32 sensor_val = get_sensor();
+	s32 current_y_vel = wheel_base_get_vel_real().y;
 	
-	wheel_base_set_vel(x_vel, y_vel, w_vel);
+	if (y_vel > 0) {
+		if (sensor_val >= 1500 && sensor_val < 2000) {
+			if (current_y_vel > 1500 && y_vel > 1500) {
+				y_vel = 1500;
+			} else if (current_y_vel > 1000 && current_y_vel < 1500 && y_vel > 1000) {
+				y_vel = 1000;
+			}
+		} else if (sensor_val >= 1000 && sensor_val < 1500) {
+			if (current_y_vel > 800 && y_vel > 800) {
+				//y_vel
+				y_vel = 800;
+			}
+		} else if (sensor_val >= 600 && sensor_val < 1000) {
+			if (current_y_vel > 500 && y_vel > 500) {
+				y_vel = 500;
+			}
+			
+		} else if (sensor_val >= 100 && sensor_val < 600) {
+			y_vel = 10;
+		}
+	}
+	
+	if (e_stop_mode) {
+		wheel_base_set_vel(0, 0, 0);
+		buzzer_set_note_period(get_note_period(NOTE_C, 8) + get_ticks());
+		buzzer_control(1, 100);
+	} else {
+		wheel_base_set_vel(x_vel, y_vel, w_vel);
+	}
 	
 	
 	/*** Change speed mode ***/
@@ -109,6 +149,7 @@ static void robocon_get_xbc(void)
 	s16 rjy_val = xbc_get_joy(XBC_JOY_RY);
 	
 	if (rjy_val_prev != -XBC_JOY_SCALE && rjy_val == -XBC_JOY_SCALE) {
+		/*
 		if (!abs_angle_mode) {
 			abs_angle_mode = true;
 		} else {
@@ -116,11 +157,14 @@ static void robocon_get_xbc(void)
 			angle_lock_ignore(200);
 		}
 		buzzer_control_note(2, 100, NOTE_C, 8);
+		*/
 	}
 	
 	if (rjy_val_prev != XBC_JOY_SCALE && rjy_val == XBC_JOY_SCALE) {
+		/*
 		abs_angle_mode = false;
 		buzzer_control_note(2, 100, NOTE_C, 7);
+		*/
 	}
 	
 	rjy_val_prev = rjy_val;
@@ -181,12 +225,8 @@ static void robocon_get_xbc(void)
 	
 	/*** Serve set ***/
 	if (button_pressed(BUTTON_XBC_LB) == 1) {
-		set_serving_set(0);
-		CLICK_MUSIC;
-	}
-	
-	if (button_pressed(BUTTON_XBC_RB) == 1) {
-		set_serving_set(1);
+		// Switch serving set
+		set_serving_set(!get_serving_set());
 		CLICK_MUSIC;
 	}
 	
@@ -230,7 +270,8 @@ static void robocon_get_xbc(void)
 	/*** Ultrasonic auto mode toggle ***/
 	if (button_pressed(BUTTON_XBC_XBOX) == 1) {
 		CLICK_MUSIC;
-		us_auto_mode = !us_auto_mode;
+		//us_auto_mode = !us_auto_mode;
+		e_stop_mode = !e_stop_mode;
 	}
 	
 	/*** Anlge lock toggle ***/
@@ -380,9 +421,30 @@ void robocon_main(void)
 			}
 
 			
-			if (ticks_img % 100 == 3) {
+			if (ticks_img % 200 == 3) {
 				// Every 100 ms (10 Hz)
 				//wheel_base_tx_position();
+				// Sensor sound
+				u32 sensor_val = get_sensor();
+				switch (sensor_val / 200) {
+					case 1:
+						buzzer_control_note(20, 25, NOTE_D, 7);
+					break;
+					
+					case 2:
+					case 3:
+					case 4:
+					case 5:
+					case 6:
+						buzzer_control_note(10, 50, NOTE_D, 7);
+					break;
+					
+					case 7:
+					case 8:
+					case 9:
+						buzzer_control_note(5, 100, NOTE_D, 7);
+					break;
+				}
 			}
 			
 			if (ticks_img % 500 == 4) {
@@ -535,7 +597,8 @@ void robocon_main(void)
 				} else {
 					tft_prints(0, 4, "[(%-4d,%-4d,%-4d)]", get_pos()->x, get_pos()->y, get_pos()->angle);
 				}
-				tft_prints(0, 5, "%s", abs_angle_mode ? "[ABSOLUTE]" : "Relative");
+				//tft_prints(0, 5, "%s", abs_angle_mode ? "[ABSOLUTE]" : "Relative");
+				tft_prints(0, 5, "%d %d", gpio_read_input(NET_SENSOR_Q1), gpio_read_input(NET_SENSOR_Q2));
 				tft_prints(0, 6, "State: (%d,%d)", get_serving_cali_state(), get_serving_hit_state());
 				
 				//tft_prints(0, 6, get_serving_calibrated() ? "CALI" : "[NOT CAL!]"); 
@@ -552,6 +615,8 @@ void robocon_main(void)
 				tft_prints(0, 8, "S%d:%d,%d", get_serving_set(), get_shuttle_drop_delay(), get_serving_hit_speed());
 				
 				tft_prints(0, 9, "AV:%d", get_angle_variance());
+				
+				tft_prints(6, 9, "S:%d", get_sensor());
 				/*
 				for (u8 i = 0; i < US_AUTO_DEVICE_COUNT; ++i) {
 					u16 dist = us_get_distance(i);

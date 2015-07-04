@@ -33,6 +33,6 @@
 #include "xbc_mb.h"
 #include "nec_mb.h"
 #include "adc.h"
-
+#include "net_sensor.h"
 
 #endif /* __MAIN_H */
