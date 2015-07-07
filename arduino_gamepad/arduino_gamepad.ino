@@ -2,6 +2,7 @@
 
 #include <SoftwareSerial.h>
 #include <PS3BT.h>
+#include <PS3USB.h>
 #include <usbhub.h>
 
 // Satisfy the IDE, which needs to see the include statment in the ino too.
@@ -30,7 +31,7 @@ USB Usb;
 BTD Btd(&Usb);
 PS3BT PS3(&Btd);
 
-SoftwareSerial GamepadSerial(8, 9); // RX=Pin8, TX=Pin9
+#define GamepadSerial Serial1
 
 unsigned short gamepad_digital;
 unsigned char package_msg[8];
@@ -83,16 +84,17 @@ bool crc16(unsigned char* buffer, const unsigned char* message, int msg_l) {
   return true;
 }
 
+short scale_up_u8_s16(unsigned char input) {
+  if (input == 128)
+    return 0;
+  return (((long)input << 8)) - 32768 | input;
+}
+
 void setup() {
-  Serial.begin(115200);
-#if !defined(__MIPSEL__)
-  while (!Serial); // Wait for serial port to connect - used on Leonardo, Teensy and other boards with built-in USB CDC serial connection
-#endif
   if (Usb.Init() == -1) {
     while (1);  // halt
   }
   GamepadSerial.begin(115200);
-  Serial.println("Ready");
 }
 
 void loop() {
@@ -137,10 +139,10 @@ void loop() {
     unsigned char gamepad_right_trigger = PS3.getAnalogButton(R2);
 
     // Left & right analog joystick value
-    short gamepad_left_joy_x = ((long)PS3.getAnalogHat(LeftHatX) << 8) - 32768;
-    short gamepad_left_joy_y = ((long)PS3.getAnalogHat(LeftHatY) << 8) - 32768;
-    short gamepad_right_joy_x = ((long)PS3.getAnalogHat(RightHatX) << 8) - 32768;
-    short gamepad_right_joy_y = ((long)PS3.getAnalogHat(RightHatY) << 8) - 32768;
+    short gamepad_left_joy_x = scale_up_u8_s16(PS3.getAnalogHat(LeftHatX));
+    short gamepad_left_joy_y = scale_up_u8_s16(255 - PS3.getAnalogHat(LeftHatY));
+    short gamepad_right_joy_x = scale_up_u8_s16(PS3.getAnalogHat(RightHatX));
+    short gamepad_right_joy_y = scale_up_u8_s16(255 - PS3.getAnalogHat(RightHatY));
 
     // Send data (part 1)
     package_msg[0] = gamepad_digital;
