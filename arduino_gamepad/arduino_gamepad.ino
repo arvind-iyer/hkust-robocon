@@ -1,8 +1,6 @@
 // The program is tested on Arduino Leonardo R3.
 
-#include <SoftwareSerial.h>
 #include <PS3BT.h>
-#include <PS3USB.h>
 #include <usbhub.h>
 
 // Satisfy the IDE, which needs to see the include statment in the ino too.
@@ -34,6 +32,13 @@ PS3BT PS3(&Btd);
 #define GamepadSerial Serial1
 
 unsigned short gamepad_digital;
+unsigned char gamepad_left_trigger;
+unsigned char gamepad_right_trigger;
+short gamepad_left_joy_x;
+short gamepad_left_joy_y;
+short gamepad_right_joy_x;
+short gamepad_right_joy_y;
+    
 unsigned char package_msg[8];
 unsigned char package_crc[2];
 
@@ -135,15 +140,16 @@ void loop() {
       gamepad_digital |= PS3_TRIANGLE;
 
     // L2, R2 triggers
-    unsigned char gamepad_left_trigger = PS3.getAnalogButton(L2);
-    unsigned char gamepad_right_trigger = PS3.getAnalogButton(R2);
+    gamepad_left_trigger = PS3.getAnalogButton(L2);
+    gamepad_right_trigger = PS3.getAnalogButton(R2);
 
     // Left & right analog joystick value
-    short gamepad_left_joy_x = scale_up_u8_s16(PS3.getAnalogHat(LeftHatX));
-    short gamepad_left_joy_y = scale_up_u8_s16(255 - PS3.getAnalogHat(LeftHatY));
-    short gamepad_right_joy_x = scale_up_u8_s16(PS3.getAnalogHat(RightHatX));
-    short gamepad_right_joy_y = scale_up_u8_s16(255 - PS3.getAnalogHat(RightHatY));
-
+    gamepad_left_joy_x = scale_up_u8_s16(PS3.getAnalogHat(LeftHatX));
+    gamepad_left_joy_y = scale_up_u8_s16(255 - PS3.getAnalogHat(LeftHatY));
+    gamepad_right_joy_x = scale_up_u8_s16(PS3.getAnalogHat(RightHatX));
+    gamepad_right_joy_y = scale_up_u8_s16(255 - PS3.getAnalogHat(RightHatY));
+  }
+  if (PS3.PS3Connected) {
     // Send data (part 1)
     package_msg[0] = gamepad_digital;
     package_msg[1] = gamepad_digital >> 8;
