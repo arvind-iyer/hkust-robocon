@@ -39,7 +39,45 @@ bool encoder_failed=0;
 
 void serve_timer_init(void)
 {
+	// Timer init
+	NVIC_InitTypeDef NVIC_InitStructure;
+	TIM_TimeBaseInitTypeDef  TIM_TimeBaseStructure;      									// TimeBase is for timer setting   > refer to P. 344 of library
+	TIM_OCInitTypeDef  TIM_OCInitStructure;   
 
+	RCC_APB1PeriphClockCmd(SERVING_TIM_RCC, ENABLE);
+	RCC_APB2PeriphClockCmd(RCC_APB2Periph_AFIO, ENABLE);
+
+	TIM_TimeBaseStructure.TIM_Period = 65535;	                				       
+	TIM_TimeBaseStructure.TIM_Prescaler = SystemCoreClock / 10000 - 1;	// 10000Hz    
+	TIM_TimeBaseStructure.TIM_ClockDivision = TIM_CKD_DIV1;
+	TIM_TimeBaseStructure.TIM_CounterMode = TIM_CounterMode_Up;  
+	TIM_TimeBaseInit(SERVING_TIM, &TIM_TimeBaseStructure);
+
+	TIM_ARRPreloadConfig(SERVING_TIM, ENABLE);
+	//TIM_Cmd(SERVING_TIM, ENABLE);	
+
+	// Make use of output compare (CCx interrupt) 
+	TIM_OCInitStructure.TIM_OCPolarity = TIM_OCPolarity_High;         //set "high" to be effective output
+	TIM_OCInitStructure.TIM_OCMode = TIM_OCMode_PWM1;	             //produce output when counter < CCR
+	//TIM_OCInitStructure.TIM_Pulse = SERVING_SHUTTLECOCK_DROPPING_TIME;                               // this part sets the initial CCR value
+	TIM_OCInitStructure.TIM_OutputState = TIM_OutputState_Enable;    // this part enable the output
+
+	TIM_OC1Init(SERVING_TIM, &TIM_OCInitStructure); 
+	TIM_OC1PreloadConfig(SERVING_TIM, TIM_OCPreload_Disable); 				// Enable CCR to be reset
+
+	TIM_ITConfig(SERVING_TIM, TIM_IT_CC1, DISABLE);	
+	TIM_ClearFlag(SERVING_TIM, TIM_IT_CC1);
+	TIM_ClearITPendingBit(SERVING_TIM, TIM_IT_CC1);												 // Clear Interrupt bits	 // Counter Enable
+
+	TIM_SetCounter(SERVING_TIM, 0);
+	TIM_Cmd(SERVING_TIM, DISABLE);
+
+	// Serving_IRQn NVIC init
+	NVIC_InitStructure.NVIC_IRQChannelPreemptionPriority = 0;
+	NVIC_InitStructure.NVIC_IRQChannelSubPriority = 0;
+	NVIC_InitStructure.NVIC_IRQChannelCmd = ENABLE;
+	NVIC_InitStructure.NVIC_IRQChannel = SERVING_IRQn;
+	NVIC_Init(&NVIC_InitStructure);
 }
 
 // private functions
@@ -107,13 +145,14 @@ void serve_update(void)
 	*		Serve start mechanism
 	*/
 	// wait for serve que, and hit the racket
+	/*
 	if (serve_hit_queued && get_full_ticks()>=serve_start_time+SERVE_DELAY[SERVE_ID])
 	{
 		buzzer_play_song(CLICK, 100, 0);
 		serve_hit();
 		log("serve_hit",serve_hit_start_time);
 	}
-	
+	*/
 	
 	/**
 	*		Serve termination mechanisms
@@ -221,14 +260,41 @@ void serve_start(u8 id)
 		serve_hit_queued = 1;
 		SERVE_ID = id;
 		
+		if (SERVE_DELAY[SERVE_ID] == 0) {return;} 
+		
 		serve_pneu_set(0, false);
 		serve_pneu_set(1, false);
 		serve_pneu_set(SERVE_ID, true);
+		
+		TIM_SetCompare1(SERVING_TIM, SERVE_DELAY[SERVE_ID] * 10);		// Set CC1 CCR Value
+		TIM_SetCounter(SERVING_TIM, 1);										// Reset counter
+		TIM_Cmd(SERVING_TIM, ENABLE);
+		TIM_ITConfig(SERVING_TIM, TIM_IT_CC1, ENABLE);		// Interrupt for CC1
+		TIM_ClearFlag(SERVING_TIM, TIM_IT_CC1);
+		TIM_ClearITPendingBit(SERVING_TIM, TIM_IT_CC1);
 		
 		serve_start_time = get_full_ticks();
 	}
 }
 
+SERVING_IRQn_Handler
+{
+  if (TIM_GetITStatus(SERVING_TIM, TIM_IT_CC1) != RESET) {
+    TIM_ClearFlag(SERVING_TIM, TIM_IT_CC1);
+		TIM_ClearITPendingBit(SERVING_TIM, TIM_IT_CC1);
+		
+		TIM_ITConfig(SERVING_TIM, TIM_IT_CC1, DISABLE);
+		TIM_Cmd(SERVING_TIM, DISABLE);
+				
+		if (serve_hit_queued) {
+			buzzer_control_note(1, 400, NOTE_G, 7);
+			serve_hit();
+			//log("serve_hit",serve_hit_start_time);
+		}
+	}
+}
+
+	
 void serve_calibrate(void)
 {
 	if (!calibrate_in_process && !hitting && !serve_hit_queued)
@@ -261,16 +327,17 @@ void serve_hit(void)
 {
 	if (serve_hit_queued)
 	{
-		serve_pneu_set(0, false);
-		serve_pneu_set(1, false);
-		
 		hitting = 1;
 		calibrated=0;
 		serve_hit_queued=0;
+		
+		serve_pneu_set(0, false);
+		serve_pneu_set(1, false);
 		if (!encoder_failed)
 			motor_set_vel(RACKET, SERVE_HIT_VEL[SERVE_ID]/10,CLOSE_LOOP);	//racket calibrate function takes a direct control over the motor
 		else
 			motor_set_vel(RACKET,(SERVE_HIT_VEL[SERVE_ID]*21)/20,OPEN_LOOP);
+
 		serve_hit_start_time = get_full_ticks();
 	}
 	

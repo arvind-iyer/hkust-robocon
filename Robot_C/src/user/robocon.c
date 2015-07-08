@@ -502,9 +502,11 @@ void robocon_main(void)
 	serve_free();
 	
 	#if (ROBOT == 'D')
+	serve_timer_init();
 	gpio_init(SERVE_PNEU0_GPIO,  GPIO_Speed_10MHz, GPIO_Mode_Out_PP, 1);		// Serve pneumatric GPIO Robot D, GEN2
 	gpio_init(SERVE_PNEU1_GPIO,  GPIO_Speed_10MHz, GPIO_Mode_Out_PP, 1);		// Serve pneumatric GPIO Robot D, GEN2. MOSFET burnt
-	gpio_init(SERVE_PNEU_GPIO_BACKUP,  GPIO_Speed_10MHz, GPIO_Mode_Out_PP, 1);	
+	gpio_init(SERVE_PNEU0_GPIO_BACKUP,  GPIO_Speed_10MHz, GPIO_Mode_Out_PP, 1);	
+	gpio_init(SERVE_PNEU1_GPIO_BACKUP,  GPIO_Speed_10MHz, GPIO_Mode_Out_PP, 1);	
 	
 	gpio_init(PNEU_GPIO, GPIO_Speed_10MHz, GPIO_Mode_Out_PP, 1);		// pneu matic GPIO
 	

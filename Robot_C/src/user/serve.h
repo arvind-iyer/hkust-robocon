@@ -17,15 +17,22 @@
 #define SERVE_PNEU0_GPIO &PE15//&PD9
 #define	SERVE_PNEU1_GPIO &PE12
 
-#define SERVE_PNEU_GPIO_BACKUP &PD9
+#define SERVE_PNEU0_GPIO_BACKUP &PD9
+#define	SERVE_PNEU1_GPIO_BACKUP &PB9
 
 #define	SERVE_PNEU_TEST		&PE5
 #define	SERVE_SET_COUNT			2
 
 #define ENCODER_THRESHOLD 	-8500
 
+#define SERVING_TIM							TIM4
+#define SERVING_TIM_RCC					RCC_APB1Periph_TIM4
+#define SERVING_IRQn						TIM4_IRQn
+#define	SERVING_IRQn_Handler		void TIM4_IRQHandler(void)
+
 static u32 SERVE_HIT_TIMEOUT = 140;	// maximum serve duration.
 
+void serve_timer_init(void);
 void serve_update(void);
 
 // interface
