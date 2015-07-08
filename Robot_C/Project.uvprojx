@@ -469,9 +469,9 @@
               <FilePath>.\src\user\flash.c</FilePath>
             </File>
             <File>
-              <FileName>ultrasounic.c</FileName>
+              <FileName>ultrasonic.c</FileName>
               <FileType>1</FileType>
-              <FilePath>.\src\user\ultrasounic.c</FilePath>
+              <FilePath>.\src\user\ultrasonic.c</FilePath>
             </File>
           </Files>
         </Group>

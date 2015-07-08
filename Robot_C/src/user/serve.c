@@ -3,9 +3,10 @@
 
 
 //racket variables
-static s32 SERVE_CAL_VEL = -260 ;		
-static s32 SERVE_HIT_VEL = 1300;			//can be changed by controller
-static u32 SERVE_DELAY = 280;			// can be changed by controller
+static s32 SERVE_CAL_VEL = -260;		
+static s32 SERVE_HIT_VEL[SERVE_SET_COUNT] = {1300};			//can be changed by controller
+static u32 SERVE_DELAY[SERVE_SET_COUNT] = {280};			// can be changed by controller
+static u8  SERVE_ID = 0;
 
 static s32 init_encoder_reading = 8000;	// will be kept updating according to the switch. Encoder value at switch location.
 u32 prev_encoder_reading=0;
@@ -36,6 +37,11 @@ bool auto_serve_queued = 0;			// when you press auto-serve
 bool encoder_failed=0;
 
 
+void serve_timer_init(void)
+{
+
+}
+
 // private functions
 
 // locks motor immediately
@@ -51,6 +57,20 @@ void racket_lock()
 }
 
 
+void serve_pneu_set(u8 id, u8 flag)
+{
+	if (id >= SERVE_SET_COUNT) {return;}
+	gpio_write((id == 0) ? SERVE_PNEU0_GPIO : SERVE_PNEU1_GPIO, (BitAction) flag);
+	is_released = flag;
+}
+
+void serve_pneu_toggle(void)
+{
+	if (hitting) {return;} 
+	is_released = !is_released;
+	serve_pneu_set(0, !is_released);
+	serve_pneu_set(1, !is_released);
+}
 
 // serve update, included in racket update
 void serve_update(void)
@@ -79,7 +99,7 @@ void serve_update(void)
 	}
 	if (auto_serve_queued && calibrated)
 	{
-		serve_start();
+		serve_start(0);
 		auto_serve_queued=0;
 	}
 	
@@ -87,7 +107,7 @@ void serve_update(void)
 	*		Serve start mechanism
 	*/
 	// wait for serve que, and hit the racket
-	if (serve_hit_queued && get_full_ticks()>=serve_start_time+SERVE_DELAY)
+	if (serve_hit_queued && get_full_ticks()>=serve_start_time+SERVE_DELAY[SERVE_ID])
 	{
 		buzzer_play_song(CLICK, 100, 0);
 		serve_hit();
@@ -132,7 +152,7 @@ void serve_update(void)
 				encoder_failed=1;
 				if (hitting)
 				{
-					motor_set_vel(RACKET,(SERVE_HIT_VEL*11)/10,OPEN_LOOP);
+					motor_set_vel(RACKET,(SERVE_HIT_VEL[SERVE_ID]*11)/10,OPEN_LOOP);
 				}
 				FAIL_MUSIC;
 			}
@@ -192,12 +212,18 @@ void serve_free(void)
 	motor_set_vel(RACKET, 0, OPEN_LOOP);
 }
 
-void serve_start(void)
+void serve_start(u8 id)
 {
+	if (id >= SERVE_SET_COUNT) {return;} 
+	
 	if (!is_released && calibrated && !serve_hit_queued && !hitting && !calibrate_in_process)
 	{
 		serve_hit_queued = 1;
-		toggle_serve_pneu();
+		SERVE_ID = id;
+		
+		serve_pneu_set(0, false);
+		serve_pneu_set(1, false);
+		serve_pneu_set(SERVE_ID, true);
 		
 		serve_start_time = get_full_ticks();
 	}
@@ -207,6 +233,10 @@ void serve_calibrate(void)
 {
 	if (!calibrate_in_process && !hitting && !serve_hit_queued)
 	{
+		// Close all valves
+		serve_pneu_set(0, false);
+		serve_pneu_set(1, false);
+		
 		serve_calibrate_start_time=get_full_ticks();
 		motor_set_vel(RACKET, SERVE_CAL_VEL, OPEN_LOOP);	//racket calibrate function takes a direct control over the motor
 		calibrate_in_process=1;
@@ -214,27 +244,33 @@ void serve_calibrate(void)
 	}
 }
 
+/*
 void toggle_serve_pneu(void)
 {
-	gpio_write(SERVE_PNEU_GPIO, !is_released);
-	gpio_write(SERVE_PNEU_GPIO_BACKUP, !is_released);
+	//gpio_write(SERVE_PNEU_GPIO, !is_released);
+	//gpio_write(SERVE_PNEU2_GPIO, !is_released);
+	//gpio_write(SERVE_PNEU_GPIO_BACKUP, !is_released);
 	is_released=!is_released;
 	//log((is_released?"ball release! ":"hold ball"),0);
 }
+*/
+
+
 
 void serve_hit(void)
 {
 	if (serve_hit_queued)
 	{
-		toggle_serve_pneu();
+		serve_pneu_set(0, false);
+		serve_pneu_set(1, false);
 		
 		hitting = 1;
 		calibrated=0;
 		serve_hit_queued=0;
 		if (!encoder_failed)
-			motor_set_vel(RACKET, SERVE_HIT_VEL/10,CLOSE_LOOP);	//racket calibrate function takes a direct control over the motor
+			motor_set_vel(RACKET, SERVE_HIT_VEL[SERVE_ID]/10,CLOSE_LOOP);	//racket calibrate function takes a direct control over the motor
 		else
-			motor_set_vel(RACKET,(SERVE_HIT_VEL*21)/20,OPEN_LOOP);
+			motor_set_vel(RACKET,(SERVE_HIT_VEL[SERVE_ID]*21)/20,OPEN_LOOP);
 		serve_hit_start_time = get_full_ticks();
 	}
 	
@@ -247,9 +283,9 @@ void fake_serve_start(void)
 		calibrated=0;
 		serve_hit_queued=0;
 		if (!encoder_failed)
-			motor_set_vel(RACKET, SERVE_HIT_VEL/10,CLOSE_LOOP);	//racket calibrate function takes a direct control over the motor
+			motor_set_vel(RACKET, SERVE_HIT_VEL[SERVE_ID]/10,CLOSE_LOOP);	//racket calibrate function takes a direct control over the motor
 		else
-			motor_set_vel(RACKET,(SERVE_HIT_VEL*21)/20,OPEN_LOOP);
+			motor_set_vel(RACKET,(SERVE_HIT_VEL[SERVE_ID]*21)/20,OPEN_LOOP);
 		serve_hit_start_time=get_full_ticks();
 		
 	}
@@ -262,7 +298,7 @@ void start_auto_serve(void)	// auto calibration before serve.
 	{
 		auto_serve_queued=1;
 		if (!calibrated){serve_calibrate();}
-		else {serve_start();
+		else {serve_start(0);
 		auto_serve_queued=0;}
 		
 	}
@@ -271,37 +307,47 @@ void start_auto_serve(void)	// auto calibration before serve.
 }
 /*************getter and setter functions ***********************/
 
-void serve_change_delay(s16 val)
+void serve_change_delay(u8 id, s16 val)
 {
-	SERVE_DELAY+=val;
+	if (id >= SERVE_SET_COUNT) {return;}
+	SERVE_DELAY[id]+=val;
 }
 
-void serve_change_vel(s16 val)
+void serve_change_vel(u8 id, s16 val)
 {
-	SERVE_HIT_VEL+=val;
+	if (id >= SERVE_SET_COUNT) {return;}
+	SERVE_HIT_VEL[id]+=val;
 }
 
-void serve_set_delay(s16 delay)
+void serve_set_delay(u8 id, s16 delay)
 {
-	SERVE_DELAY = delay;
+	if (id >= SERVE_SET_COUNT) {return;}
+	SERVE_DELAY[id] = delay;
 }
 
-void serve_set_vel(s16 vel)
+void serve_set_vel(u8 id, s16 vel)
 {
-	SERVE_HIT_VEL = vel;
+	if (id >= SERVE_SET_COUNT) {return;}
+	SERVE_HIT_VEL[id] = vel;
 }
 
-s32 serve_get_vel(void)
+s32 serve_get_vel(u8 id)
 {
-	return SERVE_HIT_VEL;
+	if (id >= SERVE_SET_COUNT) {return 0;}
+	return SERVE_HIT_VEL[id];
 }
 
-u32 serve_get_delay(void)
+u32 serve_get_delay(u8 id)
 {
-	return SERVE_DELAY;
+	if (id >= SERVE_SET_COUNT) {return 0;}
+	return SERVE_DELAY[id];
 }
 
 bool serve_prioritized(void)
 {
-	return ROBOT=='D' && (serve_hit_queued || hitting || calibrate_in_process);
+	#if (ROBOT == 'D')
+		return (serve_hit_queued || hitting || calibrate_in_process);
+	#elif
+		return false;
+	#endif
 }

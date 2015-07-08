@@ -47,8 +47,9 @@ const u16 DEFAULT_DELAY = 270;
 
 
 const u16 ACCELBOOSTER_OFFSET = 0;
-const u16 SERVE_VEL_OFFSET = 1;
-const u16 SERVE_DELAY_OFFSET = 2;
+const u16 SERVE_VEL_OFFSET[SERVE_SET_COUNT] = {1, 2};
+const u16 SERVE_DELAY_OFFSET[SERVE_SET_COUNT] = {3, 4};
+
 
 bool is_force_terminate(void)
 {
@@ -102,7 +103,7 @@ bool robot_xbc_controls(void)
 	#endif
 	
 	// Violation prevention
-	if (ROBOT == 'C') {
+	#if (ROBOT == 'C') 
 		const int allowed_speed = XBC_JOY_SCALE / 3;
 		if (vy > 0 && is_force_stop() && is_force_decel()) {
 			// Force stop
@@ -113,11 +114,17 @@ bool robot_xbc_controls(void)
 			vy = vy * allowed_speed / XBC_JOY_SCALE;
       CLICK_MUSIC;
 		}
-	}
+	#endif
 	
 	// Spining velocity
   int omega = (xbc_get_joy(XBC_JOY_RT)-xbc_get_joy(XBC_JOY_LT))/5;
-	const int speed_factor = ROBOT=='C'?6:10;
+	const int speed_factor = 
+	#if (ROBOT == 'C') 
+		6
+	#else 
+		10
+	#endif
+	;
 
 	// Accumulated the floating value
   accumulated_omega += omega % speed_factor;
@@ -153,10 +160,11 @@ bool robot_xbc_controls(void)
 	}
 	
 	robot_cd_common_function();
-	if (ROBOT=='C')
+	#if (ROBOT=='C')
 	 	robot_c_function_controls();
-	if (ROBOT=='D')
+	#elif (ROBOT=='D')
 		robot_d_function_controls();
+	#endif
 	
 	return true;
 }
@@ -187,6 +195,7 @@ static void robot_cd_common_function(void)
 	}	
 }
 
+#if (ROBOT == 'C')
 void robot_c_function_controls(void)
 {
 	/* Sensor is not in use now
@@ -243,7 +252,9 @@ void robot_c_function_controls(void)
 	//if(button_pressed(BUTTON_XBC_Y))
 	//	minus_y();
 }
+#endif
 
+#if (ROBOT == 'D') 
 void robot_d_function_controls(void)
 {
 	//Racket Hit
@@ -253,33 +264,56 @@ void robot_d_function_controls(void)
 		racket_hit(500);
 	//Calibrate
 	else if (button_pressed(BUTTON_XBC_LB) && button_pressed(BUTTON_XBC_B))
-		fake_serve_start();
+		serve_start(1);
 	else if(button_pressed(BUTTON_XBC_B))
-		serve_start();
+		serve_start(0);
 	else if(button_pressed(BUTTON_XBC_X))//Not essential
 		serve_calibrate();
-	// change serve varibales
+		
+	if (button_pressed(BUTTON_XBC_Y))  {
+		// serve varibales 1
+		if (!button_pressed(BUTTON_XBC_LB)) { 
+			if (button_pressed(BUTTON_XBC_N) && serve_get_delay(0) < MAX_DELAY)
+				serve_change_delay(0, 1);
+			else if (button_pressed(BUTTON_XBC_S) && serve_get_delay(0) > MIN_DELAY)
+				serve_change_delay(0, -1);
+			else if (button_pressed(BUTTON_XBC_W) && serve_get_vel(0) > MIN_VEL)
+				serve_change_vel(0, -2);
+				//plus_x();
+			else if (button_pressed(BUTTON_XBC_E) && serve_get_vel(0) < MAX_VEL)
+				serve_change_vel(0, 2);
+		}
+		
+		// serve variable 2
+		if (button_pressed(BUTTON_XBC_LB)) { 
+			if (button_pressed(BUTTON_XBC_N) && serve_get_delay(1) < MAX_DELAY)
+				serve_change_delay(1, 1);
+			else if (button_pressed(BUTTON_XBC_S) && serve_get_delay(1) > MIN_DELAY)
+				serve_change_delay(1, -1);
+			else if (button_pressed(BUTTON_XBC_W) && serve_get_vel(1) > MIN_VEL)
+				serve_change_vel(1, -2);
+				//plus_x();
+			else if (button_pressed(BUTTON_XBC_E) && serve_get_vel(1) < MAX_VEL)
+				serve_change_vel(1, 2);
+		}
 	
-	if (button_pressed(BUTTON_XBC_N) && button_pressed(BUTTON_XBC_Y) && serve_get_delay() < MAX_DELAY)
-		serve_change_delay(1);
-	else if (button_pressed(BUTTON_XBC_S) && button_pressed(BUTTON_XBC_Y) && serve_get_delay() > MIN_DELAY)
-		serve_change_delay(-1);
-	else if (button_pressed(BUTTON_XBC_W) && button_pressed(BUTTON_XBC_Y) && serve_get_vel() > MIN_VEL)
-		serve_change_vel(-2);
-		//plus_x();
-	else if (button_pressed(BUTTON_XBC_E) && button_pressed(BUTTON_XBC_Y) && serve_get_vel() < MAX_VEL)
-		serve_change_vel(2);
+	}
+	
 		//minus_x();
 	// acceleration rate tunning.
 	else if (button_pressed(BUTTON_XBC_E) && accel_booster < MAX_ACCEL_BOOST) {
 		++accel_booster;
 	} else if (button_pressed(BUTTON_XBC_W) && accel_booster > MIN_ACCEL_BOOST){
 		--accel_booster;
-	} else if (button_released(BUTTON_XBC_E) == 1 || (button_released(BUTTON_XBC_W)) == 1) {
+	}
+	
+	if (button_released(BUTTON_XBC_E) == 1 || (button_released(BUTTON_XBC_W)) == 1) {
 		write_flash(ACCELBOOSTER_OFFSET, accel_booster);
-		write_flash(SERVE_VEL_OFFSET, serve_get_vel());
+		write_flash(SERVE_VEL_OFFSET[0], serve_get_vel(0));
+		write_flash(SERVE_VEL_OFFSET[1], serve_get_vel(1));
 	} else if (button_released(BUTTON_XBC_N) == 1 || (button_released(BUTTON_XBC_S)) == 1) {
-		write_flash(SERVE_DELAY_OFFSET, serve_get_delay());
+		write_flash(SERVE_DELAY_OFFSET[0], serve_get_delay(0));
+		write_flash(SERVE_DELAY_OFFSET[1], serve_get_delay(1));
 	}
 	
 	if (button_pressed(BUTTON_XBC_START))
@@ -288,12 +322,12 @@ void robot_d_function_controls(void)
 	}
 	
 	/*manual pneumatic trigger*/
-	if (serve_pneu_button_enabled && gpio_read_input(&PE5))
+	if (serve_pneu_button_enabled && gpio_read_input(SERVE_PNEU_TEST))
 	{
 		serve_pneu_button_enabled=0;
-		toggle_serve_pneu();
+		serve_pneu_toggle();
 	}
-	if (!gpio_read_input(&PE5))
+	if (!gpio_read_input(SERVE_PNEU_TEST))
 	{
 		serve_pneu_button_enabled=1;
 	}
@@ -350,7 +384,7 @@ void robot_d_function_controls(void)
 		racket_hit(500);
 	}
 }
-
+#endif
 
 static void handle_bluetooth_input(void)
 {
@@ -367,50 +401,54 @@ static void handle_bluetooth_input(void)
 				racket_hit(500);
 			break;
 			case 'j':
-				if (ROBOT=='C')
+				#if (ROBOT=='C')
 					racket_down_hit();
+				#endif
 			break;
 			case 'l':
-				if(ROBOT == 'D')
+				#if (ROBOT == 'D')
 					serve_calibrate();
+				#endif
 			break;
 			case 'o':
-				if(ROBOT == 'D')
+				#if (ROBOT == 'D')
 					motor_lock(RACKET);
+				#endif
 			break;
 			case 'y':
-				if(ROBOT == 'D'){
+				#if (ROBOT == 'D')
 				//is_laser_serve_enabled(1);
-					toggle_serve_pneu();
-				}
+					serve_pneu_toggle();
+				#endif
 				break;
 			case 'u'://Normal Serve
-				if(ROBOT == 'D'){
+				#if (ROBOT == 'D')
 				//is_laser_serve_enabled(0);
-					serve_start();
-				}
+					serve_start(0);
+				#endif
 				
 				break;
 			
 			case 'p':
-				if(ROBOT == 'D')
-				serve_free();
-				key_trigger_enable = true;
+				#if (ROBOT == 'D')
+					serve_free();
+					key_trigger_enable = true;
+				#endif
 			break;
 			case '=':
 				//For both robots
-				serve_change_vel(2);
+				//serve_change_vel(2);
 				key_trigger_enable = true;
 				break;
 			case '-':
-				serve_change_vel(-2);
+				//serve_change_vel(-2);
 				key_trigger_enable = true;
 				break;
 			case '.':
-				serve_change_delay(+5);
+				//serve_change_delay(+5);
 				break;
 			case ',':
-				serve_change_delay(-5);
+				//serve_change_delay(-5);
 				break;
 			case '[':		//only temporary
 				//plus_x();
@@ -462,20 +500,25 @@ void robocon_main(void)
   // Send the acceleration data
 	wheel_base_tx_acc();
 	serve_free();
-	gpio_init(&PD9,  GPIO_Speed_10MHz, GPIO_Mode_Out_PP, 1);		// Serve pneumatric GPIO Robot D, GEN2
-	gpio_init(&PE15,  GPIO_Speed_10MHz, GPIO_Mode_Out_PP, 1);		// Serve pneumatric GPIO Robot D, GEN2. MOSFET burnt
-	gpio_init(&PD10, GPIO_Speed_10MHz, GPIO_Mode_Out_PP, 1);		// pneu matic GPIO
+	
+	#if (ROBOT == 'D')
+	gpio_init(SERVE_PNEU0_GPIO,  GPIO_Speed_10MHz, GPIO_Mode_Out_PP, 1);		// Serve pneumatric GPIO Robot D, GEN2
+	gpio_init(SERVE_PNEU1_GPIO,  GPIO_Speed_10MHz, GPIO_Mode_Out_PP, 1);		// Serve pneumatric GPIO Robot D, GEN2. MOSFET burnt
+	gpio_init(SERVE_PNEU_GPIO_BACKUP,  GPIO_Speed_10MHz, GPIO_Mode_Out_PP, 1);	
+	
+	gpio_init(PNEU_GPIO, GPIO_Speed_10MHz, GPIO_Mode_Out_PP, 1);		// pneu matic GPIO
 	
 	
-	gpio_init(&PE11, GPIO_Speed_10MHz, GPIO_Mode_IPU, 1);	// Mechanical switch ROBOT D Gen2
-	gpio_init(&PE5, GPIO_Speed_10MHz, GPIO_Mode_IPU, 1);	// Shuttlecock Holder button for ROBOT D Gen2
+	gpio_init(SERVE_SWITCH, GPIO_Speed_10MHz, GPIO_Mode_IPU, 1);	// Mechanical switch ROBOT D Gen2
+	gpio_init(SERVE_PNEU_TEST, GPIO_Speed_10MHz, GPIO_Mode_IPU, 1);	// Shuttlecock Holder button for ROBOT D Gen2
 	gpio_init(&PE3, GPIO_Speed_10MHz, GPIO_Mode_IPU, 1);	// Emergency serve button for ROBOT D Gen2
-
+	#endif
 	gpio_init(&PA4,GPIO_Speed_50MHz, GPIO_Mode_IPD,1);		// laser sensor
 	gpio_init(&PA6,GPIO_Speed_50MHz, GPIO_Mode_IPD,1);	// laser sensor grid 2
 	gpio_init(&PA7,GPIO_Speed_50MHz, GPIO_Mode_IPD,1);	// laser sensor grid 3
 	
-	toggle_serve_pneu();
+	serve_pneu_set(0, false);
+	serve_pneu_set(1, false);
 	racket_pneumatic_set(0);
 	racket_pneumatic_2_set(0);
 	
@@ -485,27 +528,43 @@ void robocon_main(void)
 	// Read from flash
 	accel_booster = read_flash(ACCELBOOSTER_OFFSET);
 	
-	if (ROBOT == 'D') {
-		serve_set_vel(read_flash(SERVE_VEL_OFFSET));
-		serve_set_delay(read_flash(SERVE_DELAY_OFFSET));
-	}
+	#if (ROBOT == 'D') 
+		serve_set_vel(0, read_flash(SERVE_VEL_OFFSET[0]));
+		serve_set_delay(0, read_flash(SERVE_DELAY_OFFSET[0]));
+		
+		serve_set_vel(1, read_flash(SERVE_VEL_OFFSET[1]));
+		serve_set_delay(1, read_flash(SERVE_DELAY_OFFSET[1]));
+		
+	#endif
+	
 	// if no memory, set to default value and save it
 	if (accel_booster < MIN_ACCEL_BOOST || accel_booster > MAX_ACCEL_BOOST) {
 		accel_booster = DEFAULT_ACCEL_BOOST;
 		write_flash(ACCELBOOSTER_OFFSET, accel_booster);
 	}
-	if (ROBOT == 'D') {
-		if (serve_get_vel() < MIN_VEL || serve_get_vel() > MAX_VEL) {
-			serve_set_vel(DEFAULT_VEL);
-			write_flash(SERVE_VEL_OFFSET, serve_get_vel());
-
+	
+	#if (ROBOT == 'D') 
+	// Protection
+		if (serve_get_vel(0) < MIN_VEL || serve_get_vel(0) > MAX_VEL) {
+			serve_set_vel(0, DEFAULT_VEL);
+			write_flash(SERVE_VEL_OFFSET[0], serve_get_vel(0)); 
 		}
 		
-		if (serve_get_delay() < MIN_DELAY || serve_get_delay() > MAX_DELAY) {
-			serve_set_delay(DEFAULT_DELAY);
-			write_flash(SERVE_DELAY_OFFSET, serve_get_delay());
+		if (serve_get_delay(0) < MIN_DELAY || serve_get_delay(0) > MAX_DELAY) {
+			serve_set_delay(0, DEFAULT_DELAY);
+			write_flash(SERVE_DELAY_OFFSET[0], serve_get_delay(0));
 		}
-	}
+		
+		if (serve_get_vel(1) < MIN_VEL || serve_get_vel(1) > MAX_VEL) {
+			serve_set_vel(1, DEFAULT_VEL);
+			write_flash(SERVE_VEL_OFFSET[1], serve_get_vel(1)); 
+		}
+		
+		if (serve_get_delay(1) < MIN_DELAY || serve_get_delay(1) > MAX_DELAY) {
+			serve_set_delay(1, DEFAULT_DELAY);
+			write_flash(SERVE_DELAY_OFFSET[1], serve_get_delay(1));
+		}
+	#endif
 	
 	
 	while (1) {
@@ -577,15 +636,14 @@ void robocon_main(void)
 
 				tft_prints(0, 1, "V:(%3d,%3d,%3d)", vel.x, vel.y, vel.w);
 				//tft_prints(0, 2, "Speed: %d", wheel_base_get_speed_mode());
-				if (ROBOT == 'D') {
+				#if (ROBOT == 'D')
 					tft_prints(0,2,"Encoder: %d", get_encoder_value(RACKET));
-					tft_prints(0,3,"Serve_delay: %d",serve_get_delay());
-					tft_prints(0,4,"Racket: %d", serve_get_vel());
-				} else {
+					tft_prints(0,3,"S0:%3d %3d", serve_get_delay(0), serve_get_vel(0));
+					tft_prints(0,4,"S1:%3d %3d", serve_get_delay(1), serve_get_vel(1));
+				#else
           tft_prints(0,2,"Decel: %d", is_force_decel());
           tft_prints(0,3,"Stop: %d", is_force_stop());
-          
-        }
+        #endif
 				
 				tft_prints(0,5,"Target: %d", wheel_base_get_target_pos().angle);
 				tft_prints(0,6,"Angle: %d", get_pos()->angle);
