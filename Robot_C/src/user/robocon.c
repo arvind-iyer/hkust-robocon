@@ -228,11 +228,11 @@ void robot_c_function_controls(void)
 		gyro_cal();
 	}
 	
-	if (button_pressed(BUTTON_XBC_E) && accel_booster < MAX_ACCEL_BOOST) {
+	if ((button_pressed(BUTTON_XBC_E) == 1 || button_pressed(BUTTON_XBC_E) >= 50) && accel_booster < MAX_ACCEL_BOOST) {
 		++accel_booster;
-	} else if (button_pressed(BUTTON_XBC_W) && accel_booster > MIN_ACCEL_BOOST){
+	} else if (button_pressed(BUTTON_XBC_W) == 1|| button_pressed(BUTTON_XBC_W) >= 50) && accel_booster > MIN_ACCEL_BOOST){
 		--accel_booster;
-	} else if (button_released(BUTTON_XBC_E) == 1|| (button_released(BUTTON_XBC_W)) == 1) {
+	} else if (button_released(BUTTON_XBC_E) == 1 || (button_released(BUTTON_XBC_W)) == 1) {
 		write_flash(ACCELBOOSTER_OFFSET, accel_booster);
 	}
 	
@@ -301,9 +301,9 @@ void robot_d_function_controls(void)
 	
 		//minus_x();
 	// acceleration rate tunning.
-	else if (button_pressed(BUTTON_XBC_E) && accel_booster < MAX_ACCEL_BOOST) {
+	else if ((button_pressed(BUTTON_XBC_E) == 1 || button_pressed(BUTTON_XBC_E) >= 50) && accel_booster < MAX_ACCEL_BOOST) {
 		++accel_booster;
-	} else if (button_pressed(BUTTON_XBC_W) && accel_booster > MIN_ACCEL_BOOST){
+	} else if ((button_pressed(BUTTON_XBC_W) == 1 || button_pressed(BUTTON_XBC_W) >= 50) && accel_booster > MIN_ACCEL_BOOST){
 		--accel_booster;
 	}
 	

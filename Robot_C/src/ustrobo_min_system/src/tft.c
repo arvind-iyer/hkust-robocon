@@ -644,6 +644,8 @@ void tft_update(void)
 		}
 	}
 
+	#warning tft printing disabled
+	/*
 	switch (tft_orientation) {
 		case 0:
 			for (y = 0; y < CHAR_MAX_Y_VERTICAL; y++) {
@@ -754,7 +756,8 @@ void tft_update(void)
 			}
 			break;
 	}
-  
+  */
+	
   if (tft_update_trigger_fx != 0) {
     tft_update_trigger_fx(); 
   }
