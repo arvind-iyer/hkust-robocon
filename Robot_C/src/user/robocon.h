@@ -44,6 +44,7 @@
 #define BR_ACC_FAC			ROBOT=='C'?50:27 
 #define BL_ACC_FAC			ROBOT=='C'?50:27 
 
+#define	E_STOP_BUTTON		(&PE3)
 static void robot_cd_common_function(void);
 bool is_force_terminate(void);
 void robocon_main(void);

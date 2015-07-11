@@ -12,7 +12,7 @@
 #include "gpio.h"
 #include "robocon.h"
 
-#define SERVE_SWITCH &PE11
+#define SERVE_SWITCH &PE11 
 #define RACKET MOTOR5
 #define SERVE_PNEU0_GPIO &PE15//&PD9
 #define	SERVE_PNEU1_GPIO &PE12

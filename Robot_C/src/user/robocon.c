@@ -333,12 +333,12 @@ void robot_d_function_controls(void)
 	}
 	
 	/*emergency auto serve*/
-	if (!emergency_serve_activated && gpio_read_input(&PE3))//on press
+	if (!emergency_serve_activated && gpio_read_input(E_STOP_BUTTON))//on press
 	{
 		emergency_serve_button_pressed=1;
 		emergency_serve_activated=0;
 	}
-	if (emergency_serve_button_pressed && !gpio_read_input(&PE3))//on release
+	if (emergency_serve_button_pressed && !gpio_read_input(E_STOP_BUTTON))//on release
 	{
 		emergency_serve_start_time=get_full_ticks();
 		emergency_serve_button_pressed=0;
@@ -512,8 +512,8 @@ void robocon_main(void)
 	
 	
 	gpio_init(SERVE_SWITCH, GPIO_Speed_10MHz, GPIO_Mode_IPU, 1);	// Mechanical switch ROBOT D Gen2
-	gpio_init(SERVE_PNEU_TEST, GPIO_Speed_10MHz, GPIO_Mode_IPU, 1);	// Shuttlecock Holder button for ROBOT D Gen2
-	gpio_init(&PE3, GPIO_Speed_10MHz, GPIO_Mode_IPU, 1);	// Emergency serve button for ROBOT D Gen2
+	gpio_init(SERVE_PNEU_TEST, GPIO_Speed_10MHz, GPIO_Mode_IPD, 1);	// Shuttlecock Holder button for ROBOT D Gen2
+	gpio_init(E_STOP_BUTTON, GPIO_Speed_10MHz, GPIO_Mode_IPD, 1);	// Emergency serve button for ROBOT D Gen2
 	#endif
 	gpio_init(&PA4,GPIO_Speed_50MHz, GPIO_Mode_IPD,1);		// laser sensor
 	gpio_init(&PA6,GPIO_Speed_50MHz, GPIO_Mode_IPD,1);	// laser sensor grid 2

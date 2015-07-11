@@ -106,8 +106,8 @@ void serve_pneu_toggle(void)
 {
 	if (hitting) {return;} 
 	is_released = !is_released;
-	serve_pneu_set(0, !is_released);
-	serve_pneu_set(1, !is_released);
+	gpio_write(SERVE_PNEU0_GPIO, is_released);
+	gpio_write(SERVE_PNEU1_GPIO, is_released);
 }
 
 // serve update, included in racket update
@@ -287,7 +287,7 @@ SERVING_IRQn_Handler
 		TIM_Cmd(SERVING_TIM, DISABLE);
 				
 		if (serve_hit_queued) {
-			buzzer_control_note(1, 400, NOTE_G, 7);
+			//buzzer_control_note(1, 400, NOTE_G, 7);
 			serve_hit();
 			//log("serve_hit",serve_hit_start_time);
 		}
