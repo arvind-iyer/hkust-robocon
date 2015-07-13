@@ -80,7 +80,7 @@ bool robot_xbc_controls(void)
 	//Analog Movement
 	//Set x and y vel according to analog stick input
 	#warning hardcoded
-	u32 speed_ratio = 
+	s32 speed_ratio = 
 	#if (ROBOT == 'C')
 		120
 	#else 
@@ -88,10 +88,10 @@ bool robot_xbc_controls(void)
 	#endif
 	;
 	
-	int raw_vx = xbc_get_joy(XBC_JOY_LX) * speed_ratio / XBC_JOY_SCALE;
-	int raw_vy = xbc_get_joy(XBC_JOY_LY) * speed_ratio / XBC_JOY_SCALE;
+	s32 raw_vx = xbc_get_joy(XBC_JOY_LX) * speed_ratio / XBC_JOY_SCALE;
+	s32 raw_vy = xbc_get_joy(XBC_JOY_LY) * speed_ratio / XBC_JOY_SCALE;
 	
-	int h = Sqrt(Sqr(raw_vx)+ Sqr(raw_vy));
+	s32 h = Sqrt(Sqr(raw_vx)+ Sqr(raw_vy));
 	
 	// Scalar Speed limit
 	if (h > XBC_JOY_SCALE) {
@@ -714,12 +714,14 @@ void robocon_main(void)
 						tft_prints(0,2,"Encoder:%d", get_encoder_value(RACKET));
 					}					tft_prints(0,3,"S0:%3d %3d", serve_get_delay(0), serve_get_vel(0));
 					tft_prints(0,4,"S1:%3d %3d", serve_get_delay(1), serve_get_vel(1));
+					tft_prints(0,5,"Timeout:%3d", serve_get_timeout());
+					
 				#else
           tft_prints(0,2,"Decel: %d", is_force_decel());
           tft_prints(0,3,"Stop: %d", is_force_stop());
         #endif
 				
-        tft_prints(0,5,"Timeout:%3d", serve_get_timeout());
+        
 				tft_prints(0,6,"Target: %d", wheel_base_get_target_pos().angle);
 				tft_prints(0,7,"Angle: %d", get_pos()->angle);
 				tft_prints(0,8,"accel rate: %d", accel_booster);
