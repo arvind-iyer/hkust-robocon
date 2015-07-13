@@ -4,9 +4,14 @@
 
 //racket variables
 static s32 SERVE_CAL_VEL = -260;		
-static s32 SERVE_HIT_VEL[SERVE_SET_COUNT] = {1300};			//can be changed by controller
-static u32 SERVE_DELAY[SERVE_SET_COUNT] = {280};			// can be changed by controller
+static s32 SERVE_HIT_VEL[SERVE_SET_COUNT] = {1800, 1300};			//can be changed by controller
+static u32 SERVE_DELAY[SERVE_SET_COUNT] = {258, 271};			// can be changed by controller
 static u8  SERVE_ID = 0;
+
+
+static u32 SERVE_HIT_TIMEOUT = 145;	// maximum serve duration.
+
+
 
 static s32 init_encoder_reading = 8000;	// will be kept updating according to the switch. Encoder value at switch location.
 u32 prev_encoder_reading=0;
@@ -169,7 +174,11 @@ void serve_update(void)
 		log ("*enc st hit",get_encoder_value(RACKET));
 	}
 	// after SERVE_HIT_TIMEOUT, stop motor
-	if (hitting && get_full_ticks()>=serve_hit_start_time+SERVE_HIT_TIMEOUT)
+	u32 timeout = SERVE_HIT_TIMEOUT;
+	if (encoder_failed) {
+		timeout = timeout * 65 / 100;
+	}
+	if (hitting && get_full_ticks()>=serve_hit_start_time+timeout)
 	{
 		//FAIL_MUSIC;
 		hitting=0;
@@ -191,7 +200,7 @@ void serve_update(void)
 				encoder_failed=1;
 				if (hitting)
 				{
-					motor_set_vel(RACKET,(SERVE_HIT_VEL[SERVE_ID]*11)/10,OPEN_LOOP);
+					motor_set_vel(RACKET,(SERVE_HIT_VEL[SERVE_ID]*100)/100,OPEN_LOOP);
 				}
 				FAIL_MUSIC;
 			}
@@ -266,7 +275,11 @@ void serve_start(u8 id)
 		serve_pneu_set(1, false);
 		serve_pneu_set(SERVE_ID, true);
 		
-		TIM_SetCompare1(SERVING_TIM, SERVE_DELAY[SERVE_ID] * 10);		// Set CC1 CCR Value
+		u16 delay = SERVE_DELAY[SERVE_ID];
+		if (encoder_failed) {
+			delay = delay + 45; 
+		}
+		TIM_SetCompare1(SERVING_TIM, delay * 10);		// Set CC1 CCR Value
 		TIM_SetCounter(SERVING_TIM, 1);										// Reset counter
 		TIM_Cmd(SERVING_TIM, ENABLE);
 		TIM_ITConfig(SERVING_TIM, TIM_IT_CC1, ENABLE);		// Interrupt for CC1
@@ -336,7 +349,7 @@ void serve_hit(void)
 		if (!encoder_failed)
 			motor_set_vel(RACKET, SERVE_HIT_VEL[SERVE_ID]/10,CLOSE_LOOP);	//racket calibrate function takes a direct control over the motor
 		else
-			motor_set_vel(RACKET,(SERVE_HIT_VEL[SERVE_ID]*21)/20,OPEN_LOOP);
+			motor_set_vel(RACKET,(SERVE_HIT_VEL[SERVE_ID]*100)/100,OPEN_LOOP);
 
 		serve_hit_start_time = get_full_ticks();
 	}
@@ -352,7 +365,7 @@ void fake_serve_start(void)
 		if (!encoder_failed)
 			motor_set_vel(RACKET, SERVE_HIT_VEL[SERVE_ID]/10,CLOSE_LOOP);	//racket calibrate function takes a direct control over the motor
 		else
-			motor_set_vel(RACKET,(SERVE_HIT_VEL[SERVE_ID]*21)/20,OPEN_LOOP);
+			motor_set_vel(RACKET,(SERVE_HIT_VEL[SERVE_ID]*5)/20,OPEN_LOOP);
 		serve_hit_start_time=get_full_ticks();
 		
 	}
@@ -410,6 +423,16 @@ u32 serve_get_delay(u8 id)
 	return SERVE_DELAY[id];
 }
 
+s32 serve_get_timeout(void)
+{
+	return SERVE_HIT_TIMEOUT;
+}
+
+void serve_set_timeout(u32 timeout)
+{
+	SERVE_HIT_TIMEOUT = timeout; 
+}
+
 bool serve_prioritized(void)
 {
 	#if (ROBOT == 'D')
@@ -417,4 +440,9 @@ bool serve_prioritized(void)
 	#elif
 		return false;
 	#endif
+}
+
+bool serve_get_failed(void)
+{
+	return encoder_failed;
 }

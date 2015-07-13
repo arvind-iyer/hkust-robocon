@@ -40,11 +40,13 @@ const u16 MIN_DELAY = 50;
 const u16 MAX_VEL = 1800;
 const u16 MIN_VEL = 800;
 
+const u32 MAX_TIMEOUT	= 150;
 // default const
 const u16 DEFAULT_ACCEL_BOOST = 1414;
-const u16 DEFAULT_VEL = 1300;
-const u16 DEFAULT_DELAY = 270;
-
+/*
+const u16 DEFAULT_VEL[SERVE_SET_COUNT] = {1300};
+const u16 DEFAULT_DELAY[SERVE_SET_COUNT] = {270};
+*/
 
 const u16 ACCELBOOSTER_OFFSET = 0;
 const u16 SERVE_VEL_OFFSET[SERVE_SET_COUNT] = {1, 2};
@@ -531,11 +533,25 @@ void robocon_main(void)
 	accel_booster = read_flash(ACCELBOOSTER_OFFSET);
 	
 	#if (ROBOT == 'D') 
-		serve_set_vel(0, read_flash(SERVE_VEL_OFFSET[0]));
-		serve_set_delay(0, read_flash(SERVE_DELAY_OFFSET[0]));
+		u32 vel[] = {read_flash(SERVE_VEL_OFFSET[0]), read_flash(SERVE_VEL_OFFSET[1])};
+		u32 delay[] = {read_flash(SERVE_DELAY_OFFSET[0]), read_flash(SERVE_DELAY_OFFSET[1])};
 		
-		serve_set_vel(1, read_flash(SERVE_VEL_OFFSET[1]));
-		serve_set_delay(1, read_flash(SERVE_DELAY_OFFSET[1]));
+		if (vel[0] >= MIN_VEL && vel[0] <= MAX_VEL) {
+			serve_set_vel(0, vel[0]);
+		}
+		
+		if (delay[0] >= MIN_DELAY && delay[0] <= MAX_DELAY) {
+			serve_set_delay(0, delay[0]);
+		}
+		
+		if (vel[1] >= MIN_VEL && vel[1] <= MAX_VEL) {
+			serve_set_vel(1, vel[1]);
+		}
+		
+		if (delay[1] >= MIN_DELAY && delay[1] <= MAX_DELAY) {
+			serve_set_delay(1, delay[1]); 
+		}
+		
 		
 	#endif
 	
@@ -545,6 +561,7 @@ void robocon_main(void)
 		write_flash(ACCELBOOSTER_OFFSET, accel_booster);
 	}
 	
+	/*
 	#if (ROBOT == 'D') 
 	// Protection
 		if (serve_get_vel(0) < MIN_VEL || serve_get_vel(0) > MAX_VEL) {
@@ -567,7 +584,7 @@ void robocon_main(void)
 			write_flash(SERVE_DELAY_OFFSET[1], serve_get_delay(1));
 		}
 	#endif
-	
+	*/
 	
 	while (1) {
 		if (ticks_img != get_ticks()) {
@@ -639,21 +656,27 @@ void robocon_main(void)
 				tft_prints(0, 1, "V:(%3d,%3d,%3d)", vel.x, vel.y, vel.w);
 				//tft_prints(0, 2, "Speed: %d", wheel_base_get_speed_mode());
 				#if (ROBOT == 'D')
-					tft_prints(0,2,"Encoder: %d", get_encoder_value(RACKET));
+					if (serve_get_failed()) {
+						tft_prints(0,2,"[Encoder:--]");
+					} else {
+						tft_prints(0,2,"Encoder:%d", get_encoder_value(RACKET));
+					}
+					
 					tft_prints(0,3,"S0:%3d %3d", serve_get_delay(0), serve_get_vel(0));
 					tft_prints(0,4,"S1:%3d %3d", serve_get_delay(1), serve_get_vel(1));
+					tft_prints(0,5,"Timeout:%3d", serve_get_timeout());
 				#else
           tft_prints(0,2,"Decel: %d", is_force_decel());
           tft_prints(0,3,"Stop: %d", is_force_stop());
         #endif
 				
-				tft_prints(0,5,"Target: %d", wheel_base_get_target_pos().angle);
-				tft_prints(0,6,"Angle: %d", get_pos()->angle);
-				tft_prints(0,7,"accel rate: %d", accel_booster);
+				tft_prints(0,6,"Target: %d", wheel_base_get_target_pos().angle);
+				tft_prints(0,7,"Angle: %d", get_pos()->angle);
+				tft_prints(0,8,"accel rate: %d", accel_booster);
 //				tft_prints(0,7,"skipTick: %d",tick_skip_count);
 				
 				if (force_terminate) {
-					tft_prints(0,8, "STOP!");
+					tft_prints(0,9, "STOP!");
 				}
 					 
         //log_update();

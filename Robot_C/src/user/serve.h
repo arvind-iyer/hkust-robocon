@@ -30,7 +30,7 @@
 #define SERVING_IRQn						TIM4_IRQn
 #define	SERVING_IRQn_Handler		void TIM4_IRQHandler(void)
 
-static u32 SERVE_HIT_TIMEOUT = 140;	// maximum serve duration.
+
 
 void serve_timer_init(void);
 void serve_update(void);
@@ -58,5 +58,9 @@ u32 serve_get_delay(u8 id);
 bool serve_prioritized(void);
 void serve_set_vel(u8 id, s16 vel);
 void serve_set_delay(u8 id, s16 delay);
+s32 serve_get_timeout(void);
+void serve_set_timeout(u32);
+
+bool serve_get_failed(void);
 
 #endif
