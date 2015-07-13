@@ -437,7 +437,7 @@ bool serve_prioritized(void)
 {
 	#if (ROBOT == 'D')
 		return (serve_hit_queued || hitting || calibrate_in_process);
-	#elif
+	#else 
 		return false;
 	#endif
 }

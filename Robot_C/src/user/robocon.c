@@ -232,9 +232,9 @@ void robot_c_function_controls(void)
 	
 	if ((button_pressed(BUTTON_XBC_E) == 1 || button_pressed(BUTTON_XBC_E) >= 50) && accel_booster < MAX_ACCEL_BOOST) {
 		++accel_booster;
-	} else if (button_pressed(BUTTON_XBC_W) == 1|| button_pressed(BUTTON_XBC_W) >= 50) && accel_booster > MIN_ACCEL_BOOST){
+	} else if ((button_pressed(BUTTON_XBC_W) == 1|| button_pressed(BUTTON_XBC_W) >= 50) && accel_booster > MIN_ACCEL_BOOST){
 		--accel_booster;
-	} else if (button_released(BUTTON_XBC_E) == 1 || (button_released(BUTTON_XBC_W)) == 1) {
+	} else if (button_released(BUTTON_XBC_E) == 1 || button_released(BUTTON_XBC_W) == 1) {
 		write_flash(ACCELBOOSTER_OFFSET, accel_booster);
 	}
 	
