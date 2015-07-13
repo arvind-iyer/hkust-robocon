@@ -510,13 +510,18 @@ void robocon_main(void)
 	gpio_init(SERVE_PNEU0_GPIO_BACKUP,  GPIO_Speed_10MHz, GPIO_Mode_Out_PP, 1);	
 	gpio_init(SERVE_PNEU1_GPIO_BACKUP,  GPIO_Speed_10MHz, GPIO_Mode_Out_PP, 1);	
 	
-	gpio_init(PNEU_GPIO, GPIO_Speed_10MHz, GPIO_Mode_Out_PP, 1);		// pneu matic GPIO
+	
 	
 	
 	gpio_init(SERVE_SWITCH, GPIO_Speed_10MHz, GPIO_Mode_IPU, 1);	// Mechanical switch ROBOT D Gen2
 	gpio_init(SERVE_PNEU_TEST, GPIO_Speed_10MHz, GPIO_Mode_IPD, 1);	// Shuttlecock Holder button for ROBOT D Gen2
 	gpio_init(E_STOP_BUTTON, GPIO_Speed_10MHz, GPIO_Mode_IPD, 1);	// Emergency serve button for ROBOT D Gen2
 	#endif
+
+	gpio_init(PNEU_GPIO, GPIO_Speed_10MHz, GPIO_Mode_Out_PP, 1);			// pneu matic GPIO
+	gpio_init(PNEU_GPIO_DOWN, GPIO_Speed_10MHz, GPIO_Mode_Out_PP, 1);
+	
+	
 	gpio_init(&PA4,GPIO_Speed_50MHz, GPIO_Mode_IPD,1);		// laser sensor
 	gpio_init(&PA6,GPIO_Speed_50MHz, GPIO_Mode_IPD,1);	// laser sensor grid 2
 	gpio_init(&PA7,GPIO_Speed_50MHz, GPIO_Mode_IPD,1);	// laser sensor grid 3
