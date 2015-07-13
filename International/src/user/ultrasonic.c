@@ -9,7 +9,7 @@ void ultrasonic_init(void)
 
 bool is_force_decel(void)
 {
-	return gpio_read_input(FORCE_STOP_GPIO);
+	return gpio_read_input(FORCE_DECEL_GPIO);
 }
 
 bool is_force_stop(void)

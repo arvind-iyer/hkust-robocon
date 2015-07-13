@@ -2,6 +2,7 @@
 s32 prev_error;
 s32 error;
 PID wheel_base_pid = {0,0,0};
+int angle_para[] = {DEFAULT_P, DEFAULT_I, 0}; // PID value, D is unused
 
 u16 integ_dw_index = 0,integ_dx_index = 0,integ_dy_index = 0;
 s32 integ_dw_list[20] = {0,0,0,0,0,
@@ -24,6 +25,9 @@ s32 pid_maintain_angle(void)
 	/**ROTATIONAL PID**/
 	POSITION curr_pos = {(get_pos()->x), (get_pos()->y), get_pos()->angle};	
 	POSITION target = wheel_base_get_target_pos();
+  const int MIN_W = 4;
+  const int MAX_W = 70;
+  const int DEADZONE = 6;
 	
 	WHEEL_BASE_VEL curr_vel = wheel_base_get_vel();
 	
@@ -37,7 +41,7 @@ s32 pid_maintain_angle(void)
 	}	
 	
 	// omega due to angle error (P value)
-	w = dw * 3 / 10;
+	w = dw * angle_para[0] / angle_para_prescalar;
 	
 	//Add integral factor
 	integ_dw_list[integ_dw_index++] = dw;
@@ -48,12 +52,12 @@ s32 pid_maintain_angle(void)
 		wi+=integ_dw_list[i];
 	}
 	// omega due to I value. (w is PI control now)
-	w+=wi/32;
+	w+=wi * angle_para[1] / angle_para_prescalar;
 	
 	// Dead zone and velocity limit.
-	if (Abs(dw) >= 10) {
-		w = Abs(w) < 10? w*10/Abs(w) : w;
-		w = Abs(w) > 70 ? w*70/Abs(w) : w;
+	if (Abs(dw) >= DEADZONE) {
+		w = Abs(w) < MIN_W? MIN_W * w / Abs(w) : w;
+		w = Abs(w) > MAX_W ? MAX_W * w / Abs(w) : w;
 	} else {
 		w = 0;
 	}

@@ -19,7 +19,6 @@ static u16 tick_skip_count=0;
 bool serve_pneu_button_enabled=1;
 bool turn_timer_started = 0;
 static bool force_terminate = false;
-
 // enabling sensors by button.
 bool sensors_activated = 0;
 bool emergency_serve_button_pressed=0;
@@ -40,16 +39,17 @@ const u16 MIN_DELAY = 50;
 const u16 MAX_VEL = 1800;
 const u16 MIN_VEL = 800;
 
+const u32 MAX_TIMEOUT = 150;
 // default const
 const u16 DEFAULT_ACCEL_BOOST = 1414;
-const u16 DEFAULT_VEL = 1300;
-const u16 DEFAULT_DELAY = 270;
-
-
+/*
+const u16 DEFAULT_VEL[SERVE_SET_COUNT] = {1300};
+const u16 DEFAULT_DELAY[SERVE_SET_COUNT] = {270};
+*/
 const u16 ACCELBOOSTER_OFFSET = 0;
 const u16 SERVE_VEL_OFFSET[SERVE_SET_COUNT] = {1, 2};
 const u16 SERVE_DELAY_OFFSET[SERVE_SET_COUNT] = {3, 4};
-
+const u16 ANGLE_PARA_OFFSET[2] = {5, 6};
 
 bool is_force_terminate(void)
 {
@@ -93,7 +93,21 @@ bool robot_xbc_controls(void)
 	// Set output x and y.
 	s32 vx = raw_vx;
 	s32 vy = raw_vy;
-	
+  
+	// Violation prevention
+	#if (ROBOT == 'C') 
+		const int allowed_speed = XBC_JOY_SCALE / 2;
+		if (raw_vy > 0 && is_force_stop() && is_force_decel()) {
+			// Force stop
+			raw_vy = 0;
+      FAIL_MUSIC;
+		}	else if (raw_vy > 0 && is_force_decel()) {
+			// Force decel
+			raw_vy = raw_vy * allowed_speed / XBC_JOY_SCALE;
+      CLICK_MUSIC;
+		}
+	#endif
+		
 	//Use rotation matrix to control the robots by absolute coordinates not relative
 	#ifdef absolute_angle
 	int current_angle = get_pos()->angle;
@@ -102,51 +116,39 @@ bool robot_xbc_controls(void)
 	vy = (raw_vy * int_cos(current_angle) + raw_vx * int_sin(current_angle)) / 10000;
 	#endif
 	
-	// Violation prevention
-	#if (ROBOT == 'C') 
-		const int allowed_speed = XBC_JOY_SCALE / 3;
-		if (vy > 0 && is_force_stop() && is_force_decel()) {
-			// Force stop
-			vy = 0;
-      FAIL_MUSIC;
-		}	else if (vy > allowed_speed && is_force_decel()) {
-			// Force decel
-			vy = vy * allowed_speed / XBC_JOY_SCALE;
-      CLICK_MUSIC;
-		}
-	#endif
-	
+
 	// Spining velocity
   int omega = (xbc_get_joy(XBC_JOY_RT)-xbc_get_joy(XBC_JOY_LT))/5;
-	const int speed_factor = 
-	#if (ROBOT == 'C') 
-		6
-	#else 
-		10
-	#endif
-	;
+  const int speed_factor = 
+  #if (ROBOT == 'C') 
+    6
+  #else 
+    10
+  #endif
+  ;
 
-	// Accumulated the floating value
+  // Accumulated the floating value
   accumulated_omega += omega % speed_factor;
   int incremental = accumulated_omega / speed_factor;
   if (incremental != 0) {
     target_angle += incremental;
     accumulated_omega -= incremental * speed_factor; 
   }
-	
-	// changing target angle with int value.
-	target_angle += omega / speed_factor;
-	if (target_angle < 0) {
-		target_angle += 3600;
-	} else if (target_angle > 3599) {
-		target_angle -= 3600;
-	}
-	
-	wheel_base_set_target_pos((POSITION){get_pos()->x, get_pos()->y, target_angle});
-
+  
+  // changing target angle with int value.
+  target_angle += omega / speed_factor;
+  if (target_angle < 0) {
+    target_angle += 3600;
+  } else if (target_angle > 3599) {
+    target_angle -= 3600;
+  }
+  
+  wheel_base_set_target_pos((POSITION){get_pos()->x, get_pos()->y, target_angle});
+  
 	// Get angular speed based on target_angle
-	int vw = pid_maintain_angle();
-	
+
+  int vw = pid_maintain_angle();
+
 	if (!emergency_serve_activated && !force_terminate)
 		wheel_base_set_vel(vx, vy, vw);
 	if (emergency_serve_activated && (raw_vx!=0 || raw_vy!=0 || omega!=0))	// cancel emergency serve
@@ -160,18 +162,13 @@ bool robot_xbc_controls(void)
 	}
 	
 	robot_cd_common_function();
-	#if (ROBOT=='C')
-	 	robot_c_function_controls();
-	#elif (ROBOT=='D')
-		robot_d_function_controls();
-	#endif
-	
 	return true;
 }
 
 
 static void robot_cd_common_function(void)
 {
+  static bool change_para[] = {false, false};
 	if (button_pressed(BUTTON_XBC_XBOX)) {
 		// forced terminate everything when pressed.
 		// Stop spinning
@@ -182,9 +179,32 @@ static void robot_cd_common_function(void)
 		wheel_base_set_vel(0, 0, 0);
 		// Serving part reset.
 		serve_free();
+    if ((button_pressed(BUTTON_XBC_E) == 1 || button_pressed(BUTTON_XBC_E) >= 50) && angle_para[0] < angle_para_prescalar) {
+      ++angle_para[0];
+      change_para[0] = true;
+    } else if ((button_pressed(BUTTON_XBC_W) == 1|| button_pressed(BUTTON_XBC_W) >= 50) && angle_para[0] > angle_para_prescalar / 100){
+      --angle_para[0];
+      change_para[0] = true;
+    }
+    
+    if ((button_pressed(BUTTON_XBC_N) == 1 || button_pressed(BUTTON_XBC_N) >= 50) && angle_para[1] < angle_para_prescalar / 12) {
+      ++angle_para[1];
+      change_para[1] = true;
+    } else if ((button_pressed(BUTTON_XBC_S) == 1|| button_pressed(BUTTON_XBC_S) >= 50) && angle_para[1] > angle_para_prescalar / 1000){
+      --angle_para[1];
+      change_para[1] = true;
+    }
 		// Ignore other button.
     return;
   } else if (button_released(BUTTON_XBC_XBOX)) {
+    if (change_para[0]) {
+      write_flash(ANGLE_PARA_OFFSET[0], angle_para[0]);
+      change_para[0] = false;
+    }
+    if (change_para[1]) {
+      write_flash(ANGLE_PARA_OFFSET[1], angle_para[1]);
+      change_para[1] = false;
+    }
 		force_terminate = false;
 	}
 	
@@ -193,6 +213,12 @@ static void robot_cd_common_function(void)
 		accumulated_omega = target_angle = 0;
 		wheel_base_tx_acc();
 	}	
+  
+  #if (ROBOT=='C')
+	 	robot_c_function_controls();
+	#elif (ROBOT=='D')
+		robot_d_function_controls();
+	#endif
 }
 
 #if (ROBOT == 'C')
@@ -230,7 +256,7 @@ void robot_c_function_controls(void)
 	
 	if ((button_pressed(BUTTON_XBC_E) == 1 || button_pressed(BUTTON_XBC_E) >= 50) && accel_booster < MAX_ACCEL_BOOST) {
 		++accel_booster;
-	} else if (button_pressed(BUTTON_XBC_W) == 1|| button_pressed(BUTTON_XBC_W) >= 50) && accel_booster > MIN_ACCEL_BOOST){
+	} else if ((button_pressed(BUTTON_XBC_W) == 1|| button_pressed(BUTTON_XBC_W) >= 50) && accel_booster > MIN_ACCEL_BOOST){
 		--accel_booster;
 	} else if (button_released(BUTTON_XBC_E) == 1 || (button_released(BUTTON_XBC_W)) == 1) {
 		write_flash(ACCELBOOSTER_OFFSET, accel_booster);
@@ -529,14 +555,28 @@ void robocon_main(void)
 	log("XBC=",xbc_get_connection());
 	// Read from flash
 	accel_booster = read_flash(ACCELBOOSTER_OFFSET);
+  angle_para[0] = read_flash(ANGLE_PARA_OFFSET[0]);
+  angle_para[1] = read_flash(ANGLE_PARA_OFFSET[1]);
 	
 	#if (ROBOT == 'D') 
-		serve_set_vel(0, read_flash(SERVE_VEL_OFFSET[0]));
-		serve_set_delay(0, read_flash(SERVE_DELAY_OFFSET[0]));
+		u32 vel[] = {read_flash(SERVE_VEL_OFFSET[0]), read_flash(SERVE_VEL_OFFSET[1])};
+		u32 delay[] = {read_flash(SERVE_DELAY_OFFSET[0]), read_flash(SERVE_DELAY_OFFSET[1])};
 		
-		serve_set_vel(1, read_flash(SERVE_VEL_OFFSET[1]));
-		serve_set_delay(1, read_flash(SERVE_DELAY_OFFSET[1]));
+		if (vel[0] >= MIN_VEL && vel[0] <= MAX_VEL) {
+			serve_set_vel(0, vel[0]);
+		}
 		
+		if (delay[0] >= MIN_DELAY && delay[0] <= MAX_DELAY) {
+			serve_set_delay(0, delay[0]);
+		}
+		
+		if (vel[1] >= MIN_VEL && vel[1] <= MAX_VEL) {
+			serve_set_vel(1, vel[1]);
+		}
+		
+		if (delay[1] >= MIN_DELAY && delay[1] <= MAX_DELAY) {
+			serve_set_delay(1, delay[1]); 
+		}		
 	#endif
 	
 	// if no memory, set to default value and save it
@@ -544,7 +584,17 @@ void robocon_main(void)
 		accel_booster = DEFAULT_ACCEL_BOOST;
 		write_flash(ACCELBOOSTER_OFFSET, accel_booster);
 	}
-	
+  
+  if (angle_para[0] < angle_para_prescalar / 100 || angle_para[0] > angle_para_prescalar) {
+		angle_para[0] = DEFAULT_P;
+		write_flash(ANGLE_PARA_OFFSET[0], angle_para[0]);
+	}	
+  
+  if (angle_para[1] < angle_para_prescalar / 1000 || angle_para[1] > (angle_para_prescalar / 12)) {
+		angle_para[1] = DEFAULT_I;
+		write_flash(ANGLE_PARA_OFFSET[1], angle_para[1]);
+	}
+	/*
 	#if (ROBOT == 'D') 
 	// Protection
 		if (serve_get_vel(0) < MIN_VEL || serve_get_vel(0) > MAX_VEL) {
@@ -567,7 +617,7 @@ void robocon_main(void)
 			write_flash(SERVE_DELAY_OFFSET[1], serve_get_delay(1));
 		}
 	#endif
-	
+	*/
 	
 	while (1) {
 		if (ticks_img != get_ticks()) {
@@ -639,21 +689,24 @@ void robocon_main(void)
 				tft_prints(0, 1, "V:(%3d,%3d,%3d)", vel.x, vel.y, vel.w);
 				//tft_prints(0, 2, "Speed: %d", wheel_base_get_speed_mode());
 				#if (ROBOT == 'D')
-					tft_prints(0,2,"Encoder: %d", get_encoder_value(RACKET));
-					tft_prints(0,3,"S0:%3d %3d", serve_get_delay(0), serve_get_vel(0));
+          if (serve_get_failed()) {
+						tft_prints(0,2,"[Encoder:--]");
+					} else {
+						tft_prints(0,2,"Encoder:%d", get_encoder_value(RACKET));
+					}					tft_prints(0,3,"S0:%3d %3d", serve_get_delay(0), serve_get_vel(0));
 					tft_prints(0,4,"S1:%3d %3d", serve_get_delay(1), serve_get_vel(1));
 				#else
           tft_prints(0,2,"Decel: %d", is_force_decel());
           tft_prints(0,3,"Stop: %d", is_force_stop());
         #endif
 				
-				tft_prints(0,5,"Target: %d", wheel_base_get_target_pos().angle);
-				tft_prints(0,6,"Angle: %d", get_pos()->angle);
-				tft_prints(0,7,"accel rate: %d", accel_booster);
+        tft_prints(0,5,"Timeout:%3d", serve_get_timeout());
+				tft_prints(0,6,"Target: %d", wheel_base_get_target_pos().angle);
+				tft_prints(0,7,"Angle: %d", get_pos()->angle);
+				tft_prints(0,8,"accel rate: %d", accel_booster);
 //				tft_prints(0,7,"skipTick: %d",tick_skip_count);
-				
 				if (force_terminate) {
-					tft_prints(0,8, "STOP!");
+          tft_prints(0,9,"p: %4d i: %4d", angle_para[0], angle_para[1]);
 				}
 					 
         //log_update();
