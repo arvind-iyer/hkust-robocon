@@ -651,7 +651,11 @@ void robocon_main(void)
         //wheel_base_update();	//wheel_base_update now also handles auto positioning system
 				bluetooth_update();
         handle_bluetooth_input();
- 
+				
+				if (!bluetooth_get_connected()) {
+					buzzer_set_note_period(get_note_period(NOTE_G, 7) + ticks_img); 
+					buzzer_control(1, 50);
+				}
         button_update();
 				// Every 10 ms (100 Hz)
          if (return_listener()) {

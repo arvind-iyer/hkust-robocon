@@ -52,6 +52,8 @@ const u8* bluetooth_recent_rx_data(void);
 void bluetooth_update(void);
 void bluetooth_rx_handler(u8 rx_data);
 
+u8 bluetooth_get_connected(void);
+
 #define	BLUETOOTH_RX_FILTER_NUM		28
 
 #endif	/* __BLUETOOTH_H */
