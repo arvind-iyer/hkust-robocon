@@ -74,6 +74,8 @@ extern u16 text_color[CHAR_MAX_X][CHAR_MAX_Y];
 extern u16 bg_color[CHAR_MAX_X][CHAR_MAX_Y];
 extern u8 text_bg_color_prev[CHAR_MAX_X][CHAR_MAX_Y]; // for transmit for xbc, msb 4bits: text color, lsb 4bits: bg color
 
+void tft_prints_enable(u8 i);
+
 void tft_spi_init(void);
 void tft_write_command(u8 command);
 void tft_write_data(u8 data);

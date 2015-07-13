@@ -41,6 +41,8 @@ static u8 rx_filter_count = 0;
 
 USART_TypeDef* BLUETOOTH_USART	= 0;
 
+static u8 rx_connected = 0;
+
 /**
 	* @brief Initialize the Bluetooth USART COM Port with interrupt
 	* @param None.
@@ -353,5 +355,10 @@ void bluetooth_update(void)
 			led_control(LED_D1, LED_OFF);
 		}
 	}
-	
+
+	rx_connected = current_time - rx_last_update <= BLUETOOTH_RX_DISCONNECTION_TIMEOUT;
+}
+
+u8 bluetooth_get_connected(void) {
+	return rx_connected;
 }

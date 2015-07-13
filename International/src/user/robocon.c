@@ -79,8 +79,17 @@ bool robot_xbc_controls(void)
 	
 	//Analog Movement
 	//Set x and y vel according to analog stick input
-	int raw_vx = xbc_get_joy(XBC_JOY_LX);
-	int raw_vy = xbc_get_joy(XBC_JOY_LY);
+	#warning hardcoded
+	u32 speed_ratio = 
+	#if (ROBOT == 'C')
+		120
+	#else 
+		165
+	#endif
+	;
+	
+	int raw_vx = xbc_get_joy(XBC_JOY_LX) * speed_ratio / XBC_JOY_SCALE;
+	int raw_vy = xbc_get_joy(XBC_JOY_LY) * speed_ratio / XBC_JOY_SCALE;
 	
 	int h = Sqrt(Sqr(raw_vx)+ Sqr(raw_vy));
 	
@@ -527,20 +536,26 @@ void robocon_main(void)
 	wheel_base_tx_acc();
 	serve_free();
 	
+	
 	#if (ROBOT == 'D')
+	tft_prints_enable(0);
 	serve_timer_init();
 	gpio_init(SERVE_PNEU0_GPIO,  GPIO_Speed_10MHz, GPIO_Mode_Out_PP, 1);		// Serve pneumatric GPIO Robot D, GEN2
 	gpio_init(SERVE_PNEU1_GPIO,  GPIO_Speed_10MHz, GPIO_Mode_Out_PP, 1);		// Serve pneumatric GPIO Robot D, GEN2. MOSFET burnt
 	gpio_init(SERVE_PNEU0_GPIO_BACKUP,  GPIO_Speed_10MHz, GPIO_Mode_Out_PP, 1);	
 	gpio_init(SERVE_PNEU1_GPIO_BACKUP,  GPIO_Speed_10MHz, GPIO_Mode_Out_PP, 1);	
 	
-	gpio_init(PNEU_GPIO, GPIO_Speed_10MHz, GPIO_Mode_Out_PP, 1);		// pneu matic GPIO
+
 	
 	
 	gpio_init(SERVE_SWITCH, GPIO_Speed_10MHz, GPIO_Mode_IPU, 1);	// Mechanical switch ROBOT D Gen2
 	gpio_init(SERVE_PNEU_TEST, GPIO_Speed_10MHz, GPIO_Mode_IPD, 1);	// Shuttlecock Holder button for ROBOT D Gen2
 	gpio_init(E_STOP_BUTTON, GPIO_Speed_10MHz, GPIO_Mode_IPD, 1);	// Emergency serve button for ROBOT D Gen2
 	#endif
+	
+	gpio_init(PNEU_GPIO, GPIO_Speed_10MHz, GPIO_Mode_Out_PP, 1);		// pneu matic GPIO
+	gpio_init(PNEU_GPIO_DOWN, GPIO_Speed_10MHz, GPIO_Mode_Out_PP, 1);	
+	
 	gpio_init(&PA4,GPIO_Speed_50MHz, GPIO_Mode_IPD,1);		// laser sensor
 	gpio_init(&PA6,GPIO_Speed_50MHz, GPIO_Mode_IPD,1);	// laser sensor grid 2
 	gpio_init(&PA7,GPIO_Speed_50MHz, GPIO_Mode_IPD,1);	// laser sensor grid 3

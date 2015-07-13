@@ -21,7 +21,7 @@
 
 #define BLUETOOTH_RX_RESET_TIMEOUT				50
 #define BLUETOOTH_RX_CHECKBYTES_FLAG			1		// True if rx uses check bytes for verification
-
+#define	BLUETOOTH_RX_DISCONNECTION_TIMEOUT	200
 
 typedef struct {
 	u8 id;

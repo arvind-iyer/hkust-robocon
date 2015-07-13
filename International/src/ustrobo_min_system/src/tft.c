@@ -18,6 +18,13 @@ u8 text_bg_color_prev[CHAR_MAX_X][CHAR_MAX_Y];/*for transmit for xbc, msb 4bits:
 
 u16 print_pos = 0;
 
+u8 prints_enabled = 1;
+
+void tft_prints_enable(u8 i) 
+{
+	prints_enabled = i;
+}
+
 static void (*tft_update_trigger_fx)(void) = 0;
 
 /**
@@ -644,119 +651,119 @@ void tft_update(void)
 		}
 	}
 
-	#warning tft printing disabled
-	/*
-	switch (tft_orientation) {
-		case 0:
-			for (y = 0; y < CHAR_MAX_Y_VERTICAL; y++) {
-				for (x = 0; x < CHAR_MAX_X_VERTICAL; x++) {
-					if (tft_char_is_changed(x, y)) {
-						char_n = 1;
-						while (x+char_n < CHAR_MAX_X_VERTICAL && tft_char_is_changed(x+char_n, y)) {
-							if (x+char_n >= CHAR_MAX_X_VERTICAL) {
-								break;
-							} else {
-								char_n++;
+	if (prints_enabled) 
+	{
+		switch (tft_orientation) {
+			case 0:
+				for (y = 0; y < CHAR_MAX_Y_VERTICAL; y++) {
+					for (x = 0; x < CHAR_MAX_X_VERTICAL; x++) {
+						if (tft_char_is_changed(x, y)) {
+							char_n = 1;
+							while (x+char_n < CHAR_MAX_X_VERTICAL && tft_char_is_changed(x+char_n, y)) {
+								if (x+char_n >= CHAR_MAX_X_VERTICAL) {
+									break;
+								} else {
+									char_n++;
+								}
 							}
-						}
-						tft_set_char_pos(x*CHAR_WIDTH, y*CHAR_HEIGHT, (x+char_n)*CHAR_WIDTH-1, (y+1)*CHAR_HEIGHT-1);
-						y2 = y;
-						for (py = 0; py < CHAR_HEIGHT; py++) {
-							for (px = 0; px < char_n*CHAR_WIDTH; px++) {
-								x2 = x+px/CHAR_WIDTH;
-								clr = ascii_8x16[((text[x2][y2] - STARTING_ASCII) * CHAR_HEIGHT) + py] & (0x80 >> (px % CHAR_WIDTH)) ? text_color[x2][y2] : bg_color[x2][y2];
-								tft_write_data(clr >> 8);
-								tft_write_data(clr);
+							tft_set_char_pos(x*CHAR_WIDTH, y*CHAR_HEIGHT, (x+char_n)*CHAR_WIDTH-1, (y+1)*CHAR_HEIGHT-1);
+							y2 = y;
+							for (py = 0; py < CHAR_HEIGHT; py++) {
+								for (px = 0; px < char_n*CHAR_WIDTH; px++) {
+									x2 = x+px/CHAR_WIDTH;
+									clr = ascii_8x16[((text[x2][y2] - STARTING_ASCII) * CHAR_HEIGHT) + py] & (0x80 >> (px % CHAR_WIDTH)) ? text_color[x2][y2] : bg_color[x2][y2];
+									tft_write_data(clr >> 8);
+									tft_write_data(clr);
+								}
 							}
+							x += char_n-1;
 						}
-						x += char_n-1;
 					}
 				}
-			}
-			break;
-		case 1:
-			for (x = 0; x < CHAR_MAX_X_HORIZONTAL; x++) {
-				for (y = CHAR_MAX_Y_HORIZONTAL-1; y >= 0; y--) {
-					if (tft_char_is_changed(x, y)) {
-						char_n = 1;
-						while (y-char_n > -1 && tft_char_is_changed(x, y-char_n)) {
-							if (y-char_n <= -1) {
-								break;
-							} else {
-								char_n++;
+				break;
+			case 1:
+				for (x = 0; x < CHAR_MAX_X_HORIZONTAL; x++) {
+					for (y = CHAR_MAX_Y_HORIZONTAL-1; y >= 0; y--) {
+						if (tft_char_is_changed(x, y)) {
+							char_n = 1;
+							while (y-char_n > -1 && tft_char_is_changed(x, y-char_n)) {
+								if (y-char_n <= -1) {
+									break;
+								} else {
+									char_n++;
+								}
 							}
-						}
-						tft_set_char_pos((CHAR_MAX_Y_HORIZONTAL-y-1)*CHAR_HEIGHT, x*CHAR_WIDTH, (CHAR_MAX_Y_HORIZONTAL-y-1+char_n)*CHAR_HEIGHT-1, (x+1)*CHAR_WIDTH-1);
-						x2 = x;
-						for (px = 0; px < CHAR_WIDTH; px++) {
-							for (py = 0; py < char_n*CHAR_HEIGHT; py++) {
-								y2 = y-py/CHAR_HEIGHT;
-								clr = ascii_8x16[((text[x2][y2] - STARTING_ASCII) * CHAR_HEIGHT) + CHAR_HEIGHT-(py % CHAR_HEIGHT)-1] & (0x80 >> px) ? text_color[x2][y2] : bg_color[x2][y2];
-								tft_write_data(clr >> 8);
-								tft_write_data(clr);
+							tft_set_char_pos((CHAR_MAX_Y_HORIZONTAL-y-1)*CHAR_HEIGHT, x*CHAR_WIDTH, (CHAR_MAX_Y_HORIZONTAL-y-1+char_n)*CHAR_HEIGHT-1, (x+1)*CHAR_WIDTH-1);
+							x2 = x;
+							for (px = 0; px < CHAR_WIDTH; px++) {
+								for (py = 0; py < char_n*CHAR_HEIGHT; py++) {
+									y2 = y-py/CHAR_HEIGHT;
+									clr = ascii_8x16[((text[x2][y2] - STARTING_ASCII) * CHAR_HEIGHT) + CHAR_HEIGHT-(py % CHAR_HEIGHT)-1] & (0x80 >> px) ? text_color[x2][y2] : bg_color[x2][y2];
+									tft_write_data(clr >> 8);
+									tft_write_data(clr);
+								}
 							}
+							y -= char_n-1;
 						}
-						y -= char_n-1;
 					}
 				}
-			}
-			break;
-		case 2:
-			for (y = CHAR_MAX_Y_VERTICAL-1; y >= 0; y--) {
-				for (x = CHAR_MAX_X_VERTICAL-1; x >= 0; x--) {
-					if (tft_char_is_changed(x, y)) {
-						char_n = 1;
-						while (x-char_n > -1 && tft_char_is_changed(x-char_n, y)) {
-							if (x-char_n <= -1) {
-								break;
-							} else {
-								char_n++;
+				break;
+			case 2:
+				for (y = CHAR_MAX_Y_VERTICAL-1; y >= 0; y--) {
+					for (x = CHAR_MAX_X_VERTICAL-1; x >= 0; x--) {
+						if (tft_char_is_changed(x, y)) {
+							char_n = 1;
+							while (x-char_n > -1 && tft_char_is_changed(x-char_n, y)) {
+								if (x-char_n <= -1) {
+									break;
+								} else {
+									char_n++;
+								}
 							}
-						}
-						tft_set_char_pos((CHAR_MAX_X_VERTICAL-x-1)*CHAR_WIDTH, (CHAR_MAX_Y_VERTICAL-y-1)*CHAR_HEIGHT, (CHAR_MAX_X_VERTICAL-x-1+char_n)*CHAR_WIDTH-1, (CHAR_MAX_Y_VERTICAL-y)*CHAR_HEIGHT-1);
-						y2 = y;
-						for (py = 0; py < CHAR_HEIGHT; py++) {
-							for (px = 0; px < char_n*CHAR_WIDTH; px++) {
-								x2 = x-px/CHAR_WIDTH;
-								clr = ascii_8x16[((text[x2][y2] - STARTING_ASCII) * CHAR_HEIGHT) + (CHAR_HEIGHT-py-1)] & (0x80 >> (CHAR_WIDTH-(px % CHAR_WIDTH)-1)) ? text_color[x2][y2] : bg_color[x2][y2];
-								tft_write_data(clr >> 8);
-								tft_write_data(clr);
+							tft_set_char_pos((CHAR_MAX_X_VERTICAL-x-1)*CHAR_WIDTH, (CHAR_MAX_Y_VERTICAL-y-1)*CHAR_HEIGHT, (CHAR_MAX_X_VERTICAL-x-1+char_n)*CHAR_WIDTH-1, (CHAR_MAX_Y_VERTICAL-y)*CHAR_HEIGHT-1);
+							y2 = y;
+							for (py = 0; py < CHAR_HEIGHT; py++) {
+								for (px = 0; px < char_n*CHAR_WIDTH; px++) {
+									x2 = x-px/CHAR_WIDTH;
+									clr = ascii_8x16[((text[x2][y2] - STARTING_ASCII) * CHAR_HEIGHT) + (CHAR_HEIGHT-py-1)] & (0x80 >> (CHAR_WIDTH-(px % CHAR_WIDTH)-1)) ? text_color[x2][y2] : bg_color[x2][y2];
+									tft_write_data(clr >> 8);
+									tft_write_data(clr);
+								}
 							}
+							x -= char_n-1;
 						}
-						x -= char_n-1;
 					}
 				}
-			}
-			break;
-		case 3:
-			for (x = CHAR_MAX_X_HORIZONTAL-1; x >= 0; x--) {
-				for (y = 0; y < CHAR_MAX_Y_HORIZONTAL; y++) {
-					if (tft_char_is_changed(x, y)) {
-						char_n = 1;
-						while (y+char_n < CHAR_MAX_Y_HORIZONTAL && tft_char_is_changed(x, y+char_n)) {
-							if (y+char_n >= CHAR_MAX_Y_HORIZONTAL) {
-								break;
-							} else {
-								char_n++;
+				break;
+			case 3:
+				for (x = CHAR_MAX_X_HORIZONTAL-1; x >= 0; x--) {
+					for (y = 0; y < CHAR_MAX_Y_HORIZONTAL; y++) {
+						if (tft_char_is_changed(x, y)) {
+							char_n = 1;
+							while (y+char_n < CHAR_MAX_Y_HORIZONTAL && tft_char_is_changed(x, y+char_n)) {
+								if (y+char_n >= CHAR_MAX_Y_HORIZONTAL) {
+									break;
+								} else {
+									char_n++;
+								}
 							}
-						}
-						tft_set_char_pos(y*CHAR_HEIGHT, (CHAR_MAX_X_HORIZONTAL-x-1)*CHAR_WIDTH, (y+char_n)*CHAR_HEIGHT-1, (CHAR_MAX_X_HORIZONTAL-x)*CHAR_WIDTH-1);
-						x2 = x;
-						for (px = 0; px < CHAR_WIDTH; px++) {
-							for (py = 0; py < char_n*CHAR_HEIGHT; py++) {
-								y2 = y+py/CHAR_HEIGHT;
-								clr = ascii_8x16[((text[x2][y2] - STARTING_ASCII) * CHAR_HEIGHT) + (py % CHAR_HEIGHT)] & (0x80 >> (CHAR_WIDTH-px-1)) ? text_color[x2][y2] : bg_color[x2][y2];
-								tft_write_data(clr >> 8);
-								tft_write_data(clr);
+							tft_set_char_pos(y*CHAR_HEIGHT, (CHAR_MAX_X_HORIZONTAL-x-1)*CHAR_WIDTH, (y+char_n)*CHAR_HEIGHT-1, (CHAR_MAX_X_HORIZONTAL-x)*CHAR_WIDTH-1);
+							x2 = x;
+							for (px = 0; px < CHAR_WIDTH; px++) {
+								for (py = 0; py < char_n*CHAR_HEIGHT; py++) {
+									y2 = y+py/CHAR_HEIGHT;
+									clr = ascii_8x16[((text[x2][y2] - STARTING_ASCII) * CHAR_HEIGHT) + (py % CHAR_HEIGHT)] & (0x80 >> (CHAR_WIDTH-px-1)) ? text_color[x2][y2] : bg_color[x2][y2];
+									tft_write_data(clr >> 8);
+									tft_write_data(clr);
+								}
 							}
+							y += char_n-1;
 						}
-						y += char_n-1;
 					}
 				}
-			}
-			break;
-	}
-  */
+				break;
+		}
+  }
 	
   if (tft_update_trigger_fx != 0) {
     tft_update_trigger_fx(); 
