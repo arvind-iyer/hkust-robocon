@@ -82,9 +82,9 @@ bool robot_xbc_controls(void)
 	#warning hardcoded
 	s32 speed_ratio = 
 	#if (ROBOT == 'C')
-		120
+		160
 	#else 
-		165
+		170
 	#endif
 	;
 	
@@ -203,7 +203,7 @@ static void robot_cd_common_function(void)
       --angle_para[1];
       change_para[1] = true;
     }
-		// Ignore other button.
+		// Ignore other button
     return;
   } else if (button_released(BUTTON_XBC_XBOX)) {
     if (change_para[0]) {
@@ -273,7 +273,7 @@ void robot_c_function_controls(void)
 	
 	//Racket Hit
 	if(button_pressed(BUTTON_XBC_LB) && button_pressed(BUTTON_XBC_B))
-		racket_hit(70);
+		racket_hit(50);
 	else if(button_pressed(BUTTON_XBC_B))
 		racket_hit(500);
 	if(button_pressed(BUTTON_XBC_A))
@@ -308,27 +308,27 @@ void robot_d_function_controls(void)
 	if (button_pressed(BUTTON_XBC_Y))  {
 		// serve varibales 1
 		if (!button_pressed(BUTTON_XBC_LB)) { 
-			if (button_pressed(BUTTON_XBC_N) && serve_get_delay(0) < MAX_DELAY)
+			if ((button_pressed(BUTTON_XBC_N) == 1 || button_pressed(BUTTON_XBC_N) >= 80) && serve_get_delay(0) < MAX_DELAY)
 				serve_change_delay(0, 1);
-			else if (button_pressed(BUTTON_XBC_S) && serve_get_delay(0) > MIN_DELAY)
+			else if ((button_pressed(BUTTON_XBC_S) == 1 || button_pressed(BUTTON_XBC_S) >= 80) && serve_get_delay(0) > MIN_DELAY)
 				serve_change_delay(0, -1);
-			else if (button_pressed(BUTTON_XBC_W) && serve_get_vel(0) > MIN_VEL)
+			else if ((button_pressed(BUTTON_XBC_W) == 1 || button_pressed(BUTTON_XBC_W) >= 80) && serve_get_vel(0) > MIN_VEL)
 				serve_change_vel(0, -2);
 				//plus_x();
-			else if (button_pressed(BUTTON_XBC_E) && serve_get_vel(0) < MAX_VEL)
+			else if ((button_pressed(BUTTON_XBC_E) == 1 || button_pressed(BUTTON_XBC_E) >= 80) && serve_get_vel(0) < MAX_VEL)
 				serve_change_vel(0, 2);
 		}
 		
 		// serve variable 2
 		if (button_pressed(BUTTON_XBC_LB)) { 
-			if (button_pressed(BUTTON_XBC_N) && serve_get_delay(1) < MAX_DELAY)
+			if ((button_pressed(BUTTON_XBC_N) == 1 || button_pressed(BUTTON_XBC_N) >= 80) && serve_get_delay(1) < MAX_DELAY)
 				serve_change_delay(1, 1);
-			else if (button_pressed(BUTTON_XBC_S) && serve_get_delay(1) > MIN_DELAY)
+			else if ((button_pressed(BUTTON_XBC_S) == 1 || button_pressed(BUTTON_XBC_S) >= 80) && serve_get_delay(1) > MIN_DELAY)
 				serve_change_delay(1, -1);
-			else if (button_pressed(BUTTON_XBC_W) && serve_get_vel(1) > MIN_VEL)
+			else if ((button_pressed(BUTTON_XBC_W) == 1 || button_pressed(BUTTON_XBC_S) >= 80) && serve_get_vel(1) > MIN_VEL)
 				serve_change_vel(1, -2);
 				//plus_x();
-			else if (button_pressed(BUTTON_XBC_E) && serve_get_vel(1) < MAX_VEL)
+			else if ((button_pressed(BUTTON_XBC_E) == 1 || button_pressed(BUTTON_XBC_S) >= 80) && serve_get_vel(1) < MAX_VEL)
 				serve_change_vel(1, 2);
 		}
 	
@@ -423,7 +423,6 @@ void robot_d_function_controls(void)
 
 static void handle_bluetooth_input(void)
 {
-	robot_xbc_controls();
 	if (/*!robot_xbc_controls() && */key_trigger_enable && !bluetooth_is_key_release())
 	{
 		//set_xbc_input_allowed(false);
@@ -649,13 +648,24 @@ void robocon_main(void)
 			//}
 			if (ticks_img % 10 == 0) {
         //wheel_base_update();	//wheel_base_update now also handles auto positioning system
-				bluetooth_update();
-        handle_bluetooth_input();
 				
-				if (!bluetooth_get_connected()) {
-					buzzer_set_note_period(get_note_period(NOTE_G, 7) + ticks_img); 
-					buzzer_control(1, 50);
-				}
+				robot_xbc_controls();
+				
+				#if (ROBOT == 'C')
+					bluetooth_update();
+					handle_bluetooth_input();
+				
+				
+					if (!bluetooth_get_connected()) {
+						if (get_seconds() % 2) {
+							buzzer_set_note_period(get_note_period(NOTE_G, 7) + ticks_img); 
+						} else {
+							buzzer_set_note_period(get_note_period(NOTE_G, 7) + 1000 - ticks_img); 
+						}
+						buzzer_control(1, 50);
+					}
+				#endif
+				
         button_update();
 				// Every 10 ms (100 Hz)
          if (return_listener()) {
@@ -712,10 +722,22 @@ void robocon_main(void)
 						tft_prints(0,2,"[Encoder:--]");
 					} else {
 						tft_prints(0,2,"Encoder:%d", get_encoder_value(RACKET));
-					}					tft_prints(0,3,"S0:%3d %3d", serve_get_delay(0), serve_get_vel(0));
+					}	
+					tft_prints(0,3,"S0:%3d %3d", serve_get_delay(0), serve_get_vel(0));
 					tft_prints(0,4,"S1:%3d %3d", serve_get_delay(1), serve_get_vel(1));
-					tft_prints(0,5,"Timeout:%3d", serve_get_timeout());
-					
+					//tft_prints(0,5,"Timeout:%3d", serve_get_timeout());
+					switch (serve_get_end()) {
+						case SERVE_END_NULL:
+							tft_prints(0,5,"NULL");
+						break;
+						case SERVE_END_ENCODER:
+							tft_prints(0,5,"[Encoder]");
+						break;
+						
+						case SERVE_END_TIMEOUT:
+							tft_prints(0,5,"[Timeout]");
+						break;
+					}
 				#else
           tft_prints(0,2,"Decel: %d", is_force_decel());
           tft_prints(0,3,"Stop: %d", is_force_stop());

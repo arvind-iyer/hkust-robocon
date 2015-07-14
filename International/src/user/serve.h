@@ -23,7 +23,7 @@
 #define	SERVE_PNEU_TEST		&PE5
 #define	SERVE_SET_COUNT			2
 
-#define ENCODER_THRESHOLD 	-8500
+#define ENCODER_THRESHOLD 	-8100 //-10500 //-8500
 
 #define SERVING_TIM							TIM4
 #define SERVING_TIM_RCC					RCC_APB1Periph_TIM4
@@ -31,6 +31,11 @@
 #define	SERVING_IRQn_Handler		void TIM4_IRQHandler(void)
 
 
+typedef enum {
+	SERVE_END_NULL,
+	SERVE_END_TIMEOUT,
+	SERVE_END_ENCODER
+} SERVE_END;
 
 void serve_timer_init(void);
 void serve_update(void);
@@ -45,6 +50,8 @@ void serve_hit(void);		// DO NOT CALL THIS FUNCTION
 void serve_start(u8 id);		// THIS IS FUNCTION U CALL
 void fake_serve_start(void);
 void start_auto_serve(void);
+
+SERVE_END serve_get_end(void);
 
 // primary control
 //void toggle_serve_pneu(void);

@@ -30,9 +30,9 @@ int main(void)
 	wheel_base_init();
   us_mb_init();
   nec_mb_init();
-	if (ROBOT == 'C') {
+	#if (ROBOT == 'C') 
 		ultrasonic_init();
-	}
+	#endif
   /** For debugging **/
   //uart_init(COM1, 115200);
   //uart_printf_enable(COM1);

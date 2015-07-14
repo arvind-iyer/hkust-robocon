@@ -37,7 +37,7 @@
 
 #define LASER_GPIO &PE7
 #define PNEU_GPIO &PD10
-#define PNEU_GPIO_DOWN &PD9
+#define PNEU_GPIO_DOWN &PE15
 
 static u16 RACKET_HIT_DELAY_TIME = 100;
 //void racket_init(void);

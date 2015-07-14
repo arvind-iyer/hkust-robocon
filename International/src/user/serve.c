@@ -41,6 +41,8 @@ bool auto_serve_queued = 0;			// when you press auto-serve
 // Encoder_state
 bool encoder_failed=0;
 
+SERVE_END serve_end = SERVE_END_NULL;
+
 
 void serve_timer_init(void)
 {
@@ -107,6 +109,11 @@ void serve_pneu_set(u8 id, u8 flag)
 	is_released = flag;
 }
 
+SERVE_END serve_get_end(void)
+{
+	return serve_end;
+}
+
 void serve_pneu_toggle(void)
 {
 	if (hitting) {return;} 
@@ -171,12 +178,13 @@ void serve_update(void)
 		calibrate_in_process=0;
 		calibrated=0;
 		serve_calibrate();
-		log ("*enc st hit",get_encoder_value(RACKET));
+		//log ("*enc st hit",get_encoder_value(RACKET));
+		serve_end = SERVE_END_ENCODER;
 	}
 	// after SERVE_HIT_TIMEOUT, stop motor
-	u32 timeout = SERVE_HIT_TIMEOUT;
+	u32 timeout = 140;
 	if (encoder_failed) {
-		timeout = timeout * 65 / 100;
+		timeout = 94;
 	}
 	if (hitting && get_full_ticks()>=serve_hit_start_time+timeout)
 	{
@@ -185,7 +193,9 @@ void serve_update(void)
 		calibrate_in_process=0;
 		calibrated=0;
 		serve_calibrate();
-		log("*!tim st hit",get_full_ticks() - serve_start_time);
+		serve_end = SERVE_END_TIMEOUT;
+		
+		//log("*!tim st hit",get_full_ticks() - serve_start_time);
 	}
 
 	/**
@@ -230,7 +240,7 @@ void serve_update(void)
 		init_encoder_is_set=1;
 		calibrated=1;
 		racket_lock();
-		buzzer_play_song(START_UP, 120, 0);
+		buzzer_play_song(serve_end == SERVE_END_TIMEOUT ? START_UP2 : START_UP, 120, 0);
 		//ONLY UPDATE ENCODER VALUE IF RACKET HITS SWITCH
 		init_encoder_reading = get_encoder_value(RACKET);
 		log("*!sw st cal",get_encoder_value(RACKET));
@@ -347,7 +357,7 @@ void serve_hit(void)
 		serve_pneu_set(0, false);
 		serve_pneu_set(1, false);
 		if (!encoder_failed)
-			motor_set_vel(RACKET, SERVE_HIT_VEL[SERVE_ID]/10,CLOSE_LOOP);	//racket calibrate function takes a direct control over the motor
+			motor_set_vel(RACKET, SERVE_HIT_VEL[SERVE_ID]*15/100,CLOSE_LOOP);	//racket calibrate function takes a direct control over the motor
 		else
 			motor_set_vel(RACKET,(SERVE_HIT_VEL[SERVE_ID]*100)/100,OPEN_LOOP);
 
