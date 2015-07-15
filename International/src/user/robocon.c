@@ -559,6 +559,8 @@ void robocon_main(void)
 	gpio_init(&PA6,GPIO_Speed_50MHz, GPIO_Mode_IPD,1);	// laser sensor grid 2
 	gpio_init(&PA7,GPIO_Speed_50MHz, GPIO_Mode_IPD,1);	// laser sensor grid 3
 	
+	gpio_init(WARNING_BUZZER, GPIO_Speed_2MHz, GPIO_Mode_Out_PP, 1);
+	
 	serve_pneu_set(0, false);
 	serve_pneu_set(1, false);
 	racket_pneumatic_set(0);
@@ -654,13 +656,18 @@ void robocon_main(void)
 				#if (ROBOT == 'C')
 					bluetooth_update();
 					handle_bluetooth_input();
-				
-				
+
 					if (!bluetooth_get_connected()) {
 						if (get_seconds() % 2) {
-							buzzer_set_note_period(get_note_period(NOTE_G, 7) + ticks_img); 
+							buzzer_set_note_period(get_note_period(NOTE_C, 8) + ticks_img); 
 						} else {
-							buzzer_set_note_period(get_note_period(NOTE_G, 7) + 1000 - ticks_img); 
+							buzzer_set_note_period(get_note_period(NOTE_C, 8) + 1000 - ticks_img); 
+						}
+						
+						if (get_ticks() % 500 <= 300) {
+							gpio_write(WARNING_BUZZER, (BitAction) 1);
+						} else {
+							gpio_write(WARNING_BUZZER, (BitAction) 0);
 						}
 						buzzer_control(1, 50);
 					}
