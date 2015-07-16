@@ -24,6 +24,7 @@ typedef enum {
 	LED_ON	= 1
 } LED_STATE;
 
+void gpio_init(const GPIO *gpio, GPIOMode_TypeDef mode, GPIOOType_TypeDef otype, GPIOSpeed_TypeDef speed, GPIOPuPd_TypeDef pupd);
 void LED_control(const GPIO *gpio, LED_STATE state); //ON or OFF
 void BUTTON_init(const GPIO *gpio);
 void timer_gpio_init(const GPIO *gpio);

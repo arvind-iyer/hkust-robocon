@@ -38,6 +38,7 @@
 ..\obj\3.2 tft_display.o: ..\FWLIB\inc\stm32f4xx_fsmc.h
 ..\obj\3.2 tft_display.o: C:\Keil_v5\ARM\ARMCC\Bin\..\include\stdlib.h
 ..\obj\3.2 tft_display.o: gpio.h
+..\obj\3.2 tft_display.o: led.h
 ..\obj\3.2 tft_display.o: buzzer_song.h
 ..\obj\3.2 tft_display.o: buzzer.h
 ..\obj\3.2 tft_display.o: timer.h

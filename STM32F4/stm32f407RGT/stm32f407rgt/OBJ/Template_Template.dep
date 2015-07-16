@@ -38,9 +38,9 @@ I (..\FWLIB\inc\stm32f4xx_dcmi.h)(0x53DBAFAD)
 I (..\FWLIB\inc\stm32f4xx_fsmc.h)(0x53DBAFAD)
 I (ticks.h)(0x559A8AAA)
 I (buzzer.h)(0x553FC3D8)
-I (gpio.h)(0x55A74DA4)
+I (gpio.h)(0x55A7655C)
 I (timer.h)(0x553FC835)
-F (.\main.c)(0x559AA9EB)(-c --cpu Cortex-M4.fp -g -O0 --apcs=interwork -I..\CORE -I..\SYSTEM\delay -I..\SYSTEM\sys -I..\SYSTEM\usart -I..\USER -I..\FWLIB\inc-I C:\Coding\STM32F4\stm32f407RGT\stm32f407rgt\USER\RTE-I C:\Keil_v5\ARM\PACK\Keil\STM32F4xx_DFP\2.4.0-I C:\Keil_v5\ARM\CMSIS\Include-I C:\Keil_v5\ARM\PACK\Keil\STM32F4xx_DFP\2.4.0\Device\Include-D__UVISION_VERSION="514" -DSTM32F407xx -DSTM32F40_41xxx -DUSE_STDPERIPH_DRIVER-o ..\obj\main.o --omf_browse ..\obj\main.crf --depend ..\obj\main.d)
+F (.\main.c)(0x55A77345)(-c --cpu Cortex-M4.fp -g -O0 --apcs=interwork -I..\CORE -I..\SYSTEM\delay -I..\SYSTEM\sys -I..\SYSTEM\usart -I..\USER -I..\FWLIB\inc-I C:\Coding\STM32F4\stm32f407RGT\stm32f407rgt\USER\RTE-I C:\Keil_v5\ARM\PACK\Keil\STM32F4xx_DFP\2.4.0-I C:\Keil_v5\ARM\CMSIS\Include-I C:\Keil_v5\ARM\PACK\Keil\STM32F4xx_DFP\2.4.0\Device\Include-D__UVISION_VERSION="514" -DSTM32F407xx -DSTM32F40_41xxx -DUSE_STDPERIPH_DRIVER-o ..\obj\main.o --omf_browse ..\obj\main.crf --depend ..\obj\main.d)
 I (main.h)(0x559785CD)
 I (C:\Keil_v5\ARM\ARMCC\include\stdio.h)(0x5475F300)
 I (C:\Keil_v5\ARM\ARMCC\include\stdlib.h)(0x5475F300)
@@ -83,23 +83,23 @@ I (..\FWLIB\inc\stm32f4xx_dcmi.h)(0x53DBAFAD)
 I (..\FWLIB\inc\stm32f4xx_fsmc.h)(0x53DBAFAD)
 I (..\SYSTEM\delay\delay.h)(0x553C4D00)
 I (..\USER\ticks.h)(0x559A8AAA)
-I (gpio.h)(0x55A74DA4)
+I (gpio.h)(0x55A7655C)
 I (ticks.h)(0x559A8AAA)
-I (led.h)(0x55A74E17)
-I (button.h)(0x559761F8)
+I (led.h)(0x55A76EF2)
+I (button.h)(0x55A76B97)
 I (timer.h)(0x553FC835)
 I (buzzer.h)(0x553FC3D8)
 I (buzzer_song.h)(0x55510AAA)
-I (1.8 TFT_display.h)(0x55A74DC2)
+I (1.8 TFT_display.h)(0x55A76920)
 I (1.8 TFT_ascii.h)(0x5543C9CC)
 I (tm_stm32f4_gpio.h)(0x553FEEEC)
 I (defines.h)(0x5543E76B)
-I (photo.h)(0x5597DEFB)
+I (photo.h)(0x55A7691B)
 I (photo.c)(0x5597DF3A)
 I (C:\Keil_v5\ARM\ARMCC\include\stdarg.h)(0x5475F2FA)
 I (..\SYSTEM\usart\usart.h)(0x55511808)
 I (..\SYSTEM\sys\sys.h)(0x53B52F5F)
-I (Temperature_ADC.h)(0x5597885B)
+I (Temperature_ADC.h)(0x55A76920)
 F (.\system_stm32f4xx.c)(0x544615DB)(-c --cpu Cortex-M4.fp -g -O0 --apcs=interwork -I..\CORE -I..\SYSTEM\delay -I..\SYSTEM\sys -I..\SYSTEM\usart -I..\USER -I..\FWLIB\inc-I C:\Coding\STM32F4\stm32f407RGT\stm32f407rgt\USER\RTE-I C:\Keil_v5\ARM\PACK\Keil\STM32F4xx_DFP\2.4.0-I C:\Keil_v5\ARM\CMSIS\Include-I C:\Keil_v5\ARM\PACK\Keil\STM32F4xx_DFP\2.4.0\Device\Include-D__UVISION_VERSION="514" -DSTM32F407xx -DSTM32F40_41xxx -DUSE_STDPERIPH_DRIVER-o ..\obj\system_stm32f4xx.o --omf_browse ..\obj\system_stm32f4xx.crf --depend ..\obj\system_stm32f4xx.d)
 I (stm32f4xx.h)(0x542BA483)
 I (..\CORE\core_cm4.h)(0x5532AF10)
@@ -1447,10 +1447,10 @@ I (..\FWLIB\inc\stm32f4xx_can.h)(0x53DBAFAD)
 I (..\FWLIB\inc\stm32f4xx_dac.h)(0x53DBAFAD)
 I (..\FWLIB\inc\stm32f4xx_dcmi.h)(0x53DBAFAD)
 I (..\FWLIB\inc\stm32f4xx_fsmc.h)(0x53DBAFAD)
-I (gpio.h)(0x55A74DA4)
+I (gpio.h)(0x55A7655C)
 I (timer.h)(0x553FC835)
-F (.\gpio.c)(0x55A74D74)(-c --cpu Cortex-M4.fp -g -O0 --apcs=interwork -I..\CORE -I..\SYSTEM\delay -I..\SYSTEM\sys -I..\SYSTEM\usart -I..\USER -I..\FWLIB\inc-I C:\Coding\STM32F4\stm32f407RGT\stm32f407rgt\USER\RTE-I C:\Keil_v5\ARM\PACK\Keil\STM32F4xx_DFP\2.4.0-I C:\Keil_v5\ARM\CMSIS\Include-I C:\Keil_v5\ARM\PACK\Keil\STM32F4xx_DFP\2.4.0\Device\Include-D__UVISION_VERSION="514" -DSTM32F407xx -DSTM32F40_41xxx -DUSE_STDPERIPH_DRIVER-o ..\obj\gpio.o --omf_browse ..\obj\gpio.crf --depend ..\obj\gpio.d)
-I (gpio.h)(0x55A74DA4)
+F (.\gpio.c)(0x55A76F09)(-c --cpu Cortex-M4.fp -g -O0 --apcs=interwork -I..\CORE -I..\SYSTEM\delay -I..\SYSTEM\sys -I..\SYSTEM\usart -I..\USER -I..\FWLIB\inc-I C:\Coding\STM32F4\stm32f407RGT\stm32f407rgt\USER\RTE-I C:\Keil_v5\ARM\PACK\Keil\STM32F4xx_DFP\2.4.0-I C:\Keil_v5\ARM\CMSIS\Include-I C:\Keil_v5\ARM\PACK\Keil\STM32F4xx_DFP\2.4.0\Device\Include-D__UVISION_VERSION="514" -DSTM32F407xx -DSTM32F40_41xxx -DUSE_STDPERIPH_DRIVER-o ..\obj\gpio.o --omf_browse ..\obj\gpio.crf --depend ..\obj\gpio.d)
+I (gpio.h)(0x55A7655C)
 I (..\FWLIB\inc\stm32f4xx_gpio.h)(0x53DBAFAD)
 I (..\USER\stm32f4xx.h)(0x542BA483)
 I (..\CORE\core_cm4.h)(0x5532AF10)
@@ -1560,10 +1560,10 @@ I (..\FWLIB\inc\stm32f4xx_can.h)(0x53DBAFAD)
 I (..\FWLIB\inc\stm32f4xx_dac.h)(0x53DBAFAD)
 I (..\FWLIB\inc\stm32f4xx_dcmi.h)(0x53DBAFAD)
 I (..\FWLIB\inc\stm32f4xx_fsmc.h)(0x53DBAFAD)
-I (gpio.h)(0x55A74DA4)
-F (.\button.c)(0x553FC106)(-c --cpu Cortex-M4.fp -g -O0 --apcs=interwork -I..\CORE -I..\SYSTEM\delay -I..\SYSTEM\sys -I..\SYSTEM\usart -I..\USER -I..\FWLIB\inc-I C:\Coding\STM32F4\stm32f407RGT\stm32f407rgt\USER\RTE-I C:\Keil_v5\ARM\PACK\Keil\STM32F4xx_DFP\2.4.0-I C:\Keil_v5\ARM\CMSIS\Include-I C:\Keil_v5\ARM\PACK\Keil\STM32F4xx_DFP\2.4.0\Device\Include-D__UVISION_VERSION="514" -DSTM32F407xx -DSTM32F40_41xxx -DUSE_STDPERIPH_DRIVER-o ..\obj\button.o --omf_browse ..\obj\button.crf --depend ..\obj\button.d)
-I (button.h)(0x559761F8)
-I (gpio.h)(0x55A74DA4)
+I (gpio.h)(0x55A7655C)
+F (.\button.c)(0x55A76B52)(-c --cpu Cortex-M4.fp -g -O0 --apcs=interwork -I..\CORE -I..\SYSTEM\delay -I..\SYSTEM\sys -I..\SYSTEM\usart -I..\USER -I..\FWLIB\inc-I C:\Coding\STM32F4\stm32f407RGT\stm32f407rgt\USER\RTE-I C:\Keil_v5\ARM\PACK\Keil\STM32F4xx_DFP\2.4.0-I C:\Keil_v5\ARM\CMSIS\Include-I C:\Keil_v5\ARM\PACK\Keil\STM32F4xx_DFP\2.4.0\Device\Include-D__UVISION_VERSION="514" -DSTM32F407xx -DSTM32F40_41xxx -DUSE_STDPERIPH_DRIVER-o ..\obj\button.o --omf_browse ..\obj\button.crf --depend ..\obj\button.d)
+I (button.h)(0x55A76B97)
+I (gpio.h)(0x55A7655C)
 I (..\FWLIB\inc\stm32f4xx_gpio.h)(0x53DBAFAD)
 I (..\USER\stm32f4xx.h)(0x542BA483)
 I (..\CORE\core_cm4.h)(0x5532AF10)
@@ -1598,9 +1598,9 @@ I (..\FWLIB\inc\stm32f4xx_can.h)(0x53DBAFAD)
 I (..\FWLIB\inc\stm32f4xx_dac.h)(0x53DBAFAD)
 I (..\FWLIB\inc\stm32f4xx_dcmi.h)(0x53DBAFAD)
 I (..\FWLIB\inc\stm32f4xx_fsmc.h)(0x53DBAFAD)
-F (.\led.c)(0x55A74D8D)(-c --cpu Cortex-M4.fp -g -O0 --apcs=interwork -I..\CORE -I..\SYSTEM\delay -I..\SYSTEM\sys -I..\SYSTEM\usart -I..\USER -I..\FWLIB\inc-I C:\Coding\STM32F4\stm32f407RGT\stm32f407rgt\USER\RTE-I C:\Keil_v5\ARM\PACK\Keil\STM32F4xx_DFP\2.4.0-I C:\Keil_v5\ARM\CMSIS\Include-I C:\Keil_v5\ARM\PACK\Keil\STM32F4xx_DFP\2.4.0\Device\Include-D__UVISION_VERSION="514" -DSTM32F407xx -DSTM32F40_41xxx -DUSE_STDPERIPH_DRIVER-o ..\obj\led.o --omf_browse ..\obj\led.crf --depend ..\obj\led.d)
-I (led.h)(0x55A74E17)
-I (gpio.h)(0x55A74DA4)
+F (.\led.c)(0x55A76EB9)(-c --cpu Cortex-M4.fp -g -O0 --apcs=interwork -I..\CORE -I..\SYSTEM\delay -I..\SYSTEM\sys -I..\SYSTEM\usart -I..\USER -I..\FWLIB\inc-I C:\Coding\STM32F4\stm32f407RGT\stm32f407rgt\USER\RTE-I C:\Keil_v5\ARM\PACK\Keil\STM32F4xx_DFP\2.4.0-I C:\Keil_v5\ARM\CMSIS\Include-I C:\Keil_v5\ARM\PACK\Keil\STM32F4xx_DFP\2.4.0\Device\Include-D__UVISION_VERSION="514" -DSTM32F407xx -DSTM32F40_41xxx -DUSE_STDPERIPH_DRIVER-o ..\obj\led.o --omf_browse ..\obj\led.crf --depend ..\obj\led.d)
+I (led.h)(0x55A76EF2)
+I (gpio.h)(0x55A7655C)
 I (..\FWLIB\inc\stm32f4xx_gpio.h)(0x53DBAFAD)
 I (..\USER\stm32f4xx.h)(0x542BA483)
 I (..\CORE\core_cm4.h)(0x5532AF10)
@@ -1672,10 +1672,10 @@ I (..\FWLIB\inc\stm32f4xx_can.h)(0x53DBAFAD)
 I (..\FWLIB\inc\stm32f4xx_dac.h)(0x53DBAFAD)
 I (..\FWLIB\inc\stm32f4xx_dcmi.h)(0x53DBAFAD)
 I (..\FWLIB\inc\stm32f4xx_fsmc.h)(0x53DBAFAD)
-I (gpio.h)(0x55A74DA4)
+I (gpio.h)(0x55A7655C)
 I (timer.h)(0x553FC835)
-F (.\3.2 TFT_display.c)(0x55A74CC9)(-c --cpu Cortex-M4.fp -g -O0 --apcs=interwork -I..\CORE -I..\SYSTEM\delay -I..\SYSTEM\sys -I..\SYSTEM\usart -I..\USER -I..\FWLIB\inc-I C:\Coding\STM32F4\stm32f407RGT\stm32f407rgt\USER\RTE-I C:\Keil_v5\ARM\PACK\Keil\STM32F4xx_DFP\2.4.0-I C:\Keil_v5\ARM\CMSIS\Include-I C:\Keil_v5\ARM\PACK\Keil\STM32F4xx_DFP\2.4.0\Device\Include-D__UVISION_VERSION="514" -DSTM32F407xx -DSTM32F40_41xxx -DUSE_STDPERIPH_DRIVER-o "..\obj\3.2 tft_display.o" --omf_browse "..\obj\3.2 tft_display.crf" --depend "..\obj\3.2 tft_display.d")
-I (3.2 TFT_display.h)(0x5541DA05)
+F (.\3.2 TFT_display.c)(0x55A765CF)(-c --cpu Cortex-M4.fp -g -O0 --apcs=interwork -I..\CORE -I..\SYSTEM\delay -I..\SYSTEM\sys -I..\SYSTEM\usart -I..\USER -I..\FWLIB\inc-I C:\Coding\STM32F4\stm32f407RGT\stm32f407rgt\USER\RTE-I C:\Keil_v5\ARM\PACK\Keil\STM32F4xx_DFP\2.4.0-I C:\Keil_v5\ARM\CMSIS\Include-I C:\Keil_v5\ARM\PACK\Keil\STM32F4xx_DFP\2.4.0\Device\Include-D__UVISION_VERSION="514" -DSTM32F407xx -DSTM32F40_41xxx -DUSE_STDPERIPH_DRIVER-o "..\obj\3.2 tft_display.o" --omf_browse "..\obj\3.2 tft_display.crf" --depend "..\obj\3.2 tft_display.d")
+I (3.2 TFT_display.h)(0x55A7665C)
 I (..\SYSTEM\sys\sys.h)(0x53B52F5F)
 I (..\USER\stm32f4xx.h)(0x542BA483)
 I (..\CORE\core_cm4.h)(0x5532AF10)
@@ -1712,7 +1712,8 @@ I (..\FWLIB\inc\stm32f4xx_dac.h)(0x53DBAFAD)
 I (..\FWLIB\inc\stm32f4xx_dcmi.h)(0x53DBAFAD)
 I (..\FWLIB\inc\stm32f4xx_fsmc.h)(0x53DBAFAD)
 I (C:\Keil_v5\ARM\ARMCC\include\stdlib.h)(0x5475F300)
-I (gpio.h)(0x55A74DA4)
+I (gpio.h)(0x55A7655C)
+I (led.h)(0x55A76EF2)
 I (buzzer_song.h)(0x55510AAA)
 I (buzzer.h)(0x553FC3D8)
 I (timer.h)(0x553FC835)
@@ -1835,8 +1836,8 @@ I (..\FWLIB\inc\stm32f4xx_fsmc.h)(0x53DBAFAD)
 I (defines.h)(0x5543E76B)
 I (attributes.h)(0x553FF124)
 I (tm_stm32f4_gpio.h)(0x553FEEEC)
-F (.\1.8 TFT_display.c)(0x559A9E9B)(-c --cpu Cortex-M4.fp -g -O0 --apcs=interwork -I..\CORE -I..\SYSTEM\delay -I..\SYSTEM\sys -I..\SYSTEM\usart -I..\USER -I..\FWLIB\inc-I C:\Coding\STM32F4\stm32f407RGT\stm32f407rgt\USER\RTE-I C:\Keil_v5\ARM\PACK\Keil\STM32F4xx_DFP\2.4.0-I C:\Keil_v5\ARM\CMSIS\Include-I C:\Keil_v5\ARM\PACK\Keil\STM32F4xx_DFP\2.4.0\Device\Include-D__UVISION_VERSION="514" -DSTM32F407xx -DSTM32F40_41xxx -DUSE_STDPERIPH_DRIVER-o "..\obj\1.8 tft_display.o" --omf_browse "..\obj\1.8 tft_display.crf" --depend "..\obj\1.8 tft_display.d")
-I (1.8 TFT_display.h)(0x55A74DC2)
+F (.\1.8 TFT_display.c)(0x55A75A88)(-c --cpu Cortex-M4.fp -g -O0 --apcs=interwork -I..\CORE -I..\SYSTEM\delay -I..\SYSTEM\sys -I..\SYSTEM\usart -I..\USER -I..\FWLIB\inc-I C:\Coding\STM32F4\stm32f407RGT\stm32f407rgt\USER\RTE-I C:\Keil_v5\ARM\PACK\Keil\STM32F4xx_DFP\2.4.0-I C:\Keil_v5\ARM\CMSIS\Include-I C:\Keil_v5\ARM\PACK\Keil\STM32F4xx_DFP\2.4.0\Device\Include-D__UVISION_VERSION="514" -DSTM32F407xx -DSTM32F40_41xxx -DUSE_STDPERIPH_DRIVER-o "..\obj\1.8 tft_display.o" --omf_browse "..\obj\1.8 tft_display.crf" --depend "..\obj\1.8 tft_display.d")
+I (1.8 TFT_display.h)(0x55A76920)
 I (stm32f4xx.h)(0x542BA483)
 I (..\CORE\core_cm4.h)(0x5532AF10)
 I (C:\Keil_v5\ARM\ARMCC\include\stdint.h)(0x5475F300)
@@ -1873,14 +1874,14 @@ I (..\FWLIB\inc\stm32f4xx_dac.h)(0x53DBAFAD)
 I (..\FWLIB\inc\stm32f4xx_dcmi.h)(0x53DBAFAD)
 I (..\FWLIB\inc\stm32f4xx_fsmc.h)(0x53DBAFAD)
 I (1.8 TFT_ascii.h)(0x5543C9CC)
-I (gpio.h)(0x55A74DA4)
-I (led.h)(0x55A74E17)
+I (gpio.h)(0x55A7655C)
+I (led.h)(0x55A76EF2)
 I (tm_stm32f4_gpio.h)(0x553FEEEC)
 I (defines.h)(0x5543E76B)
 I (buzzer_song.h)(0x55510AAA)
 I (buzzer.h)(0x553FC3D8)
 I (timer.h)(0x553FC835)
-I (photo.h)(0x5597DEFB)
+I (photo.h)(0x55A7691B)
 I (photo.c)(0x5597DF3A)
 I (C:\Keil_v5\ARM\ARMCC\include\stdio.h)(0x5475F300)
 I (C:\Keil_v5\ARM\ARMCC\include\stdarg.h)(0x5475F2FA)
@@ -1888,7 +1889,7 @@ I (..\SYSTEM\delay\delay.h)(0x553C4D00)
 I (..\USER\ticks.h)(0x559A8AAA)
 I (ticks.h)(0x559A8AAA)
 F (.\Temperature_ADC.c)(0x55978AB6)(-c --cpu Cortex-M4.fp -g -O0 --apcs=interwork -I..\CORE -I..\SYSTEM\delay -I..\SYSTEM\sys -I..\SYSTEM\usart -I..\USER -I..\FWLIB\inc-I C:\Coding\STM32F4\stm32f407RGT\stm32f407rgt\USER\RTE-I C:\Keil_v5\ARM\PACK\Keil\STM32F4xx_DFP\2.4.0-I C:\Keil_v5\ARM\CMSIS\Include-I C:\Keil_v5\ARM\PACK\Keil\STM32F4xx_DFP\2.4.0\Device\Include-D__UVISION_VERSION="514" -DSTM32F407xx -DSTM32F40_41xxx -DUSE_STDPERIPH_DRIVER-o ..\obj\temperature_adc.o --omf_browse ..\obj\temperature_adc.crf --depend ..\obj\temperature_adc.d)
-I (Temperature_ADC.h)(0x5597885B)
+I (Temperature_ADC.h)(0x55A76920)
 I (..\SYSTEM\delay\delay.h)(0x553C4D00)
 I (..\USER\stm32f4xx.h)(0x542BA483)
 I (..\CORE\core_cm4.h)(0x5532AF10)

@@ -11,3 +11,8 @@ void button_init(){
 	BUTTON_init(down_button);	 //down button
 
 }
+
+u8 button_read(const GPIO* gpio)
+{
+	return gpio_read_input(gpio);
+}

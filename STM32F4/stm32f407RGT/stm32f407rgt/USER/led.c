@@ -18,3 +18,15 @@ void LED_init(const GPIO *gpio){
 	}
 	
 }
+
+void LED_control(const GPIO *gpio, LED_STATE state){
+	
+	if (state == 1){
+	GPIO_SetBits(gpio->gpio, gpio->gpio_pin);
+		
+	}
+	if (state == 0){
+	GPIO_ResetBits(gpio->gpio, gpio->gpio_pin);
+	}
+
+}

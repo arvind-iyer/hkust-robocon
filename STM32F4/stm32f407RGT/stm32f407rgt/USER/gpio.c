@@ -273,14 +273,22 @@ void LED_gpio_rcc_init(const GPIO* gpio){
 }
 
 
-
+void gpio_init(const GPIO *gpio, GPIOMode_TypeDef mode, GPIOOType_TypeDef otype, GPIOSpeed_TypeDef speed, GPIOPuPd_TypeDef pupd)
+{
+	GPIO_InitTypeDef GPIO_InitStructure;
+	LED_gpio_rcc_init(gpio);
+	GPIO_InitStructure.GPIO_Pin = gpio->gpio_pin;
+	GPIO_InitStructure.GPIO_Mode = mode;
+	GPIO_InitStructure.GPIO_OType = otype;
+	GPIO_InitStructure.GPIO_Speed = speed;
+	GPIO_InitStructure.GPIO_PuPd = pupd;
+	GPIO_Init(gpio->gpio, &GPIO_InitStructure);
+}
 
 
 
 void timer_gpio_init(const GPIO *gpio)
 {
-	
-	
 	GPIO_InitTypeDef  GPIO_InitStructure;
 	LED_gpio_rcc_init(gpio);
 	GPIO_InitStructure.GPIO_Pin = gpio->gpio_pin;
@@ -288,29 +296,8 @@ void timer_gpio_init(const GPIO *gpio)
     GPIO_InitStructure.GPIO_OType = GPIO_OType_PP;
     GPIO_InitStructure.GPIO_Speed = GPIO_Speed_50MHz;
     GPIO_InitStructure.GPIO_PuPd = GPIO_PuPd_NOPULL;
-    GPIO_Init(gpio->gpio, &GPIO_InitStructure);
-
-
-	
+    GPIO_Init(gpio->gpio, &GPIO_InitStructure);	
 }
-
-
-
-
-void LED_control(const GPIO *gpio, LED_STATE state){
-	
-if (state == 1){
-GPIO_SetBits(gpio->gpio, gpio->gpio_pin);
-	
-}
-if (state == 0){
-GPIO_ResetBits(gpio->gpio, gpio->gpio_pin);
-}
-
-}
-
-
-
 
 
 void BUTTON_init(const GPIO *gpio)
