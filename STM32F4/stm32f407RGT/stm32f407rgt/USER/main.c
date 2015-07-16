@@ -31,6 +31,15 @@ void draw_ball(int x, int y){
 tft_put_pixel(x,y,RED);
 }
 
+void display_button_data()
+{
+	int j = 0;
+	for(  j = 0; j < BUTTON_COUNT; j++)
+	{
+		tft_prints(0,j+2, "%d   %d", button_pressed_count[j], button_released_count[j]);
+	}
+}
+
 int main(void)
 {	//putting global flag
 	
@@ -39,7 +48,6 @@ int main(void)
 	buzzer_init();	 //initialization of buzzer
 	uart_init(115200);
 	tft_init( 2,WHITE, BLACK, BLACK);
-	//delay_nms(1000);
 	buzzer_play_song(START_UP, 125, 0);
 
 	while (1)  {
@@ -60,12 +68,9 @@ int main(void)
 				tft_clear();
 				show_time();
 				tft_update();			
-				
+				button_update();
+				printf("Test");
 			}
-			
-			
-			
-			
 		}
 	}	
 }	

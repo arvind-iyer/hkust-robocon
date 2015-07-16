@@ -1,4 +1,5 @@
 ..\obj\button.o: button.c
+..\obj\button.o: C:\Keil_v5\ARM\ARMCC\Bin\..\include\stdio.h
 ..\obj\button.o: button.h
 ..\obj\button.o: gpio.h
 ..\obj\button.o: ..\FWLIB\inc\stm32f4xx_gpio.h
