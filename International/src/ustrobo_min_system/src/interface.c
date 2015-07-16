@@ -70,6 +70,11 @@ void system_start(u16 duration)
 				led_control((LED) (LED_D1 | LED_D2 | LED_D3), LED_ON); 
 				tft_prints(0, 6, " NO BATTERY!");
 				tft_update();
+				
+				button_update();
+				if (BUTTON_ENTER_LISTENER()) {
+					break; 
+				}
 			}
 		
 	}

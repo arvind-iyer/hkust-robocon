@@ -656,7 +656,7 @@ void robocon_main(void)
 				#if (ROBOT == 'C')
 					bluetooth_update();
 					handle_bluetooth_input();
-
+					
 					if (!bluetooth_get_connected()) {
 						if (get_seconds() % 2) {
 							buzzer_set_note_period(get_note_period(NOTE_C, 8) + ticks_img); 
@@ -664,12 +664,14 @@ void robocon_main(void)
 							buzzer_set_note_period(get_note_period(NOTE_C, 8) + 1000 - ticks_img); 
 						}
 						
-						if (get_ticks() % 500 <= 300) {
+						if (get_ticks() % 500 <= 250) {
 							gpio_write(WARNING_BUZZER, (BitAction) 1);
 						} else {
 							gpio_write(WARNING_BUZZER, (BitAction) 0);
 						}
 						buzzer_control(1, 50);
+					} else {
+						gpio_write(WARNING_BUZZER, (BitAction) 0);
 					}
 				#endif
 				

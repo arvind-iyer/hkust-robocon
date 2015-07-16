@@ -24,7 +24,7 @@ int main(void)
 	can_rx_init();
   can_motor_init();
 	
-	bluetooth_init();
+	
   //mb1240_init();
   xbc_mb_init(XBC_BLUETOOTH_FIRST); 
 	wheel_base_init();
@@ -32,6 +32,7 @@ int main(void)
   nec_mb_init();
 	#if (ROBOT == 'C') 
 		ultrasonic_init();
+		bluetooth_init();
 	#endif
   /** For debugging **/
   //uart_init(COM1, 115200);

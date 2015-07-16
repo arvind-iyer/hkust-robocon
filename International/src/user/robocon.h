@@ -46,7 +46,7 @@
 
 #define	E_STOP_BUTTON		(&PE3) // and 10
 
-#define	WARNING_BUZZER	(&PE14)
+#define	WARNING_BUZZER	(&PE12)
 
 static void robot_cd_common_function(void);
 bool is_force_terminate(void);
