@@ -1,0 +1,25 @@
+TB250 381:560 SEGGER J-Link V4.91b (beta) Log File (0000ms, 0851ms total)
+TB250 381:560 DLL Compiled: Sep 15 2014 09:17:56 (0000ms, 0851ms total)
+TB250 381:560 Logging started @ 2015-06-24 20:34 (0000ms, 0851ms total)
+TB250 381:560 JLINK_SetWarnOutHandler(...) (0000ms, 0851ms total)
+TB250 381:560 JLINK_OpenEx(...)
+  ***** Error: Can not connect to J-Link via USB.  returns "Can not connect to J-Link via USB." (0001ms, 0852ms total)
+
+  ***** API Error: API JLINK_GetHardwareVersion function called before JLINKARM_Open()
+TB250 381:561 
+  ***** Error: Can not connect to J-Link via USB.JLINK_GetDeviceFamily()  returns 0 (0000ms, 0852ms total)
+
+  ***** API Error: API JLINK_GetDebugInfo function called before JLINKARM_Open()
+TB250 383:588 
+  ***** Error: Can not connect to J-Link via USB.
+  ***** API Error: API JLINK_ReadMem function called before JLINKARM_Open()
+TB250 383:588 
+  ***** Error: Can not connect to J-Link via USB.
+  ***** API Error: API JLINK_ReadMem function called before JLINKARM_Open()
+TB250 383:588 
+  ***** Error: Can not connect to J-Link via USB.
+  ***** API Error: API JLINK_SetSpeed function called before JLINKARM_Open()
+TB250 384:786 
+  ***** Error: Can not connect to J-Link via USB.JLINK_Close() (0000ms, 0854ms total)
+TB250 384:787  (0000ms, 0854ms total)
+TB250 384:787 Closed (0000ms, 0854ms total)
