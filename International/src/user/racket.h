@@ -39,7 +39,11 @@
 #define PNEU_GPIO &PD10
 #define PNEU_GPIO_DOWN &PE15
 
+#define	RACKET_DOWN_HIT_DELAY_TIME 700
+
 static u16 RACKET_HIT_DELAY_TIME = 100;
+
+
 //void racket_init(void);
 
 

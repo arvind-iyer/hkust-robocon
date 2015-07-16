@@ -272,9 +272,11 @@ void robot_c_function_controls(void)
 	}
 	
 	//Racket Hit
+	/*
 	if(button_pressed(BUTTON_XBC_LB) && button_pressed(BUTTON_XBC_B))
 		racket_hit(50);
-	else if(button_pressed(BUTTON_XBC_B))
+		*/
+	if(button_pressed(BUTTON_XBC_B))
 		racket_hit(500);
 	if(button_pressed(BUTTON_XBC_A))
 		racket_down_hit();
@@ -378,7 +380,6 @@ void robot_d_function_controls(void)
 		emergency_serve_start_time=get_full_ticks();
 		emergency_serve_button_pressed=0;
 		emergency_serve_activated=1;
-		log("emergency",0);
 		serve_calibrate();
 		emergency_serve_hitting=0;
 	}
@@ -392,7 +393,6 @@ void robot_d_function_controls(void)
 		}
 		if (emergency_serve_start_time+(1000 + AUTO_SERVE_DELAY)<get_full_ticks())	// remove robot after serve
 		{
-			log("remove",get_full_ticks());
 			//SUCCESSFUL_SOUND;
 			remove_robot_sequence_started=1;
 			wheel_base_set_vel(100,0,0);
@@ -401,7 +401,6 @@ void robot_d_function_controls(void)
 		if (emergency_serve_start_time+(AUTO_SERVE_DELAY+2100)<get_full_ticks())//remove robot complete
 		{
 			serve_free();
-			log("removed",get_full_ticks());
 			buzzer_play_song(BIRTHDAY_SONG, 120, 0);
 			remove_robot_sequence_started=0;
 			emergency_serve_activated=0;
@@ -568,7 +567,6 @@ void robocon_main(void)
 	
 	wheel_base_set_target_pos((POSITION){get_pos()->x, get_pos()->y, 0}); 
 	
-	log("XBC=",xbc_get_connection());
 	// Read from flash
 	accel_booster = read_flash(ACCELBOOSTER_OFFSET);
   angle_para[0] = read_flash(ANGLE_PARA_OFFSET[0]);

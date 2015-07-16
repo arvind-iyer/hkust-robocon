@@ -8,8 +8,8 @@
 
 #define LOG_SPACE 4;
 
-void log(char* pstr, s32 val);
-void log_update(void);
+//void log(char* pstr, s32 val);
+//void log_update(void);
 //void log_update();
 
 #endif

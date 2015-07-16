@@ -18,7 +18,6 @@ bool ultra_detect_pulse_high()
 				// checks for range of distance. Rising edge.
 				if (us_get_distance(i)<ULTRA_DETECT_MAX_RANGE && us_get_distance(i)>ULTRA_DETECT_MIN_RANGE)
 				{
-					log("ult_pulse",short_distance_detected_counter);
 					//log("ult_detect",us_get_distance(i));
 					return 1;
 				}
@@ -83,7 +82,6 @@ bool ir_detect_shuttle(void)
 		// IT IS NOT A FALLING EDGE
 		 if ( ir_detected_counter<SENSOR_PULSE_WIDTH_MAX && ir_detected_counter>SENSOR_PULSE_WIDTH_MIN)
 		{
-			log("ir_pulse",ir_detected_counter);
 			last_ir_detect_time = get_full_ticks();
 		}
 		// for 1.5 seconds after sensor triggered hitting, it ignores any incoming data.
@@ -106,12 +104,10 @@ void sensors_update(void)
 	if (ultra_detect_shuttle())
 	{
 		racket_delayed_hit(0);
-		log("ultra_racket",1);
 	}
 	if (ROBOT=='C' && ir_detect_shuttle())
 	{
 		racket_down_hit();
-		log("ir_racket", 1);
 		last_ultra_detect_time = get_full_ticks()-1000;	// minor ultrasonic noise correction. when hitting by ir, disable ultrasonic for 500 ms
 	}
 }

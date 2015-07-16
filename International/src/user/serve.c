@@ -98,7 +98,7 @@ void racket_lock()
 		motor_lock(RACKET);
 	else
 		motor_set_vel(RACKET, SERVE_CAL_VEL+100, OPEN_LOOP);
-	//log("motor_lock",1);
+
 }
 
 
@@ -162,7 +162,6 @@ void serve_update(void)
 	{
 		buzzer_play_song(CLICK, 100, 0);
 		serve_hit();
-		log("serve_hit",serve_hit_start_time);
 	}
 	*/
 	
@@ -243,7 +242,6 @@ void serve_update(void)
 		buzzer_play_song(serve_end == SERVE_END_TIMEOUT ? START_UP2 : START_UP, 120, 0);
 		//ONLY UPDATE ENCODER VALUE IF RACKET HITS SWITCH
 		init_encoder_reading = get_encoder_value(RACKET);
-		log("*!sw st cal",get_encoder_value(RACKET));
 	}
 	
 	// if calibration doesn't stop 1.5 seconds, FORCE STOP CALIBRATION, and register current encoder value as init encoder value.
@@ -257,7 +255,6 @@ void serve_update(void)
 		motor_set_vel(RACKET, SERVE_CAL_VEL+100, OPEN_LOOP);
 		//racket_lock();
 		//init_encoder_reading = get_encoder_value(RACKET);
-		log("*tim st cal",get_full_ticks() - serve_start_time);
 	}
 }
 
