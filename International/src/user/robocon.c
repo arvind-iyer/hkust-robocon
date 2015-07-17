@@ -95,8 +95,8 @@ bool robot_xbc_controls(void)
 	
 	// Scalar Speed limit
 	if (h > XBC_JOY_SCALE) {
-		raw_vx = raw_vx*XBC_JOY_SCALE / h;
-		raw_vy = raw_vy*XBC_JOY_SCALE / h;
+		raw_vx = raw_vx * speed_ratio / XBC_JOY_SCALE / h;
+		raw_vy = raw_vy * speed_ratio / XBC_JOY_SCALE / h;
 	}
 	
 	// Set output x and y.
@@ -105,15 +105,22 @@ bool robot_xbc_controls(void)
   
 	// Violation prevention
 	#if (ROBOT == 'C') 
-		const int allowed_speed = XBC_JOY_SCALE / 2;
-		if (raw_vy > 0 && is_force_stop() && is_force_decel()) {
-			// Force stop
-			raw_vy = 0;
-      FAIL_MUSIC;
-		}	else if (raw_vy > 0 && is_force_decel()) {
+		const int MAX_DIST = 2900;
+		const int STOP_DIST = 511;
+
+		int allowed_speed = ultrasonic_get_val != 0 ? XBC_JOY_SCALE * (ultrasonic_get_val() - 500) / MAX_DIST : XBC_JOY_SCALE;
+		if (allowed_speed < 0) {
+			allowed_speed = 0;
+		}
+		if (raw_vy > 0 && ultrasonic_get_val() < MAX_DIST) {
 			// Force decel
+			accel_booster = read_flash(ACCELBOOSTER_OFFSET);
 			raw_vy = raw_vy * allowed_speed / XBC_JOY_SCALE;
-      CLICK_MUSIC;
+		} else if (raw_vy > 0 && ultrasonic_get_val() < STOP_DIST) {
+			accel_booster = 2047;	// forced stop
+			raw_vy = 0;
+		} else {
+			accel_booster = read_flash(ACCELBOOSTER_OFFSET);
 		}
 	#endif
 		
