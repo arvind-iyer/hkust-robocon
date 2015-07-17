@@ -49,7 +49,7 @@ int main(void)
 	uart_init(115200);
 	tft_init( 2,WHITE, BLACK, BLACK);
 	buzzer_play_song(START_UP, 125, 0);
-
+	LED_init(&PA15);
 	while (1)  {
 		if(ticks_usimg != get_us_ticks())
 		{
@@ -67,6 +67,7 @@ int main(void)
 				//tft_update();
 				tft_clear();
 				show_time();
+				display_button_data();
 				tft_update();			
 				button_update();
 				printf("Test");
