@@ -36,7 +36,8 @@ void display_button_data()
 	int j = 0;
 	for(  j = 0; j < BUTTON_COUNT; j++)
 	{
-		tft_prints(0,j+2, "%d   %d", button_pressed_count[j], button_released_count[j]);
+		tft_prints(0,j+2, "%d  %d", button_pressed(j), button_released(j));
+		//tft_prints(0, j+2, "%d", gpio_read_input(buttons[j]));
 	}
 }
 

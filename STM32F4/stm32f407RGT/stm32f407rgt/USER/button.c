@@ -1,16 +1,20 @@
 #include "stdio.h"
 #include "button.h"
 
-static const GPIO* buttons[BUTTON_COUNT] = { 
-	SMALL_BUTTON_GPIO,
-	JOY_UP_GPIO,
-	JOY_CENTER_GPIO,
-	JOY_LEFT_GPIO,
-	JOY_RIGHT_GPIO,
-	JOY_DOWN_GPIO
-};
+static u16 button_pressed_count[BUTTON_COUNT];
+static u16 button_released_count[BUTTON_COUNT];
 
 
+u8 button_read(const GPIO* gpio)
+{
+	return !gpio_read_input(gpio);
+}
+
+/**
+  * @brief  : Initialises all buttons in list
+  * @param  : None
+  * @retval : None
+  */
 
 void button_init(){
 	int i;
@@ -20,26 +24,56 @@ void button_init(){
 	}
 }
 
+/**
+  * @brief  : Iteratively updates the state of each button
+  * @param  : None
+  * @retval : None
+  */
 void button_update()
 {
-	int i;
-	for (i = 0; i < BUTTON_COUNT; i++)
+	for (int b = 0; b < BUTTON_COUNT; b++)
 	{
-		if(button_read(buttons[i]))
+		if(button_read(buttons[b]) == 1)
 		{
-			button_pressed_count[i]++;
+			button_pressed_count[b] += button_pressed_count[b] == BUTTON_RELEASE_TIME ? 0 : 1;
+			button_released_count[b] = 0;
 		}
 		else
 		{
-			button_pressed_count[i] = 0;
-			button_released_count[i] = 1;
+			if(button_pressed_count[b] > 0)
+			{
+				button_released_count[b] = 1;
+			}
+			if(button_released_count[b] && button_released_count[b] < BUTTON_RELEASE_TIME)
+				button_released_count[b]++;
+			else if(button_released_count[b] == BUTTON_RELEASE_TIME)
+				button_released_count[b] = 0;
+			
+			button_pressed_count[b] = 0;
 		}
-		printf("%d : %d ",i, button_pressed_count[i]);
+		
+		
 	}
 }
 
-u8 button_read(const GPIO* gpio)
+
+/**
+  * @brief  : Returns button pressed state
+  * @param  : Button enum
+  * @retval : Button state
+  */
+u8 button_pressed(BUTTON b)
 {
-	return gpio_read_input(gpio);
+	return button_pressed_count[b];
 }
 
+
+/**
+  * @brief  : Returns button released state
+  * @param  : Button enum
+  * @retval : Button state
+  */
+u8 button_released(BUTTON b)
+{
+	return button_released_count[b];
+}

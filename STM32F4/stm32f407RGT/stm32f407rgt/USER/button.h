@@ -9,6 +9,7 @@
 
 #define BUTTON_COUNT 6
 
+
 #define BUTTON_RELEASE_TIME 25
 
 typedef enum {
@@ -20,10 +21,17 @@ typedef enum {
 	JOY_DOWN = 5
 }BUTTON;
 
+static const GPIO* buttons[BUTTON_COUNT] = { 
+	SMALL_BUTTON_GPIO,
+	JOY_UP_GPIO,
+	JOY_CENTER_GPIO,
+	JOY_LEFT_GPIO,
+	JOY_RIGHT_GPIO,
+	JOY_DOWN_GPIO
+};
 
-static u16 button_pressed_count[BUTTON_COUNT] = { 0 };
-static u16 button_released_count[BUTTON_COUNT] = { 0 };
 
 void button_init(void);
 void button_update(void);
-u8 button_read(const GPIO* gpio);
+u8 button_pressed(BUTTON b);
+u8 button_released(BUTTON b);

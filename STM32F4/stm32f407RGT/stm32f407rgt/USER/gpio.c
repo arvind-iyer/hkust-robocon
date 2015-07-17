@@ -306,7 +306,7 @@ void BUTTON_init(const GPIO *gpio)
 	GPIO_InitStructure.GPIO_Pin = gpio->gpio_pin;
     GPIO_InitStructure.GPIO_Mode = GPIO_Mode_IN;
     GPIO_InitStructure.GPIO_OType = GPIO_OType_PP;
-    GPIO_InitStructure.GPIO_Speed = GPIO_Speed_2MHz;
+    GPIO_InitStructure.GPIO_Speed = GPIO_Speed_25MHz;
     GPIO_InitStructure.GPIO_PuPd = GPIO_PuPd_UP;
     GPIO_Init(gpio->gpio, &GPIO_InitStructure);
 }

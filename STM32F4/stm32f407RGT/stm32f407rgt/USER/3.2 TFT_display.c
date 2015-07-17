@@ -90,7 +90,7 @@ u16 LCD_ReadReg(vu16 LCD_Reg)
 	delay_nus(5);
 	LED_control(rd,LED_ON);	
 	LCD_rd=false;
-			
+	return 0;		
 }   
 //¿ªÊ¼Ð´GRAM
 void LCD_WriteRAM_Prepare(void)

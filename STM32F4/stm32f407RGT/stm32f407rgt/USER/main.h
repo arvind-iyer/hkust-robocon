@@ -27,24 +27,6 @@
 #include "stm32f4xx_crc.h"
 #include "core_cm4.h"
 #include "core_cmFunc.h"
-//#include "buzzer.h"
-//#include "led.h"
-//#include "tft.h"
-//#include "interface.h"
-//#include "xbc_mb.h"
-//#include "button.h"
-//#include "encoder.h"
-//#include "system_test.h"
 
-/*** Optional ***/
-//#include "can_protocol.h"
-//#include "usart.h"
-//#include "approx_math.h"
-//#include "servo.h"
-//#include "gyro.h"
-//#include "bluetooth.h"
-//#include "robocon.h"
-//#include "wheel_base.h"
-//#include "ultrasonic.h"
 
 #endif /* __MAIN_H */
