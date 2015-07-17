@@ -746,8 +746,9 @@ void robocon_main(void)
 						break;
 					}
 				#else
-          tft_prints(0,2,"Decel: %d", is_force_decel());
-          tft_prints(0,3,"Stop: %d", is_force_stop());
+          //tft_prints(0,2,"Decel: %d", is_force_decel());
+          //tft_prints(0,3,"Stop: %d", is_force_stop());
+					tft_prints(0,2,"US: %d", ultrasonic_get_val());
         #endif
 				
         
