@@ -115,12 +115,15 @@ static void robocon_get_xbc(void)
 		}
 	}
 	
-	if (e_stop_mode) {
-		wheel_base_set_vel(0, 0, 0);
+	#warning
+	wheel_base_stop();
+	if (e_stop_mode) {	
+		#warning
+		//wheel_base_set_vel(0, 0, 0);
 		buzzer_set_note_period(get_note_period(NOTE_C, 8) + get_ticks());
 		buzzer_control(1, 100);
 	} else {
-		wheel_base_set_vel(x_vel, y_vel, w_vel);
+		//wheel_base_set_vel(x_vel, y_vel, w_vel);
 	}
 	
 	
@@ -203,13 +206,13 @@ static void robocon_get_xbc(void)
 	}
 	
 	// Calibrate
-	if (button_pressed(BUTTON_XBC_X) == 1 || button_pressed(BUTTON_CALIBRATE) == 10) {
+	if (button_pressed(BUTTON_XBC_X) == 1 || button_pressed(BUTTON_CALIBRATE) == 5) {
 		CLICK_MUSIC;
 		serving_mode = serving_cali_start();
 	}
 	
 	// Auto-serve
-	if (button_pressed(BUTTON_AUTO_SERVE) == 10) {
+	if (button_pressed(BUTTON_AUTO_SERVE) == 5) {
 		if (auto_serve_mode) {
 			// Off
 			auto_serve_mode = false;
@@ -505,7 +508,7 @@ void robocon_main(void)
 					gpio_write(SERVING_LED_GPIO, (BitAction) (ticks_img % 500 < 250));
 				} else if (get_serving_hit_state() != SERVING_NULL) {
 					gpio_write(SERVING_LED_GPIO, 1);
-				} else if (serving_mode && get_serving_calibrated()) {
+				} else if (get_serving_calibrated()) {
 					gpio_write(SERVING_LED_GPIO, (BitAction) (ticks_img % 125 < 62));
 				} else {
 					gpio_write(SERVING_LED_GPIO, 0);

@@ -45,7 +45,7 @@
 #define	FLASH_SERVING_HIT_SPEED_2_OFFSET			6
 #define	FLASH_SERVING_SET_OFFSET							7
 
-#define	AUTO_SERVE_PRE_DELAY								7000		// 7000 ms
+#define	AUTO_SERVE_PRE_DELAY								500		// 7000 ms
 void robocon_init(void);
 void robocon_main(void);
 

@@ -334,7 +334,7 @@ void serving_hit_update(void)
 			|| serving_stop_hitting_full_ticks + SERVING_HIT_STOP_DELAY <= get_full_ticks()
 			) {
 				valve_set(0);
-				serving_hit_state = SERVING_NULL;
+				serving_hit_state = SERVING_RECALI;
 				serving_stop_hitting_full_ticks = 0;
 			}
 			motor_set_vel(SERVING_MOTOR, 0, OPEN_LOOP);
@@ -343,7 +343,7 @@ void serving_hit_update(void)
 		
 		case SERVING_RECALI:
 			//motor_set_vel(SERVING_MOTOR, 0, OPEN_LOOP);
-			buzzer_play_song(MARIO_END, 80, 0); 
+			CLICK_MUSIC; 
 			valve_set(0);
 			serving_hit_state = SERVING_NULL;
 			serving_cali_start();

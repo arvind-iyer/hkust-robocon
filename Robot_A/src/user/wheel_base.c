@@ -199,6 +199,8 @@ s32 wheel_base_vel_scalar(WHEEL_BASE_VEL v)
 	*/
 void wheel_base_update(void)
 {
+	wheel_base_stop();
+	return;
   /** 
     * TODO1: Use wheel_base_set_vel(x,y,w) to control the FOUR wheel base motor
     * TODO2: If there is not any Bluetooth RX data after BLUETOOTH_WHEEL_BASE_TIMEOUT, stop the motors
