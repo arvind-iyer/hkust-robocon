@@ -56,6 +56,8 @@ int main(void)
 			ticks_usimg=get_us_ticks();
 		}
 		
+		
+		
 		if (ticks_msimg != get_ms_ticks()) 
 		{
 			ticks_msimg = get_ms_ticks();  //maximum 1000000	
