@@ -22,18 +22,21 @@ Dialog DLL:      TCM.DLL V1.14.4.0
  
 <h2>Project:</h2>
 C:\Coding\Robocon2015\STM32F4\stm32f407RGT\stm32f407rgt\USER\Template.uvprojx
-Project File Date:  07/16/2015
+Project File Date:  07/17/2015
 
 <h2>Output:</h2>
 Build target 'Template'
+compiling main.c...
+main.c(39): warning:  #188-D: enumerated type mixed with another type
+                tft_prints(0,j+2, "%d  %d", button_pressed(j), button_released(j));
+main.c(39): warning:  #188-D: enumerated type mixed with another type
+                tft_prints(0,j+2, "%d  %d", button_pressed(j), button_released(j));
+main.c: 2 warnings, 0 errors
 compiling button.c...
-button.h(37): warning:  #1-D: last line of file ends without a newline
-  u8 button_released(BUTTON b);
-button.c: 1 warning, 0 errors
 linking...
-Program Size: Code=22324 RO-data=2072 RW-data=8348 ZI-data=3884  
+Program Size: Code=22344 RO-data=2072 RW-data=8348 ZI-data=3884  
 FromELF: creating hex file...
-"..\OBJ\Template.axf" - 0 Error(s), 1 Warning(s).
+"..\OBJ\Template.axf" - 0 Error(s), 2 Warning(s).
 
 <h2>Collection of Component include folders:</h2>
   C:\Coding\Robocon2015\STM32F4\stm32f407RGT\stm32f407rgt\USER\RTE

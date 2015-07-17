@@ -35,7 +35,7 @@ void button_update()
 	{
 		if(button_read(buttons[b]) == 1)
 		{
-			button_pressed_count[b] += button_pressed_count[b] == BUTTON_RELEASE_TIME ? 0 : 1;
+			button_pressed_count[b] += button_pressed_count[b] == BUTTON_PRESS_TIME ? 0 : 1;
 			button_released_count[b] = 0;
 		}
 		else
@@ -76,4 +76,14 @@ u8 button_pressed(BUTTON b)
 u8 button_released(BUTTON b)
 {
 	return button_released_count[b];
+}
+
+/**
+  * @brief  : Returns if button is being held down (longer press time)
+  * @param  : Button enum
+  * @retval : 1 if button held for BUTTON_PRESS_TIME, else 0
+  */
+u8 button_hold(BUTTON b)
+{
+	return button_pressed_count[b] == BUTTON_PRESS_TIME;
 }

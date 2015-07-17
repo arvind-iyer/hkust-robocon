@@ -3,7 +3,7 @@
 <title>Static Call Graph - [..\OBJ\Template.axf]</title></head>
 <body><HR>
 <H1>Static Call Graph for image ..\OBJ\Template.axf</H1><HR>
-<BR><P>#&#060CALLGRAPH&#062# ARM Linker, 5050106: Last Updated: Fri Jul 17 17:33:47 2015
+<BR><P>#&#060CALLGRAPH&#062# ARM Linker, 5050106: Last Updated: Fri Jul 17 17:39:48 2015
 <BR><P>
 <H3>Maximum Stack Usage =        440 bytes + Unknown(Functions without stacksize, Cycles, Untraceable Function Pointers)</H3><H3>
 Call chain for Maximum Stack Depth:</H3>
@@ -1658,6 +1658,8 @@ Global Symbols
 <BR><BR>[Called By]<UL><LI><a href="#[a4]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;display_button_data
 </UL>
 
+<P><STRONG><a name="[204]"></a>button_hold</STRONG> (Thumb, 20 bytes, Stack size 0 bytes, button.o(.text), UNUSED)
+
 <P><STRONG><a name="[ad]"></a>LED_init</STRONG> (Thumb, 64 bytes, Stack size 16 bytes, led.o(.text))
 <BR><BR>[Stack]<UL><LI>Max Depth = 36<LI>Call Chain = LED_init &rArr; GPIO_PinAFConfig
 </UL>
@@ -1779,17 +1781,17 @@ Global Symbols
 <BR>[Called By]<UL><LI><a href="#[97]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;main
 </UL>
 
-<P><STRONG><a name="[204]"></a>tft_enable</STRONG> (Thumb, 8 bytes, Stack size 0 bytes, 1.8 tft_display.o(.text), UNUSED)
+<P><STRONG><a name="[205]"></a>tft_enable</STRONG> (Thumb, 8 bytes, Stack size 0 bytes, 1.8 tft_display.o(.text), UNUSED)
 
-<P><STRONG><a name="[205]"></a>tft_disable</STRONG> (Thumb, 8 bytes, Stack size 0 bytes, 1.8 tft_display.o(.text), UNUSED)
+<P><STRONG><a name="[206]"></a>tft_disable</STRONG> (Thumb, 8 bytes, Stack size 0 bytes, 1.8 tft_display.o(.text), UNUSED)
 
-<P><STRONG><a name="[206]"></a>tft_get_bg_color</STRONG> (Thumb, 6 bytes, Stack size 0 bytes, 1.8 tft_display.o(.text), UNUSED)
+<P><STRONG><a name="[207]"></a>tft_get_bg_color</STRONG> (Thumb, 6 bytes, Stack size 0 bytes, 1.8 tft_display.o(.text), UNUSED)
 
-<P><STRONG><a name="[207]"></a>tft_get_text_color</STRONG> (Thumb, 6 bytes, Stack size 0 bytes, 1.8 tft_display.o(.text), UNUSED)
+<P><STRONG><a name="[208]"></a>tft_get_text_color</STRONG> (Thumb, 6 bytes, Stack size 0 bytes, 1.8 tft_display.o(.text), UNUSED)
 
-<P><STRONG><a name="[208]"></a>tft_get_special_text_color</STRONG> (Thumb, 6 bytes, Stack size 0 bytes, 1.8 tft_display.o(.text), UNUSED)
+<P><STRONG><a name="[209]"></a>tft_get_special_text_color</STRONG> (Thumb, 6 bytes, Stack size 0 bytes, 1.8 tft_display.o(.text), UNUSED)
 
-<P><STRONG><a name="[209]"></a>tft_get_orientation</STRONG> (Thumb, 6 bytes, Stack size 0 bytes, 1.8 tft_display.o(.text), UNUSED)
+<P><STRONG><a name="[20a]"></a>tft_get_orientation</STRONG> (Thumb, 6 bytes, Stack size 0 bytes, 1.8 tft_display.o(.text), UNUSED)
 
 <P><STRONG><a name="[111]"></a>tft_force_clear</STRONG> (Thumb, 86 bytes, Stack size 16 bytes, 1.8 tft_display.o(.text), UNUSED)
 <BR><BR>[Calls]<UL><LI><a href="#[10d]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;tft_fill_color
@@ -1802,9 +1804,9 @@ Global Symbols
 <BR><BR>[Calls]<UL><LI><a href="#[111]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;tft_force_clear
 </UL>
 
-<P><STRONG><a name="[20a]"></a>tft_get_max_x_char</STRONG> (Thumb, 24 bytes, Stack size 0 bytes, 1.8 tft_display.o(.text), UNUSED)
+<P><STRONG><a name="[20b]"></a>tft_get_max_x_char</STRONG> (Thumb, 24 bytes, Stack size 0 bytes, 1.8 tft_display.o(.text), UNUSED)
 
-<P><STRONG><a name="[20b]"></a>tft_get_max_y_char</STRONG> (Thumb, 24 bytes, Stack size 0 bytes, 1.8 tft_display.o(.text), UNUSED)
+<P><STRONG><a name="[20c]"></a>tft_get_max_y_char</STRONG> (Thumb, 24 bytes, Stack size 0 bytes, 1.8 tft_display.o(.text), UNUSED)
 
 <P><STRONG><a name="[113]"></a>tft_set_pixel_pos</STRONG> (Thumb, 78 bytes, Stack size 16 bytes, 1.8 tft_display.o(.text), UNUSED)
 <BR><BR>[Calls]<UL><LI><a href="#[10a]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;tft_write_data
@@ -1875,7 +1877,7 @@ Global Symbols
 <BR>[Called By]<UL><LI><a href="#[97]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;main
 </UL>
 
-<P><STRONG><a name="[20c]"></a>__use_no_semihosting</STRONG> (Thumb, 2 bytes, Stack size 0 bytes, use_no_semi_2.o(.text), UNUSED)
+<P><STRONG><a name="[20d]"></a>__use_no_semihosting</STRONG> (Thumb, 2 bytes, Stack size 0 bytes, use_no_semi_2.o(.text), UNUSED)
 
 <P><STRONG><a name="[117]"></a>vsprintf</STRONG> (Thumb, 32 bytes, Stack size 16 bytes, vsprintf.o(.text))
 <BR><BR>[Stack]<UL><LI>Max Depth = 120 + Unknown Stack Size
@@ -1929,15 +1931,15 @@ Global Symbols
 <BR>[Called By]<UL><LI><a href="#[119]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;_printf_char_common
 </UL>
 
-<P><STRONG><a name="[20d]"></a>__use_two_region_memory</STRONG> (Thumb, 2 bytes, Stack size 0 bytes, heapauxi.o(.text), UNUSED)
+<P><STRONG><a name="[20e]"></a>__use_two_region_memory</STRONG> (Thumb, 2 bytes, Stack size 0 bytes, heapauxi.o(.text), UNUSED)
 
-<P><STRONG><a name="[20e]"></a>__rt_heap_escrow$2region</STRONG> (Thumb, 2 bytes, Stack size 0 bytes, heapauxi.o(.text), UNUSED)
+<P><STRONG><a name="[20f]"></a>__rt_heap_escrow$2region</STRONG> (Thumb, 2 bytes, Stack size 0 bytes, heapauxi.o(.text), UNUSED)
 
-<P><STRONG><a name="[20f]"></a>__rt_heap_expand$2region</STRONG> (Thumb, 2 bytes, Stack size 0 bytes, heapauxi.o(.text), UNUSED)
+<P><STRONG><a name="[210]"></a>__rt_heap_expand$2region</STRONG> (Thumb, 2 bytes, Stack size 0 bytes, heapauxi.o(.text), UNUSED)
 
-<P><STRONG><a name="[210]"></a>__I$use$semihosting</STRONG> (Thumb, 0 bytes, Stack size 0 bytes, use_no_semi.o(.text), UNUSED)
+<P><STRONG><a name="[211]"></a>__I$use$semihosting</STRONG> (Thumb, 0 bytes, Stack size 0 bytes, use_no_semi.o(.text), UNUSED)
 
-<P><STRONG><a name="[211]"></a>__use_no_semihosting_swi</STRONG> (Thumb, 2 bytes, Stack size 0 bytes, use_no_semi.o(.text), UNUSED)
+<P><STRONG><a name="[212]"></a>__use_no_semihosting_swi</STRONG> (Thumb, 2 bytes, Stack size 0 bytes, use_no_semi.o(.text), UNUSED)
 
 <P><STRONG><a name="[11c]"></a>_printf_pre_padding</STRONG> (Thumb, 44 bytes, Stack size 16 bytes, _printf_pad.o(.text))
 <BR><BR>[Stack]<UL><LI>Max Depth = 16<LI>Call Chain = _printf_pre_padding
@@ -2126,7 +2128,7 @@ Global Symbols
 <LI><a href="#[7c]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;_printf_longlong_dec
 </UL>
 
-<P><STRONG><a name="[212]"></a>__lib_sel_fp_printf</STRONG> (Thumb, 2 bytes, Stack size 0 bytes, _printf_fp_dec.o(.text), UNUSED)
+<P><STRONG><a name="[213]"></a>__lib_sel_fp_printf</STRONG> (Thumb, 2 bytes, Stack size 0 bytes, _printf_fp_dec.o(.text), UNUSED)
 
 <P><STRONG><a name="[130]"></a>_printf_fp_dec_real</STRONG> (Thumb, 620 bytes, Stack size 104 bytes, _printf_fp_dec.o(.text))
 <BR><BR>[Stack]<UL><LI>Max Depth = 320<LI>Call Chain = _printf_fp_dec_real &rArr; _fp_digits &rArr; _btod_etento &rArr; _btod_emul &rArr; _e2e
@@ -2238,13 +2240,13 @@ Global Symbols
 <BR>[Called By]<UL><LI><a href="#[96]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__rt_entry_main
 </UL>
 
-<P><STRONG><a name="[213]"></a>__user_libspace</STRONG> (Thumb, 8 bytes, Stack size 0 bytes, libspace.o(.text), UNUSED)
+<P><STRONG><a name="[214]"></a>__user_libspace</STRONG> (Thumb, 8 bytes, Stack size 0 bytes, libspace.o(.text), UNUSED)
 
 <P><STRONG><a name="[136]"></a>__user_perproc_libspace</STRONG> (Thumb, 0 bytes, Stack size 0 bytes, libspace.o(.text))
 <BR><BR>[Called By]<UL><LI><a href="#[93]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__user_setup_stackheap
 </UL>
 
-<P><STRONG><a name="[214]"></a>__user_perthread_libspace</STRONG> (Thumb, 0 bytes, Stack size 0 bytes, libspace.o(.text), UNUSED)
+<P><STRONG><a name="[215]"></a>__user_perthread_libspace</STRONG> (Thumb, 0 bytes, Stack size 0 bytes, libspace.o(.text), UNUSED)
 
 <P><STRONG><a name="[13e]"></a>strcmp</STRONG> (Thumb, 128 bytes, Stack size 0 bytes, strcmpv7m.o(.text))
 <BR><BR>[Called By]<UL><LI><a href="#[91]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;_get_lc_numeric
@@ -2338,9 +2340,9 @@ Global Symbols
 <BR><BR>[Called By]<UL><LI><a href="#[8b]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__rt_lib_init_fp_1
 </UL>
 
-<P><STRONG><a name="[215]"></a>__fplib_config_fpu_vfp</STRONG> (Thumb, 0 bytes, Stack size unknown bytes, fpinit.o(x$fpl$fpinit), UNUSED)
+<P><STRONG><a name="[216]"></a>__fplib_config_fpu_vfp</STRONG> (Thumb, 0 bytes, Stack size unknown bytes, fpinit.o(x$fpl$fpinit), UNUSED)
 
-<P><STRONG><a name="[216]"></a>__fplib_config_pureend_doubles</STRONG> (Thumb, 0 bytes, Stack size unknown bytes, fpinit.o(x$fpl$fpinit), UNUSED)
+<P><STRONG><a name="[217]"></a>__fplib_config_pureend_doubles</STRONG> (Thumb, 0 bytes, Stack size unknown bytes, fpinit.o(x$fpl$fpinit), UNUSED)
 
 <P><STRONG><a name="[6e]"></a>_printf_fp_dec</STRONG> (Thumb, 4 bytes, Stack size 0 bytes, printf1.o(x$fpl$printf1))
 <BR><BR>[Stack]<UL><LI>Max Depth = 320<LI>Call Chain = _printf_fp_dec &rArr; _printf_fp_dec_real &rArr; _fp_digits &rArr; _btod_etento &rArr; _btod_emul &rArr; _e2e

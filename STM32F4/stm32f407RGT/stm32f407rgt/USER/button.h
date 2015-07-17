@@ -9,8 +9,8 @@
 
 #define BUTTON_COUNT 6
 
-
-#define BUTTON_RELEASE_TIME 25
+#define BUTTON_PRESS_TIME		20
+#define BUTTON_RELEASE_TIME 20
 
 typedef enum {
 	SMALL_BUTTON = 0,
