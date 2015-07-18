@@ -867,13 +867,13 @@ ARM Macro Assembler    Page 14
               00000400 
               00000200 
               00000000 
-Command Line: --debug --xref --diag_suppress=9931 --cpu=Cortex-M4.fp --apcs=int
-erwork --depend=..\obj\startup_stm32f40_41xxx.d -o..\obj\startup_stm32f40_41xxx
-.o -IC:\Coding\Robocon2015\STM32F4\stm32f407RGT\stm32f407rgt\USER\RTE -IC:\Keil
-_v5\ARM\PACK\Keil\STM32F4xx_DFP\2.4.0 -IC:\Keil_v5\ARM\CMSIS\Include -IC:\Keil_
-v5\ARM\PACK\Keil\STM32F4xx_DFP\2.4.0\Device\Include --predefine="__UVISION_VERS
-ION SETA 514" --predefine="STM32F407xx SETA 1" --list=..\obj\startup_stm32f40_4
-1xxx.lst ..\CORE\startup_stm32f40_41xxx.s
+Command Line: --debug --xref --cpu=Cortex-M4.fp --apcs=interwork --depend=..\ob
+j\startup_stm32f40_41xxx.d -o..\obj\startup_stm32f40_41xxx.o -IE:\ROBOCON2015GI
+THUT\Robocon2015\STM32F4\stm32f407RGT\stm32f407rgt\USER\RTE -IC:\Keil_v5\ARM\PA
+CK\Keil\STM32F4xx_DFP\2.3.0\Drivers\CMSIS\Device\ST\STM32F4xx\Include -IC:\Keil
+_v5\ARM\CMSIS\Include -IC:\Keil_v5\ARM\PACK\Keil\STM32F4xx_DFP\2.3.0\Device\Inc
+lude --predefine="STM32F407xx SETA 1" --list=..\obj\startup_stm32f40_41xxx.lst 
+..\CORE\startup_stm32f40_41xxx.s
 
 
 
@@ -1986,4 +1986,4 @@ Symbol: __use_two_region_memory
       None
 Comment: __use_two_region_memory unused
 3 symbols
-448 symbols in table
+447 symbols in table

@@ -1,36 +1,52 @@
 #ifndef __LCD_RED_H
 #define __LCD_RED_H
-  #define DC &PA4
-  #define RST &PC9
-  #define CS &PB12
+
 #include "stm32f4xx.h"
 #include "stm32f4xx_gpio.h"
 #include "1.8 TFT_ascii.h"
 #include "gpio.h"
 #include "led.h"
-#include "tm_stm32f4_gpio.h"
 #include "buzzer_song.h"
-#include "photo.h"
+
 #include <stdio.h>
 #include <stdarg.h>
 
 #include "delay.h"
 
 // SPI, RST, DC
-#define TFT_SPI			SPI2
-
-#define TFT_RST_PIN		GPIO_Pin_9
-#define TFT_RST_PORT	GPIOC
-
+#define DC &PA4
 #define TFT_DC_PIN		GPIO_Pin_4
 #define TFT_DC_PORT		GPIOA
 
+#define RST &PC9
+#define TFT_RST_PIN		GPIO_Pin_9
+#define TFT_RST_PORT	GPIOC
 
+#define CS &PB12
 #define GPIO_Pin_CS		GPIO_Pin_12
 #define GPIO_CS			GPIOB
 
+
+// SPI MOSI CLK
+#define TFT_SPI			SPI2
+#define SPI_GPIO_CLOCK  RCC_AHB1Periph_GPIOB
+#define SPI_SPI_CLOCK   RCC_APB1Periph_SPI2
+#define SPI_MOSI        GPIO_Pin_15
+#define SPI_MOSI_SOURCE GPIO_PinSource15
+#define SPI_CLK         GPIO_Pin_13
+#define SPI_CLK_SOURCE  GPIO_PinSource13
+#define SPI_GPIO        GPIOB
+#define SPI_AF          GPIO_AF_SPI2
+
+
+
+
+
+
+
+
 // Color
-#define	BGR888_MODE		1   //to convert BGR888 color to RGB565,,, what i need to get is RGB888 code or BGR888 code
+#define	BGR888_MODE		1   //RGB888 is 24bits, the monitor can support up to 18 bits, so convert 24bits to 16bits,do the following calculation
 
 #if (!BGR888_MODE)
 #define	RGB888TO565(RGB888)  (((RGB888 >> 8) & 0xF800) |((RGB888 >> 5) & 0x07E0) | ((RGB888 >> 3) & 0x001F))
@@ -38,20 +54,21 @@
 #define	RGB888TO565(BGR888)  (((BGR888 >> 19) & 0x001F) |((BGR888 >> 5) & 0x07E0) | (((u32)BGR888 << 8) & 0xF800))
 #endif
 
-#define WHITE					(RGB888TO565(0xFFFFFF))
-#define BLACK					(RGB888TO565(0x000000))
-#define DARK_GREY			(RGB888TO565(0x555555))
-#define GREY					(RGB888TO565(0xAAAAAA))
-#define RED						(RGB888TO565(0xFF0000))
-#define ORANGE				(RGB888TO565(0xFF9900))
-#define YELLOW				(RGB888TO565(0xFFFF00))
-#define GREEN					(RGB888TO565(0x00FF00))
-#define	DARK_GREEN		(RGB888TO565(0x00CC00))
-#define BLUE					(RGB888TO565(0x0000FF))
-#define	BLUE2					(RGB888TO565(0x202060))
-#define	SKY_BLUE			(RGB888TO565(0x11CFFF))
-#define CYAN					(RGB888TO565(0x8888FF))
-#define PURPLE				(RGB888TO565(0x00AAAA))
+//to minimize the MCU calculation
+#define WHITE				0xFFFF//	(RGB888TO565(0xFFFFFF))
+#define BLACK				0x0000//	(RGB888TO565(0x000000))
+#define DARK_GREY			0x52AA//    (RGB888TO565(0x555555))
+#define GREY				0x001F//	(RGB888TO565(0xAAAAAA))
+#define RED					0xAD55// 	(RGB888TO565(0xFF0000))
+#define ORANGE				0x04DF//    (RGB888TO565(0xFF9900))
+#define YELLOW				0x07FF//    (RGB888TO565(0xFFFF00))
+#define GREEN				0x07E0// 	(RGB888TO565(0x00FF00))
+#define	DARK_GREEN		    0x0660//    (RGB888TO565(0x00CC00))
+#define BLUE				0xF800//	(RGB888TO565(0x0000FF))
+#define	BLUE2				0x6104// 	(RGB888TO565(0x202060))
+#define	SKY_BLUE			0xFE62//    (RGB888TO565(0x11CFFF))
+#define CYAN				0xFC51//  	(RGB888TO565(0x8888FF))
+#define PURPLE				0xAD40//    (RGB888TO565(0x00AAAA))
 
 
 
@@ -70,12 +87,7 @@
 #define CHAR_MAX_X				20		// max between CHAR_MAX_X_VERTICAL and CHAR_MAX_X_HORIZONTAL
 #define CHAR_MAX_Y				10		// max between CHAR_MAX_Y_VERTICAL and CHAR_MAX_Y_HORIZONTAL
 
-//extern u8 tft_orientation;
-//extern u8 tft_width;
-//extern u8 tft_height;
-//extern u16 curr_bg_color;
-//extern u16 curr_text_color;
-//extern u16 curr_text_color_sp;
+
 extern u8 do_picture_flag;
 extern char text[CHAR_MAX_X][CHAR_MAX_Y];
 extern u16 text_color[CHAR_MAX_X][CHAR_MAX_Y];
@@ -113,6 +125,5 @@ void tft_fill_color(u16 color);
 u8 tft_char_is_changed(u8 x, u8 y);
 void tft_prints(u8 x, u8 y, const char * pstr, ...);
 void tft_update(void);
-void picture_put_pixel(void);
-void do_picture(void);
+
 #endif		/* __LCD_RED_H */

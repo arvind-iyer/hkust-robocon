@@ -14,7 +14,7 @@
         <TargetCommonOption>
           <Device>STM32F407ZG</Device>
           <Vendor>STMicroelectronics</Vendor>
-          <PackID>Keil.STM32F4xx_DFP.2.4.0</PackID>
+          <PackID>Keil.STM32F4xx_DFP.2.3.0</PackID>
           <PackURL>http://www.keil.com/pack</PackURL>
           <Cpu>IROM(0x08000000,0x100000) IRAM(0x20000000,0x20000) IRAM2(0x10000000,0x10000) CPUTYPE("Cortex-M4") FPU2 CLOCK(168000000) ELITTLE</Cpu>
           <FlashUtilSpec></FlashUtilSpec>
@@ -689,26 +689,6 @@
               <FilePath>.\buzzer_song.c</FilePath>
             </File>
             <File>
-              <FileName>3.2 TFT_display.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>.\3.2 TFT_display.c</FilePath>
-            </File>
-            <File>
-              <FileName>tm_stm32f4_fonts.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>.\tm_stm32f4_fonts.c</FilePath>
-            </File>
-            <File>
-              <FileName>tm_stm32f4_gpio.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>.\tm_stm32f4_gpio.c</FilePath>
-            </File>
-            <File>
-              <FileName>tm_stm32f4_spi.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>.\tm_stm32f4_spi.c</FilePath>
-            </File>
-            <File>
               <FileName>1.8 TFT_display.c</FileName>
               <FileType>1</FileType>
               <FilePath>.\1.8 TFT_display.c</FilePath>
@@ -719,9 +699,9 @@
               <FilePath>.\Temperature_ADC.c</FilePath>
             </File>
             <File>
-              <FileName>photo.c</FileName>
+              <FileName>flash.c</FileName>
               <FileType>1</FileType>
-              <FilePath>.\photo.c</FilePath>
+              <FilePath>.\flash.c</FilePath>
             </File>
           </Files>
         </Group>

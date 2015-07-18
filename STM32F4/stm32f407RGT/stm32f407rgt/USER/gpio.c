@@ -301,7 +301,7 @@ void timer_gpio_init(const GPIO *gpio)
 
 
 void BUTTON_init(const GPIO *gpio)
-{GPIO_InitTypeDef  GPIO_InitStructure;
+{   GPIO_InitTypeDef  GPIO_InitStructure;
 	LED_gpio_rcc_init(gpio);
 	GPIO_InitStructure.GPIO_Pin = gpio->gpio_pin;
     GPIO_InitStructure.GPIO_Mode = GPIO_Mode_IN;

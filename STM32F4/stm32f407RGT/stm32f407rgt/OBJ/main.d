@@ -53,10 +53,6 @@
 ..\obj\main.o: 1.8 TFT_display.h
 ..\obj\main.o: 1.8 TFT_ascii.h
 ..\obj\main.o: led.h
-..\obj\main.o: tm_stm32f4_gpio.h
-..\obj\main.o: defines.h
-..\obj\main.o: photo.h
-..\obj\main.o: photo.c
 ..\obj\main.o: C:\Keil_v5\ARM\ARMCC\Bin\..\include\stdarg.h
 ..\obj\main.o: ..\SYSTEM\delay\delay.h
 ..\obj\main.o: ..\USER\ticks.h

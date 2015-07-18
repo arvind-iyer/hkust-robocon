@@ -47,13 +47,8 @@
 "..\obj\button.o"
 "..\obj\led.o"
 "..\obj\buzzer_song.o"
-"..\obj\3.2 tft_display.o"
-"..\obj\tm_stm32f4_fonts.o"
-"..\obj\tm_stm32f4_gpio.o"
-"..\obj\tm_stm32f4_spi.o"
 "..\obj\1.8 tft_display.o"
 "..\obj\temperature_adc.o"
-"..\obj\photo.o"
 --strict --scatter "..\OBJ\Template.sct"
 --summary_stderr --info summarysizes --map --xref --callgraph --symbols
 --info sizes --info totals --info unused --info veneers

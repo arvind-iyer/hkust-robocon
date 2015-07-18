@@ -38,13 +38,9 @@
 ..\obj\1.8 tft_display.o: 1.8 TFT_ascii.h
 ..\obj\1.8 tft_display.o: gpio.h
 ..\obj\1.8 tft_display.o: led.h
-..\obj\1.8 tft_display.o: tm_stm32f4_gpio.h
-..\obj\1.8 tft_display.o: defines.h
 ..\obj\1.8 tft_display.o: buzzer_song.h
 ..\obj\1.8 tft_display.o: buzzer.h
 ..\obj\1.8 tft_display.o: timer.h
-..\obj\1.8 tft_display.o: photo.h
-..\obj\1.8 tft_display.o: photo.c
 ..\obj\1.8 tft_display.o: C:\Keil_v5\ARM\ARMCC\Bin\..\include\stdio.h
 ..\obj\1.8 tft_display.o: C:\Keil_v5\ARM\ARMCC\Bin\..\include\stdarg.h
 ..\obj\1.8 tft_display.o: ..\SYSTEM\delay\delay.h

@@ -29,60 +29,15 @@ void tft_spi_init(void)
    SPI_InitTypeDef   	SPI_InitStructure;
    GPIO_InitTypeDef 	GPIO_InitStructure;
 
-   /* Enable TFT_SPI and GPIO clocks */
-   //RCC_APB2PeriphClockCmd(RCC_APB2Periph_SPI1 | RCC_APB2Periph_GPIOA, ENABLE);
-    	//RCC_APB2PeriphClockCmd(RCC_APB2Periph_GPIOA, ENABLE);
-		//RCC_APB2PeriphClockCmd(RCC_APB2Periph_GPIOB, ENABLE);
-		//RCC_APB2PeriphClockCmd(RCC_APB2Periph_GPIOD, ENABLE);
-		//RCC_APB2PeriphClockCmd(RCC_APB2Periph_AFIO, ENABLE);
-	
-		//RCC_APB1PeriphClockCmd(RCC_APB1Periph_SPI2, ENABLE);//spi2 clock enable
 
-//	GPIO_PinRemapConfig(GPIO_Remap_SWJ_JTAGDisable, ENABLE);
-	
-   /* Enable GPIOA for RST pin */
-   //RCC_APB2PeriphClockCmd(RCC_APB2Periph_GPIOA, ENABLE);
-  // LED_init(RST);
-/*	GPIO_InitStructure.GPIO_Pin = GPIO_Pin_7;
-   GPIO_InitStructure.GPIO_Mode = GPIO_Mode_Out_PP;
-   GPIO_InitStructure.GPIO_Speed = GPIO_Speed_10MHz;
-   GPIO_Init(GPIOD, &GPIO_InitStructure);
-*/
-
-
-   /* Enable GPIOF for DC Pin */
-   //LED_init(DC);
-   
-   
-   //RCC_APB2PeriphClockCmd(RCC_APB2Periph_GPIOF, ENABLE);
-   /*GPIO_InitStructure.GPIO_Pin = GPIO_Pin_6;
-   GPIO_InitStructure.GPIO_Mode = GPIO_Mode_Out_PP;
-   GPIO_InitStructure.GPIO_Speed = GPIO_Speed_10MHz;
-   GPIO_Init(GPIOD, &GPIO_InitStructure);
-*/
-   /* Configure TFT_SPI Pin: SCK, MISO and MOSI */
-   
-   //TM_GPIO_InitAlternate(GPIOB, GPIO_PIN_13 | GPIO_PIN_15, TM_GPIO_OType_PP, TM_GPIO_PuPd_NOPULL, TM_GPIO_Speed_High, GPIO_AF_SPI2);
-   
-
-   
-   
-  
-   
-   /*GPIO_InitStructure.GPIO_Pin = GPIO_Pin_3 | GPIO_Pin_4 | GPIO_Pin_5;
-   GPIO_InitStructure.GPIO_Mode = GPIO_Mode_AF_PP;
-   GPIO_InitStructure.GPIO_Speed = GPIO_Speed_50MHz;
-   GPIO_Init(GPIOB, &GPIO_InitStructure);
-
-*/
+ /* Configure TFT_SPI Pin: CS,RST,DC */
    LED_init(RST);
-   /* Configure TFT_SPI Pin: CS */
-  
+   LED_init(CS);
    LED_init(DC);
 
-    RCC_AHB1PeriphClockCmd(RCC_AHB1Periph_GPIOB, ENABLE);
-	RCC_APB1PeriphClockCmd(RCC_APB1Periph_SPI2, ENABLE);
-	GPIO_InitStructure.GPIO_Pin =  GPIO_PIN_13 |  GPIO_PIN_15 ;
+    RCC_AHB1PeriphClockCmd(SPI_GPIO_CLOCK, ENABLE);
+	RCC_APB1PeriphClockCmd(SPI_SPI_CLOCK, ENABLE);
+	GPIO_InitStructure.GPIO_Pin =  SPI_CLK  |  SPI_MOSI ;
     GPIO_InitStructure.GPIO_Mode = GPIO_Mode_AF;
     GPIO_InitStructure.GPIO_OType = GPIO_OType_PP;
     GPIO_InitStructure.GPIO_Speed = GPIO_Speed_100MHz;
@@ -90,44 +45,11 @@ void tft_spi_init(void)
     GPIO_Init(GPIOB, &GPIO_InitStructure);
 	
 
-	
-	GPIO_PinAFConfig(GPIOB,GPIO_PinSource13,GPIO_AF_SPI2);
-	
-//	GPIO_PinAFConfig(GPIOB,GPIO_PinSource14,GPIO_AF_SPI2);
+	GPIO_PinAFConfig(SPI_GPIO,SPI_CLK_SOURCE,SPI_AF);
+	GPIO_PinAFConfig(SPI_GPIO,SPI_MOSI_SOURCE,SPI_AF);
+   
+    
 
-	GPIO_PinAFConfig(GPIOB,GPIO_PinSource15,GPIO_AF_SPI2);
-   
-   
-   
-     
-//	GPIO_InitStructure.GPIO_Pin =  GPIO_PIN_12;
-//    GPIO_InitStructure.GPIO_Mode = GPIO_Mode_AF;
-//    GPIO_InitStructure.GPIO_OType = GPIO_OType_PP;
-//    GPIO_InitStructure.GPIO_Speed = GPIO_Speed_100MHz;
-//    GPIO_InitStructure.GPIO_PuPd = GPIO_PuPd_UP;
-//    GPIO_Init(GPIOB, &GPIO_InitStructure);
-//   
-//   	GPIO_PinAFConfig(GPIOB,GPIO_PinSource12,GPIO_AF_SPI2);//NSS cs
-	
-    LED_init(CS);
-   //
-   /*
-   GPIO_InitStructure.GPIO_Pin = GPIO_Pin_CS;
-   GPIO_InitStructure.GPIO_Mode = GPIO_Mode_Out_PP;
-	 GPIO_InitStructure.GPIO_Speed = GPIO_Speed_50MHz;
-   GPIO_Init(GPIO_CS, &GPIO_InitStructure);
-	*/ 
-	 /* Configure TFT_SPI Pin: CS */
-//   GPIO_InitStructure.GPIO_Pin = GPIO_Pin_5;
-//   GPIO_InitStructure.GPIO_Mode = GPIO_Mode_IPU;
-//	 GPIO_InitStructure.GPIO_Speed = GPIO_Speed_50MHz;
-//   GPIO_Init(GPIOD, &GPIO_InitStructure);
-	 
-  
-		//GPIO_PinRemapConfig(GPIO_Remap_SPI3, ENABLE);
-   /* TFT_SPI configuration */
-  
-  // CLICK_MUSIC_SOUND;
    SPI_InitStructure.SPI_Direction = SPI_Direction_2Lines_FullDuplex;//no need full duplex
    SPI_InitStructure.SPI_Mode = SPI_Mode_Master;
    SPI_InitStructure.SPI_DataSize = SPI_DataSize_8b;//originally 8bits
@@ -198,9 +120,8 @@ void tft_write_data(u8 data)
 void tft_config(void)
 {
     tft_write_command(0x01);   //Sofeware setting
-	//delay_nms(1);
 	tft_write_command(0x11);//Sleep out
-	//delay_nms(120);
+
 	
 	//ST7735R Frame Rate
 	tft_write_command(0xB1);

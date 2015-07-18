@@ -3,46 +3,110 @@
 <pre>
 <h1>µVision Build Log</h1>
 <h2>Tool Versions:</h2>
-IDE-Version: µVision V5.14.0.0
-Copyright (C) 2015 ARM Ltd and ARM Germany GmbH. All rights reserved.
-License Information: Arvind Iyer, HKUST, LIC=47GSB-2UFST-UGF7Q-NADQ7-KZDP2-12WLJ
+IDE-Version: µVision V5.12.0.0
+Copyright (C) 2014 ARM Ltd and ARM Germany GmbH. All rights reserved.
+License Information: Ngai Cheung, HKUST, LIC=FYKZ9-429MS-VERHA-1XS4W-9LM2Q-F4C0H
  
 Tool Versions:
-Toolchain:       MDK-ARM Standard  Version: 5.14.0.0
+Toolchain:       MDK-ARM Standard  Version: 5.12.0.0
 Toolchain Path:  C:\Keil_v5\ARM\ARMCC\Bin
-C Compiler:      Armcc.exe V5.05 update 1 (build 106)
-Assembler:       Armasm.exe V5.05 update 1 (build 106)
-Linker/Locator:  ArmLink.exe V5.05 update 1 (build 106)
-Library Manager: ArmAr.exe V5.05 update 1 (build 106)
-Hex Converter:   FromElf.exe V5.05 update 1 (build 106)
-CPU DLL:         SARMCM3.DLL V5.14.0.0
-Dialog DLL:      DCM.DLL V1.13.1.0
-Target DLL:      STLink\ST-LINKIII-KEIL_SWO.dll V2.0.14.0_KEIL
-Dialog DLL:      TCM.DLL V1.14.4.0
+C Compiler:      Armcc.exe V5.05 (build 41)
+Assembler:       Armasm.exe V5.05 (build 41)
+Linker/Locator:  ArmLink.exe V5.05 (build 41)
+Library Manager: ArmAr.exe V5.05 (build 41)
+Hex Converter:   FromElf.exe V5.05 (build 41)
+CPU DLL:         SARMCM3.DLL V5.12.0.0
+Dialog DLL:      DCM.DLL V1.13.0.0
+    Target DLL: STLink\ST-LINKIII-KEIL_SWO.dll
+Dialog DLL:      TCM.DLL V1.14.2.0
  
 <h2>Project:</h2>
-C:\Coding\Robocon2015\STM32F4\stm32f407RGT\stm32f407rgt\USER\Template.uvprojx
-Project File Date:  07/17/2015
+E:\ROBOCON2015GITHUT\Robocon2015\STM32F4\stm32f407RGT\stm32f407rgt\USER\Template.uvprojx
+Project File Date:  07/18/2015
 
 <h2>Output:</h2>
 Build target 'Template'
-compiling main.c...
-main.c(39): warning:  #188-D: enumerated type mixed with another type
-                tft_prints(0,j+2, "%d  %d", button_pressed(j), button_released(j));
-main.c(39): warning:  #188-D: enumerated type mixed with another type
-                tft_prints(0,j+2, "%d  %d", button_pressed(j), button_released(j));
-main.c: 2 warnings, 0 errors
-compiling button.c...
-linking...
-Program Size: Code=22344 RO-data=2072 RW-data=8348 ZI-data=3884  
-FromELF: creating hex file...
-"..\OBJ\Template.axf" - 0 Error(s), 2 Warning(s).
+compiling flash.c...
+flash.c(34): error:  #20: identifier "mSize" is undefined
+   for(i=0; i<mSize; i++)
+flash.c(36): error:  #20: identifier "mazeWalls" is undefined
+   mazeWalls[i][j] = *(int16_t *)(startAddress + (i*mSize+j)*4);
+flash.c: 0 warnings, 2 errors
+"..\OBJ\Template.axf" - 2 Error(s), 0 Warning(s).
 
 <h2>Collection of Component include folders:</h2>
-  C:\Coding\Robocon2015\STM32F4\stm32f407RGT\stm32f407rgt\USER\RTE
-  C:\Keil_v5\ARM\PACK\Keil\STM32F4xx_DFP\2.4.0
+  E:\ROBOCON2015GITHUT\Robocon2015\STM32F4\stm32f407RGT\stm32f407rgt\USER\RTE
+  C:\Keil_v5\ARM\PACK\Keil\STM32F4xx_DFP\2.3.0\Drivers\CMSIS\Device\ST\STM32F4xx\Include
 
 <h2>Collection of Component Files used:</h2>
+Target not created.
 </pre>
 </body>
 </html>
+con2015\STM32F4\stm32f407RGT\stm32f407rgt\USER\RTE
+  C:\Keil_v5\ARM\PACK\Keil\STM32F4xx_DFP\2.3.0\Drivers\CMSIS\Device\ST\STM32F4xx\Include
+
+<h2>Collection of Component Files used:</h2>
+f4xx_dma.c...
+compiling stm32f4xx_exti.c...
+compiling stm32f4xx_dac.c...
+compiling stm32f4xx_flash.c...
+compiling stm32f4xx_flash_ramfunc.c...
+compiling stm32f4xx_fsmc.c...
+compiling stm32f4xx_gpio.c...
+compiling stm32f4xx_hash.c...
+compiling stm32f4xx_hash_md5.c...
+compiling stm32f4xx_hash_sha1.c...
+compiling stm32f4xx_i2c.c...
+compiling stm32f4xx_iwdg.c...
+compiling stm32f4xx_ltdc.c...
+compiling stm32f4xx_pwr.c...
+compiling stm32f4xx_rcc.c...
+compiling stm32f4xx_rng.c...
+compiling stm32f4xx_rtc.c...
+compiling stm32f4xx_sai.c...
+compiling stm32f4xx_sdio.c...
+compiling stm32f4xx_spi.c...
+compiling stm32f4xx_syscfg.c...
+compiling stm32f4xx_tim.c...
+compiling stm32f4xx_usart.c...
+compiling stm32f4xx_wwdg.c...
+compiling usart.c...
+compiling buzzer.c...
+compiling gpio.c...
+compiling ticks.c...
+compiling pwm.c...
+compiling timer.c...
+timer.c(117): warning:  #1-D: last line of file ends without a newline
+  */
+timer.c: 1 warning, 0 errors
+compiling button.c...
+compiling led.c...
+compiling buzzer_song.c...
+buzzer_song.c(7): warning:  #188-D: enumerated type mixed with another type
+  const MUSIC_NOTE CLICK_RIGHT[] = {{1, 7}, {NOTE_END}};
+buzzer_song.c(8): warning:  #188-D: enumerated type mixed with another type
+  const MUSIC_NOTE CLICK_DOWN[] = {{2, 7}, {NOTE_END}};
+buzzer_song.c(9): warning:  #188-D: enumerated type mixed with another type
+  const MUSIC_NOTE CLICK_UP[] = {{3, 7}, {NOTE_END}};
+buzzer_song.c(10): warning:  #188-D: enumerated type mixed with another type
+  const MUSIC_NOTE CLICK_CENTER[] = {{4, 7}, {NOTE_END}};
+buzzer_song.c(11): warning:  #188-D: enumerated type mixed with another type
+  const MUSIC_NOTE CLICK_SMALL_BUTTON[] = {{5, 7}, {NOTE_END}};
+buzzer_song.c(12): warning:  #188-D: enumerated type mixed with another type
+  const MUSIC_NOTE CLICK_MUSIC[] = {{6,7} ,{NOTE_END}};
+buzzer_song.c: 6 warnings, 0 errors
+compiling 1.8 TFT_display.c...
+1.8 TFT_display.c(40): error:  #20: identifier "GPIO_PIN_13" is undefined
+        GPIO_InitStructure.GPIO_Pin =  SPI_CLK  |  SPI_MOSI ;
+1.8 TFT_display.c(40): error:  #20: identifier "GPIO_PIN_15" is undefined
+        GPIO_InitStructure.GPIO_Pin =  SPI_CLK  |  SPI_MOSI ;
+compiling Temperature_ADC.c...
+"..\OBJ\Template.axf" - 2 Error(s), 9 Warning(s).
+
+<h2>Collection of Component include folders:</h2>
+  E:\ROBOCON2015GITHUT\Robocon2015\STM32F4\stm32f407RGT\stm32f407rgt\USER\RTE
+  C:\Keil_v5\ARM\PACK\Keil\STM32F4xx_DFP\2.3.0\Drivers\CMSIS\Device\ST\STM32F4xx\Include
+
+<h2>Collection of Component Files used:</h2>
+Target not created.
