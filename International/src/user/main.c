@@ -26,7 +26,6 @@ int main(void)
 	
 	
   //mb1240_init();
-  xbc_mb_init(XBC_BLUETOOTH_FIRST); 
 	wheel_base_init();
   us_mb_init();
   nec_mb_init();
@@ -34,6 +33,8 @@ int main(void)
 		ultrasonic_init();
 		bluetooth_init();
 	#endif
+	
+	xbc_mb_init(XBC_BLUETOOTH_FIRST); 
   /** For debugging **/
   //uart_init(COM1, 115200);
   //uart_printf_enable(COM1);
