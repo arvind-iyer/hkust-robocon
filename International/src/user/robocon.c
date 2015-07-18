@@ -24,7 +24,7 @@ bool sensors_activated = 0;
 bool emergency_serve_button_pressed=0;
 
 // emergency serve activated
-bool emergency_serve_activated = 0;
+u8 emergency_serve_activated = 0;
 u32 emergency_serve_start_time=0;
 bool remove_robot_sequence_started=0;
 u32 remove_robot_start_time=0;
@@ -366,12 +366,12 @@ void robot_d_function_controls(void)
 	}
 	
 	/*manual pneumatic trigger*/
-	if (serve_pneu_button_enabled && gpio_read_input(SERVE_PNEU_TEST))
+	if (serve_pneu_button_enabled && !gpio_read_input(SERVE_PNEU_TEST))
 	{
 		serve_pneu_button_enabled=0;
 		serve_pneu_toggle();
 	}
-	if (!gpio_read_input(SERVE_PNEU_TEST))
+	if (gpio_read_input(SERVE_PNEU_TEST))
 	{
 		serve_pneu_button_enabled=1;
 	}
@@ -382,17 +382,25 @@ void robot_d_function_controls(void)
 		emergency_serve_button_pressed=1;
 		emergency_serve_activated=0;
 	}
+	
+	
 	if (emergency_serve_button_pressed && !gpio_read_input(E_STOP_BUTTON))//on release
 	{
 		emergency_serve_start_time=get_full_ticks();
 		emergency_serve_button_pressed=0;
 		emergency_serve_activated=1;
 		serve_calibrate();
+		
 		emergency_serve_hitting=0;
 	}
 	if (emergency_serve_activated)
 	{
-		const int AUTO_SERVE_DELAY = 10000;	// 10 seconds
+		const int AUTO_SERVE_DELAY = 6000;	// 6 seconds
+		if (emergency_serve_activated == 1 && !serve_get_calibrating()) {
+			emergency_serve_activated = 2;
+			buzzer_play_song(MARIO, 100, 0);
+		}
+		
 		if (emergency_serve_start_time+AUTO_SERVE_DELAY<get_full_ticks() && emergency_serve_start_time+AUTO_SERVE_DELAY+300>get_full_ticks())//autoserve after 6 secs
 		{
 			start_auto_serve();
@@ -554,8 +562,8 @@ void robocon_main(void)
 	
 	
 	gpio_init(SERVE_SWITCH, GPIO_Speed_10MHz, GPIO_Mode_IPU, 1);	// Mechanical switch ROBOT D Gen2
-	gpio_init(SERVE_PNEU_TEST, GPIO_Speed_10MHz, GPIO_Mode_IPD, 1);	// Shuttlecock Holder button for ROBOT D Gen2
-	gpio_init(E_STOP_BUTTON, GPIO_Speed_10MHz, GPIO_Mode_IPD, 1);	// Emergency serve button for ROBOT D Gen2
+	gpio_init(SERVE_PNEU_TEST, GPIO_Speed_10MHz, GPIO_Mode_IPU, 1);	// Shuttlecock Holder button for ROBOT D Gen2
+	gpio_init(E_STOP_BUTTON, GPIO_Speed_10MHz, GPIO_Mode_IPU, 1);	// Emergency serve button for ROBOT D Gen2
 	#endif
 	
 	gpio_init(PNEU_GPIO, GPIO_Speed_10MHz, GPIO_Mode_Out_PP, 1);		// pneu matic GPIO

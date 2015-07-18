@@ -35,7 +35,7 @@ void system_start(u16 duration)
 	
 	tft_update();
 	
-	buzzer_play_song(START_UP, 120, 0);
+	//buzzer_play_song(START_UP, 120, 0);
 
 	u16 prev_text_color = tft_get_text_color();	// Temp color change
 	
@@ -45,7 +45,11 @@ void system_start(u16 duration)
 		case BATTERY_USB:
 		case BATTERY_OKAY:
 			// DO NOTHING
-			buzzer_play_song(START_UP, 120, 0);
+			#if (ROBOT == 'C') 
+				buzzer_play_song(START_UP, 120, 0);
+			#else 
+				buzzer_play_song(MARIO_BEGIN, 50, 0); 
+			#endif
 			tft_set_text_color(DARK_GREEN);
 			tft_prints(0, 6, " Battery OK");
 		break;

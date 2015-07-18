@@ -10,6 +10,9 @@ extern const MUSIC_NOTE FAIL_SOUND[];
 extern const MUSIC_NOTE BIRTHDAY_SONG[];
 extern const MUSIC_NOTE CLICK[];
 
+extern const MUSIC_NOTE MARIO_BEGIN[];
+extern const MUSIC_NOTE MARIO[];
+
 #define	SUCCESSFUL_MUSIC			buzzer_play_song(SUCCESSFUL_SOUND, 100, 0)
 #define	FAIL_MUSIC 						buzzer_play_song(FAIL_SOUND, 120, 100)
 #define	CLICK_MUSIC						buzzer_play_song(CLICK, 10, 0)

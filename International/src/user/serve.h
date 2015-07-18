@@ -12,7 +12,7 @@
 #include "gpio.h"
 #include "robocon.h"
 
-#define SERVE_SWITCH &PE11 
+#define SERVE_SWITCH &PE9
 #define RACKET MOTOR5
 #define SERVE_PNEU0_GPIO &PE15//&PD9
 #define	SERVE_PNEU1_GPIO &PE12
@@ -69,5 +69,6 @@ s32 serve_get_timeout(void);
 void serve_set_timeout(u32);
 
 bool serve_get_failed(void);
+bool serve_get_calibrating(void);
 
 #endif

@@ -18,7 +18,7 @@
 #include "encoder.h"
 #include "ultrasonic_mb.h"
   //'C' or 'D'
-#define ROBOT 'C'
+#define ROBOT 'D'
 
 
 /*** Optional ***/
@@ -44,7 +44,7 @@
 #define BR_ACC_FAC			ROBOT=='C'?50:27 
 #define BL_ACC_FAC			ROBOT=='C'?50:27 
 
-#define	E_STOP_BUTTON		(&PE3) // and 10
+#define	E_STOP_BUTTON		(&PE11) // and 10
 
 #define	WARNING_BUZZER	(&PE12)
 

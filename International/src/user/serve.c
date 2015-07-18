@@ -453,3 +453,8 @@ bool serve_get_failed(void)
 {
 	return encoder_failed;
 }
+
+bool serve_get_calibrating(void)
+{
+	return calibrate_in_process;
+}
