@@ -80,23 +80,22 @@ bool robot_xbc_controls(void)
 	//Analog Movement
 	//Set x and y vel according to analog stick input
 	#warning hardcoded
-	s32 speed_ratio = 
+	const s32 MAX_SPEED = 
 	#if (ROBOT == 'C')
 		160
 	#else 
 		170
 	#endif
 	;
-	
-	s32 raw_vx = xbc_get_joy(XBC_JOY_LX) * speed_ratio / XBC_JOY_SCALE;
-	s32 raw_vy = xbc_get_joy(XBC_JOY_LY) * speed_ratio / XBC_JOY_SCALE;
+	s32 raw_vx = xbc_get_joy(XBC_JOY_LX) * MAX_SPEED / XBC_JOY_SCALE;
+	s32 raw_vy = xbc_get_joy(XBC_JOY_LY) * MAX_SPEED / XBC_JOY_SCALE;
 	
 	s32 h = Sqrt(Sqr(raw_vx)+ Sqr(raw_vy));
 	
 	// Scalar Speed limit
-	if (h > XBC_JOY_SCALE) {
-		raw_vx = raw_vx * speed_ratio / XBC_JOY_SCALE / h;
-		raw_vy = raw_vy * speed_ratio / XBC_JOY_SCALE / h;
+	if (h > MAX_SPEED) {
+		raw_vx = raw_vx * MAX_SPEED / h;
+		raw_vy = raw_vy * MAX_SPEED / h;
 	}
 	
 	// Set output x and y.
@@ -105,23 +104,24 @@ bool robot_xbc_controls(void)
   
 	// Violation prevention
 	#if (ROBOT == 'C') 
-		const int MAX_DIST = 2900;
-		const int STOP_DIST = 511;
-
-		int allowed_speed = ultrasonic_get_val != 0 ? XBC_JOY_SCALE * (ultrasonic_get_val() - 500) / MAX_DIST : XBC_JOY_SCALE;
-		if (allowed_speed < 0) {
-			allowed_speed = 0;
-		}
-		if (raw_vy > 0 && ultrasonic_get_val() < MAX_DIST) {
-			// Force decel
-			accel_booster = read_flash(ACCELBOOSTER_OFFSET);
-			raw_vy = raw_vy * allowed_speed / XBC_JOY_SCALE;
-		} else if (raw_vy > 0 && ultrasonic_get_val() < STOP_DIST) {
-			accel_booster = 2047;	// forced stop
-			raw_vy = 0;
-		} else {
-			accel_booster = read_flash(ACCELBOOSTER_OFFSET);
-		}
+  const int MAX_DIST = 2800;
+  const int STOP_DIST = 433;
+  int distance = ultrasonic_get_val() * int_cos((get_pos()->angle < 900 || get_pos()->angle > 2700 ? get_pos()->angle : 0)) / 10000;
+  int allowed_speed = ultrasonic_get_val != 0 ? MAX_SPEED * (distance - STOP_DIST) / (MAX_DIST - STOP_DIST) : MAX_SPEED;
+  if (allowed_speed < 0) {
+    allowed_speed = 0;
+  }
+  
+  if (raw_vy > 0 && distance < STOP_DIST && ultrasonic_get_val() > 0) {
+    accel_booster = 2236;	// forced stop
+    raw_vy = 0;
+  } else if (raw_vy > 0 && (distance < MAX_DIST && ultrasonic_get_val() > 0)) {
+    // Force decel
+    accel_booster = allowed_speed * 2 < MAX_SPEED && allowed_speed > 0 ? 1732 : read_flash(ACCELBOOSTER_OFFSET);
+    raw_vy = raw_vy * Sqrt(allowed_speed) / Sqrt(MAX_SPEED);
+  } else {
+    accel_booster = read_flash(ACCELBOOSTER_OFFSET);
+  }
 	#endif
 		
 	//Use rotation matrix to control the robots by absolute coordinates not relative
