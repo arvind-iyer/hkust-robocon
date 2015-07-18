@@ -175,7 +175,7 @@
           </Flash1>
           <bUseTDR>0</bUseTDR>
           <Flash2>BIN\UL2CM3.DLL</Flash2>
-          <Flash3>"flash.bat" (./output/@h.hex 30 256000 STM32F1_Med-density_128K)</Flash3>
+          <Flash3>"flash.bat" (./output/@h.hex 30 115200 STM32F1_Med-density_128K)</Flash3>
           <Flash4></Flash4>
           <pFcarmOut></pFcarmOut>
           <pFcarmGrp></pFcarmGrp>

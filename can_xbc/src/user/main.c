@@ -29,7 +29,8 @@ int main(void)
   //init_xbc_board();
   
 	//buzzer_play_song(START_UP, 120, 0);
-  buzzer_control_note(1, 300, NOTE_G, 4);
+  //buzzer_control_note(1, 300, NOTE_G, 4);
+	buzzer_play_song(MARIO_BEGIN2, 50, 0);
   //led_control(LED_D1, LED_ON);
   //led_control(LED_D2, LED_ON);
   
@@ -63,7 +64,7 @@ int main(void)
 				led_control(LED_D1, LED_ON);
         if (!connection) {
           connection = true;
-          buzzer_play_song(CONNECTED_SOUND, 120, 0);
+          //buzzer_play_song(MARIO_BEGIN2, 50, 0);
         }
         
         if (ticks_img % 5 == 0) {
