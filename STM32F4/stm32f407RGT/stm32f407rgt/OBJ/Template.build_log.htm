@@ -22,22 +22,24 @@ Dialog DLL:      TCM.DLL V1.14.2.0
  
 <h2>Project:</h2>
 E:\ROBOCON2015GITHUT\Robocon2015\STM32F4\stm32f407RGT\stm32f407rgt\USER\Template.uvprojx
-Project File Date:  07/18/2015
+Project File Date:  07/19/2015
 
 <h2>Output:</h2>
 Build target 'Template'
 compiling main.c...
-flash.h(9): warning:  #1295-D: Deprecated declaration readFlash - give arg types
-  u16 readFlash();
 flash.h(12): warning:  #1-D: last line of file ends without a newline
   #endif /* __FLASH_H */
 main.c(39): warning:  #188-D: enumerated type mixed with another type
                 tft_prints(0,j+2, "%d  %d", button_pressed(j), button_released(j));
 main.c(39): warning:  #188-D: enumerated type mixed with another type
                 tft_prints(0,j+2, "%d  %d", button_pressed(j), button_released(j));
-main.c: 4 warnings, 0 errors
+main.c: 3 warnings, 0 errors
+compiling flash.c...
+flash.h(12): warning:  #1-D: last line of file ends without a newline
+  #endif /* __FLASH_H */
+flash.c: 1 warning, 0 errors
 linking...
-Program Size: Code=24124 RO-data=2072 RW-data=8352 ZI-data=3888  
+Program Size: Code=24156 RO-data=2072 RW-data=8352 ZI-data=3888  
 FromELF: creating hex file...
 "..\OBJ\Template.axf" - 0 Error(s), 4 Warning(s).
 
@@ -46,19 +48,22 @@ FromELF: creating hex file...
   C:\Keil_v5\ARM\PACK\Keil\STM32F4xx_DFP\2.3.0\Drivers\CMSIS\Device\ST\STM32F4xx\Include
 
 <h2>Collection of Component Files used:</h2>
-Load "..\\OBJ\\Template.axf" 
-Erase Done.
-Programming Done.
-Application running ...
-GT\stm32f407rgt\USER\RTE
-  C:\Keil_v5\ARM\PACK\Keil\STM32F4xx_DFP\2.3.0\Drivers\CMSIS\Device\ST\STM32F4xx\Include
+</pre>
+</body>
+</html>
+STM32F4xx\Include
 
 <h2>Collection of Component Files used:</h2>
-Load "..\\OBJ\\Template.axf" 
-Erase Done.
-Programming Done.
-Application running ...
-ing stm32f4xx_pwr.c...
+Target not created.
+M32F4xx_DFP\2.3.0\Drivers\CMSIS\Device\ST\STM32F4xx\Include
+
+<h2>Collection of Component Files used:</h2>
+Target not created.
+compiling stm32f4xx_hash_sha1.c...
+compiling stm32f4xx_i2c.c...
+compiling stm32f4xx_iwdg.c...
+compiling stm32f4xx_ltdc.c...
+compiling stm32f4xx_pwr.c...
 compiling stm32f4xx_rcc.c...
 compiling stm32f4xx_rng.c...
 compiling stm32f4xx_rtc.c...
@@ -99,20 +104,12 @@ compiling Temperature_ADC.c...
 compiling flash.c...
 flash.h(12): warning:  #1-D: last line of file ends without a newline
   #endif /* __FLASH_H */
-flash.c: 1 warning, 0 errors
-linking...
-Program Size: Code=22380 RO-data=2072 RW-data=8348 ZI-data=3884  
-FromELF: creating hex file...
-"..\OBJ\Template.axf" - 0 Error(s), 11 Warning(s).
-
-<h2>Collection of Component include folders:</h2>
-  E:\ROBOCON2015GITHUT\Robocon2015\STM32F4\stm32f407RGT\stm32f407rgt\USER\RTE
-  C:\Keil_v5\ARM\PACK\Keil\STM32F4xx_DFP\2.3.0\Drivers\CMSIS\Device\ST\STM32F4xx\Include
-
-<h2>Collection of Component Files used:</h2>
-ress_num,u16 data) //address_num should start from 0
-flash.c: 2 warnings, 2 errors
-"..\OBJ\Template.axf" - 2 Error(s), 13 Warning(s).
+flash.c(15): warning:  #223-D: function "read_flash" declared implicitly
+                        flash_data[i] = read_flash(i);
+flash.c(12): warning:  #550-D: variable "flash_data" was set but never used
+         u32 flash_data[data_count];
+flash.c: 3 warnings, 0 errors
+"..\OBJ\Template.axf" - 1 Error(s), 13 Warning(s).
 
 <h2>Collection of Component include folders:</h2>
   E:\ROBOCON2015GITHUT\Robocon2015\STM32F4\stm32f407RGT\stm32f407rgt\USER\RTE

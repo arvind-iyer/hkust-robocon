@@ -43,9 +43,7 @@ void display_button_data()
 
 void test_flash()
 {
-u16 abc = readFlash();
-	
-tft_prints(0,8,"%d",abc);
+
 }
 
 int main(void)
@@ -58,7 +56,8 @@ int main(void)
 	tft_init( 2,WHITE, BLACK, BLACK);
 	buzzer_play_song(START_UP, 125, 0);
 	LED_init(&PA15);
-	writeFlash(1,8888);
+	writeFlash(155,8888);
+	
 	while (1)  {
 
 		if(ticks_usimg != get_us_ticks())
