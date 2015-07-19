@@ -3,117 +3,40 @@
 <pre>
 <h1>µVision Build Log</h1>
 <h2>Tool Versions:</h2>
-IDE-Version: µVision V5.12.0.0
-Copyright (C) 2014 ARM Ltd and ARM Germany GmbH. All rights reserved.
-License Information: Ngai Cheung, HKUST, LIC=FYKZ9-429MS-VERHA-1XS4W-9LM2Q-F4C0H
+IDE-Version: µVision V5.14.0.0
+Copyright (C) 2015 ARM Ltd and ARM Germany GmbH. All rights reserved.
+License Information: Arvind Iyer, HKUST, LIC=47GSB-2UFST-UGF7Q-NADQ7-KZDP2-12WLJ
  
 Tool Versions:
-Toolchain:       MDK-ARM Standard  Version: 5.12.0.0
+Toolchain:       MDK-ARM Standard  Version: 5.14.0.0
 Toolchain Path:  C:\Keil_v5\ARM\ARMCC\Bin
-C Compiler:      Armcc.exe V5.05 (build 41)
-Assembler:       Armasm.exe V5.05 (build 41)
-Linker/Locator:  ArmLink.exe V5.05 (build 41)
-Library Manager: ArmAr.exe V5.05 (build 41)
-Hex Converter:   FromElf.exe V5.05 (build 41)
-CPU DLL:         SARMCM3.DLL V5.12.0.0
-Dialog DLL:      DCM.DLL V1.13.0.0
-    Target DLL: STLink\ST-LINKIII-KEIL_SWO.dll
-Dialog DLL:      TCM.DLL V1.14.2.0
+C Compiler:      Armcc.exe V5.05 update 1 (build 106)
+Assembler:       Armasm.exe V5.05 update 1 (build 106)
+Linker/Locator:  ArmLink.exe V5.05 update 1 (build 106)
+Library Manager: ArmAr.exe V5.05 update 1 (build 106)
+Hex Converter:   FromElf.exe V5.05 update 1 (build 106)
+CPU DLL:         SARMCM3.DLL V5.14.0.0
+Dialog DLL:      DCM.DLL V1.13.1.0
+Target DLL:      STLink\ST-LINKIII-KEIL_SWO.dll V2.0.14.0_KEIL
+Dialog DLL:      TCM.DLL V1.14.4.0
  
 <h2>Project:</h2>
-E:\ROBOCON2015GITHUT\Robocon2015\STM32F4\stm32f407RGT\stm32f407rgt\USER\Template.uvprojx
+C:\Coding\Robocon2015\STM32F4\stm32f407RGT\stm32f407rgt\USER\Template.uvprojx
 Project File Date:  07/19/2015
 
 <h2>Output:</h2>
 Build target 'Template'
-compiling main.c...
-flash.h(12): warning:  #1-D: last line of file ends without a newline
-  #endif /* __FLASH_H */
-main.c(39): warning:  #188-D: enumerated type mixed with another type
-                tft_prints(0,j+2, "%d  %d", button_pressed(j), button_released(j));
-main.c(39): warning:  #188-D: enumerated type mixed with another type
-                tft_prints(0,j+2, "%d  %d", button_pressed(j), button_released(j));
-main.c: 3 warnings, 0 errors
-compiling flash.c...
-flash.h(12): warning:  #1-D: last line of file ends without a newline
-  #endif /* __FLASH_H */
-flash.c: 1 warning, 0 errors
+compiling interrupt.c...
 linking...
-Program Size: Code=24156 RO-data=2072 RW-data=8352 ZI-data=3888  
+Program Size: Code=23424 RO-data=2072 RW-data=8348 ZI-data=3884  
 FromELF: creating hex file...
-"..\OBJ\Template.axf" - 0 Error(s), 4 Warning(s).
+"..\OBJ\Template.axf" - 0 Error(s), 0 Warning(s).
 
 <h2>Collection of Component include folders:</h2>
-  E:\ROBOCON2015GITHUT\Robocon2015\STM32F4\stm32f407RGT\stm32f407rgt\USER\RTE
-  C:\Keil_v5\ARM\PACK\Keil\STM32F4xx_DFP\2.3.0\Drivers\CMSIS\Device\ST\STM32F4xx\Include
+  C:\Coding\Robocon2015\STM32F4\stm32f407RGT\stm32f407rgt\USER\RTE
+  C:\Keil_v5\ARM\PACK\Keil\STM32F4xx_DFP\2.4.0
 
 <h2>Collection of Component Files used:</h2>
 </pre>
 </body>
 </html>
-STM32F4xx\Include
-
-<h2>Collection of Component Files used:</h2>
-Target not created.
-M32F4xx_DFP\2.3.0\Drivers\CMSIS\Device\ST\STM32F4xx\Include
-
-<h2>Collection of Component Files used:</h2>
-Target not created.
-compiling stm32f4xx_hash_sha1.c...
-compiling stm32f4xx_i2c.c...
-compiling stm32f4xx_iwdg.c...
-compiling stm32f4xx_ltdc.c...
-compiling stm32f4xx_pwr.c...
-compiling stm32f4xx_rcc.c...
-compiling stm32f4xx_rng.c...
-compiling stm32f4xx_rtc.c...
-compiling stm32f4xx_sai.c...
-compiling stm32f4xx_sdio.c...
-compiling stm32f4xx_spi.c...
-compiling stm32f4xx_syscfg.c...
-compiling stm32f4xx_tim.c...
-compiling stm32f4xx_usart.c...
-compiling stm32f4xx_wwdg.c...
-compiling usart.c...
-compiling buzzer.c...
-compiling gpio.c...
-compiling ticks.c...
-compiling pwm.c...
-compiling timer.c...
-timer.c(117): warning:  #1-D: last line of file ends without a newline
-  */
-timer.c: 1 warning, 0 errors
-compiling button.c...
-compiling led.c...
-compiling buzzer_song.c...
-buzzer_song.c(7): warning:  #188-D: enumerated type mixed with another type
-  const MUSIC_NOTE CLICK_RIGHT[] = {{1, 7}, {NOTE_END}};
-buzzer_song.c(8): warning:  #188-D: enumerated type mixed with another type
-  const MUSIC_NOTE CLICK_DOWN[] = {{2, 7}, {NOTE_END}};
-buzzer_song.c(9): warning:  #188-D: enumerated type mixed with another type
-  const MUSIC_NOTE CLICK_UP[] = {{3, 7}, {NOTE_END}};
-buzzer_song.c(10): warning:  #188-D: enumerated type mixed with another type
-  const MUSIC_NOTE CLICK_CENTER[] = {{4, 7}, {NOTE_END}};
-buzzer_song.c(11): warning:  #188-D: enumerated type mixed with another type
-  const MUSIC_NOTE CLICK_SMALL_BUTTON[] = {{5, 7}, {NOTE_END}};
-buzzer_song.c(12): warning:  #188-D: enumerated type mixed with another type
-  const MUSIC_NOTE CLICK_MUSIC[] = {{6,7} ,{NOTE_END}};
-buzzer_song.c: 6 warnings, 0 errors
-compiling 1.8 TFT_display.c...
-compiling Temperature_ADC.c...
-compiling flash.c...
-flash.h(12): warning:  #1-D: last line of file ends without a newline
-  #endif /* __FLASH_H */
-flash.c(15): warning:  #223-D: function "read_flash" declared implicitly
-                        flash_data[i] = read_flash(i);
-flash.c(12): warning:  #550-D: variable "flash_data" was set but never used
-         u32 flash_data[data_count];
-flash.c: 3 warnings, 0 errors
-"..\OBJ\Template.axf" - 1 Error(s), 13 Warning(s).
-
-<h2>Collection of Component include folders:</h2>
-  E:\ROBOCON2015GITHUT\Robocon2015\STM32F4\stm32f407RGT\stm32f407rgt\USER\RTE
-  C:\Keil_v5\ARM\PACK\Keil\STM32F4xx_DFP\2.3.0\Drivers\CMSIS\Device\ST\STM32F4xx\Include
-
-<h2>Collection of Component Files used:</h2>
-Target not created.

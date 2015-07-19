@@ -62,4 +62,7 @@
 ..\obj\main.o: ..\SYSTEM\delay\delay.h
 ..\obj\main.o: ..\USER\ticks.h
 ..\obj\main.o: flash.h
+..\obj\main.o: interrupt.h
+..\obj\main.o: main.h
+..\obj\main.o: buzzer.h
 ..\obj\main.o: ..\CORE\core_cm4.h

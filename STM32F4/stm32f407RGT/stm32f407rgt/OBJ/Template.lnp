@@ -50,6 +50,7 @@
 "..\obj\1.8 tft_display.o"
 "..\obj\temperature_adc.o"
 "..\obj\flash.o"
+"..\obj\interrupt.o"
 --strict --scatter "..\OBJ\Template.sct"
 --summary_stderr --info summarysizes --map --xref --callgraph --symbols
 --info sizes --info totals --info unused --info veneers
