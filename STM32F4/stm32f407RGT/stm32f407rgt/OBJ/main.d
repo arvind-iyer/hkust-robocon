@@ -61,4 +61,5 @@
 ..\obj\main.o: Temperature_ADC.h
 ..\obj\main.o: ..\SYSTEM\delay\delay.h
 ..\obj\main.o: ..\USER\ticks.h
+..\obj\main.o: flash.h
 ..\obj\main.o: ..\CORE\core_cm4.h

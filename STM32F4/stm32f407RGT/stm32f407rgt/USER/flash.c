@@ -1,11 +1,12 @@
 #include "flash.h"
 
-uint32_t startAddress = 0x080E0000;//starting from 896KB, the beginning of last sector
 
 
-void writeFlash(void)
+
+u32 startAddress = 0x080E0000;//starting from 896KB, the beginning of last sector
+
+void writeFlash(u8 address_num,u16 data) //address_num should start from 0
  {
-
 
  FLASH_Unlock();// you need to unlcok flash first
  /* Clear All pending flags */
@@ -16,10 +17,9 @@ void writeFlash(void)
  //VoltageRange_3        ((uint8_t)0x02)  /*!<Device operating range: 2.7V to 3.6V */
 
 
+ FLASH_ProgramHalfWord(startAddress+address_num*4 ,data); //halfword only for 16 bits data
 
- FLASH_ProgramHalfWord(startAddress ,13); //halfword only for 16 bits data
-
-FLASH_Lock();//lock flash at the end
+ FLASH_Lock();//lock flash at the end
 
 }
 
@@ -28,10 +28,9 @@ FLASH_Lock();//lock flash at the end
 //just simply call this function. the reading speed for flash is faster
 
 //than write
- void readFlash(void)
+
+u16 readFlash()
  {
- u32 i, j;
- for(i=0; i<mSize; i++)
- for(j=0; j<mSize; j++)
- mazeWalls[i][j] = *(int16_t *)(startAddress + (i*mSize+j)*4);
+u16 read_data = *(int16_t *)(startAddress+4);
+	 return read_data;
  }

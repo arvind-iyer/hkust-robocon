@@ -1,8 +1,8 @@
 #include "gpio.h"
 
-#define SMALL_BUTTON_GPIO &PE3
+#define SMALL_BUTTON_GPIO   &PE3
 #define JOY_UP_GPIO   		&PE5
-#define JOY_CENTER_GPIO   &PC14
+#define JOY_CENTER_GPIO     &PC14
 #define JOY_LEFT_GPIO   	&PE4
 #define JOY_RIGHT_GPIO   	&PC13
 #define JOY_DOWN_GPIO   	&PC15

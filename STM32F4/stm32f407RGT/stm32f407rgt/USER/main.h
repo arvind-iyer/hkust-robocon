@@ -22,7 +22,7 @@
 #include "1.8 TFT_display.h"//#include "3.2 TFT_display.h"
 #include "usart.h"
 #include "Temperature_ADC.h"
-
+#include "flash.h"
 
 #include "stm32f4xx_crc.h"
 #include "core_cm4.h"

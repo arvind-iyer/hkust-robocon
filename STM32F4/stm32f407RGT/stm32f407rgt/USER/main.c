@@ -41,12 +41,13 @@ void display_button_data()
 	}
 }
 
-void test_color_hex()
+void test_flash()
 {
-tft_prints(0,8,"%X,%X",SKY_BLUE,PURPLE);
-
-
+u16 abc = readFlash();
+	
+tft_prints(0,8,"%d",abc);
 }
+
 int main(void)
 {	//putting global flag
 	
@@ -57,6 +58,7 @@ int main(void)
 	tft_init( 2,WHITE, BLACK, BLACK);
 	buzzer_play_song(START_UP, 125, 0);
 	LED_init(&PA15);
+	writeFlash(1,8888);
 	while (1)  {
 
 		if(ticks_usimg != get_us_ticks())
@@ -77,7 +79,7 @@ int main(void)
 				//tft_update();
 				tft_clear();
 				show_time();
-				test_color_hex();
+				test_flash();
 				display_button_data();
 				tft_update();			
 				button_update();
