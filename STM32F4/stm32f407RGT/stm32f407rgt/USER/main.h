@@ -23,6 +23,7 @@
 #include "usart.h"
 #include "Temperature_ADC.h"
 #include "flash.h"
+#include "interrupt.h"
 
 #include "stm32f4xx_crc.h"
 #include "core_cm4.h"
