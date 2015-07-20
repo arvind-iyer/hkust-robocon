@@ -17,7 +17,7 @@ static motor* motor_x[no_of_motor] = {0};
 
 motor::motor(GPIO* const phaseA_gpio, GPIO* const phaseB_gpio, TIM_TypeDef* encoder_TIM, GPIO* const motor_mag, GPIO* const motor_dirA, GPIO* const motor_dirB, TIMER* const motor_TIM) :
 encoder(phaseA_gpio, phaseB_gpio, encoder_TIM), is_close_loop(false), overspeed(false),
-curr_pwm(0), target_vel(0), curr_vel(0), acceleration(100), motor_timer(motor_TIM->TIMx),
+curr_pwm(0), target_vel(0), curr_vel(0), acceleration(100.0), motor_timer(motor_TIM->TIMx),
 dirA_gpio(motor_dirA), dirB_gpio(motor_dirB)
 {
 
@@ -36,7 +36,7 @@ dirA_gpio(motor_dirA), dirB_gpio(motor_dirB)
 
 void motor::set_accel(unsigned int accel)
 {
-	acceleration = (accel > MAX_ACCEL ? MAX_ACCEL : (accel < MIN_ACCEL ? MIN_ACCEL : accel));
+	acceleration = static_cast<float>(accel > MAX_ACCEL ? MAX_ACCEL : (accel < MIN_ACCEL ? MIN_ACCEL : accel));
 }
 
 void motor::set_target_vel(int vel)
@@ -79,11 +79,10 @@ void motor::lock()
 
 void motor::refresh()
 {
-	const float accel_per_ms = acceleration / 1000.0;
-	if (curr_vel - target_vel > accel_per_ms) {
-		curr_vel -= accel_per_ms;
-	} else if  (curr_vel - target_vel < accel_per_ms) {
-		curr_vel += accel_per_ms;
+	float accel_per_ms = acceleration / 1000.0;
+	if (abs(curr_vel - target_vel) > accel_per_ms) {
+		int dir = (target_vel - curr_vel) / abs(curr_vel - target_vel);
+		curr_vel += dir * accel_per_ms;
 	} else {
 		curr_vel = target_vel;
 	}
@@ -179,6 +178,7 @@ void motor::output_pwm(int pwm)
 
 	switch (static_cast<int>(std::abs(pwm) * F1toF4_CORR)) {
 		case 0 ... 419:
+			speed_indicator_on(0);
 			break;
 		case 420 ... 1259:
 			speed_indicator_on(1);

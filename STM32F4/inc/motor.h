@@ -65,7 +65,7 @@ namespace _motor {
 		bool is_close_loop;
 		int target_vel;
 		float curr_vel;
-		unsigned int acceleration;
+		float acceleration;
 
 		TIM_TypeDef* const motor_timer;
 		static const int MAX_ACCEL = 1000;

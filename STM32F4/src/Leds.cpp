@@ -91,7 +91,7 @@ static void speed_indicator_off(short id) {
 
 void speed_indicator_on(short id)
 {
-	static short last_led = 0;
+	static short last_led = -1;
 	if (last_led != id) {
 		switch (id) {
 			case 0:
