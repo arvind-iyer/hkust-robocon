@@ -56,6 +56,7 @@ bool is_force_terminate(void)
 	return force_terminate;
 }
 
+
 bool robot_xbc_controls(void)
 {
 	
@@ -167,14 +168,17 @@ bool robot_xbc_controls(void)
 
 	if (!emergency_serve_activated && !force_terminate)
 		wheel_base_set_vel(vx, vy, vw);
-	if (emergency_serve_activated && (raw_vx!=0 || raw_vy!=0 || omega!=0))	// cancel emergency serve
+	if (emergency_serve_activated)	// cancel emergency serve
 	{
-		//SUCCESSFUL_SOUND;
-		if (!emergency_serve_hitting)
-		{
-			serve_free();
+		if ((raw_vx!=0 || raw_vy!=0 || omega!=0)) {
+			//SUCCESSFUL_SOUND;
+			if (!emergency_serve_hitting)
+			{
+				serve_free();
+			}
+			emergency_serve_activated=0;
+			buzzer_control_note(2, 100, NOTE_G, 7);
 		}
-		emergency_serve_activated=0;
 	}
 	
 	robot_cd_common_function();
@@ -228,6 +232,7 @@ static void robot_cd_common_function(void)
 		gyro_pos_set(get_pos()->x, get_pos()->y, 0);
 		accumulated_omega = target_angle = 0;
 		wheel_base_tx_acc();
+		RACKET_SET_ACC;
 	}	
   
   #if (ROBOT=='C')
@@ -311,8 +316,12 @@ void robot_d_function_controls(void)
 		serve_start(1);
 	else if(button_pressed(BUTTON_XBC_B))
 		serve_start(0);
-	else if(button_pressed(BUTTON_XBC_X))//Not essential
+	else if(button_pressed(BUTTON_XBC_X))//Not essential 
+	{
+		RACKET_SET_ACC;
 		serve_calibrate();
+
+	}
 		
 	if (button_pressed(BUTTON_XBC_Y))  {
 		// serve varibales 1
@@ -544,7 +553,7 @@ static void handle_bluetooth_input(void)
 
 void robocon_main(void)
 {
-	motor_set_acceleration(RACKET, 5000);
+	RACKET_SET_ACC;
   // Send the acceleration data
 	wheel_base_tx_acc();
 	serve_free();

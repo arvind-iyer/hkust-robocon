@@ -264,7 +264,9 @@ void menu(u8 default_id, bool pre_enter)
 						u16 prev_bg_color = tft_get_bg_color();
 						u16 prev_text_color = tft_get_text_color();
 						tft_clear();
-						CLICK_MUSIC;
+						if (!pre_enter) {
+							CLICK_MUSIC;
+						}
 						menu_list[menu_selected].fx();
 						CLICK_MUSIC;
 						tft_clear();

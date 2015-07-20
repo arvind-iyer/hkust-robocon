@@ -44,6 +44,7 @@
 #define BR_ACC_FAC			ROBOT=='C'?50:27 
 #define BL_ACC_FAC			ROBOT=='C'?50:27 
 
+#define	RACKET_SET_ACC	motor_set_acceleration(RACKET,5000);
 #define	E_STOP_BUTTON		(&PE11) // and 10
 
 #define	WARNING_BUZZER	(&PE12)
