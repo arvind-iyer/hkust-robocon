@@ -11,21 +11,10 @@
 #ifndef ENCODER_H_
 #define ENCODER_H_
 
-GPIO* const encoder_L_A = &PB6;
-GPIO* const encoder_L_B = &PB7;
-TIM_TypeDef* const encoder_L_TIM = TIM4;
+GPIO* const encoder_A = &PC6;
+GPIO* const encoder_B = &PC7;
+TIM_TypeDef* const encoder_TIM = TIM3;
 
-GPIO* const encoder_R_A = &PA6;
-GPIO* const encoder_R_B = &PA7;
-TIM_TypeDef* const encoder_R_TIM = TIM3;
-
-GPIO* const encoder_U_A = &PA15;
-GPIO* const encoder_U_B = &PB3;
-TIM_TypeDef* const encoder_U_TIM = TIM2;
-
-GPIO* const encoder_D_A = &PA0;
-GPIO* const encoder_D_B = &PA1;
-TIM_TypeDef* const encoder_D_TIM = TIM5;
 
 class encoder
 {
@@ -36,10 +25,11 @@ public:
 	virtual void refresh(void);
 	void send_feedback(void);
 	virtual ~encoder(void);
+	bool is_encoder_working();
 
-	bool is_encoder_work;
 protected:
 	const int this_id;
+	bool is_encoder_work;
 
 private:
 	TIM_TypeDef* const m_TIM;
