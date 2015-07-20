@@ -3,10 +3,17 @@
 *.lo
 *.o
 *.obj
+*.hex
 
 # Precompiled Headers
 *.gch
 *.pch
+
+# Unsuccessful compiled files
+*.d
+*.crf
+*.axf
+*.lst
 
 # Compiled Dynamic libraries
 *.so
@@ -26,3 +33,11 @@
 *.exe
 *.out
 *.app
+
+# Other compiled files
+*.map
+*.dep
+*.lnp
+*.htm
+*.iex
+*.sct
