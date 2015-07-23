@@ -19,6 +19,9 @@ static u16 tick_skip_count=0;
 bool serve_pneu_button_enabled=1;
 bool turn_timer_started = 0;
 static bool force_terminate = false;
+#if (ROBOT == 'C')
+static bool trust_ultrasonic = true;
+#endif
 // enabling sensors by button.
 bool sensors_activated = 0;
 bool emergency_serve_button_pressed=0;
@@ -105,24 +108,36 @@ bool robot_xbc_controls(void)
   
 	// Violation prevention
 	#if (ROBOT == 'C') 
-  const int MAX_DIST = 2800;
-  const int STOP_DIST = 433;
-  int distance = ultrasonic_get_val() * int_cos((get_pos()->angle < 900 || get_pos()->angle > 2700 ? get_pos()->angle : 0)) / 10000;
-  int allowed_speed = ultrasonic_get_val != 0 ? MAX_SPEED * (distance - STOP_DIST) / (MAX_DIST - STOP_DIST) : MAX_SPEED;
-  if (allowed_speed < 0) {
-    allowed_speed = 0;
-  }
-  
-  if (raw_vy > 0 && distance < STOP_DIST && ultrasonic_get_val() > 0) {
-    accel_booster = 2236;	// forced stop
-    raw_vy = 0;
-  } else if (raw_vy > 0 && (distance < MAX_DIST && ultrasonic_get_val() > 0)) {
-    // Force decel
-    accel_booster = allowed_speed * 2 < MAX_SPEED && allowed_speed > 0 ? 1732 : read_flash(ACCELBOOSTER_OFFSET);
-    raw_vy = raw_vy * Sqrt(allowed_speed) / Sqrt(MAX_SPEED);
-  } else {
-    accel_booster = read_flash(ACCELBOOSTER_OFFSET);
-  }
+	static int last_ultrasonic = -5;	// trivial value
+	const int trust_threshold = 511;
+	if (Abs(last_ultrasonic - ultrasonic_get_val()) < trust_threshold || last_ultrasonic < 0) {
+		last_ultrasonic = ultrasonic_get_val();
+		trust_ultrasonic = true;
+	} else {
+		trust_ultrasonic = false
+		FAIL_MUSIC;
+	}
+	if (trust_ultrasonic) {
+		const int MAX_DIST = 2800;
+		const int STOP_DIST = 433;
+		int distance = ultrasonic_get_val() * int_cos((get_pos()->angle < 900 || get_pos()->angle > 2700 ? get_pos()->angle : 0)) / 10000;
+		int allowed_speed = ultrasonic_get_val != 0 ? MAX_SPEED * (distance - STOP_DIST) / (MAX_DIST - STOP_DIST) : MAX_SPEED;
+		if (allowed_speed < 0) {
+			allowed_speed = 0;
+		}
+		
+		if (raw_vy > 0 && distance < STOP_DIST && ultrasonic_get_val() > 0) {
+			accel_booster = 2236;	// forced stop
+			raw_vy = 0;
+			CLICK_MUSIC;
+		} else if (raw_vy > 0 && (distance < MAX_DIST && ultrasonic_get_val() > 0)) {
+			// Force decel
+			accel_booster = allowed_speed * 2 < MAX_SPEED && allowed_speed > 0 ? 1732 : read_flash(ACCELBOOSTER_OFFSET);
+			raw_vy = raw_vy * Sqrt(allowed_speed) / Sqrt(MAX_SPEED);
+		} else {
+			accel_booster = read_flash(ACCELBOOSTER_OFFSET);
+		}
+	}
 	#endif
 		
 	//Use rotation matrix to control the robots by absolute coordinates not relative
@@ -308,7 +323,7 @@ void robot_d_function_controls(void)
 {
 	//Racket Hit
 	if(button_pressed(BUTTON_XBC_LB) && button_pressed(BUTTON_XBC_A))
-		racket_hit(70);
+		racket_hit(50);
 	else if(button_pressed(BUTTON_XBC_A))
 		racket_hit(500);
 	//Calibrate
