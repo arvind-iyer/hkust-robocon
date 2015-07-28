@@ -45,7 +45,7 @@ typedef enum {
 	MOTOR16
 } MOTOR_ID;
 
-#define this_motor MOTOR1
+#define this_motor MOTOR5
 
 
 /*** TX ***/
