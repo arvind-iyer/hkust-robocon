@@ -114,7 +114,7 @@ bool robot_xbc_controls(void)
 		last_ultrasonic = ultrasonic_get_val();
 		trust_ultrasonic = true;
 	} else {
-		trust_ultrasonic = false
+		trust_ultrasonic = false;
 		FAIL_MUSIC;
 	}
 	if (trust_ultrasonic) {
