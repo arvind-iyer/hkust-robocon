@@ -56,10 +56,10 @@ typedef struct {
 } WHEEL_BASE_VEL;
 
 static const MOTOR_ID
-	MOTOR_BOTTOM_RIGHT 		= ROBOT=='C'?MOTOR2:MOTOR1,		//changed from MOTOR1		//MOTOR3 for C
-	MOTOR_BOTTOM_LEFT 		= ROBOT=='C'?MOTOR3:MOTOR2,		//changed from MOTOR2		// MOTOR4 for C
-	MOTOR_TOP_LEFT 				= ROBOT=='C'?MOTOR1:MOTOR3,		//changed from MOTOR3				//MOTOR1 for C
-	MOTOR_TOP_RIGHT 			= ROBOT=='C'?MOTOR4:MOTOR4;		//changed from MOTOR4				// MOTOR2 for C
+	MOTOR_BOTTOM_RIGHT 		= ROBOT=='C'?MOTOR2:MOTOR3,		//changed from MOTOR1		//MOTOR3 for C
+	MOTOR_BOTTOM_LEFT 		= ROBOT=='C'?MOTOR3:MOTOR4,		//changed from MOTOR2		// MOTOR4 for C
+	MOTOR_TOP_LEFT 				= ROBOT=='C'?MOTOR1:MOTOR2,		//changed from MOTOR3				//MOTOR1 for C
+	MOTOR_TOP_RIGHT 			= ROBOT=='C'?MOTOR4:MOTOR1;		//changed from MOTOR4				// MOTOR2 for C
 
 extern int accel_booster;
 
