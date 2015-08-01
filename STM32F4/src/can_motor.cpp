@@ -133,6 +133,9 @@ void motor_lock(MOTOR_ID motor_id)
 /*** motor command decoding ***/
 void motor_cmd_decoding(CanRxMsg msg)
 {
+//	static int sec = 0;
+//	if (Ticks::getInstance()->getSeconds() == sec) return;
+//	sec = Ticks::getInstance()->getSeconds();
 	try {
 		u8 id = msg.StdId - CAN_MOTOR_BASE;
 		switch (msg.Data[0]) {
@@ -146,9 +149,13 @@ void motor_cmd_decoding(CanRxMsg msg)
 					CLOSE_LOOP_FLAG loop_flag = (CLOSE_LOOP_FLAG) msg.Data[5];// 5-th byte is loop-flag (start as 0th byte)
 					// velocity or pwm control.
 					s32 velocity = n_bytes_to_one(fragment_vel, VEL_SIZE);
+					motor* this_motor = motor::get_instance(id);
 					// Ignore if same velocity is sent.
-					(loop_flag == CLOSE_LOOP) ? motor::get_instance(id)->set_target_vel(velocity) :
-							motor::get_instance(id)->set_pwm(velocity);
+					if ((this_motor->get_target_vel()) != velocity || loop_flag == OPEN_LOOP) {
+						(loop_flag == CLOSE_LOOP) ? this_motor->set_target_vel(velocity) :
+								this_motor->set_pwm(velocity);
+					}
+
 					FIVE_VOLT_LED.off();
 				}
 				break;

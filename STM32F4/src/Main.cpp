@@ -30,41 +30,6 @@
 
 static int ticks_img = 655;
 
-//void HardFault_Handler(void)	// Indicate any seg fault.
-//{
-//	Leds Signal6(LED_6, LED_ON);
-//	while (true) {
-//		if (ticks_img != Ticks::getInstance()->getTicks()) {
-//			ticks_img = Ticks::getInstance()->getTicks();
-//			if (Ticks::getInstance()->getFullTicks() % 2000 == 0) {
-//				FAIL_MUSIC;
-//				Signal6.led_toggle();
-//			}
-//			buzzer_check();
-//		}
-//	}
-//}
-//
-//void UsageFault_Handler(void) // Any Division by 0 or relevant runtime error
-//{
-//	Leds Signal12(LED_12, LED_ON);
-//	while (true) {
-//		if (ticks_img != Ticks::getInstance()->getTicks()) {
-//			ticks_img = Ticks::getInstance()->getTicks();
-//			if (Ticks::getInstance()->getFullTicks() % 2000 == 0) {
-//				FAIL_MUSIC;
-//				Signal12.led_toggle();
-//			}
-//			buzzer_check();
-//		}
-//	}
-//}
-//
-//void FPU_IRQHandler()
-//{
-//	Leds Signal12(LED_12, LED_ON);
-//}
-
 int main()
 {
 	Ticks ticks;
@@ -83,14 +48,48 @@ int main()
 			if (ticks_img % 100 == 0) {
 				drived_motor.send_feedback();
 			}
-
+#warning "Wrong LED"
+#define TESTING
 			// LED signal
 			// Encoder
+#ifdef TESTING
+			static int sec = 0;
+			if (Ticks::getInstance()->getSeconds() != sec) {
+				sec = Ticks::getInstance()->getSeconds();
+				ENCODER_ERR_LED.led_toggle();
+			}
+
+
+			switch (static_cast<int>(std::abs(drived_motor.get_current_vel()))) {
+				case 0 ... 35:
+					speed_indicator_on(0);
+					break;
+				case 36 ... 70:
+					speed_indicator_on(1);
+					break;
+				case 81 ... 105:
+					speed_indicator_on(2);
+					break;
+				case 106 ... 140:
+					speed_indicator_on(3);
+					break;
+				case 141 ... 175:
+					speed_indicator_on(4);
+					break;
+				case 176 ... 200:
+					speed_indicator_on(5);
+					break;
+				default:
+					speed_indicator_on(6);
+			}
+
+#else
 			if (!drived_motor.is_encoder_working()) {
 				ENCODER_ERR_LED.on();
 			} else {
 				ENCODER_ERR_LED.off();
 			}
+#endif
 			// Open or close loop or locking
 			if (drived_motor.is_open_loop()) {
 				OPEN_LOOP_LED.on();
@@ -106,7 +105,7 @@ int main()
 				OPEN_LOOP_LED.off();
 			}
 			// life signal
-			if (ticks_img % 100 == 0) {
+			if (ticks_img % 500 == 0) {
 				LIFE_LED.led_toggle();
 			}
 

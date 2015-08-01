@@ -17,7 +17,7 @@ static motor* motor_x[no_of_motor] = {0};
 
 motor::motor(GPIO* const phaseA_gpio, GPIO* const phaseB_gpio, TIM_TypeDef* encoder_TIM, GPIO* const motor_mag, GPIO* const motor_dirA, GPIO* const motor_dirB, TIMER* const motor_TIM) :
 encoder(phaseA_gpio, phaseB_gpio, encoder_TIM), is_close_loop(false), overspeed(false),
-curr_pwm(0), target_vel(0), curr_vel(0), acceleration(100.0), motor_timer(motor_TIM->TIMx),
+curr_pwm(0), target_vel(0), curr_vel(0), acceleration(1000), motor_timer(motor_TIM->TIMx),
 dirA_gpio(motor_dirA), dirB_gpio(motor_dirB)
 {
 
@@ -61,12 +61,12 @@ int motor::get_target_vel()
 	return target_vel;
 }
 
-float motor::get_current_vel()
+int motor::get_current_vel()
 {
 	return curr_vel;
 }
 
-float motor::get_pwm()
+int motor::get_pwm()
 {
 	return curr_pwm;
 }
@@ -79,10 +79,10 @@ void motor::lock()
 
 void motor::refresh()
 {
-	float accel_per_ms = acceleration / 1000.0;
+	int accel_per_ms = acceleration / 1000;
 	if (abs(curr_vel - target_vel) > accel_per_ms) {
 		int dir = (target_vel - curr_vel) / abs(curr_vel - target_vel);
-		curr_vel += dir * accel_per_ms;
+		curr_vel += accel_per_ms * dir;
 	} else {
 		curr_vel = target_vel;
 	}
@@ -98,14 +98,14 @@ int motor::cal_error()
 }
 
 
-void motor::pid_control(float p, float i, float d)
+void motor::pid_control(int p, int i, int d)
 {
 	const int TIMEOUT = 100;
 
-	static float prev_error = 0;
+	static int prev_error = 0;
 	static int encoder_fail_time_out = 0;
 #ifdef increment_PID
-	static float last_prev_error = 0;
+	static int last_prev_error = 0;
 	float PID = p*(cal_error() - prev_error) + i*cal_error() + d*(cal_error() + last_prev_error - prev_error*2);
 #else
 	static float acumulate_error = 0;
@@ -120,7 +120,7 @@ void motor::pid_control(float p, float i, float d)
 			encoder_fail_time_out = 0;
 		}
 #ifdef increment_PID
-		curr_pwm += PID;
+		curr_pwm += PID/10;
 #else
 		curr_pwm = PID;
 #endif
@@ -148,7 +148,7 @@ void motor::pid_control(float p, float i, float d)
 	acumulate_error += cal_error();
 #endif
 	prev_error = cal_error();
-	output_pwm(std::floor(curr_pwm));
+	output_pwm(std::floor(curr_pwm * MAX_PWM / 1799));
 }
 
 void motor::set_dir(dir direction)
@@ -175,31 +175,30 @@ bool motor::is_overspeed()
 
 void motor::output_pwm(int pwm)
 {
-
-	switch (static_cast<int>(std::abs(pwm) * F1toF4_CORR)) {
-		case 0 ... 419:
-			speed_indicator_on(0);
-			break;
-		case 420 ... 1259:
-			speed_indicator_on(1);
-			break;
-		case 1260 ... 2099:
-			speed_indicator_on(2);
-			break;
-		case 2100 ... 2939:
-			speed_indicator_on(3);
-			break;
-		case 2940 ... 3779:
-			speed_indicator_on(4);
-			break;
-		case 3780 ... 4199:
-			speed_indicator_on(5);
-			break;
-		default:
-			overspeed = true;
-			speed_indicator_on(6);
-			pwm = MAX_PWM * (pwm / std::abs(pwm));
-	}
+//	switch (static_cast<int>(std::abs(pwm))) {
+//		case 0 ... 419:
+//			speed_indicator_on(0);
+//			break;
+//		case 420 ... 1259:
+//			speed_indicator_on(1);
+//			break;
+//		case 1260 ... 2099:
+//			speed_indicator_on(2);
+//			break;
+//		case 2100 ... 2939:
+//			speed_indicator_on(3);
+//			break;
+//		case 2940 ... 3779:
+//			speed_indicator_on(4);
+//			break;
+//		case 3780 ... 4199:
+//			speed_indicator_on(5);
+//			break;
+//		default:
+//			overspeed = true;
+//			speed_indicator_on(6);
+//			pwm = MAX_PWM * (pwm / std::abs(pwm));
+//	}
 
 	TIM_SetCompare1(motor_timer, uint32_t(MAX_PWM - std::abs(pwm)));
 

@@ -45,13 +45,13 @@ namespace _motor {
 		void set_accel(unsigned int accel);
 		void lock();
 
-		void pid_control(float p, float i, float d);
+		void pid_control(int p, int i, int d);
 		void refresh();
 		// Get function
 		unsigned int get_accel();
 		int get_target_vel();
-		float get_current_vel();
-		float get_pwm();
+		int get_current_vel();
+		int get_pwm();
 		bool is_open_loop();
 		bool is_overspeed();
 		const int MAX_PWM = SystemCoreClock / control_freq - 1;
@@ -64,8 +64,8 @@ namespace _motor {
 
 		bool is_close_loop;
 		int target_vel;
-		float curr_vel;
-		float acceleration;
+		int curr_vel;
+		int acceleration;
 
 		TIM_TypeDef* const motor_timer;
 		static const int MAX_ACCEL = 1000;
@@ -74,7 +74,7 @@ namespace _motor {
 		// Access
 
 		// Output
-		float curr_pwm;
+		int curr_pwm;
 		bool overspeed;
 		GPIO* const dirA_gpio;
 		GPIO* const dirB_gpio;
