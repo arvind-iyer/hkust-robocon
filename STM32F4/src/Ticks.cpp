@@ -21,6 +21,12 @@ void SysTick_Handler(void)
 	}
 	if (counter % 5 == 0) {
 		_mTicks->TicksIncrement();
+		try {
+			motor::get_instance(0)->encoder::refresh();
+			motor::get_instance(0)->refresh();
+		} catch (motor_error&) {
+			return;
+		}
 	}
 	try {
 		motor::get_instance(0)->pid_control(64, 1.2, 24);

@@ -78,8 +78,6 @@ int main()
 	while (true) {
 		if (ticks_img != ticks.getTicks()) {
 			ticks_img = ticks.getTicks();
-			drived_motor.encoder::refresh();
-			drived_motor.refresh();
 			if (ticks_img % 100 == 0) {
 				drived_motor.send_feedback();
 			}
