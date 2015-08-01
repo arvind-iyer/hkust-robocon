@@ -10,20 +10,18 @@
 
 #include <gpio.h>
 
-GPIO* const LED_[] = {&PA3, &PA4, &PC5, &PB0, &PB1, &PB10, &PB11, &PB12, &PB13, &PC10, &PC12, &PC11};
-
-GPIO* const LED_1 = &PA3;
-GPIO* const LED_2 = &PA4;
-GPIO* const LED_3 = &PC5;
-GPIO* const LED_4 = &PB0;
-GPIO* const LED_5 = &PB1;
-GPIO* const LED_6 = &PB10;
-GPIO* const LED_7 = &PB11;
-GPIO* const LED_8 = &PB12;
-GPIO* const LED_9 = &PB13;
-GPIO* const LED_10 = &PC10;
-GPIO* const LED_11 = &PC12;
-GPIO* const LED_12 = &PC11;
+GPIO* const OPEN_LOOP_GPIO = &PB5;
+GPIO* const LIFE_GPIO = &PB6;
+GPIO* const CLOSE_LOOP_GPIO = &PB7;
+GPIO* const LOCK_GPIO = &PB9;
+GPIO* const FIVE_VOLT_GPIO = &PB8;
+GPIO* const ENCODER_ERR_GPIO = &PA2;
+GPIO* const SPEED_10_GPIO = &PA6;
+GPIO* const SPEED_30_GPIO = &PA5;
+GPIO* const SPEED_50_GPIO = &PA3;
+GPIO* const SPEED_70_GPIO = &PC2;
+GPIO* const SPEED_90_GPIO = &PC0;
+GPIO* const OVER_SPEED_GPIO = &PA1;
 
 enum LED_STATUS {
 	LED_ON = true,
@@ -35,28 +33,26 @@ class Leds {
 	public:
 
 		Leds(GPIO* const, LED_STATUS init_state = LED_OFF);
-		void led_reinit(LED_STATUS init_state = LED_OFF) const;
 		void led_control(LED_STATUS status) const;
 		void led_toggle() const;
+		void on() const;
+		void off() const;
+		static void leds_init();
 
 	private:
+		void led_init(LED_STATUS init_state = LED_OFF) const;
 		GPIO* const gpio_m;
 
 };
 
-class LED {
-public:
-	LED(Leds** led_array, unsigned int size);
-	void multi_control(int bit) const;
-	Leds* operator[](unsigned int) const;
-private:
-	Leds** led_array_m;
-	const int led_no;
-
-};
+extern const Leds OPEN_LOOP_LED, CLOSE_LOOP_LED,
+			LOCK_LED, LIFE_LED,
+			ENCODER_ERR_LED, SPEED_10_LED,
+			SPEED_30_LED, SPEED_50_LED,
+			SPEED_70_LED, SPEED_90_LED,
+			OVER_SPEED_LED;
 
 
-extern Leds* led_array_ptr[];
-extern Leds Signal10, Signal11, Signal12;
-
+extern const Leds FIVE_VOLT_LED;
+void speed_indicator_on(short id);
 #endif /* LEDS_H_ */

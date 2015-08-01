@@ -25,7 +25,7 @@ const u16 ACCEL_PRESCALAR = 1000;		// convert v/s to v/ms, while v means velocit
 // Static variable that record current and target state (initiated as default value).
 static s32 current_vel = 0;					// default velocity is 0
 static s32 target_vel = 0;					// default target is 0
-static u16 current_accel = 100;			// default accel is 100 v/s
+static u16 current_accel = 1000;			// default accel is 1000 v/s
 static s32 curr_pwm = 0;						// pwm that already set to motor
 static CLOSE_LOOP_FLAG current_flag = OPEN_LOOP;
 static bool encoder_working = true;
@@ -175,7 +175,10 @@ void motor_control(s32 p, s32 i, s32 d)
 //	}
 //	
 	s32 PID = p*(cal_vel_err() - prev_error) + i*cal_vel_err() + d*(cal_vel_err() + last_prev_error - prev_error*2);
-	
+	if (Abs(PID) > MAX_PWM * PID_Prescalar * 10) {
+    // PID overflow protection
+    PID = (PID / Abs(PID)) * MAX_PWM * PID_Prescalar * 10;
+  }
 	if (current_flag == CLOSE_LOOP && encoder_working) {
     // Disable close loop if velocity is set but no change in encoder / unexpected full power.
     if (Abs(current_vel) > 0 && get_encoder_vel() == 0) {
@@ -202,6 +205,10 @@ void motor_control(s32 p, s32 i, s32 d)
 //    } else {
       // Use pwm control and reset timeout.
 		curr_pwm += PID;
+    if (Abs(curr_pwm) > MAX_PWM * PID_Prescalar * 5) {
+      // PWM overflow protection
+      curr_pwm = (curr_pwm / Abs(curr_pwm)) * MAX_PWM * PID_Prescalar * 5;
+    }
 //      lock_time_out = 0;
 //    }
 	} else {

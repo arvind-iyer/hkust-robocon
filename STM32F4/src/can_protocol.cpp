@@ -78,7 +78,7 @@ void can_init(void)
 	CAN_InitStructure.CAN_SJW = CAN_SJW_1tq;
 	CAN_InitStructure.CAN_BS1 = CAN_BS1_6tq;
 	CAN_InitStructure.CAN_BS2 = CAN_BS2_7tq;
-	CAN_InitStructure.CAN_Prescaler = 2;
+	CAN_InitStructure.CAN_Prescaler = 3;
 	while (CAN_Init(CANn, &CAN_InitStructure) != CAN_InitStatus_Success);
 	
 	/* CAN Transmission Mailbox Empty interrupt enable */ 

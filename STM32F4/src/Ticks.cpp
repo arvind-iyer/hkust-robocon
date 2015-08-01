@@ -23,7 +23,7 @@ void SysTick_Handler(void)
 		_mTicks->TicksIncrement();
 	}
 	try {
-		motor::get_instance(3)->pid_control(149.33 , 2.8, 56.0);
+		motor::get_instance(0)->pid_control(64, 1.2, 24);
 	} catch (motor_error&) {
 		return;
 	}

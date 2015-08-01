@@ -147,10 +147,9 @@ void motor_cmd_decoding(CanRxMsg msg)
 					// velocity or pwm control.
 					s32 velocity = n_bytes_to_one(fragment_vel, VEL_SIZE);
 					// Ignore if same velocity is sent.
-					if (velocity != motor::get_instance(id)->get_target_vel() || loop_flag == OPEN_LOOP) {
-						(loop_flag == CLOSE_LOOP) ? motor::get_instance(id)->set_target_vel(velocity) :
-								motor::get_instance(id)->set_pwm(velocity);
-					}
+					(loop_flag == CLOSE_LOOP) ? motor::get_instance(id)->set_target_vel(velocity) :
+							motor::get_instance(id)->set_pwm(velocity);
+					FIVE_VOLT_LED.off();
 				}
 				break;
 			case CAN_MOTOR_ACCEL_CMD:
