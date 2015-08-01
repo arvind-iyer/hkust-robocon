@@ -303,15 +303,19 @@ void wheel_base_update(void)
 	if (diff_omega > 0) {
 		wheel_base_vector_update(&(accumulate.w), wheel_base_get_tar_vel().w, &(wheel_base_vel.w), diff_omega, alpha, spin_no_boost_accel);
 	}
-	
+	static int last_vel[3] = {0,0,0};
 	// Decide whether update to motor 
 	if (is_force_terminate()) {
 		motor_set_vel(MOTOR_BOTTOM_RIGHT, 0, OPEN_LOOP);
 		motor_set_vel(MOTOR_BOTTOM_LEFT, 0, OPEN_LOOP);
 		motor_set_vel(MOTOR_TOP_LEFT, 0, OPEN_LOOP);
 		motor_set_vel(MOTOR_TOP_RIGHT, 0, OPEN_LOOP);
-	} else {
+	} else if (wheel_base_vel.x != last_vel[0] || wheel_base_vel.y != last_vel[1] || wheel_base_vel.w != last_vel[2]) {
 		// Output the velocity value to motor.
+		last_vel[0] = wheel_base_vel.x;
+		last_vel[1] = wheel_base_vel.y;
+		last_vel[2] = wheel_base_vel.w;
+		
 		motor_set_vel(MOTOR_BOTTOM_RIGHT, (WHEEL_BASE_XY_VEL_RATIO * (wheel_base_vel.x + mod*wheel_base_vel.y) / 1000 + WHEEL_BASE_W_VEL_RATIO * wheel_base_vel.w / 1000), wheel_base_close_loop_flag);
 		motor_set_vel(MOTOR_BOTTOM_LEFT,  (WHEEL_BASE_XY_VEL_RATIO * (wheel_base_vel.x - mod*wheel_base_vel.y) / 1000 + WHEEL_BASE_W_VEL_RATIO * wheel_base_vel.w / 1000), wheel_base_close_loop_flag);
 		motor_set_vel(MOTOR_TOP_LEFT,			(WHEEL_BASE_XY_VEL_RATIO * (-wheel_base_vel.x - wheel_base_vel.y) / 1000 + WHEEL_BASE_W_VEL_RATIO * wheel_base_vel.w / 1000), wheel_base_close_loop_flag);
