@@ -7,6 +7,7 @@
 
 #include <Ticks.h>
 #include <stm32f4xx.h>
+#include <stm32f4xx_iwdg.h>
 #include <stdio.h>
 #include <motor.h>
 
@@ -22,7 +23,7 @@ void SysTick_Handler(void)
 		_mTicks->TicksIncrement();
 	}
 	try {
-		motor::get_instance(0)->pid_control(640, 12, 240);
+		motor::get_instance(3)->pid_control(149.33 , 2.8, 56.0);
 	} catch (motor_error&) {
 		return;
 	}
@@ -35,9 +36,12 @@ uint16_t Ticks::getTimeout(){
 
 Ticks::Ticks() : ticks(0), timeoutCount(0), seconds(0)
 {
-	SysTick_CLKSourceConfig(SysTick_CLKSource_HCLK);
 	SysTick_Config(SystemCoreClock / clock_frequency);
 	_mTicks = this;
+	IWDG_WriteAccessCmd(IWDG_WriteAccess_Enable);
+	IWDG_SetPrescaler(IWDG_Prescaler_128);
+	IWDG_SetReload(250);
+	IWDG_ReloadCounter();
 }
 
 Ticks* Ticks::getInstance()

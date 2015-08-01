@@ -15,20 +15,17 @@ static float ideal_pos = 0;
 
 static motor* motor_x[no_of_motor] = {0};
 
-motor::motor(GPIO* const phaseA_gpio, GPIO* const phaseB_gpio, TIM_TypeDef* encoder_TIM, GPIO* const motor_mag, GPIO* const motor_dirA, GPIO* const motor_dirB, TIMER* const motor_TIM) :
+motor::motor(GPIO* const phaseA_gpio, GPIO* const phaseB_gpio, TIM_TypeDef* encoder_TIM, GPIO* const motor_mag, GPIO* const motor_dir, TIMER* const motor_TIM) :
 encoder(phaseA_gpio, phaseB_gpio, encoder_TIM), is_close_loop(false), overspeed(false),
-curr_pwm(0), target_vel(0), curr_vel(0), acceleration(1000), motor_timer(motor_TIM->TIMx),
-dirA_gpio(motor_dirA), dirB_gpio(motor_dirB)
+curr_pwm(0), target_vel(0), curr_vel(0), acceleration(100), motor_timer(motor_TIM->TIMx), dir_gpio(motor_dir)
 {
 
 	motor_mag->gpio_init(GPIO_Speed_100MHz, GPIO_Mode_AF, GPIO_OType_PP, GPIO_PuPd_NOPULL);
-	motor_dirA->gpio_init(GPIO_Speed_100MHz, GPIO_Mode_OUT, GPIO_OType_PP, GPIO_PuPd_NOPULL);
-	motor_dirB->gpio_init(GPIO_Speed_100MHz, GPIO_Mode_OUT, GPIO_OType_PP, GPIO_PuPd_NOPULL);
-	GPIO_PinAFConfig(motor_mag->gpio, motor_mag->get_pin_source(), GPIO_AF_TIM12);
+	motor_dir->gpio_init(GPIO_Speed_100MHz, GPIO_Mode_OUT, GPIO_OType_PP, GPIO_PuPd_NOPULL);
+	GPIO_PinAFConfig(motor_mag->gpio, motor_mag->get_pin_source(), GPIO_AF_TIM11);
   timer_init(motor_TIM->TIMx, 0, TIM_CounterMode_Up, MAX_PWM, TIM_CKD_DIV1);
   pwm_timer_init(*motor_TIM, TIM_OCMode_PWM1, TIM_OutputState_Enable, MAX_PWM, TIM_OCPolarity_High);
-  dirA_gpio->gpio_write(Bit_RESET);
-  dirB_gpio->gpio_write(Bit_SET);
+  dir_gpio->gpio_write(Bit_RESET);
   if (this_id < no_of_motor) {
   	motor_x[this_id] = this;
   }
@@ -36,7 +33,7 @@ dirA_gpio(motor_dirA), dirB_gpio(motor_dirB)
 
 void motor::set_accel(unsigned int accel)
 {
-	acceleration = static_cast<float>(accel > MAX_ACCEL ? MAX_ACCEL : (accel < MIN_ACCEL ? MIN_ACCEL : accel));
+	acceleration = (accel > MAX_ACCEL ? MAX_ACCEL : (accel < MIN_ACCEL ? MIN_ACCEL : accel));
 }
 
 void motor::set_target_vel(int vel)
@@ -79,33 +76,31 @@ void motor::lock()
 
 void motor::refresh()
 {
-	int accel_per_ms = acceleration / 1000;
-	if (abs(curr_vel - target_vel) > accel_per_ms) {
-		int dir = (target_vel - curr_vel) / abs(curr_vel - target_vel);
-		curr_vel += accel_per_ms * dir;
-	} else {
-		curr_vel = target_vel;
+	if (curr_vel > target_vel) {
+		--curr_vel;
+	} else if  (curr_vel < target_vel) {
+		++curr_vel;
 	}
 }
 
 int motor::cal_error()
 {
 #ifdef increment_PID
-	return std::floor(curr_vel) - get_change_of_encoder();
+	return curr_vel - get_change_of_encoder();
 #else
 	return get_encoder_value() - ideal_pos;
 #endif
 }
 
 
-void motor::pid_control(int p, int i, int d)
+void motor::pid_control(float p, float i, float d)
 {
 	const int TIMEOUT = 100;
 
-	static int prev_error = 0;
+	static float prev_error = 0;
 	static int encoder_fail_time_out = 0;
 #ifdef increment_PID
-	static int last_prev_error = 0;
+	static float last_prev_error = 0;
 	float PID = p*(cal_error() - prev_error) + i*cal_error() + d*(cal_error() + last_prev_error - prev_error*2);
 #else
 	static float acumulate_error = 0;
@@ -113,14 +108,14 @@ void motor::pid_control(int p, int i, int d)
 	ideal_pos += curr_vel/5.0;
 #endif
 	if (is_close_loop && is_encoder_work) {
-		if (std::abs(std::floor(curr_vel)) > 0 && get_change_of_encoder() == 0) {
+		if (std::abs(curr_vel) > 0 && get_change_of_encoder() == 0) {
 			++encoder_fail_time_out;
 			is_encoder_work = (encoder_fail_time_out > TIMEOUT ? false : true);
 		} else {
 			encoder_fail_time_out = 0;
 		}
 #ifdef increment_PID
-		curr_pwm += PID/10;
+		curr_pwm += PID;
 #else
 		curr_pwm = PID;
 #endif
@@ -148,24 +143,17 @@ void motor::pid_control(int p, int i, int d)
 	acumulate_error += cal_error();
 #endif
 	prev_error = cal_error();
-	output_pwm(std::floor(curr_pwm * MAX_PWM / 1799));
+	output_pwm(curr_pwm);
 }
 
 void motor::set_dir(dir direction)
 {
 	if (direction == ANTI_CKW) {
-		dirA_gpio->gpio_write(Bit_RESET);
-		dirB_gpio->gpio_write(Bit_SET);
+		dir_gpio->gpio_write(Bit_RESET);
 	} else if (direction == CKW) {
-		dirA_gpio->gpio_write(Bit_SET);
-		dirB_gpio->gpio_write(Bit_RESET);
+		dir_gpio->gpio_write(Bit_SET);
 	}
 
-}
-
-bool motor::is_open_loop()
-{
-	return !is_close_loop;
 }
 
 bool motor::is_overspeed()
@@ -175,30 +163,15 @@ bool motor::is_overspeed()
 
 void motor::output_pwm(int pwm)
 {
-//	switch (static_cast<int>(std::abs(pwm))) {
-//		case 0 ... 419:
-//			speed_indicator_on(0);
-//			break;
-//		case 420 ... 1259:
-//			speed_indicator_on(1);
-//			break;
-//		case 1260 ... 2099:
-//			speed_indicator_on(2);
-//			break;
-//		case 2100 ... 2939:
-//			speed_indicator_on(3);
-//			break;
-//		case 2940 ... 3779:
-//			speed_indicator_on(4);
-//			break;
-//		case 3780 ... 4199:
-//			speed_indicator_on(5);
-//			break;
-//		default:
-//			overspeed = true;
-//			speed_indicator_on(6);
-//			pwm = MAX_PWM * (pwm / std::abs(pwm));
-//	}
+	if (pwm > MAX_PWM) {
+		pwm = MAX_PWM;
+		overspeed = true;
+	} else if (pwm < -MAX_PWM) {
+		pwm = -MAX_PWM;
+		overspeed = true;
+	} else {
+		overspeed = false;
+	}
 
 	TIM_SetCompare1(motor_timer, uint32_t(MAX_PWM - std::abs(pwm)));
 
