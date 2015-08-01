@@ -177,3 +177,23 @@ void TIMER::AF_init(GPIO* gpio_of_TIM)
 		GPIO_PinAFConfig(gpio_of_TIM->gpio, gpio_of_TIM->get_pin_source(), GPIO_AF_TIM12);
 	}
 }
+
+void TIMER::SetCompare(uint32_t Compare_value)
+{
+	switch (Chx) {
+		case Ch1:
+			TIM_SetCompare1(TIMx, Compare_value);
+			break;
+		case Ch2:
+			TIM_SetCompare2(TIMx, Compare_value);
+			break;
+		case Ch3:
+			TIM_SetCompare3(TIMx, Compare_value);
+			break;
+		case Ch4:
+			TIM_SetCompare4(TIMx, Compare_value);
+			break;
+
+	}
+}
+

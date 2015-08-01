@@ -12,7 +12,7 @@ static motor* m_MOTOR;
 
 motor::motor(GPIO* const phaseA_gpio, GPIO* const phaseB_gpio, TIMER* const encoder_TIM, GPIO* const motor_mag, GPIO* const motor_dirA, GPIO* const motor_dirB, TIMER* const motor_TIM) :
 encoder(phaseA_gpio, phaseB_gpio, encoder_TIM), is_close_loop(false), overspeed(false),
-curr_pwm(0), target_vel(0), curr_vel(0), acceleration(100.0), motor_timer(motor_TIM->TIMx),
+curr_pwm(0), target_vel(0), curr_vel(0), acceleration(100.0), motor_timer(motor_TIM),
 dirA_gpio(motor_dirA), dirB_gpio(motor_dirB)
 {
 	// GPIO init
@@ -177,7 +177,7 @@ void motor::output_pwm(int pwm)
 			pwm = MAX_PWM * (pwm / std::abs(pwm));
 	}
 
-	TIM_SetCompare1(motor_timer, uint32_t(MAX_PWM - std::abs(pwm)));
+	motor_timer->SetCompare(uint32_t(MAX_PWM - std::abs(pwm)));
 
 	set_dir(static_cast<int>(pwm) > 0 ? CKW : (static_cast<int>(pwm) < 0 ? ANTI_CKW : DONT_CARE));
 }

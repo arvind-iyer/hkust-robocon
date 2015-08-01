@@ -73,7 +73,7 @@ namespace _motor {
 		float curr_vel;
 		float acceleration;
 
-		TIM_TypeDef* const motor_timer;
+		TIMER* const motor_timer;
 		static const int MAX_ACCEL = 1000;
 		static const int MIN_ACCEL = 5;
 

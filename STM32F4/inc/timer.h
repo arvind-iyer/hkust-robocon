@@ -16,22 +16,11 @@ class TIMER {
 public:
 	TIMER(TIM_TypeDef* const TIMn, Channel Chn);
 	void AF_init(GPIO* gpio_of_TIM);
+	void SetCompare(uint32_t Compare_value);
 
 	TIM_TypeDef* const TIMx;
 	Channel Chx;
 };
-
-//class TIMER_ {
-//public:
-//	TIMER_();
-//	void output_pwm(uint16_t);
-//
-//private:
-//	TIM_TypeDef* const TIMx;
-//	const Channel Chx;
-//	void (* const Set_pwm) (TIM_TypeDef*, uint16_t);
-//};
-
 
 void (* const Channel_init[4]) (TIM_TypeDef* TIMx, TIM_OCInitTypeDef* TIM_OCInitStruct) = {TIM_OC1Init, TIM_OC2Init, TIM_OC3Init, TIM_OC4Init};
 void (* const Channel_config[4]) (TIM_TypeDef* TIMx, uint16_t TIM_OCPreload) = {TIM_OC1PreloadConfig, TIM_OC2PreloadConfig, TIM_OC3PreloadConfig, TIM_OC4PreloadConfig};
