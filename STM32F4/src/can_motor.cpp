@@ -12,7 +12,7 @@ u16 get_can_motor_id(u8 motor_id)
 
 void can_motor_init(void)
 {
-	can_rx_add_filter(get_can_motor_id(this_motor), CAN_RX_MASK_DIGIT_0_3, 	motor_cmd_decoding);
+	can_rx_add_filter(get_can_motor_id(this_motor), CAN_RX_MASK_EXACT, 	motor_cmd_decoding);
 }
 
 /*** TX ***/
@@ -147,9 +147,9 @@ void motor_cmd_decoding(CanRxMsg msg)
 					// velocity or pwm control.
 					s32 velocity = n_bytes_to_one(fragment_vel, VEL_SIZE);
 					// Ignore if same velocity is sent.
-					(loop_flag == CLOSE_LOOP) ? motor::get_instance(id)->set_target_vel(velocity) :
-							motor::get_instance(id)->set_pwm(velocity);
-					FIVE_VOLT_LED.off();
+					(loop_flag == CLOSE_LOOP) ? motor::get_instance()->set_target_vel(velocity) :
+							motor::get_instance()->set_pwm(velocity);
+					NO_CAN_LED.off();
 				}
 				break;
 			case CAN_MOTOR_ACCEL_CMD:
@@ -159,7 +159,7 @@ void motor_cmd_decoding(CanRxMsg msg)
 					for (u8 i = 0; i < ACCEL_SIZE; ++i) {
 						fragment_accel[i] = msg.Data[i+1];
 					}
-					motor::get_instance(id)->set_accel(n_bytes_to_one(fragment_accel, ACCEL_SIZE));
+					motor::get_instance()->set_accel(n_bytes_to_one(fragment_accel, ACCEL_SIZE));
 				}
 				break;
 			case CAN_MOTOR_POS_CMD:
@@ -167,7 +167,7 @@ void motor_cmd_decoding(CanRxMsg msg)
 				break;
 			case CAN_MOTOR_LOCK_CMD:
 				if (msg.DLC == CAN_MOTOR_LOCK_LENGTH) {
-					motor::get_instance(id)->lock();
+					motor::get_instance()->lock();
 				}
 				break;
 			default:

@@ -4,6 +4,46 @@ TIMER::TIMER(TIM_TypeDef* const TIM, Channel ch) : TIMx(TIM), Chx(ch) {}
 
 
 TIMER
+	TIM1Ch1(TIM1, Ch1),
+	TIM1Ch2(TIM1, Ch2),
+	TIM1Ch3(TIM1, Ch3),
+	TIM1Ch4(TIM1, Ch4),
+
+	TIM2Ch1(TIM2, Ch1),
+	TIM2Ch2(TIM2, Ch2),
+	TIM2Ch3(TIM2, Ch3),
+	TIM2Ch4(TIM2, Ch4),
+
+	TIM3Ch1(TIM3, Ch1),
+	TIM3Ch2(TIM3, Ch2),
+	TIM3Ch3(TIM3, Ch3),
+	TIM3Ch4(TIM3, Ch4),
+
+	TIM4Ch1(TIM4, Ch1),
+	TIM4Ch2(TIM4, Ch2),
+	TIM4Ch3(TIM4, Ch3),
+	TIM4Ch4(TIM4, Ch4),
+
+	TIM5Ch1(TIM5, Ch1),
+	TIM5Ch2(TIM5, Ch2),
+	TIM5Ch3(TIM5, Ch3),
+	TIM5Ch4(TIM5, Ch4),
+
+	TIM6Ch1(TIM6, Ch1),
+	TIM6Ch2(TIM6, Ch2),
+	TIM6Ch3(TIM6, Ch3),
+	TIM6Ch4(TIM6, Ch4),
+
+	TIM7Ch1(TIM7, Ch1),
+	TIM7Ch2(TIM7, Ch2),
+	TIM7Ch3(TIM7, Ch3),
+	TIM7Ch4(TIM7, Ch4),
+
+	TIM8Ch1(TIM8, Ch1),
+	TIM8Ch2(TIM8, Ch2),
+	TIM8Ch3(TIM8, Ch3),
+	TIM8Ch4(TIM8, Ch4),
+
 	TIM9Ch1(TIM9, Ch1),
 	TIM9Ch2(TIM9, Ch2),
 	TIM9Ch3(TIM9, Ch3),
@@ -22,7 +62,17 @@ TIMER
 	TIM12Ch1(TIM12, Ch1),
 	TIM12Ch2(TIM12, Ch2),
 	TIM12Ch3(TIM12, Ch3),
-	TIM12Ch4(TIM12, Ch4);
+	TIM12Ch4(TIM12, Ch4),
+
+	TIM13Ch1(TIM13, Ch1),
+	TIM13Ch2(TIM13, Ch2),
+	TIM13Ch3(TIM13, Ch3),
+	TIM13Ch4(TIM13, Ch4),
+
+	TIM14Ch1(TIM14, Ch1),
+	TIM14Ch2(TIM14, Ch2),
+	TIM14Ch3(TIM14, Ch3),
+	TIM14Ch4(TIM14, Ch4);
 
 void timer_init(TIM_TypeDef* TIMx, u16 Prescaler, u16 CounterMode, u16 Peroid, u16 ClockDivision)
 {
@@ -108,4 +158,22 @@ void encoder_timer_init(TIM_TypeDef* TIMx, const u16 initial_value)
 	TIM_SetCounter(TIMx, initial_value);
 	// Counter Enable
 	TIM_Cmd(TIMx, ENABLE);
+}
+
+void TIMER::AF_init(GPIO* gpio_of_TIM)
+{
+	// For F4 AF init, see stm32f4xx_gpio.h starting from line 243.
+	if (TIMx == TIM1 || TIMx == TIM2) {
+		// AF1 for TIM1 and 2
+		GPIO_PinAFConfig(gpio_of_TIM->gpio, gpio_of_TIM->get_pin_source(), GPIO_AF_TIM1);
+	} else if (TIMx == TIM3 || TIMx == TIM4 || TIMx == TIM5) {
+		// AF2 for TIM3 to 5
+		GPIO_PinAFConfig(gpio_of_TIM->gpio, gpio_of_TIM->get_pin_source(), GPIO_AF_TIM3);
+	}	else if (TIMx == TIM8 || TIMx == TIM9 || TIMx == TIM10 || TIMx == TIM11) {
+		// AF3 for TIM 8 to 11
+		GPIO_PinAFConfig(gpio_of_TIM->gpio, gpio_of_TIM->get_pin_source(), GPIO_AF_TIM8);
+	}	else if (TIMx == TIM12 || TIMx == TIM13 || TIMx == TIM14) {
+		// AF9 for TIM 12 to 14
+		GPIO_PinAFConfig(gpio_of_TIM->gpio, gpio_of_TIM->get_pin_source(), GPIO_AF_TIM12);
+	}
 }

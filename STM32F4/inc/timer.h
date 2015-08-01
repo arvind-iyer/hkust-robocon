@@ -3,6 +3,7 @@
 
 #include "stm32f4xx_tim.h"
 #include "stm32f4xx.h"
+#include "gpio.h"
 
 enum Channel{
 	Ch1 = 0,
@@ -14,6 +15,8 @@ enum Channel{
 class TIMER {
 public:
 	TIMER(TIM_TypeDef* const TIMn, Channel Chn);
+	void AF_init(GPIO* gpio_of_TIM);
+
 	TIM_TypeDef* const TIMx;
 	Channel Chx;
 };

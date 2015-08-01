@@ -36,29 +36,35 @@ namespace _motor {
 	class motor : public encoder
 	{
 	public:
-		motor(GPIO* const phaseA_gpio, GPIO* const phaseB_gpio, TIM_TypeDef* encoder_TIM, \
+		motor(GPIO* const phaseA_gpio, GPIO* const phaseB_gpio, TIMER* const encoder_TIM, \
 				GPIO* const motor_mag, GPIO* const motor_dirA, GPIO* const motor_dirB, TIMER* const motor_TIM);
-		static motor* get_instance(unsigned int access_id) throw(motor_error);
-	// Set function
+		static motor* get_instance() throw(motor_error);
+		// Set function from can
 		void set_target_vel(int vel);
 		void set_pwm(int pwm);
 		void set_accel(unsigned int accel);
 		void lock();
 
+		// Real time update function
 		void pid_control(float p, float i, float d);
 		void refresh();
+
 		// Get function
 		unsigned int get_accel();
 		int get_target_vel();
 		float get_current_vel();
 		float get_pwm();
-		bool is_open_loop();
-		bool is_overspeed();
+
+		// return true if is close loop and false otherwise.
+		bool get_close_loop_state();
+		bool get_overspeed_state();
+
+		// Constant
 		const int MAX_PWM = SystemCoreClock / control_freq - 1;
 		const float F1toF4_CORR = (MAX_PWM + 1) / 1800.0;
-		int cal_error();
 
 	private:
+		int cal_error();
 		void output_pwm(int pwm);
 		void set_dir(dir direction);
 

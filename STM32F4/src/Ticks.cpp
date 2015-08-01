@@ -19,17 +19,19 @@ void SysTick_Handler(void)
 	if (++counter >= 5000) {
 		counter = 0;
 	}
+	// ms control
 	if (counter % 5 == 0) {
 		_mTicks->TicksIncrement();
 		try {
-			motor::get_instance(0)->encoder::refresh();
-			motor::get_instance(0)->refresh();
+			motor::get_instance()->encoder::refresh();
+			motor::get_instance()->refresh();
 		} catch (motor_error&) {
 			return;
 		}
 	}
+	// 200 mu s control
 	try {
-		motor::get_instance(0)->pid_control(64, 1.2, 24);
+		motor::get_instance()->pid_control(64, 1.2, 24);
 	} catch (motor_error&) {
 		return;
 	}

@@ -27,43 +27,7 @@
 #include "motor.h"
 #include "gpio.h"
 
-
 static int ticks_img = 655;
-
-//void HardFault_Handler(void)	// Indicate any seg fault.
-//{
-//	Leds Signal6(LED_6, LED_ON);
-//	while (true) {
-//		if (ticks_img != Ticks::getInstance()->getTicks()) {
-//			ticks_img = Ticks::getInstance()->getTicks();
-//			if (Ticks::getInstance()->getFullTicks() % 2000 == 0) {
-//				FAIL_MUSIC;
-//				Signal6.led_toggle();
-//			}
-//			buzzer_check();
-//		}
-//	}
-//}
-//
-//void UsageFault_Handler(void) // Any Division by 0 or relevant runtime error
-//{
-//	Leds Signal12(LED_12, LED_ON);
-//	while (true) {
-//		if (ticks_img != Ticks::getInstance()->getTicks()) {
-//			ticks_img = Ticks::getInstance()->getTicks();
-//			if (Ticks::getInstance()->getFullTicks() % 2000 == 0) {
-//				FAIL_MUSIC;
-//				Signal12.led_toggle();
-//			}
-//			buzzer_check();
-//		}
-//	}
-//}
-//
-//void FPU_IRQHandler()
-//{
-//	Leds Signal12(LED_12, LED_ON);
-//}
 
 int main()
 {
@@ -78,38 +42,40 @@ int main()
 	while (true) {
 		if (ticks_img != ticks.getTicks()) {
 			ticks_img = ticks.getTicks();
+
+			// Send encoder value
 			if (ticks_img % 100 == 0) {
 				drived_motor.send_feedback();
 			}
 
 			// LED signal
-			// Encoder
-			if (!drived_motor.is_encoder_working()) {
-				ENCODER_ERR_LED.on();
-			} else {
+			// Encoder work or not
+			if (drived_motor.get_encoder_working_state()) {
 				ENCODER_ERR_LED.off();
+			} else {
+				ENCODER_ERR_LED.on();
 			}
 			// Open or close loop or locking
-			if (drived_motor.is_open_loop()) {
-				OPEN_LOOP_LED.on();
-				CLOSE_LOOP_LED.off();
-				LOCK_LED.off();
-			} else {
-				if (drived_motor.get_current_vel() == 0 && drived_motor.is_encoder_working()) {
+		  if (drived_motor.get_close_loop_state()) {
+				if (drived_motor.get_target_vel() == 0 && drived_motor.get_encoder_working_state()) {
 					LOCK_LED.on();
 				} else {
 					LOCK_LED.off();
 				}
 				CLOSE_LOOP_LED.on();
 				OPEN_LOOP_LED.off();
+			} else {
+				OPEN_LOOP_LED.on();
+				CLOSE_LOOP_LED.off();
+				LOCK_LED.off();
 			}
 			// life signal
 			if (ticks_img % 100 == 0) {
 				LIFE_LED.led_toggle();
 			}
-
+			// turn on CAN LED every seconds.
 			if (ticks_img == 0) {
-				FIVE_VOLT_LED.on();
+				NO_CAN_LED.on();
 			}
 		}
 	}
