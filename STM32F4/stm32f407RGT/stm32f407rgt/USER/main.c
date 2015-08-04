@@ -59,7 +59,7 @@ int main(void)
 	LED_init(&PA15);
 	//writeFlash(155,8888);
 	//gpio_init(&PE3, GPIO_Mode_IN, GPIO_OType_PP, GPIO_Speed_100MHz, GPIO_PuPd_UP);
-	init_gpio_interrupt(&PE3, EXTI_Trigger_Falling);
+	init_gpio_interrupt(SMALL_BUTTON_GPIO, EXTI_Trigger_Falling);
 	init_gpio_interrupt(JOY_CENTER_GPIO, EXTI_Trigger_Falling);
 	while (1)  {
 
@@ -85,7 +85,7 @@ int main(void)
 				tft_update();			
 				//button_update();
 			
-				printf("Test");
+				
 			}
 		}
 	}	

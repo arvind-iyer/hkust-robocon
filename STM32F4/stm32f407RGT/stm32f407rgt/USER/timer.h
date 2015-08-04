@@ -11,8 +11,6 @@
 
 
 
-//void (* const Channel_init[4]) (TIM_TypeDef* TIMx, TIM_OCInitTypeDef* TIM_OCInitStruct) = {TIM_OC1Init, TIM_OC2Init, TIM_OC3Init, TIM_OC4Init};
-//void (* const Channel_config[4]) (TIM_TypeDef* TIMx, uint16_t TIM_OCPreload) = {TIM_OC1PreloadConfig, TIM_OC2PreloadConfig, TIM_OC3PreloadConfig, TIM_OC4PreloadConfig};
 
 
 

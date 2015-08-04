@@ -94,7 +94,7 @@ void init_gpio_interrupt(const GPIO* gpio, EXTITrigger_TypeDef trigger_type)
 	NVIC_InitTypeDef NVIC_InitStruct;
 	
 	/* Enable clock for GPIO */
-	LED_gpio_rcc_init(gpio);
+	gpio_rcc_init(gpio);
 	/* Enable clock for SYSCFG */
 	RCC_APB2PeriphClockCmd(RCC_APB2Periph_SYSCFG, ENABLE);
 	
@@ -135,7 +135,10 @@ void init_gpio_interrupt(const GPIO* gpio, EXTITrigger_TypeDef trigger_type)
 
 /* Set interrupt handlers */
 /* Handle PD0 interrupt */
-void EXTI3_IRQHandler(void) {
+
+//put what you want to do in the IRQ handler
+
+void EXTI3_IRQHandler(void) {          					//for GPIO interrupt 
 	/* Make sure that interrupt flag is set */
 	if (EXTI_GetITStatus(EXTI_Line3) != RESET) {
 		/* Do your stuff when PE3 is changed */
@@ -145,7 +148,7 @@ void EXTI3_IRQHandler(void) {
 	}
 }
 
-void EXTI15_10_IRQHandler(void) {
+void EXTI15_10_IRQHandler(void) {						//for GPIO interrupt
 	/* Make sure that interrupt flag is set */
 	if (EXTI_GetITStatus(EXTI_Line14) != RESET) {
 		/* Do your stuff when PC14 is changed */

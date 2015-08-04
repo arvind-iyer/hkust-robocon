@@ -29,7 +29,7 @@ void LED_control(const GPIO *gpio, LED_STATE state); //ON or OFF
 void BUTTON_init(const GPIO *gpio);
 void timer_gpio_init(const GPIO *gpio);
 void AF_config(const GPIO *gpio,u16 AF_function);
-void LED_gpio_rcc_init(const GPIO* gpio);
+void gpio_rcc_init(const GPIO* gpio);
 u8 gpio_read_input(const GPIO* gpio);
 
 

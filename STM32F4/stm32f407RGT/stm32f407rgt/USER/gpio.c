@@ -234,7 +234,7 @@ const GPIO
 
 
 
-void LED_gpio_rcc_init(const GPIO* gpio){
+void gpio_rcc_init(const GPIO* gpio){
 	switch((u32)(gpio->gpio)){
 		case((u32)(GPIOA)):
 	RCC_AHB1PeriphClockCmd(RCC_AHB1Periph_GPIOA, ENABLE);
@@ -276,7 +276,7 @@ void LED_gpio_rcc_init(const GPIO* gpio){
 void gpio_init(const GPIO *gpio, GPIOMode_TypeDef mode, GPIOOType_TypeDef otype, GPIOSpeed_TypeDef speed, GPIOPuPd_TypeDef pupd)
 {
 	GPIO_InitTypeDef GPIO_InitStructure;
-	LED_gpio_rcc_init(gpio);
+	gpio_rcc_init(gpio);
 	GPIO_InitStructure.GPIO_Pin = gpio->gpio_pin;
 	GPIO_InitStructure.GPIO_Mode = mode;
 	GPIO_InitStructure.GPIO_OType = otype;
@@ -290,11 +290,11 @@ void gpio_init(const GPIO *gpio, GPIOMode_TypeDef mode, GPIOOType_TypeDef otype,
 void timer_gpio_init(const GPIO *gpio)
 {
 	GPIO_InitTypeDef  GPIO_InitStructure;
-	LED_gpio_rcc_init(gpio);
+	gpio_rcc_init(gpio);
 	GPIO_InitStructure.GPIO_Pin = gpio->gpio_pin;
     GPIO_InitStructure.GPIO_Mode = GPIO_Mode_AF;
     GPIO_InitStructure.GPIO_OType = GPIO_OType_PP;
-    GPIO_InitStructure.GPIO_Speed = GPIO_Speed_50MHz;
+    GPIO_InitStructure.GPIO_Speed = GPIO_Speed_100MHz;
     GPIO_InitStructure.GPIO_PuPd = GPIO_PuPd_NOPULL;
     GPIO_Init(gpio->gpio, &GPIO_InitStructure);	
 }
@@ -302,7 +302,7 @@ void timer_gpio_init(const GPIO *gpio)
 
 void BUTTON_init(const GPIO *gpio)
 {   GPIO_InitTypeDef  GPIO_InitStructure;
-	LED_gpio_rcc_init(gpio);
+	gpio_rcc_init(gpio);
 	GPIO_InitStructure.GPIO_Pin = gpio->gpio_pin;
     GPIO_InitStructure.GPIO_Mode = GPIO_Mode_IN;
     GPIO_InitStructure.GPIO_OType = GPIO_OType_PP;
