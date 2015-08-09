@@ -57,7 +57,7 @@ int main(void)
 	//button_init();	 //initialization of button
 	buzzer_init();	 //initialization of buzzer
 
-	uart_init(115200);
+	uart_init(9600);
 	
 	tft_init( 2,WHITE, BLACK, BLACK);
 	buzzer_play_song(START_UP, 125, 0);
@@ -69,7 +69,7 @@ int main(void)
 		if(ticks_usimg != get_us_ticks())
 		{
 			ticks_usimg=get_us_ticks();
-			if(ticks_usimg%1==0)Print("abcdefghijklmnopq");
+			//if(ticks_usimg%1==0)Print("abcdefghijklmnopq");
 		}
 		
 		

@@ -47,7 +47,7 @@ void uart_init(u32 baudrate){
 	GPIO_PinAFConfig(GPIOA,GPIO_PinSource10,GPIO_AF_USART1);
 	
 
-  GPIO_InitStructure.GPIO_Pin = GPIO_Pin_9 | GPIO_Pin_10; 
+    GPIO_InitStructure.GPIO_Pin = GPIO_Pin_9 | GPIO_Pin_10; 
 	GPIO_InitStructure.GPIO_Mode = GPIO_Mode_AF;
 	GPIO_InitStructure.GPIO_Speed = GPIO_Speed_50MHz;	
 	GPIO_InitStructure.GPIO_OType = GPIO_OType_PP; 
@@ -122,9 +122,6 @@ void uart_init(u32 baudrate){
 		
 		/* DMA RX INIT
 		DMA2 STREAM2 CHANNEL4
-		
-		
-		
 		*/
 		
 
