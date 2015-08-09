@@ -54,7 +54,7 @@ int main(void)
 	buzzer_init();	 //initialization of buzzer
 <<<<<<< HEAD
 
-	uart_init(9600);
+	uart_init(115200);
 	
 =======
 	buzzer_set_volume(50);
@@ -73,9 +73,13 @@ int main(void)
 		{
 			ticks_usimg=get_us_ticks();
 <<<<<<< HEAD
+<<<<<<< HEAD
 			//if(ticks_usimg%1==0)Print("abcdefghijklmnopq");
 =======
 >>>>>>> parent of 2af6e34... uart with dma
+=======
+			if(ticks_usimg%1==0)Print("abcdefghijklmnopq");
+>>>>>>> parent of cb9afd5... suddenly usart die
 		}
 		
 		
