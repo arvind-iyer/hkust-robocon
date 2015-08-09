@@ -143,7 +143,6 @@ void EXTI3_IRQHandler(void) {          					//for GPIO interrupt
 	if (EXTI_GetITStatus(EXTI_Line3) != RESET) {
 		/* Do your stuff when PE3 is changed */
 		buzzer_play_song(START_UP, 125, 0);
-		Print("565656");
 		/* Clear interrupt flag */
 		EXTI_ClearITPendingBit(EXTI_Line3);
 	}
@@ -154,7 +153,6 @@ void EXTI15_10_IRQHandler(void) {						//for GPIO interrupt
 	if (EXTI_GetITStatus(EXTI_Line14) != RESET) {
 		/* Do your stuff when PC14 is changed */
 		buzzer_play_song(START_UP, 125, 0);
-		Print("ygiygig");
 		/* Clear interrupt flag */
 		EXTI_ClearITPendingBit(EXTI_Line14);
 	}
