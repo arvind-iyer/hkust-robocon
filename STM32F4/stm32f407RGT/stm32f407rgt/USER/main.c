@@ -21,10 +21,14 @@ void system_time(){
 
 void show_time(){
 	//tft_clear();
-printf("MCU serving time(h:m:s:ms)  %d : %d : %d : %d \n" ,hour,minute,second,ms);
+	
+	
+	//Print("MCU serving time(h:m:s:ms)  %d : %d : %d : %d \n" ,hour,minute,second,ms);
+
+ 
 	tft_prints(0,0,"(h:m:s:ms) ");
 	tft_prints(0,1, "%d : %d : %d : %d \n" ,hour,minute,second,ms);
-		
+
 }
 
 void draw_ball(int x, int y){
@@ -52,13 +56,12 @@ int main(void)
 	SysTick_Init();  // must init to make the  interrupt in ticks.h per 1 us
 	//button_init();	 //initialization of button
 	buzzer_init();	 //initialization of buzzer
-	buzzer_set_volume(50);
+
 	uart_init(115200);
+	
 	tft_init( 2,WHITE, BLACK, BLACK);
 	buzzer_play_song(START_UP, 125, 0);
 	LED_init(&PA15);
-	//writeFlash(155,8888);
-	//gpio_init(&PE3, GPIO_Mode_IN, GPIO_OType_PP, GPIO_Speed_100MHz, GPIO_PuPd_UP);
 	init_gpio_interrupt(SMALL_BUTTON_GPIO, EXTI_Trigger_Falling);
 	init_gpio_interrupt(JOY_CENTER_GPIO, EXTI_Trigger_Falling);
 	while (1)  {
@@ -66,6 +69,7 @@ int main(void)
 		if(ticks_usimg != get_us_ticks())
 		{
 			ticks_usimg=get_us_ticks();
+			if(ticks_usimg%1==0)Print("abcdefghijklmnopq");
 		}
 		
 		
@@ -76,13 +80,16 @@ int main(void)
 				buzzer_check();
 				system_time(); //every 1ms
 
-			if(ticks_msimg%50==3)
+			if(ticks_msimg%1000==3)
 			{  //for processing monitor data
 				tft_clear();
 				show_time();
 				test_flash();
 				//display_button_data();
 				tft_update();			
+              
+				
+				
 				//button_update();
 			
 				
