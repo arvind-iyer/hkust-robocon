@@ -41,6 +41,14 @@ void display_button_data()
 	}
 }
 
+char data[100]={1,2,3,4,5,6,7,8,9,10};
+int a =0;
+u8 sended =0;
+
+void send_tx(){
+	
+
+}
 
 int main(void)
 {	//putting global flag
@@ -49,19 +57,19 @@ int main(void)
 	
 buzzer_init();	 //initialization of buzzer
 
-uart_init(115200);
+uart_init(9600);
 
 
 
 ////uart_init(115200);
 
-tft_init( 2,BLUE, BLACK, BLACK);
+tft_init( 2,GREEN, BLACK, BLACK);
 buzzer_play_song(START_UP, 125, 0);
-//LED_init(&PA15);
+LED_init(&PA15);//THE ONLY LED ON THE BOARD
 
-////gpio_init(&PE3, GPIO_Mode_IN, GPIO_OType_PP, GPIO_Speed_100MHz, GPIO_PuPd_UP);
-//init_gpio_interrupt(SMALL_BUTTON_GPIO, EXTI_Trigger_Falling);
-//init_gpio_interrupt(JOY_CENTER_GPIO, EXTI_Trigger_Falling);
+//gpio_init(&PE3, GPIO_Mode_IN, GPIO_OType_PP, GPIO_Speed_100MHz, GPIO_PuPd_UP);
+init_gpio_interrupt(SMALL_BUTTON_GPIO, EXTI_Trigger_Falling);
+init_gpio_interrupt(JOY_CENTER_GPIO, EXTI_Trigger_Falling);
 while (1)  {
 
 	if(ticks_usimg != get_us_ticks())
@@ -83,12 +91,17 @@ while (1)  {
 		if(ticks_msimg%500==3)
 		{  //for processing monitor data
 			tft_clear();
-			show_time();
-			Print("aba");
-			//display_button_data();
-			tft_update();			
-			//button_update();
 		
+			show_time();
+			//send_tx();
+			//display_button_data();
+			tft_update();	
+			
+			
+			//usart_tx('1');
+		
+			//send_tx();
+			usart_print("aaa");
 			
 		}
 	}

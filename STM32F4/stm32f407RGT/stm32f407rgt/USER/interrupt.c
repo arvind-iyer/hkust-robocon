@@ -145,6 +145,7 @@ void EXTI3_IRQHandler(void) {          					//for GPIO interrupt
 		buzzer_play_song(START_UP, 125, 0);
 		/* Clear interrupt flag */
 		EXTI_ClearITPendingBit(EXTI_Line3);
+	usart_tx_one_byte('2');
 	}
 }
 
@@ -155,5 +156,6 @@ void EXTI15_10_IRQHandler(void) {						//for GPIO interrupt
 		buzzer_play_song(START_UP, 125, 0);
 		/* Clear interrupt flag */
 		EXTI_ClearITPendingBit(EXTI_Line14);
+	usart_tx_one_byte('3');
 	}
 }
