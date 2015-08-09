@@ -21,7 +21,7 @@ void system_time(){
 
 void show_time(){
 	//tft_clear();
-printf("MCU serving time(h:m:s:ms)  %d : %d : %d : %d \n" ,hour,minute,second,ms);
+//printf("MCU serving time(h:m:s:ms)  %d : %d : %d : %d \n" ,hour,minute,second,ms);
 	tft_prints(0,0,"(h:m:s:ms) ");
 	tft_prints(0,1, "%d : %d : %d : %d \n" ,hour,minute,second,ms);
 		
@@ -41,72 +41,62 @@ void display_button_data()
 	}
 }
 
-void test_flash()
-{
-
-}
 
 int main(void)
 {	//putting global flag
 	
 	SysTick_Init();  // must init to make the  interrupt in ticks.h per 1 us
-	//button_init();	 //initialization of button
-	buzzer_init();	 //initialization of buzzer
-<<<<<<< HEAD
-
-	uart_init(115200);
 	
-=======
-	buzzer_set_volume(50);
-	uart_init(115200);
->>>>>>> parent of 2af6e34... uart with dma
-	tft_init( 2,WHITE, BLACK, BLACK);
-	buzzer_play_song(START_UP, 125, 0);
-	LED_init(&PA15);
-	//writeFlash(155,8888);
-	//gpio_init(&PE3, GPIO_Mode_IN, GPIO_OType_PP, GPIO_Speed_100MHz, GPIO_PuPd_UP);
-	init_gpio_interrupt(SMALL_BUTTON_GPIO, EXTI_Trigger_Falling);
-	init_gpio_interrupt(JOY_CENTER_GPIO, EXTI_Trigger_Falling);
-	while (1)  {
+buzzer_init();	 //initialization of buzzer
 
-		if(ticks_usimg != get_us_ticks())
-		{
-			ticks_usimg=get_us_ticks();
-<<<<<<< HEAD
-<<<<<<< HEAD
-			//if(ticks_usimg%1==0)Print("abcdefghijklmnopq");
-=======
->>>>>>> parent of 2af6e34... uart with dma
-=======
-			if(ticks_usimg%1==0)Print("abcdefghijklmnopq");
->>>>>>> parent of cb9afd5... suddenly usart die
-		}
-		
-		
-		
-		if (ticks_msimg != get_ms_ticks()) 
-		{
-			ticks_msimg = get_ms_ticks();  //maximum 1000000	
-				buzzer_check();
-				system_time(); //every 1ms
+uart_init(115200);
 
-			if(ticks_msimg%50==3)
-			{  //for processing monitor data
-				tft_clear();
-				show_time();
-				test_flash();
-				//display_button_data();
-				tft_update();			
-				//button_update();
+
+
+////uart_init(115200);
+
+tft_init( 2,BLUE, BLACK, BLACK);
+buzzer_play_song(START_UP, 125, 0);
+//LED_init(&PA15);
+
+////gpio_init(&PE3, GPIO_Mode_IN, GPIO_OType_PP, GPIO_Speed_100MHz, GPIO_PuPd_UP);
+//init_gpio_interrupt(SMALL_BUTTON_GPIO, EXTI_Trigger_Falling);
+//init_gpio_interrupt(JOY_CENTER_GPIO, EXTI_Trigger_Falling);
+while (1)  {
+
+	if(ticks_usimg != get_us_ticks())
+	{
+		ticks_usimg=get_us_ticks();
+
+
+
+
+	
+	
+	
+	if (ticks_msimg != get_ms_ticks()) 
+	{
+		ticks_msimg = get_ms_ticks();  //maximum 1000000	
+			buzzer_check();
+			system_time(); //every 1ms
+
+		if(ticks_msimg%500==3)
+		{  //for processing monitor data
+			tft_clear();
+			show_time();
+			Print("aba");
+			//display_button_data();
+			tft_update();			
+			//button_update();
+		
 			
-				
-			}
 		}
-	}	
+	}
 }	
-		
-
+}	
 	
+
+}	
 
 	
 
