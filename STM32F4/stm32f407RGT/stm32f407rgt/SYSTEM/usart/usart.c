@@ -9,8 +9,8 @@ char txBuffer[64];
 char rxBuffer[7];
 
 void uart_init(u32 baudrate){
-   //GPIO端口设置
-  GPIO_InitTypeDef GPIO_InitStructure;
+   
+    GPIO_InitTypeDef GPIO_InitStructure;
 	USART_InitTypeDef USART_InitStructure;
 	NVIC_InitTypeDef NVIC_InitStructure;
 	DMA_InitTypeDef DMA_InitStructure;
@@ -20,26 +20,20 @@ void uart_init(u32 baudrate){
 	RCC_AHB1PeriphClockCmd (RCC_AHB1Periph_DMA2, ENABLE);
 	
 	
-		USART_ClearFlag(USART1, USART_FLAG_TC);
+	USART_ClearFlag(USART1, USART_FLAG_TC);
 	
 
 	USART_ITConfig(USART1, USART_IT_RXNE, ENABLE);//开启相关中断
 	
-	 USART1->CR1 |= USART_CR1_RXNEIE;//enable RX interrupt
-	 USART1->CR1 |= USART_CR1_UE;
+	USART1->CR1 |= USART_CR1_RXNEIE;//enable RX interrupt
+	USART1->CR1 |= USART_CR1_UE;
 	 
-  NVIC_InitStructure.NVIC_IRQChannel = USART1_IRQn;
+    NVIC_InitStructure.NVIC_IRQChannel = USART1_IRQn;
 	NVIC_InitStructure.NVIC_IRQChannelPreemptionPriority=0;
 	NVIC_InitStructure.NVIC_IRQChannelSubPriority =1;	
 	NVIC_InitStructure.NVIC_IRQChannelCmd = ENABLE;
 	NVIC_Init(&NVIC_InitStructure);
 	
-	
-
-	
-
-	
-
  
     GPIO_InitStructure.GPIO_Pin = GPIO_Pin_9 | GPIO_Pin_10; 
 	GPIO_InitStructure.GPIO_Mode = GPIO_Mode_AF;
@@ -86,16 +80,8 @@ void uart_init(u32 baudrate){
         USART_DMACmd(USART1, USART_DMAReq_Tx, ENABLE);
 		
 
-		
-
-		
-		
-		
 		/* DMA RX INIT
 		DMA2 STREAM2 CHANNEL4
-		
-		
-		
 		*/
 		
 
