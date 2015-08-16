@@ -694,11 +694,6 @@
               <FilePath>.\1.8 TFT_display.c</FilePath>
             </File>
             <File>
-              <FileName>Temperature_ADC.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>.\Temperature_ADC.c</FilePath>
-            </File>
-            <File>
               <FileName>flash.c</FileName>
               <FileType>1</FileType>
               <FilePath>.\flash.c</FilePath>

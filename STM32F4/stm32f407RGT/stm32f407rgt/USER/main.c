@@ -45,9 +45,14 @@ char data[100]={1,2,3,4,5,6,7,8,9,10};
 int a =0;
 u8 sended =0;
 
-void send_tx(){
+void test(){
+	
+	tft_prints(0,4,"pin_adc:%f",get_battery());
+	
 	
 
+	tft_prints(0,3,"degree:%f",get_temperature());
+	usart_rx();
 }
 
 int main(void)
@@ -58,10 +63,8 @@ int main(void)
 buzzer_init();	 //initialization of buzzer
 
 uart_init(9600);
+	ADC1_init();
 
-
-
-////uart_init(115200);
 
 tft_init( 2,GREEN, BLACK, BLACK);
 buzzer_play_song(START_UP, 125, 0);
@@ -70,18 +73,18 @@ LED_init(&PA15);//THE ONLY LED ON THE BOARD
 //gpio_init(&PE3, GPIO_Mode_IN, GPIO_OType_PP, GPIO_Speed_100MHz, GPIO_PuPd_UP);
 init_gpio_interrupt(SMALL_BUTTON_GPIO, EXTI_Trigger_Falling);
 init_gpio_interrupt(JOY_CENTER_GPIO, EXTI_Trigger_Falling);
+int temp =1;
 while (1)  {
 
-	if(ticks_usimg != get_us_ticks())
+	if(ticks_usimg != get_us_ticks())   // using us to control  for some important control
 	{
 		ticks_usimg=get_us_ticks();
+		
+		
+		
+		
 
 
-
-
-	
-	
-	
 	if (ticks_msimg != get_ms_ticks()) 
 	{
 		ticks_msimg = get_ms_ticks();  //maximum 1000000	
@@ -91,7 +94,7 @@ while (1)  {
 		if(ticks_msimg%500==3)
 		{  //for processing monitor data
 			tft_clear();
-		
+			test();
 			show_time();
 			//send_tx();
 			//display_button_data();
@@ -100,9 +103,9 @@ while (1)  {
 			
 			//usart_tx('1');
 		
-			//send_tx();
-			usart_print("aaa");
-			
+		
+			usart_print("whatsapp");
+		
 		}
 	}
 }	

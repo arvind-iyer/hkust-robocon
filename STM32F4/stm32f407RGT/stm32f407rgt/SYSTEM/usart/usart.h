@@ -9,6 +9,9 @@
 void uart_init(u32 baudrate);
 void usart_tx_one_byte(char data);
 void usart_print(const char* pstr, ...);
+void usart_rx();
+
+
 #endif
 
 

@@ -3,4 +3,8 @@
 #include "stm32f4xx_adc.h"
 #include "stm32f4xx_dma.h"
 
-void battery_init(void);
+void ADC1_init(void);
+float get_battery();
+u16 raw_data();
+float get_temperature();
+u16 get_temp_level();
