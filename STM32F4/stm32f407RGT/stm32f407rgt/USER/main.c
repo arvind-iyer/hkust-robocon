@@ -41,17 +41,12 @@ void display_button_data()
 	}
 }
 
-char data[100]={1,2,3,4,5,6,7,8,9,10};
-int a =0;
-u8 sended =0;
+
 
 void test(){
 	
-	tft_prints(0,4,"pin_adc:%f",get_battery());
 	
 	
-
-	tft_prints(0,3,"degree:%f",get_temperature());
 	usart_rx();
 }
 
@@ -97,6 +92,7 @@ while (1)  {
 		{  //for processing monitor data
 			tft_clear();
 			test();
+			tft_prints(0,3,"degree:%f",get_temperature());
 			show_time();
 			//send_tx();
 			//display_button_data();
