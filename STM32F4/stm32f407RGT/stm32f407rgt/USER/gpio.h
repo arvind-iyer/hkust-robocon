@@ -19,13 +19,10 @@ extern const GPIO
 	PF0, PF1, PF2, PF3, PF4, PF5, PF6, PF7, PF8, PF9, PF10, PF11, PF12, PF13, PF14, PF15,
 	PG0, PG1, PG2, PG3, PG4, PG5, PG6, PG7, PG8, PG9, PG10, PG11, PG12, PG13, PG14, PG15;
 
-typedef enum {
-	LED_OFF = 0,
-	LED_ON	= 1
-} LED_STATE;
+
 
 void gpio_init(const GPIO *gpio, GPIOMode_TypeDef mode, GPIOOType_TypeDef otype, GPIOSpeed_TypeDef speed, GPIOPuPd_TypeDef pupd);
-void LED_control(const GPIO *gpio, LED_STATE state); //ON or OFF
+
 void BUTTON_init(const GPIO *gpio);
 void timer_gpio_init(const GPIO *gpio);
 void AF_config(const GPIO *gpio,u16 AF_function);

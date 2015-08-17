@@ -20,7 +20,7 @@
 
 
 #include "adc.h"
-#define Total_adc_count  2
+
 
 
 
@@ -35,17 +35,22 @@ void ADC1_init(void)
 	GPIO_InitTypeDef GPIO_InitStructure;   	
 	
 /*Enable clock for adc,dma,gpio*/
-	RCC_AHB1PeriphClockCmd(RCC_AHB1Periph_GPIOC, ENABLE);
+	
 	RCC_AHB1PeriphClockCmd(RCC_AHB1Periph_DMA2, ENABLE);
 	RCC_APB2PeriphClockCmd(RCC_APB2Periph_ADC1, ENABLE);
 
-	/*Define and Enable GPIO*/
-	GPIO_InitStructure.GPIO_Pin = GPIO_Pin_0;
+	/*Define and Enable GPIO for adc*/
+	
+	#if ADC_channel_10_enable==1
+	RCC_AHB1PeriphClockCmd(ADC_channel_10_CLOCK, ENABLE);
+	GPIO_InitStructure.GPIO_Pin = ADC_channel_10_pin;
     GPIO_InitStructure.GPIO_Mode = GPIO_Mode_AN;
-    GPIO_InitStructure.GPIO_PuPd = GPIO_PuPd_NOPULL ;
+    GPIO_InitStructure.GPIO_PuPd = GPIO_PuPd_NOPULL;
     GPIO_Init(GPIOC, &GPIO_InitStructure); 
-
-	/*DMA init*/
+	
+	#endif
+	
+	/*ADC1 DMA init*/
 	DMA_DeInit(DMA2_Stream0);
 	DMA_InitStructure.DMA_Channel = DMA_Channel_0;  
 	DMA_InitStructure.DMA_PeripheralBaseAddr = (u32)&ADC1->DR;
@@ -83,16 +88,52 @@ void ADC1_init(void)
 	
 	ADC_DMACmd(ADC1, ENABLE);
 	
-	//put here for more adc channel that you need to read
-	ADC_RegularChannelConfig(ADC1, ADC_Channel_10, 1, ADC_SampleTime_480Cycles);
-	ADC_RegularChannelConfig(ADC1, ADC_Channel_16, 2, ADC_SampleTime_480Cycles);//temperature sensor
+	/*ADC channel config*/
+	#if   ADC_channel_1_enable==1
+	ADC_RegularChannelConfig(ADC1, ADC_Channel_1, 1, ADC_SampleTime_480Cycles);
+	#elif ADC_channel_2_enable==1
+	ADC_RegularChannelConfig(ADC1, ADC_Channel_2, 2, ADC_SampleTime_480Cycles);
+	#elif ADC_channel_3_enable==1
+	ADC_RegularChannelConfig(ADC1, ADC_Channel_3, 3, ADC_SampleTime_480Cycles);
+	#elif ADC_channel_4_enable==1
+	ADC_RegularChannelConfig(ADC1, ADC_Channel_4, 4, ADC_SampleTime_480Cycles);
+	#elif ADC_channel_5_enable==1
+	ADC_RegularChannelConfig(ADC1, ADC_Channel_5, 5, ADC_SampleTime_480Cycles);
+	#elif ADC_channel_6_enable==1
+	ADC_RegularChannelConfig(ADC1, ADC_Channel_6, 6, ADC_SampleTime_480Cycles);
+	#elif ADC_channel_7_enable==1
+	ADC_RegularChannelConfig(ADC1, ADC_Channel_7, 7, ADC_SampleTime_480Cycles);
+	#elif ADC_channel_8_enable==1
+	ADC_RegularChannelConfig(ADC1, ADC_Channel_8, 8, ADC_SampleTime_480Cycles);
+	#elif ADC_channel_9_enable==1
+	ADC_RegularChannelConfig(ADC1, ADC_Channel_9, 9, ADC_SampleTime_480Cycles);
+	#elif ADC_channel_10_enable==1
+	ADC_RegularChannelConfig(ADC1, ADC_Channel_10, 10, ADC_SampleTime_480Cycles);
+	#elif ADC_channel_11_enable==1
+	ADC_RegularChannelConfig(ADC1, ADC_Channel_11, 11, ADC_SampleTime_480Cycles);
+	#elif ADC_channel_12_enable==1
+	ADC_RegularChannelConfig(ADC1, ADC_Channel_12, 12, ADC_SampleTime_480Cycles);
+	#elif ADC_channel_13_enable==1
+	ADC_RegularChannelConfig(ADC1, ADC_Channel_13, 13, ADC_SampleTime_480Cycles);
+	#elif ADC_channel_14_enable==1
+	ADC_RegularChannelConfig(ADC1, ADC_Channel_14, 14, ADC_SampleTime_480Cycles);
+	#elif ADC_channel_15_enable==1
+	ADC_RegularChannelConfig(ADC1, ADC_Channel_15, 15, ADC_SampleTime_480Cycles);
+	#elif ADC_channel_16_enable==1
+	ADC_RegularChannelConfig(ADC1, ADC_Channel_16, 16, ADC_SampleTime_480Cycles);//temperature sensor
+	
+	#endif
+	
 	//put more if needed, rank number cant be the same
 	
 	
 	ADC_DMARequestAfterLastTransferCmd(ADC1, ENABLE);
 	ADC_Cmd(ADC1, ENABLE);
     ADC_SoftwareStartConv(ADC1); 
+	
+	#if ADC_channel_16_enable==1
 	ADC_TempSensorVrefintCmd(ENABLE);
+	#endif
 }
 
 
@@ -103,14 +144,16 @@ u16 ADC_raw_data(int RANK){
 float get_battery()    //return voltage
 {
 float voltage_factor=0.0026996337;				//factor = 3300 / 4095 * total resistance / gnd_resistance / 1000
-	return ADC1_level[1]*voltage_factor;		//3.176039647=3300/4095*67/17
+	return ADC1_level[10]*voltage_factor;		//3.176039647=3300/4095*67/17
 	
 }
 
 float get_temperature() //return degree celcius
 {
-	
-	return (ADC1_level[2]*0.805860805-760)/2500+25;//0.805860805=3300/4095
-
+	#if ADC_channel_16_enable==1
+	return (ADC1_level[16]*0.805860805-760)/2.5+25;//0.805860805=3300/4095
+	#else
+	return 0;//return 0 if it is not enable
+	#endif
 	   //Temperature (in °„C) = {(VSENSE ®C V25) / Avg_Slope} + 25
 }
