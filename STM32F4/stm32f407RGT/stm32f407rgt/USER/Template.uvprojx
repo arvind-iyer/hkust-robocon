@@ -723,6 +723,11 @@
               <FileType>1</FileType>
               <FilePath>.\DHT11.c</FilePath>
             </File>
+            <File>
+              <FileName>linear_ccd.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\linear_ccd.c</FilePath>
+            </File>
           </Files>
         </Group>
       </Groups>
