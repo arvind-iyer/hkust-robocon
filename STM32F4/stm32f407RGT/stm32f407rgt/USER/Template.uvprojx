@@ -718,6 +718,11 @@
               <FileType>1</FileType>
               <FilePath>.\ADC.c</FilePath>
             </File>
+            <File>
+              <FileName>DHT11.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\DHT11.c</FilePath>
+            </File>
           </Files>
         </Group>
       </Groups>

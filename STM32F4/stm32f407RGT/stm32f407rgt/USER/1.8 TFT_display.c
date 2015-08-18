@@ -1,5 +1,7 @@
 #include "1.8 TFT_display.h"
 #include "ticks.h"
+#include "stdbool.h"
+#include "string.h"
 //private data
 u16 curr_bg_color = BLACK;
 u16 curr_text_color = BLACK;
@@ -24,8 +26,8 @@ u16 print_pos = 0;
   * @retval None
   */
 
-char spi_tx_buffer[100];
-char spi_rx_buffer[100];
+u8 spi_tx_buffer[100];
+u8 spi_rx_buffer[100];
 void tft_spi_init(void)
 {
    SPI_InitTypeDef   	SPI_InitStructure;
@@ -71,7 +73,7 @@ void tft_spi_init(void)
    SPI_SSOutputCmd( TFT_SPI , DISABLE );
 
 
-//	//DMA_DeInit(DMA1_Stream3);//SPI2_RX no RX in monitor
+//	DMA_DeInit(DMA1_Stream3);//SPI2_RX 
 //	DMA_DeInit(DMA1_Stream4);//SPI2_TX
 //	
 //	DMA_InitStructure.DMA_FIFOMode = DMA_FIFOMode_Disable ;
@@ -80,46 +82,59 @@ void tft_spi_init(void)
 //	DMA_InitStructure.DMA_MemoryDataSize = DMA_MemoryDataSize_Byte;
 //	DMA_InitStructure.DMA_MemoryInc = DMA_MemoryInc_Enable;
 //	DMA_InitStructure.DMA_Mode = DMA_Mode_Normal;
-//	DMA_InitStructure.DMA_PeripheralBaseAddr = (uint32_t)(&(SPI1->DR));
+//	DMA_InitStructure.DMA_PeripheralBaseAddr = (uint32_t)(&(SPI2->DR));
 //	DMA_InitStructure.DMA_PeripheralBurst = DMA_PeripheralBurst_Single;
 //	DMA_InitStructure.DMA_PeripheralDataSize = DMA_PeripheralDataSize_Byte;
 //	DMA_InitStructure.DMA_MemoryDataSize = DMA_MemoryDataSize_Byte;
 //	DMA_InitStructure.DMA_PeripheralInc = DMA_PeripheralInc_Disable;
-//	DMA_InitStructure.DMA_Priority = DMA_Priority_High;
+//	DMA_InitStructure.DMA_Priority = DMA_Priority_Low;
 //	
 //		/* Configure Tx DMA */
 //	DMA_InitStructure.DMA_Channel = DMA_Channel_0;
 //	DMA_InitStructure.DMA_DIR = DMA_DIR_MemoryToPeripheral;
 //	DMA_InitStructure.DMA_Memory0BaseAddr = (uint32_t) spi_tx_buffer;
-//	DMA_Init(DMA2_Stream3, &DMA_InitStructure);
+//	DMA_Init(DMA1_Stream3, &DMA_InitStructure);
 //		
 //		/* Configure Rx DMA */	
 //	DMA_InitStructure.DMA_Channel = DMA_Channel_0;
 //	DMA_InitStructure.DMA_DIR = DMA_DIR_PeripheralToMemory;
 //	DMA_InitStructure.DMA_Memory0BaseAddr = (uint32_t) spi_rx_buffer;
-//	DMA_Init(DMA2_Stream2, &DMA_InitStructure);
+//	DMA_Init(DMA1_Stream2, &DMA_InitStructure);
 //	
-//	DMA_Cmd(DMA2_Stream3, ENABLE); /* Enable the DMA SPI TX Stream */
-//    DMA_Cmd(DMA2_Stream2, ENABLE); /* Enable the DMA SPI RX Stream */
+//	DMA_Cmd(DMA1_Stream3, ENABLE); /* Enable the DMA SPI TX Stream */
+//    DMA_Cmd(DMA1_Stream2, ENABLE); /* Enable the DMA SPI RX Stream */
 //	 
 //	/* Enable the SPI Rx/Tx DMA request */
-//	SPI_I2S_DMACmd(SPI1, SPI_I2S_DMAReq_Rx, ENABLE);
-//	SPI_I2S_DMACmd(SPI1, SPI_I2S_DMAReq_Tx, ENABLE);
-	 
-	
-	
+//	SPI_I2S_DMACmd(SPI2, SPI_I2S_DMAReq_Rx, ENABLE);
+//	SPI_I2S_DMACmd(SPI2, SPI_I2S_DMAReq_Tx, ENABLE);
 	
 }
+
+//static bool SPI_FIRST_TX =true;
+//void spi_tx_one_byte(char data) 		//only send one data when call this function once
+//{
+
+//    if(SET == DMA_GetFlagStatus(DMA1_Stream3,DMA_FLAG_TCIF7)|| (SPI_FIRST_TX==true))  //TCIF = 1 = SET A transfer complete event happen 0= no transfer complete event
+//    {  SPI_FIRST_TX=false;
+//       DMA_ClearFlag(DMA1_Stream3,DMA_FLAG_TCIF7);
+//		
+//        DMA_Cmd(DMA1_Stream3,DISABLE);
+//        spi_tx_buffer[0] = data;
+//		
+//		DMA_SetCurrDataCounter(DMA1_Stream3, strlen(&data));
+//        DMA_Cmd(DMA1_Stream3,ENABLE);
+//         
+//    }
+//	
+//}	
 
 /**
   * @brief  Sending a command
   * @param  command: one byte command to be sent
   * @retval None
   */
-
-
 void tft_write_command(u8 command)
-{   
+{  
 	
 
 	GPIO_ResetBits(GPIO_CS, GPIO_Pin_CS);
@@ -129,12 +144,11 @@ void tft_write_command(u8 command)
    while (SPI_I2S_GetFlagStatus(TFT_SPI, SPI_I2S_FLAG_TXE) == RESET);
    /* Send byte through the TFT_SPI peripheral */
    SPI_I2S_SendData(TFT_SPI, command);
-	
+	//spi_tx_one_byte(command);
    while (SPI_I2S_GetFlagStatus(TFT_SPI, SPI_I2S_FLAG_RXNE) == RESET);
    SPI_I2S_ReceiveData(TFT_SPI);
    GPIO_SetBits(GPIO_CS, GPIO_Pin_CS);
-		
-	
+
 }
 
 /**
