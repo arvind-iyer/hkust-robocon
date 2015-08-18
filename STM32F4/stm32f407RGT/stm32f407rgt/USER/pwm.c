@@ -52,11 +52,6 @@ void pwm_init(void)
 
 
 void pwm_control( u8 pwm_id , u16 speed ){
-	if(speed>1000)
-		return;
-	else
-		speed+=500;
-
 	if(pwm_id == 1)						
 		TIM_SetCompare1(PWM_TIM, speed);
 	else if(pwm_id==2)

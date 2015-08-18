@@ -44,7 +44,10 @@ void display_button_data()
 
 
 void test(){
-	
+	u8 temp;
+	u8 humi;
+	DHT11_Read_Data(&temp,&humi);
+	tft_prints(0,2,"t%d,h%d",temp,humi);
 	
 	
 	usart_rx();
@@ -59,7 +62,7 @@ buzzer_init();	 //initialization of buzzer
 
 uart_init(9600);
 	ADC1_init();
-
+DHT11_Init();
 
 tft_init( 2,GREEN, BLACK, BLACK);
 buzzer_play_song(START_UP, 125, 0);
@@ -87,8 +90,9 @@ while (1)  {
 			system_time(); //every 1ms
 
 		
-		if(ticks_msimg%50==1){LED_blink(&PA15);}
-		if(ticks_msimg%500==3)
+		if(ticks_msimg%100==1){LED_blink(&PA15);}
+		
+		if(ticks_msimg%1000==0)
 		{  //for processing monitor data
 			tft_clear();
 			test();

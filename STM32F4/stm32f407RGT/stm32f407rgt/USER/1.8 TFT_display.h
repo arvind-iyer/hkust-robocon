@@ -11,7 +11,7 @@
 #include <stdio.h>
 #include <stdarg.h>
 
-#include "delay.h"
+#include "ticks.h"
 
 // SPI, RST, DC
 #define DC &PA4

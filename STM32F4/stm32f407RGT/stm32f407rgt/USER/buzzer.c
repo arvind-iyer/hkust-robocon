@@ -74,7 +74,7 @@ void buzzer_init()
 	AF_config(BUZZER_GPIO,GPIO_AF_TIM9);  // to be put in void easier
 
 
-    timer_init(BUZZER_TIM, SystemCoreClock / BUZZER_COUNT_PER_SECOND - 1, TIM_CounterMode_Up, buzzer_note_period, TIM_CKD_DIV2);
+    timer_init(BUZZER_TIM, SystemCoreClock / BUZZER_COUNT_PER_SECOND - 1, TIM_CounterMode_Up, buzzer_note_period, TIM_CKD_DIV1);
   
     pwm_timer_init(BUZZER_CHANNEL,BUZZER_TIM, TIM_OCMode_PWM1, TIM_OutputState_Enable, buzzer_volume, TIM_OCPolarity_High);
 

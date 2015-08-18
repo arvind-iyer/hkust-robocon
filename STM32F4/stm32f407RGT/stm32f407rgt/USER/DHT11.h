@@ -1,28 +1,22 @@
+#ifndef __DHT11_H 
+#define __DHT11_H  
 #include "stm32f4xx.h"
-#include "delay.h"
- /* Define to prevent recursive inclusion -------------------------------------*/
-#ifndef __DHT11_H
-#define __DHT11_H
+#include "ticks.h"
 
-/* Exported constants --------------------------------------------------------*/
-#define MAX_TICS 10000
-#define DHT11_OK 0
-#define DHT11_NO_CONN 1
-#define DHT11_CS_ERROR 2
+
+//IO方向设置 
+
+////IO操作函数	    
+#define	DHT11_DQ_OUT   //数据端口	PA0  
+#define	DHT11_DQ_IN    //数据端口	PA0  
+
 #define DHT11_PORT GPIOA
-#define DHT11_PIN GPIO_Pin_5
+#define DHT11_PIN GPIO_Pin_0
 
-//#define DHT11_PORT GPIOC
-//#define DHT11_PIN GPIO_Pin_2
-
-/* Exported macro ------------------------------------------------------------*/
-
-/* Exported functions ------------------------------------------------------- */
-uint8_t DHT11_RawRead(uint8_t *buf);
-float DHT22_Humidity(uint8_t *buf);
-float DHT22_Temperature(uint8_t *buf);
-uint8_t DHT11_Humidity(uint8_t *buf);
-uint8_t DHT11_Temperature(uint8_t *buf);
-uint8_t DHT11_pwm_Read(uint8_t *buf, uint32_t *dt, uint32_t *cnt);
-
-#endif /* __DHT11_H */
+u8 DHT11_Init(void);//初始化DHT11 
+u8 DHT11_Read_Data(u8 *temp,u8 *humi);//读取温湿度 
+u8 DHT11_Read_Byte(void);//读出一个字节 
+u8 DHT11_Read_Bit(void);//读出一个位 
+u8 DHT11_Check(void);//检测是否存在DHT11 
+void DHT11_Rst(void);//复位DHT11     
+#endif 

@@ -8,11 +8,11 @@
 #include "gpio.h"
 #include "timer.h"
 
-#define BUZZER_GPIO ((GPIO*) &PE6)
+#define BUZZER_GPIO  				&PE6
 
-#define BUZZER_TIM                          TIM9
-#define BUZZER_TIM_RCC                  RCC_APB2Periph_TIM9
-#define BUZZER_CHANNEL         TIM_Channel_2
+#define BUZZER_TIM                  TIM9
+#define BUZZER_TIM_RCC              RCC_APB2Periph_TIM9
+#define BUZZER_CHANNEL         		TIM_Channel_2
 
 #define BUZZER_TIM_OC_INIT          TIM_OC2Init
 #define BUZZER_TIM_SETCOMPARE       TIM_SetCompare2

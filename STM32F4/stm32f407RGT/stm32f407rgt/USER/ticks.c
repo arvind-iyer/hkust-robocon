@@ -41,8 +41,6 @@ return (sysTickUpCounter/1000);
 }
 
 
-
- 
 void delay_nus(u32 n) {
 	sysTickDownCounter = n;
 	while (sysTickDownCounter != 0) {

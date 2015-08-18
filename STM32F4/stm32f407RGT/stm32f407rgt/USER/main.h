@@ -10,7 +10,6 @@
 
 /*** Essential ***/
 
-#include "delay.h"
 #include "gpio.h"
 #include "ticks.h"
 #include "led.h"
@@ -24,6 +23,9 @@
 #include "flash.h"
 #include "interrupt.h"
 #include "can_protocol.h"
+
+
+#include "DHT11.h"
 
 #include "ADC.h"
 

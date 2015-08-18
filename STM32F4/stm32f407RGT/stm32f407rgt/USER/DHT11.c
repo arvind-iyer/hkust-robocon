@@ -1,164 +1,126 @@
-#include "DHT11.h"
+#include "dht11.h" 
 
-uint16_t read_cycle(uint16_t cur_tics, uint8_t neg_tic){
-	uint16_t cnt_tics;
- 	if (cur_tics < MAX_TICS) cnt_tics = 0;
-	if (neg_tic){
-		while (!GPIO_ReadInputDataBit(DHT11_PORT, DHT11_PIN)&&(cnt_tics<MAX_TICS)){
-			cnt_tics++;
-		}
-	}
-	else {
-		while (GPIO_ReadInputDataBit(DHT11_PORT, DHT11_PIN)&&(cnt_tics<MAX_TICS)){
-			cnt_tics++;
-		}
-	}
- 	return cnt_tics;
+void DHT11_IO_OUT(){
+	
+	GPIO_InitTypeDef GPIO_InitStructure;
+	GPIO_InitStructure.GPIO_Pin = DHT11_PIN;
+	GPIO_InitStructure.GPIO_Mode = GPIO_Mode_OUT;
+	GPIO_InitStructure.GPIO_OType = GPIO_OType_PP;
+	GPIO_InitStructure.GPIO_PuPd = GPIO_PuPd_NOPULL;
+	GPIO_InitStructure.GPIO_Speed = GPIO_Speed_2MHz;
+	GPIO_Init(DHT11_PORT, &GPIO_InitStructure);
+
+}
+    
+//RESET the DHT11 by hw
+void DHT11_Rst(void)	    
+{                  
+	DHT11_IO_OUT(); 	//SET TO OUTPUT mode 
+    GPIO_WriteBit(DHT11_PORT,DHT11_PIN,0); 	//pull down DQ 
+    delay_nms(20);    	//拉低至少18ms 
+    GPIO_WriteBit(DHT11_PORT,DHT11_PIN,1); 	//DQ=1  
+	delay_nus(30);     	//主机拉高20~40us 
+} 
+
+void DHT11_IO_IN(){
+	
+	GPIO_InitTypeDef GPIO_InitStructure;
+    GPIO_InitStructure.GPIO_Pin = DHT11_PIN;
+    GPIO_InitStructure.GPIO_Mode = GPIO_Mode_IN;
+    GPIO_InitStructure.GPIO_Speed = GPIO_Speed_50MHz;
+    GPIO_Init(DHT11_PORT, &GPIO_InitStructure);
+
 }
 
-uint8_t DHT11_RawRead(uint8_t *buf){
-  GPIO_InitTypeDef GPIO_InitStructure;
-	uint16_t dt[42];
-	uint16_t cnt;
-	uint8_t i, check_sum; 
+//等待DHT11的回应 
+//返回1:未检测到DHT11的存在 
+//返回0:存在 
+u8 DHT11_Check(void) 	    
+{    
+u8 retry=0; 
+	DHT11_IO_IN();//SET INPUT	  
+	while (GPIO_ReadInputDataBit(DHT11_PORT,DHT11_PIN) && retry < 85)//DHT11会拉低40~80us 
+	{ 
+	retry++; 
+	delay_nus(1); 
+	};	  
 	
-  GPIO_InitStructure.GPIO_Pin = DHT11_PIN;
-  GPIO_InitStructure.GPIO_Mode = GPIO_Mode_OUT;
-  GPIO_InitStructure.GPIO_OType = GPIO_OType_PP;
-  GPIO_InitStructure.GPIO_PuPd = GPIO_PuPd_NOPULL;
-  GPIO_InitStructure.GPIO_Speed = GPIO_Speed_2MHz;
-  GPIO_Init(DHT11_PORT, &GPIO_InitStructure);
+if(retry>=100)return 1; 
+else retry=0; 
 
-	
+	while (!GPIO_ReadInputDataBit(DHT11_PORT,DHT11_PIN)&&retry<85)//DHT11拉低后会再次拉高40~80us 
+	{ 
+	retry++; 
+	delay_nus(1); 
+	}; 
+if(retry>=100)return 1;	     
+return 0; 
+} 
 
-	//reset DHT11
-	delay_nms(500);
- 	GPIO_ResetBits(DHT11_PORT,DHT11_PIN);
-	delay_nms(20);
- 	GPIO_SetBits(DHT11_PORT,DHT11_PIN);
-	
-	
-  GPIO_InitStructure.GPIO_Pin = DHT11_PIN;
-  GPIO_InitStructure.GPIO_Mode = GPIO_Mode_IN;
-  GPIO_InitStructure.GPIO_Speed = GPIO_Speed_50MHz;
-  GPIO_Init(DHT11_PORT, &GPIO_InitStructure);
-	
-	
-  //start reading	
- 	cnt = 0; 
-	for(i=0;i<83 && cnt<MAX_TICS;i++){
-		if (i & 1){
-			cnt = read_cycle(cnt, 1);
-		}
-		else {
-			cnt = read_cycle(cnt, 0);
-			dt[i/2]= cnt;
-		}
-	}
-	
- 	//release line
-	GPIO_SetBits(DHT11_PORT, DHT11_PIN);
+//从DHT11读取一个位 
+//返回值：1/0 
+u8 DHT11_Read_Bit(void) 	  
+{ 
+ u8 retry=0; 
+while(GPIO_ReadInputDataBit(DHT11_PORT,DHT11_PIN)&&retry<100)//等待变为低电平 
+{ 
+retry++; 
+delay_nus(1); 
+} 
+retry=0; 
+while(!GPIO_ReadInputDataBit(DHT11_PORT,DHT11_PIN)&&retry<100)//等待变高电平 
+{ 
+retry++; 
+delay_nus(1); 
+} 
+delay_nus(30);//wait 30us to see whether it is a long signal(1) or short signal(0)
 
-	for (i = 0; i<5; i++) buf[i]=0;
-	
-	if (cnt>=MAX_TICS) return DHT11_NO_CONN;
-	
-	//convert data
- 	for(i=2;i<42;i++){
-		(*buf) <<= 1;
-  	if (dt[i]>20) {
-			(*buf)++;
- 		}
-		if (!((i-1)%8) && (i>2)) {
-			buf++;
-		}
- 	}
-	
-	//calculate checksum
-	buf -= 5;
-	check_sum = 0;
- 	for(i=0;i<4;i++){
-		check_sum += *buf;
-		buf++;
-	}
-	
-	if (*buf != check_sum) return DHT11_CS_ERROR;
-				
-	return DHT11_OK;	
-	//return check_sum;
-}
+if(GPIO_ReadInputDataBit(DHT11_PORT,DHT11_PIN))return 1; //data coming from here
 
-uint8_t DHT11_pwm_Read(uint8_t *buf, uint32_t *dt, uint32_t *cnt){
-	uint8_t i, check_sum; 
-	
-	*cnt = 0;
-	for (i = 0; i<43; i++) dt[i]=0;
-GPIO_InitTypeDef GPIO_InitStructure;
-	 GPIO_InitStructure.GPIO_Pin = DHT11_PIN;
-   GPIO_InitStructure.GPIO_Mode = GPIO_Mode_OUT;
-  GPIO_InitStructure.GPIO_OType = GPIO_OType_PP;
-  GPIO_InitStructure.GPIO_PuPd = GPIO_PuPd_NOPULL;
-  GPIO_InitStructure.GPIO_Speed = GPIO_Speed_2MHz;
-  GPIO_Init(DHT11_PORT, &GPIO_InitStructure);
-
-	GPIO_ResetBits(DHT11_PORT,	DHT11_PIN);
-	delay_nms(20);
-	GPIO_SetBits(DHT11_PORT,	DHT11_PIN);
-	tim_init_pwm_cnt(DHT11_PORT,	DHT11_PIN);
-	Delay(20);
-
-	//pin_mode(TIM2_GPIO, TIM2_CH1, GPIO_MODE_OUT2_PP);
-	//GPIO_HIGH(TIM2_GPIO,	TIM2_CH1);
-
-	for (i = 0; i<5; i++) buf[i]=0;
-		
-	if (*cnt==0) return DHT11_NO_CONN;
-	
-	//convert data
- 	for(i=3;i<42;i++){
-		(*buf) <<= 1;
-  	if (dt[i]>2000) {
-			(*buf)++;
- 		}
-		if (!((i-2)%8) && (i>3)) {
-			buf++;
-		}
- 	}
-	
-	//calculate checksum
-	buf -= 5;
-	check_sum = 0;
- 	for(i=0;i<4;i++){
-		check_sum += *buf;
-		buf++;
-	}
-	
-	if (*buf != check_sum) return DHT11_CS_ERROR;
-				
-	return DHT11_OK;	
-	//return check_sum;
-}
-
-
-float DHT22_Humidity(uint8_t *buf){
-	float res;
-	res = buf[0] * 256 + buf[1];
-	res /= 10.0;
-	return res;
-}
-
-float DHT22_Temperature(uint8_t *buf){
-	float res;
-	res = (buf[2] & 0x7F)* 256 + buf[3];
-  res /= 10.0;
-  if (buf[2] & 0x80) res *= -1;
-	return res;
-}
-
-uint8_t DHT11_Humidity(uint8_t *buf){
-	return buf[0];
-}
-
-uint8_t DHT11_Temperature(uint8_t *buf){
-	return buf[2];;
-}
+else return 0;	    
+} 
+//从DHT11读取一个字节 
+//返回值：读到的数据 
+u8 DHT11_Read_Byte(void)     
+{         
+    u8 i,dat; 
+    dat=0; 
+for (i=0;i<8;i++)  
+{ 
+   	dat<<=1;  
+    dat|=DHT11_Read_Bit(); 
+    }	     
+    return dat; 
+} 
+//从DHT11读取一次数据 
+//temp:温度值(范围:0~50°) 
+//humi:湿度值(范围:20%~90%) 
+//返回值：0,正常;1,读取失败 
+u8 DHT11_Read_Data(u8 *temp,u8 *humi)     
+{   
+u8 buf[5]; 
+u8 i; 
+DHT11_Rst(); 
+if(DHT11_Check()==0) 
+{ 
+for(i=0;i<5;i++)//读取40位数据 but the buf[3] and buf [1] is nth inside 
+{ 
+buf[i]=DHT11_Read_Byte(); 
+} 
+if((buf[0]+buf[2])==buf[4]) 
+{ 
+*humi=buf[0]; 
+*temp=buf[2]; 
+} 
+}else return 1; 
+return 0;	     
+} 
+//初始化DHT11的IO口 DQ 同时检测DHT11的存在 
+//返回1:不存在 
+//返回0:存在    	  
+u8 DHT11_Init(void) 
+{ 
+DHT11_IO_OUT();
+DHT11_Rst(); 
+return DHT11_Check(); 
+}  
