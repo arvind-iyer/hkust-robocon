@@ -26,7 +26,7 @@
 
 
 #include "DHT11.h"
-
+#include "linear_ccd.h"
 #include "ADC.h"
 
 #include "stm32f4xx_crc.h"

@@ -241,7 +241,7 @@ u16 ADC_raw_data(int channel){
 
 float get_battery()    //return voltage
 {
-	float voltage_factor=0.003330891;				//factor = 3300 / 4095 * total resistance / gnd_resistance / 1000
+	float voltage_factor=0.0026996337;				//factor = 3300 / 4095 * total resistance / gnd_resistance / 1000
 	return ADC1_level[5];		//3.176039647=3300/4095*67/17
 }
 

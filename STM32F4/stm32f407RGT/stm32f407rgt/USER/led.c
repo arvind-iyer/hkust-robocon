@@ -30,7 +30,7 @@ void LED_control(const GPIO *gpio, u8 state){
 	}
 
 }
-u8 state=0;
+static u8 state=0;
 
 void LED_blink(const GPIO *gpio)
 {

@@ -17,7 +17,7 @@
 #define ADC_channel_7_enable  0
 #define ADC_channel_8_enable  0
 #define ADC_channel_9_enable  0
-#define ADC_channel_10_enable  0
+#define ADC_channel_10_enable  1
 #define ADC_channel_11_enable  0
 #define ADC_channel_12_enable  0
 #define ADC_channel_13_enable  0

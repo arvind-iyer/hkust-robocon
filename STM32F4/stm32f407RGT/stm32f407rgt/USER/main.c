@@ -44,11 +44,7 @@ void display_button_data()
 
 
 void test(){
-	u8 temp;
-	u8 humi;
-	DHT11_Read_Data(&temp,&humi);
-	tft_prints(0,2,"t%d,h%d",temp,humi);
-	
+
 	
 	usart_rx();
 }
@@ -62,7 +58,7 @@ buzzer_init();	 //initialization of buzzer
 
 uart_init(9600);
 	ADC1_init();
-DHT11_Init();
+linear_ccd_init();
 
 tft_init( 2,GREEN, BLACK, BLACK);
 buzzer_play_song(START_UP, 125, 0);
@@ -92,13 +88,14 @@ while (1)  {
 		
 		if(ticks_msimg%100==1){LED_blink(&PA15);}
 		
-		if(ticks_msimg%1000==0)
+		if(ticks_msimg%500==0)
 		{  //for processing monitor data
-			tft_clear();
-			test();
-			tft_prints(0,3,"degree:%f",get_temperature());
+			
+		//	test();
+		//	tft_prints(0,3,"degree:%f",get_temperature());
 			show_time();
 			//send_tx();
+			linear_ccd_read();
 			//display_button_data();
 			tft_update();	
 			
@@ -106,7 +103,7 @@ while (1)  {
 			//usart_tx('1');
 		
 		
-			usart_print("whatsapp");
+			//usart_print("whatsapp");
 		
 		}
 	}
